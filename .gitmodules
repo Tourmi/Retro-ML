@@ -1,0 +1,6 @@
+[submodule "Submodules/SharpNEAT"]
+	path = Submodules/SharpNEAT
+	url = https://github.com/colgreen/sharpneat-refactor.git
+[submodule "Submodules/BizHawk"]
+	path = Submodules/BizHawk
+	url = https://github.com/TASEmulators/BizHawk.git
