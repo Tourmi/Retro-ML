@@ -3,7 +3,7 @@ using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.ReactiveUI;
 using System;
 
-namespace SWM_ML
+namespace SMW_ML
 {
     internal class Program
     {

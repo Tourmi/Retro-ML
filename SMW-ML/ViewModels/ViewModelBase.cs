@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace SWM_ML.ViewModels
+namespace SMW_ML.ViewModels
 {
     public class ViewModelBase : ReactiveObject
     {

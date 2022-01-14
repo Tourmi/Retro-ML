@@ -1,10 +1,10 @@
 using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
-using SWM_ML.ViewModels;
-using SWM_ML.Views;
+using SMW_ML.ViewModels;
+using SMW_ML.Views;
 
-namespace SWM_ML
+namespace SMW_ML
 {
     public class App : Application
     {

@@ -1,9 +1,9 @@
 using Avalonia.Controls;
 using Avalonia.Controls.Templates;
-using SWM_ML.ViewModels;
+using SMW_ML.ViewModels;
 using System;
 
-namespace SWM_ML
+namespace SMW_ML
 {
     public class ViewLocator : IDataTemplate
     {
