@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
     <TargetFramework>net6.0</TargetFramework>
@@ -15,5 +15,19 @@
     <!--Condition below is needed to remove Avalonia.Diagnostics package from build output in Release configuration.-->
     <PackageReference Condition="'$(Configuration)' == 'Debug'" Include="Avalonia.Diagnostics" Version="0.10.10" />
     <PackageReference Include="Avalonia.ReactiveUI" Version="0.10.10" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="BizHawk.Emulation.Common">
+      <HintPath>..\Submodules\BizHawk\src\BizHawk.Emulation.Common\obj\Release\BizHawk.Emulation.Common.dll</HintPath>
+    </Reference>
+    <Reference Include="BizHawk.Emulation.Cores">
+      <HintPath>..\Submodules\BizHawk\src\BizHawk.Emulation.Cores\obj\Release\BizHawk.Emulation.Cores.dll</HintPath>
+    </Reference>
+    <Reference Include="EmuHawk">
+      <HintPath>..\Submodules\BizHawk\src\BizHawk.Client.EmuHawk\obj\Release\EmuHawk.exe</HintPath>
+    </Reference>
+    <Reference Include="SharpNeat">
+      <HintPath>..\Submodules\SharpNEAT\src\SharpNeat\bin\Release\net6.0\SharpNeat.dll</HintPath>
+    </Reference>
   </ItemGroup>
 </Project>
