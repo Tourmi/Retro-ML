@@ -5,7 +5,7 @@ using System.Text;
 
 namespace SMW_ML.ViewModels
 {
-    public class ViewModelBase : ReactiveObject
+    internal class ViewModelBase : ReactiveObject
     {
     }
 }
