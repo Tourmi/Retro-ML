@@ -15,6 +15,7 @@
     <PackageReference Condition="'$(Configuration)' == 'Debug'" Include="Avalonia.Diagnostics" Version="0.10.10" />
     <PackageReference Include="Avalonia.ReactiveUI" Version="0.10.10" />
     <PackageReference Include="Redzen" Version="13.0.0" />
+    <PackageReference Include="System.IO.Ports" Version="6.0.0" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="BizHawk.Emulation.Common">
