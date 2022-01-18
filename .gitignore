@@ -213,3 +213,10 @@ coc-settings.json
 *.map
 src/Web/Avalonia.Web.Blazor/wwwroot/*.js
 src/Web/Avalonia.Web.Blazor/Interop/Typescript/*.js
+
+
+##################
+# Manually Added
+##################
+
+*.sfc

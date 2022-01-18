@@ -2,6 +2,7 @@ using ReactiveUI;
 using SMW_ML.Emulator;
 using SMW_ML.Neural.Training;
 using SMW_ML.Neural.Training.SharpNeat;
+using SMW_ML.Utils;
 using System;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
@@ -26,7 +27,13 @@ namespace SMW_ML.ViewModels
         public void StartTraining()
         {
             IsTrainingRunning = true;
-            emulator = new BizhawkAdapter(pathToEmulator: null, pathToLuaScript: null, pathToROM: null, pathToBizhawkConfig: null, savestatesPath: null);
+            emulator = new BizhawkAdapter(
+                pathToEmulator: DefaultPaths.EMULATOR, 
+                pathToLuaScript: DefaultPaths.EMULATOR_ADAPTER, 
+                pathToROM: DefaultPaths.ROM, 
+                pathToBizhawkConfig: DefaultPaths.EMULATOR_CONFIG, 
+                savestatesPath: DefaultPaths.SAVESTATES_DIR
+            );
             trainer = new SharpNeatTrainer(emulator);
             trainer.StartTraining("config/config.json");
         }

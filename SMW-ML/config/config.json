@@ -19,7 +19,7 @@
     "secondaryParentGeneProbability": 0.1
   },
   "populationSize": 5,
-  "initialInterconnectionsProportion": 0.05,
+  "initialInterconnectionsProportion": 0.2,
   "connectionWeightScale": 5.0,
   "complexityRegulationStrategy": {
     "strategyName": "relative",

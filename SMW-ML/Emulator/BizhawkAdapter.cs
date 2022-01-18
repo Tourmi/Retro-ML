@@ -81,7 +81,7 @@ namespace SMW_ML.Emulator
 
         public void LoadState(string saveState)
         {
-            SendCommand(Commands.LOAD_STATE, Path.Combine(savestatesPath, saveState));
+            SendCommand(Commands.LOAD_STATE, Path.GetFullPath(saveState));
         }
 
         public void NextFrame()
@@ -123,9 +123,10 @@ namespace SMW_ML.Emulator
             client.Close();
             client.Dispose();
 
-            server.Shutdown(SocketShutdown.Both);
             server.Close();
             server.Dispose();
+
+            arduinoPreviewer?.Dispose();
         }
 
         private void SendCommand(string command, params object[] args)
