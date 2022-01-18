@@ -2,6 +2,8 @@
 using SharpNeat.Evaluation;
 using SMW_ML.Emulator;
 using SMW_ML.Game;
+using SMW_ML.Game.SuperMarioWorld;
+using SMW_ML.Neural.Scoring;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -13,84 +15,56 @@ namespace SMW_ML.Neural.Training.SharpNeat
 {
     internal class SMWPhenomeEvaluator : IPhenomeEvaluator<IBlackBox<double>>
     {
-        private const int INPUT_ROW_COUNT = 15;
-        private const int INPUT_COLUMN_COUNT = 15;
-        public const int INPUT_COUNT = INPUT_ROW_COUNT * INPUT_COLUMN_COUNT * 2 + 2; // 15x15 tile grid around Mario of solid tiles, as well as enemies. +1 for bias
-
-        private const int FRAMES_TO_PROCESS = 1080;
-
         private readonly IEmulatorAdapter emulator;
+        private readonly DataReader dataReader;
+        private readonly InputSetter inputSetter;
+        private readonly OutputGetter outputGetter;
 
-        public SMWPhenomeEvaluator(IEmulatorAdapter emulator)
+        public SMWPhenomeEvaluator(IEmulatorAdapter emulator, DataReader dataReader, InputSetter inputSetter, OutputGetter outputGetter)
         {
             this.emulator = emulator;
+            this.dataReader = dataReader;
+            this.inputSetter = inputSetter;
+            this.outputGetter = outputGetter;
         }
 
         public FitnessInfo Evaluate(IBlackBox<double> phenome)
         {
-            double score = 0;
+            Score score = new();
 
             emulator.Reserve();
-            emulator.LoadState(emulator.GetStates()[0]);
-            emulator.NextFrame();
-
-            for (int i = 0; i < FRAMES_TO_PROCESS; i++)
+            var saveStates = emulator.GetStates();
+            foreach (var state in saveStates)
             {
-                score = DoFrame(phenome);
+                emulator.LoadState(state);
+                emulator.NextFrame();
+
+                while (!score.ShouldStop)
+                {
+                    DoFrame(phenome);
+
+                    score.Update(dataReader);
+                }
+                score.LevelDone();
             }
             emulator.Free();
 
-            return new FitnessInfo(score);
+            return new FitnessInfo(score.GetScore());
         }
 
-        private double DoFrame(IBlackBox<double> phenome)
+        /// <summary>
+        /// Runs a single frame on the emulator, using the given AI
+        /// </summary>
+        /// <param name="phenome"></param>
+        private void DoFrame(IBlackBox<double> phenome)
         {
             phenome.ResetState();
-
-            int position = emulator.ReadMemory(0x000094) + (emulator.ReadMemory(0x000095) << 8);
-            var inputs = phenome.InputVector;
-
-            int currOffset = 0;
-            inputs[currOffset++] = 1; //Bias
-            inputs[currOffset++] = position; //Temporary
-
-            for (int i = 0; i < INPUT_ROW_COUNT; i++)
-            {
-                for (int j = 0; j < INPUT_COLUMN_COUNT; j++)
-                {
-                    // TODO : read tile at position
-                    inputs[currOffset++] = 0;
-                }
-            }
-
-            for (int i = 0; i < INPUT_ROW_COUNT; i++)
-            {
-                for (int j = 0; j < INPUT_COLUMN_COUNT; j++)
-                {
-                    //TODO : check if enemy at position
-                    inputs[currOffset++] = 0;
-                }
-            }
+            inputSetter.SetInputs(phenome.InputVector);
 
             phenome.Activate();
 
-            var outputs = phenome.OutputVector;
-            string controllerInputs = "";
-            for (int i = 0; i < phenome.OutputCount; i++)
-            {
-                if (outputs[i] > 0.5)
-                {
-                    controllerInputs += (char)Input.IndexToButton(i);
-                }
-            }
-
-            Input controllerInput = new(controllerInputs);
-
-            emulator.SendInput(controllerInput);
+            emulator.SendInput(outputGetter.GetControllerInput(phenome.OutputVector));
             emulator.NextFrame();
-
-
-            return position;
         }
     }
 }

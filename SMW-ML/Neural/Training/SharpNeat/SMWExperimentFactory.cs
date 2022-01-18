@@ -6,6 +6,7 @@ using SharpNeat.Neat.Reproduction.Asexual;
 using SharpNeat.Neat.Reproduction.Sexual;
 using SharpNeat.NeuralNets;
 using SMW_ML.Emulator;
+using SMW_ML.Game.SuperMarioWorld;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -28,7 +29,8 @@ namespace SMW_ML.Neural.Training.SharpNeat
 
         public INeatExperiment<double> CreateExperiment(JsonElement configElem)
         {
-            var evalScheme = new SMWEvaluationScheme(emulator);
+            var dataReader = new DataReader(emulator);
+            var evalScheme = new SMWEvaluationScheme(emulator, dataReader, new InputSetter(dataReader), new OutputGetter());
 
             var experiment = new NeatExperiment<double>(evalScheme, this.Id)
             {

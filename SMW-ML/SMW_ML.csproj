@@ -45,6 +45,6 @@
 		<Message Text="Copied Emulator to emu\" Importance="high" />
 
 		<Copy SourceFiles="@(ROM)" DestinationFolder="$(TargetDir)" />
-		<Message Text="Copied ROM to project root" Condition="Exists('$(TargetDir)\smw.sfc')" Importance="high"/>
+		<Message Text="Copied ROM to project root" Condition="Exists('$(TargetDir)\smw.sfc')" Importance="high" />
 	</Target>
 </Project>

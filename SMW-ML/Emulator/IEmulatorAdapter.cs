@@ -14,14 +14,14 @@ namespace SMW_ML.Emulator
         /// </summary>
         /// <param name="addr"></param>
         /// <returns></returns>
-        byte ReadMemory(int addr);
+        byte ReadMemory(uint addr);
         /// <summary>
         /// Reads the game memory starting from the given address
         /// </summary>
         /// <param name="addr"></param>
         /// <param name="count"></param>
         /// <returns></returns>
-        byte[] ReadMemory(int addr, int count);
+        byte[] ReadMemory(uint addr, uint count);
         /// <summary>
         /// Sends the given input to the emulator
         /// </summary>

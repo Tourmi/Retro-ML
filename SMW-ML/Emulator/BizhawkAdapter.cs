@@ -89,14 +89,14 @@ namespace SMW_ML.Emulator
             SendCommand(Commands.NEXT_FRAME);
         }
 
-        public byte ReadMemory(int addr)
+        public byte ReadMemory(uint addr)
         {
             SendCommand(Commands.READ_MEMORY, addr);
 
             return Read(1)[0];
         }
 
-        public byte[] ReadMemory(int addr, int count)
+        public byte[] ReadMemory(uint addr, uint count)
         {
             SendCommand(Commands.READ_MEMORY_RANGE, addr, count);
 
@@ -138,10 +138,10 @@ namespace SMW_ML.Emulator
             client.Receive(okayByte);
         }
 
-        private byte[] Read(int amount)
+        private byte[] Read(uint amount)
         {
             byte[] buffer = new byte[amount];
-            client.Receive(buffer, amount, SocketFlags.None);
+            client.Receive(buffer, (int)amount, SocketFlags.None);
 
             return buffer;
         }

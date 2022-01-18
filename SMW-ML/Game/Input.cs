@@ -10,7 +10,7 @@ namespace SMW_ML.Game
     {
         public const int BUTTON_COUNT = 12;
 
-        private readonly Buttons[] buttons = new Buttons[] {
+        private static readonly Buttons[] buttons = new Buttons[] {
             Buttons.A, 
             Buttons.B, 
             Buttons.X, 
@@ -91,6 +91,6 @@ namespace SMW_ML.Game
             return output;
         }
 
-        public static Buttons IndexToButton(int index) => Enum.GetValues<Buttons>()[index];
+        public static Buttons IndexToButton(int index) => buttons[index];
     }
 }

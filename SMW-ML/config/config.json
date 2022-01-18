@@ -2,7 +2,7 @@
   "isAcyclic": true,
   "activationFnName": "LeakyReLU",
   "evolutionAlgorithmSettings": {
-    "speciesCount": 2,
+    "speciesCount": 5,
     "elitismProportion": 0.2,
     "selectionProportion": 0.2,
     "offspringAsexualProportion": 0.5,
@@ -10,21 +10,21 @@
     "interspeciesMatingProportion": 0.1
   },
   "reproductionAsexualSettings": {
-    "connectionWeightMutationProbability": 0.94,
-    "addNodeMutationProbability": 0.01,
-    "addConnectionMutationProbability": 0.025,
-    "deleteConnectionMutationProbability": 0.025
+    "connectionWeightMutationProbability": 0.50,
+    "addNodeMutationProbability": 0.1,
+    "addConnectionMutationProbability": 0.2,
+    "deleteConnectionMutationProbability": 0.2
   },
   "reproductionSexualSettings": {
     "secondaryParentGeneProbability": 0.1
   },
-  "populationSize": 5,
-  "initialInterconnectionsProportion": 0.2,
+  "populationSize": 10,
+  "initialInterconnectionsProportion": 0.3,
   "connectionWeightScale": 5.0,
   "complexityRegulationStrategy": {
     "strategyName": "relative",
     "relativeComplexityCeiling": 10,
-    "minSimplifcationGenerations": 10
+    "minSimplifcationGenerations": 5
   },
   "degreeOfParallelism": -1,
   "enableHardwareAcceleratedNeuralNets": false,
