@@ -5,6 +5,7 @@ using SharpNeat.Neat.EvolutionAlgorithm;
 using SharpNeat.Neat.Reproduction.Asexual;
 using SharpNeat.Neat.Reproduction.Sexual;
 using SharpNeat.NeuralNets;
+using SMW_ML.Emulator;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,15 +19,16 @@ namespace SMW_ML.Neural.Training.SharpNeat
     {
         public string Id => "smw-experiment-factory";
 
-        public SMWExperimentFactory()
+        private IEmulatorAdapter emulator;
+
+        public SMWExperimentFactory(IEmulatorAdapter emulator)
         {
-            // TODO : receive emulator instances manager here
+            this.emulator = emulator;
         }
 
         public INeatExperiment<double> CreateExperiment(JsonElement configElem)
         {
-            var evalScheme = new SMWEvaluationScheme(); // TODO : Pass emulator instance manager
-
+            var evalScheme = new SMWEvaluationScheme(emulator);
 
             var experiment = new NeatExperiment<double>(evalScheme, this.Id)
             {

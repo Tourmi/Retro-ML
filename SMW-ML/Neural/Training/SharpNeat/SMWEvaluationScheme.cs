@@ -1,5 +1,6 @@
 ﻿using SharpNeat.BlackBox;
 using SharpNeat.Evaluation;
+using SMW_ML.Emulator;
 using SMW_ML.Game;
 using System;
 using System.Collections.Generic;
@@ -11,6 +12,8 @@ namespace SMW_ML.Neural.Training.SharpNeat
 {
     internal class SMWEvaluationScheme : IBlackBoxEvaluationScheme<double>
     {
+        private IEmulatorAdapter emulator;
+
         public int InputCount => SMWPhenomeEvaluator.INPUT_COUNT;
 
         public int OutputCount => Input.BUTTON_COUNT;
@@ -24,12 +27,12 @@ namespace SMW_ML.Neural.Training.SharpNeat
         //We need an emulator instance for every AI.
         public bool EvaluatorsHaveState => true;
 
-        public SMWEvaluationScheme()
+        public SMWEvaluationScheme(IEmulatorAdapter emulator)
         {
-            // TODO : receive emulator instance manager here
+            this.emulator = emulator;
         }
 
-        public IPhenomeEvaluator<IBlackBox<double>> CreateEvaluator() => new SMWPhenomeEvaluator(); // Pass emulator instance manager here
+        public IPhenomeEvaluator<IBlackBox<double>> CreateEvaluator() => new SMWPhenomeEvaluator(emulator);
 
         public bool TestForStopCondition(FitnessInfo fitnessInfo) => false;
     }

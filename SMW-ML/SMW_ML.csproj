@@ -7,6 +7,7 @@
   <ItemGroup>
     <AvaloniaResource Include="Assets\**" />
     <None Remove=".gitignore" />
+    <None Remove="Assets\bizhawkAdapter.lua" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Avalonia" Version="0.10.11" />
@@ -18,15 +19,6 @@
     <PackageReference Include="System.IO.Ports" Version="6.0.0" />
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="BizHawk.Emulation.Common">
-      <HintPath>..\Submodules\BizHawk\src\BizHawk.Emulation.Common\obj\Release\BizHawk.Emulation.Common.dll</HintPath>
-    </Reference>
-    <Reference Include="BizHawk.Emulation.Cores">
-      <HintPath>..\Submodules\BizHawk\src\BizHawk.Emulation.Cores\obj\Release\BizHawk.Emulation.Cores.dll</HintPath>
-    </Reference>
-    <Reference Include="EmuHawk">
-      <HintPath>..\Submodules\BizHawk\src\BizHawk.Client.EmuHawk\obj\Release\EmuHawk.exe</HintPath>
-    </Reference>
     <Reference Include="SharpNeat">
       <HintPath>..\Submodules\SharpNEAT\src\SharpNeat\bin\Release\net6.0\SharpNeat.dll</HintPath>
     </Reference>
@@ -37,6 +29,12 @@
     </None>
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="Assets\SaveStates\" />
     <Folder Include="Models\" />
+  </ItemGroup>
+  <ItemGroup>
+    <AvaloniaResource Update="Assets\bizhawkAdapter.lua">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </AvaloniaResource>
   </ItemGroup>
 </Project>

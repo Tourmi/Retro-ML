@@ -1,4 +1,5 @@
 using ReactiveUI;
+using SMW_ML.Emulator;
 using SMW_ML.Neural.Training;
 using SMW_ML.Neural.Training.SharpNeat;
 using System;
@@ -10,12 +11,13 @@ namespace SMW_ML.ViewModels
 {
     internal class MainWindowViewModel : ViewModelBase
     {
-        private readonly INeuralTrainer trainer;
+        private INeuralTrainer? trainer;
+        private IEmulatorAdapter? emulator;
         private bool isTrainingRunning = false;
 
         public MainWindowViewModel()
         {
-            trainer = new SharpNeatTrainer();
+            
         }
 
         public string Greeting => "Super Mario World - Machine Learning";
@@ -24,13 +26,18 @@ namespace SMW_ML.ViewModels
         public void StartTraining()
         {
             IsTrainingRunning = true;
+            emulator = new BizhawkAdapter(pathToEmulator: null, pathToLuaScript: null, pathToROM: null, pathToBizhawkConfig: null, savestatesPath: null);
+            trainer = new SharpNeatTrainer(emulator);
             trainer.StartTraining("config/config.json");
         }
 
         public string Stop => "Stop Training";
         public void StopTraining()
         {
-            trainer.StopTraining();
+            trainer?.StopTraining();
+            emulator?.Dispose();
+            emulator = null;
+            trainer = null;
             IsTrainingRunning = false;
         }
 

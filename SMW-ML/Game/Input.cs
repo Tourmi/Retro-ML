@@ -77,6 +77,20 @@ namespace SMW_ML.Game
             return new byte[] { byte1, byte2 };
         }
 
+        public override string ToString()
+        {
+            string output = "";
+            for (int i =0; i < inputMask.Length; i++)
+            {
+                if (inputMask[i])
+                {
+                    output += (char)buttons[i];
+                }
+            }
+
+            return output;
+        }
+
         public static Buttons IndexToButton(int index) => Enum.GetValues<Buttons>()[index];
     }
 }

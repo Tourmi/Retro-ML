@@ -9,6 +9,7 @@ using SharpNeat.IO;
 using SharpNeat.Neat;
 using System.Threading;
 using SharpNeat.Neat.EvolutionAlgorithm;
+using SMW_ML.Emulator;
 
 namespace SMW_ML.Neural.Training.SharpNeat
 {
@@ -26,12 +27,10 @@ namespace SMW_ML.Neural.Training.SharpNeat
         /// <summary>
         /// Neural training using the SharpNEAT library
         /// </summary>
-        public SharpNeatTrainer()
+        public SharpNeatTrainer(IEmulatorAdapter emulator)
         {
-            // TODO : receive Emulator Manager
-
             syncSemaphore = new Semaphore(1, 1);
-            experimentFactory = new SMWExperimentFactory(); // TODO : pass emulator manager here
+            experimentFactory = new SMWExperimentFactory(emulator);
         }
 
         /// <summary>

@@ -30,5 +30,7 @@ namespace SMW_ML.Arduino
         {
             serial.Dispose();
         }
+
+        public static bool ArduinoAvailable() => SerialPort.GetPortNames().Contains(SERIAL_PORT);
     }
 }
