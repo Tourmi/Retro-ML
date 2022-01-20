@@ -16,11 +16,11 @@ namespace SMW_ML.Neural.Training.SharpNeat
     internal class SMWPhenomeEvaluator : IPhenomeEvaluator<IBlackBox<double>>
     {
         private readonly IEmulatorAdapter emulator;
-        private readonly DataReader dataReader;
+        private readonly DataGetter dataReader;
         private readonly InputSetter inputSetter;
         private readonly OutputGetter outputGetter;
 
-        public SMWPhenomeEvaluator(IEmulatorAdapter emulator, DataReader dataReader, InputSetter inputSetter, OutputGetter outputGetter)
+        public SMWPhenomeEvaluator(IEmulatorAdapter emulator, DataGetter dataReader, InputSetter inputSetter, OutputGetter outputGetter)
         {
             this.emulator = emulator;
             this.dataReader = dataReader;
@@ -38,12 +38,14 @@ namespace SMW_ML.Neural.Training.SharpNeat
             {
                 emulator.LoadState(state);
                 emulator.NextFrame();
+                dataReader.NextLevel();
 
                 while (!score.ShouldStop)
                 {
                     DoFrame(phenome);
 
                     score.Update(dataReader);
+                    dataReader.NextFrame();
                 }
                 score.LevelDone();
             }

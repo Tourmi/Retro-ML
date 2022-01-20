@@ -10,9 +10,17 @@ namespace SMW_ML.Game.SuperMarioWorld
     internal class InputSetter
     {
         private const bool USE_BIAS = true;
-        private const bool USE_POS_X = true;
-        private const bool USE_POS_Y = true;
+        private const bool USE_POS_X = false;
+        private const bool USE_POS_Y = false;
         private const bool USE_IS_ON_GROUND = true;
+        private const bool USE_IS_IN_WATER = true;
+        private const bool USE_IS_SINKING = true;
+        private const bool USE_CAN_JUMP_OUT_OF_WATER = true;
+        private const bool USE_IS_CARRYING_SOMETHING = true;
+        private const bool USE_CAN_CLIMB = true;
+        private const bool USE_IS_AT_MAX_SPEED = true;
+        private const bool USE_INTERNAL_CLOCK = true;
+        private const bool USE_WAS_DIALOG_TRIGGERED = true;
 
         private const bool USE_TILE_GRID = false;
         private const bool USE_ENEMY_GRID = false;
@@ -20,9 +28,9 @@ namespace SMW_ML.Game.SuperMarioWorld
         private const int GRID_WIDTH = 11;
         private const int GRID_HEIGHT = 11;
 
-        private DataReader dataReader;
+        private DataGetter dataReader;
 
-        public InputSetter(DataReader dataReader)
+        public InputSetter(DataGetter dataReader)
         {
             this.dataReader = dataReader;
         }
@@ -36,18 +44,47 @@ namespace SMW_ML.Game.SuperMarioWorld
             }
             if (USE_POS_X)
             {
-                uint positionX = dataReader.GetPositionX();
-                inputs[currOffset++] = positionX;
+                inputs[currOffset++] = dataReader.GetPositionX();
             }
             if (USE_POS_Y)
             {
-                uint positionY = dataReader.GetPositionY();
-                inputs[currOffset++] = positionY;
+                inputs[currOffset++] = dataReader.GetPositionY();
             }
             if (USE_IS_ON_GROUND)
             {
-                bool isOnGround = dataReader.IsOnGround();
-                inputs[currOffset++] = isOnGround ? 1 : 0;
+                inputs[currOffset++] = dataReader.IsOnGround() ? 1 : 0;
+            }
+            if (USE_IS_IN_WATER)
+            {
+                inputs[currOffset++] = dataReader.IsInWater() ? 1 : 0;
+            }
+            if (USE_IS_SINKING)
+            {
+                inputs[currOffset++] = dataReader.IsSinking() ? 1 : 0;
+            }
+            if (USE_CAN_JUMP_OUT_OF_WATER)
+            {
+                inputs[currOffset++] = dataReader.CanJumpOutOfWater() ? 1 : 0;
+            }
+            if (USE_IS_CARRYING_SOMETHING)
+            {
+                inputs[currOffset++] = dataReader.IsCarryingSomething() ? 1 : 0;
+            }
+            if (USE_CAN_CLIMB)
+            {
+                inputs[currOffset++] = dataReader.CanClimb() ? 1 : 0;
+            }
+            if (USE_IS_AT_MAX_SPEED)
+            {
+                inputs[currOffset++] = dataReader.IsAtMaxSpeed() ? 1 : 0;
+            }
+            if (USE_INTERNAL_CLOCK)
+            {
+                inputs[currOffset++] = dataReader.WasInternalClockTriggered() ? 1 : 0;
+            }
+            if (USE_WAS_DIALOG_TRIGGERED)
+            {
+                inputs[currOffset++] = dataReader.WasDialogBoxOpened() ? 1 : 0;
             }
 
             if (USE_TILE_GRID)
@@ -83,6 +120,14 @@ namespace SMW_ML.Game.SuperMarioWorld
             if (USE_IS_ON_GROUND) count++;
             if (USE_TILE_GRID) count += GRID_WIDTH * GRID_HEIGHT;
             if (USE_ENEMY_GRID) count += GRID_WIDTH * GRID_HEIGHT;
+            if (USE_IS_IN_WATER) count++;
+            if (USE_IS_SINKING) count++;
+            if (USE_CAN_JUMP_OUT_OF_WATER) count++;
+            if (USE_IS_CARRYING_SOMETHING) count++;
+            if (USE_CAN_CLIMB) count++;
+            if (USE_IS_AT_MAX_SPEED) count++;
+            if (USE_INTERNAL_CLOCK) count++;
+            if (USE_WAS_DIALOG_TRIGGERED) count++;
 
             return count;
         }

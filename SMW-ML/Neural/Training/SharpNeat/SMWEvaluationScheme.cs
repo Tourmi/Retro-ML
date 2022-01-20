@@ -14,7 +14,7 @@ namespace SMW_ML.Neural.Training.SharpNeat
     internal class SMWEvaluationScheme : IBlackBoxEvaluationScheme<double>
     {
         private readonly IEmulatorAdapter emulator;
-        private readonly DataReader dataReader;
+        private readonly DataGetter dataReader;
         private readonly InputSetter inputSetter;
         private readonly OutputGetter outputGetter;
 
@@ -31,7 +31,7 @@ namespace SMW_ML.Neural.Training.SharpNeat
         //We need an emulator instance for every AI.
         public bool EvaluatorsHaveState => true;
 
-        public SMWEvaluationScheme(IEmulatorAdapter emulator, DataReader dataReader, InputSetter inputSetter, OutputGetter outputGetter)
+        public SMWEvaluationScheme(IEmulatorAdapter emulator, DataGetter dataReader, InputSetter inputSetter, OutputGetter outputGetter)
         {
             this.emulator = emulator;
             this.dataReader = dataReader;

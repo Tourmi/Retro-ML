@@ -6,18 +6,31 @@ using System.Threading.Tasks;
 
 namespace SMW_ML.Game.SuperMarioWorld
 {
+    /// <summary>
+    /// RAM addresses used in Super Mario World.
+    /// 
+    /// <br>HUGE thanks to <see href="https://www.smwcentral.net">SMWCentral</see> for making those values available</br>
+    /// </summary>
     internal static class Addresses
     {
         public struct AddressData
         {
-            public AddressData(uint address, uint length)
+            public enum CacheDurations
+            {
+                Frame,
+                Level
+            }
+
+            public AddressData(uint address, uint length, CacheDurations cacheDuration = CacheDurations.Frame)
             {
                 Address = address;
                 Length = length;
+                CacheDuration = cacheDuration;
             }
 
             public uint Address;
             public uint Length;
+            public CacheDurations CacheDuration;
         }
 
 
@@ -37,18 +50,18 @@ namespace SMW_ML.Game.SuperMarioWorld
             /// </summary>
             public static readonly AddressData IsOnGround = new(0x0013EF, 1);
             /// <summary>
-            /// 0x00 = if not standing on Solid Sprite
-            /// 0x01 = Standing on top of a floating rock, floating grass platform, floating skull, Mega Mole, carrot top lift, etc.
-            /// 0x02 = Standing on top of a springboard, pea bouncer.
-            /// 0x03 = Standing on top of a brown chained platform, gray falling platform.
+            /// <br>0x00 = if not standing on Solid Sprite                                                                                     </br>
+            /// <br>0x01 = Standing on top of a floating rock, floating grass platform, floating skull, Mega Mole, carrot top lift, etc.       </br>
+            /// <br>0x02 = Standing on top of a springboard, pea bouncer.                                                                      </br>
+            /// <br>0x03 = Standing on top of a brown chained platform, gray falling platform.                                                 </br>
             /// </summary>
             public static readonly AddressData IsOnSolidSprite = new(0x001471, 1);
             /// <summary>
             /// Notable values:
-            /// 0x00 = Player on ground
-            /// 0x0B = Jumping/swimming upwards.
-            /// 0x0C = Shooting out of a slanted pipe, running at maximum speed.
-            /// 0x24 = Descending/sinking.
+            /// <br>0x00 = Player on ground                                           </br>
+            /// <br>0x0B = Jumping/swimming upwards.                                  </br>
+            /// <br>0x0C = Shooting out of a slanted pipe, running at maximum speed.  </br>
+            /// <br>0x24 = Descending/sinking.                                        </br>
             /// </summary>
             public static readonly AddressData AirFlag = new(0x000072, 1);
             /// <summary>
@@ -60,9 +73,23 @@ namespace SMW_ML.Game.SuperMarioWorld
             /// </summary>
             public static readonly AddressData IsCarryingSomething = new(0x00148F, 1);
             /// <summary>
+            /// <br>Player is climbing flag: format: n--sifhb</br>
+            /// <br>n: Net/vine flag. 1 - net, 0 - vine. Determines whether Mario can move diagonally.</br>
+            /// <br>s: Side body collision point with climbing. If clear, block horizontal movement.</br>
+            /// <br>i: Side head collision point with climbing.</br>
+            /// <br>f: Feet collision point with climbing.</br>
+            /// <br>h: Head collision point with climbing.</br>
+            /// <br>b: Body collision point with climbing.</br>
+            /// </summary>
+            public static readonly AddressData IsClimbingFlags = new(0x000074, 1);
+            /// <summary>
             /// 0x01 when the player can climb in the air (Used for the ropes), 0x00 otherwise
             /// </summary>
             public static readonly AddressData CanClimbOnAir = new(0x0018BE, 1);
+            /// <summary>
+            /// Can climb if bits ----X-XX are set. NOT GUARANTEED TO WORK, IS USED AS SCRATCH RAM
+            /// </summary>
+            public static readonly AddressData CanClimb = new(0x00008B, 1);
             /// <summary>
             /// 0x01 if inside a lakitu cloud, 0x00 otherwise
             /// </summary>
@@ -326,11 +353,11 @@ namespace SMW_ML.Game.SuperMarioWorld
             /// <summary>
             /// 0x01 when in a water level, 0x00 otherwise
             /// </summary>
-            public static readonly AddressData IsWater = new(0x000085, 1);
+            public static readonly AddressData IsWater = new(0x000085, 1, AddressData.CacheDurations.Level);
             /// <summary>
             /// 0x00 if not slippery, 0x01 through 0x7F if half-slippery, 0x80 to 0xFF for full slippery
             /// </summary>
-            public static readonly AddressData IsSlippery = new(0x000085, 1);
+            public static readonly AddressData IsSlippery = new(0x000085, 1, AddressData.CacheDurations.Level);
             /// <summary>
             /// 0x01 if the level is paused, 0x00 otherwise
             /// </summary>
@@ -370,24 +397,24 @@ namespace SMW_ML.Game.SuperMarioWorld
             /// v = Vertical layer 1.
             /// - = unused.
             /// </summary>
-            public static readonly AddressData ScreenMode = new(0x00005B, 1);
+            public static readonly AddressData ScreenMode = new(0x00005B, 1, AddressData.CacheDurations.Level);
             /// <summary>
             /// Amount of screens in level. Set to FF in Ludwig & Reznor fights
             /// </summary>
-            public static readonly AddressData ScreenCount = new(0x00005D, 1);
+            public static readonly AddressData ScreenCount = new(0x00005D, 1, AddressData.CacheDurations.Level);
 
             /// <summary>
             /// 0x00 : there is no water tide in the level
             /// 0x01 : the tide has a variable height
             /// 0x02 : the tide has a fixed height
             /// </summary>
-            public static readonly AddressData WaterTide = new(0x001403, 1);
+            public static readonly AddressData WaterTide = new(0x001403, 1, AddressData.CacheDurations.Level);
             /// <summary>
             /// 0x00 : No scroll
             /// 0x01 : Fixed speed scroll
             /// 0x02 : Variable speed scroll
             /// </summary>
-            public static readonly AddressData HorizontalScrollLayer2 = new(0x001413, 1);
+            public static readonly AddressData HorizontalScrollLayer2 = new(0x001413, 1, AddressData.CacheDurations.Level);
             /// <summary>
             /// val type            speed  
             /// <br> 00	None	    0        </br>
@@ -395,7 +422,7 @@ namespace SMW_ML.Game.SuperMarioWorld
             /// <br> 02	Variable	1/2      </br>
             /// <br> 03	Slow	    1/32     </br> 
             /// </summary>
-            public static readonly AddressData VerticalScrollLayer2 = new(0x001413, 1);
+            public static readonly AddressData VerticalScrollLayer2 = new(0x001413, 1, AddressData.CacheDurations.Level);
             /// <summary>
             /// 0x00 = none; 0x01 = message 1; 0x02 = message 2; 0x03 = Yoshi thanks message.
             /// </summary>
@@ -430,12 +457,12 @@ namespace SMW_ML.Game.SuperMarioWorld
             /// <br>For vertical levels, $200 bytes per screen, with the format --sssssx yyyyxxxx. All bytes are used.</br>
             /// <br>If layer 2 or 3 is interactive in the level, it uses screens 10-1F (0E-1B in vertical levels).</br>
             /// </summary>
-            public static readonly AddressData Map16LowBytes = new(0x00C800, 14_336);
+            public static readonly AddressData Map16LowBytes = new(0x00C800, 14_336, AddressData.CacheDurations.Level);
             /// <summary>
             /// Map 16 High Byte Table.
             /// Completes <see cref="Map16LowBytes"/>.
             /// </summary>
-            public static readonly AddressData Map16HighBytes = new(0x01C800, 14_336);
+            public static readonly AddressData Map16HighBytes = new(0x01C800, 14_336, AddressData.CacheDurations.Level);
 
         }
 

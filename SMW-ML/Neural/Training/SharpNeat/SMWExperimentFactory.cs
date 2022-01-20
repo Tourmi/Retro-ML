@@ -29,7 +29,7 @@ namespace SMW_ML.Neural.Training.SharpNeat
 
         public INeatExperiment<double> CreateExperiment(JsonElement configElem)
         {
-            var dataReader = new DataReader(emulator);
+            var dataReader = new DataGetter(emulator);
             var evalScheme = new SMWEvaluationScheme(emulator, dataReader, new InputSetter(dataReader), new OutputGetter());
 
             var experiment = new NeatExperiment<double>(evalScheme, this.Id)

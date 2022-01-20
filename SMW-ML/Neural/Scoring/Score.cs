@@ -10,7 +10,8 @@ namespace SMW_ML.Neural.Scoring
     internal class Score
     {
         private const int MAX_IMMOBILE_FRAMES = 10;
-        private const int MAX_TRAINING_FRAMES = 30 * 60;
+        private const int MAX_IMMOBILE_FRAMES_IF_ALREADY_MOVED = 180;
+        private const int MAX_TRAINING_FRAMES = 60 * 60;
 
         private double score;
 
@@ -18,6 +19,7 @@ namespace SMW_ML.Neural.Scoring
         private uint previousXPosition;
         private uint maxXPosition;
         private bool shouldStop = false;
+        private int moved = -1;
 
         private int immobileFrames = 0;
         private int levelFrames = 0;
@@ -36,21 +38,23 @@ namespace SMW_ML.Neural.Scoring
             maxXPosition = 0;
             immobileFrames = 0;
             levelFrames = 0;
+            moved = -1;
         }
 
-        public void Update(DataReader dataReader)
+        public void Update(DataGetter dataReader)
         {
             uint newPosX = dataReader.GetPositionX();
             if (newPosX > maxXPosition)
             {
                 levelScore += newPosX - previousXPosition;
                 maxXPosition = newPosX;
+                moved++;
             }
 
             if (newPosX == previousXPosition && dataReader.CanAct())
             {
                 immobileFrames++;
-                if (immobileFrames >= MAX_IMMOBILE_FRAMES)
+                if (immobileFrames >= MAX_IMMOBILE_FRAMES && moved < 1 || immobileFrames >= MAX_IMMOBILE_FRAMES_IF_ALREADY_MOVED)
                 {
                     shouldStop = true;
                 }
