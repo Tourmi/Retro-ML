@@ -14,6 +14,7 @@ namespace SMW_ML.Game.SuperMarioWorld
         private const bool USE_POS_Y = false;
         private const bool USE_IS_ON_GROUND = true;
         private const bool USE_IS_IN_WATER = true;
+        private const bool USE_IS_RAISING = true;
         private const bool USE_IS_SINKING = true;
         private const bool USE_CAN_JUMP_OUT_OF_WATER = true;
         private const bool USE_IS_CARRYING_SOMETHING = true;
@@ -22,11 +23,19 @@ namespace SMW_ML.Game.SuperMarioWorld
         private const bool USE_INTERNAL_CLOCK = true;
         private const bool USE_WAS_DIALOG_TRIGGERED = true;
 
-        private const bool USE_TILE_GRID = false;
+        private const bool USE_TILE_GRID = true;
         private const bool USE_ENEMY_GRID = false;
 
-        private const int GRID_WIDTH = 11;
-        private const int GRID_HEIGHT = 11;
+        /// <summary>
+        /// Horizontal distance in tiles from Mario to check
+        /// </summary>
+        private const int GRID_X_DIST = 5;
+        /// <summary>
+        /// Vertical distance in tiles from Mario to check
+        /// </summary>
+        private const int GRID_Y_DIST = 5;
+        private const int GRID_WIDTH = GRID_X_DIST * 2 + 1;
+        private const int GRID_HEIGHT = GRID_Y_DIST * 2 + 1;
 
         private DataGetter dataReader;
 
@@ -57,6 +66,10 @@ namespace SMW_ML.Game.SuperMarioWorld
             if (USE_IS_IN_WATER)
             {
                 inputs[currOffset++] = dataReader.IsInWater() ? 1 : 0;
+            }
+            if (USE_IS_RAISING)
+            {
+                inputs[currOffset++] = dataReader.IsRaising() ? 1 : 0;
             }
             if (USE_IS_SINKING)
             {
@@ -89,20 +102,20 @@ namespace SMW_ML.Game.SuperMarioWorld
 
             if (USE_TILE_GRID)
             {
-                for (int i = 0; i < GRID_WIDTH; i++)
+                var walkableTiles = dataReader.GetWalkableTilesAroundPosition(GRID_X_DIST, GRID_Y_DIST);
+                for (int i = 0; i < GRID_HEIGHT; i++)
                 {
-                    for (int j = 0; j < GRID_HEIGHT; j++)
+                    for (int j = 0; j < GRID_WIDTH; j++)
                     {
-                        // TODO : read tile at position
-                        inputs[currOffset++] = 0;
+                        inputs[currOffset++] = walkableTiles[i, j] ? 1 : 0;
                     }
                 }
             }
             if (USE_ENEMY_GRID)
             {
-                for (int i = 0; i < GRID_WIDTH; i++)
+                for (int i = 0; i < GRID_HEIGHT; i++)
                 {
-                    for (int j = 0; j < GRID_HEIGHT; j++)
+                    for (int j = 0; j < GRID_WIDTH; j++)
                     {
                         //TODO : check if enemy at position
                         inputs[currOffset++] = 0;
@@ -121,6 +134,7 @@ namespace SMW_ML.Game.SuperMarioWorld
             if (USE_TILE_GRID) count += GRID_WIDTH * GRID_HEIGHT;
             if (USE_ENEMY_GRID) count += GRID_WIDTH * GRID_HEIGHT;
             if (USE_IS_IN_WATER) count++;
+            if (USE_IS_RAISING) count++;
             if (USE_IS_SINKING) count++;
             if (USE_CAN_JUMP_OUT_OF_WATER) count++;
             if (USE_IS_CARRYING_SOMETHING) count++;

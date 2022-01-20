@@ -10,7 +10,7 @@ namespace SMW_ML.Neural.Scoring
     internal class Score
     {
         private const int MAX_IMMOBILE_FRAMES = 10;
-        private const int MAX_IMMOBILE_FRAMES_IF_ALREADY_MOVED = 180;
+        private const int MAX_IMMOBILE_FRAMES_IF_ALREADY_MOVED = 4 * 60;
         private const int MAX_TRAINING_FRAMES = 60 * 60;
 
         private double score;
@@ -18,6 +18,7 @@ namespace SMW_ML.Neural.Scoring
         private double levelScore;
         private uint previousXPosition;
         private uint maxXPosition;
+        private uint minYPosition;
         private bool shouldStop = false;
         private int moved = -1;
 
@@ -31,7 +32,7 @@ namespace SMW_ML.Neural.Scoring
 
         public void LevelDone()
         {
-            score += levelScore;
+            score += levelScore + (1000 * levelScore / levelFrames) + minYPosition;
 
             shouldStop = false;
             previousXPosition = 0;
@@ -39,11 +40,31 @@ namespace SMW_ML.Neural.Scoring
             immobileFrames = 0;
             levelFrames = 0;
             moved = -1;
+            minYPosition = uint.MaxValue;
         }
 
         public void Update(DataGetter dataReader)
         {
             uint newPosX = dataReader.GetPositionX();
+
+            var newPosY = dataReader.GetPositionY();
+
+            if (newPosX <= maxXPosition && newPosY >= minYPosition && dataReader.CanAct())
+            {
+                immobileFrames++;
+                if (immobileFrames >= MAX_IMMOBILE_FRAMES && moved < 1 || immobileFrames >= MAX_IMMOBILE_FRAMES_IF_ALREADY_MOVED)
+                {
+                    shouldStop = true;
+                    levelFrames = MAX_TRAINING_FRAMES * 2;
+                    return;
+                }
+            }
+            else
+            {
+                immobileFrames = 0;
+            }
+            minYPosition = Math.Min(minYPosition, newPosY);
+
             if (newPosX > maxXPosition)
             {
                 levelScore += newPosX - previousXPosition;
@@ -51,21 +72,15 @@ namespace SMW_ML.Neural.Scoring
                 moved++;
             }
 
-            if (newPosX == previousXPosition && dataReader.CanAct())
-            {
-                immobileFrames++;
-                if (immobileFrames >= MAX_IMMOBILE_FRAMES && moved < 1 || immobileFrames >= MAX_IMMOBILE_FRAMES_IF_ALREADY_MOVED)
-                {
-                    shouldStop = true;
-                }
-            } else
-            {
-                immobileFrames = 0;
-            }
-
             if (dataReader.IsDead())
             {
                 shouldStop = true;
+                return;
+            } else if (dataReader.WonLevel())
+            {
+                shouldStop = true;
+                levelScore *= 10;
+                return;
             }
 
             levelFrames++;

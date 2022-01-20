@@ -2,9 +2,9 @@
   "isAcyclic": true,
   "activationFnName": "LeakyReLU",
   "evolutionAlgorithmSettings": {
-    "speciesCount": 5,
-    "elitismProportion": 0.4,
-    "selectionProportion": 0.5,
+    "speciesCount": 20,
+    "elitismProportion": 0.15,
+    "selectionProportion": 0.1,
     "offspringAsexualProportion": 0.5,
     "offspringSexualProportion": 0.5,
     "interspeciesMatingProportion": 0.1
@@ -18,8 +18,8 @@
   "reproductionSexualSettings": {
     "secondaryParentGeneProbability": 0.1
   },
-  "populationSize": 20,
-  "initialInterconnectionsProportion": 0.3,
+  "populationSize": 100,
+  "initialInterconnectionsProportion": 0.05,
   "connectionWeightScale": 5.0,
   "complexityRegulationStrategy": {
     "strategyName": "relative",

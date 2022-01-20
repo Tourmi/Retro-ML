@@ -9,7 +9,8 @@ namespace SMW_ML.Game.SuperMarioWorld
     /// <summary>
     /// RAM addresses used in Super Mario World.
     /// 
-    /// <br>HUGE thanks to <see href="https://www.smwcentral.net">SMWCentral</see> for making those values available</br>
+    /// <br>HUGE thanks to <see href="https://www.smwcentral.net/?p=memorymap&amp;game=smw">SMWCentral</see> for making those values available</br>
+    /// <br>Thanks to HammerBrother for the C800 memory maps! <see href="https://www.smwcentral.net/?p=section&amp;a=details&amp;id=21702"/></br>
     /// </summary>
     internal static class Addresses
     {
@@ -21,16 +22,18 @@ namespace SMW_ML.Game.SuperMarioWorld
                 Level
             }
 
-            public AddressData(uint address, uint length, CacheDurations cacheDuration = CacheDurations.Frame)
+            public AddressData(uint address, uint length, CacheDurations cacheDuration = CacheDurations.Frame, uint highByteLocation = 0)
             {
                 Address = address;
                 Length = length;
                 CacheDuration = cacheDuration;
+                HighByteAddress = highByteLocation;
             }
 
             public uint Address;
             public uint Length;
             public CacheDurations CacheDuration;
+            public uint HighByteAddress;
         }
 
 
@@ -188,21 +191,13 @@ namespace SMW_ML.Game.SuperMarioWorld
             public static readonly AddressData YSpeeds = new(0x0000AA, 12);
 
             /// <summary>
-            /// Low byte of the 16-bit sprite X positions
+            /// 16-bit sprite X positions
             /// </summary>
-            public static readonly AddressData LowByteXPositions = new(0x0000D8, 12);
+            public static readonly AddressData XPositions = new(0x0000D8, 12, highByteLocation: 0x0014E0);
             /// <summary>
-            /// High byte of the 16-bit sprite X positions
+            /// 16-bit sprite Y positions
             /// </summary>
-            public static readonly AddressData HighByteXPositions = new(0x0014E0, 12);
-            /// <summary>
-            /// Low byte of the 16-bit sprite Y positions
-            /// </summary>
-            public static readonly AddressData LowByteYPositions = new(0x0000E4, 12);
-            /// <summary>
-            /// High byte of the 16-bit sprite Y positions
-            /// </summary>
-            public static readonly AddressData HighByteYPositions = new(0x0014D4, 12);
+            public static readonly AddressData YPositions = new(0x0000E4, 12, highByteLocation: 0x0014D4);
             /// <summary>
             /// 0x01 if the sprite is on Yoshi's tongue
             /// </summary>
@@ -277,21 +272,13 @@ namespace SMW_ML.Game.SuperMarioWorld
             /// </summary>
             public static readonly AddressData ShooterNumbers = new(0x001783, 8);
             /// <summary>
-            /// Low byte of the 16-bit shooter X positions
+            /// 16-bit shooter X positions
             /// </summary>
-            public static readonly AddressData LowByteShooterXPositions = new(0x00179B, 8);
+            public static readonly AddressData ShooterXPositions = new(0x00179B, 8, highByteLocation: 0x0017A3);
             /// <summary>
-            /// High byte of the 16-bit shooter X positions
+            /// 16-bit shooter Y positions
             /// </summary>
-            public static readonly AddressData HighByteShooterXPositions = new(0x0017A3, 8);
-            /// <summary>
-            /// Low byte of the 16-bit shooter Y positions
-            /// </summary>
-            public static readonly AddressData LowByteShooterYPositions = new(0x00178B, 8);
-            /// <summary>
-            /// High byte of the 16-bit shooter Y positions
-            /// </summary>
-            public static readonly AddressData HighByteShooterYPositions = new(0x001793, 8);
+            public static readonly AddressData ShooterYPositions = new(0x00178B, 8, highByteLocation: 0x001793);
 
         }
 
@@ -351,6 +338,16 @@ namespace SMW_ML.Game.SuperMarioWorld
         public static class Level
         {
             /// <summary>
+            /// Translevel number, set during transfer from world map to level. This identifies the first room of the current level. To convert this to a room number (the "level number" in Lunar Magic), if > #$24, then add #$DC.
+            /// In the clean ROM, the actual formula is more complex.If translevel number > #$24, then subtract #$24. Then check RAM $7E:1F11 or $7E:1F12. If the player is in a submap (not the big world map), then add #$100. 
+            /// The submaps of SMW use translevel numbers > #$24, and the big map uses numbers <= #$24, so the simplication is that #$100 - #$24 is #$DC; Lunar Magic forces this simplification to remain.
+            /// </summary>
+            public static readonly AddressData Number = new(0x0013BF, 1);
+            /// <summary>
+            /// 0x00 if on main map.
+            /// </summary>
+            public static readonly AddressData SubMap = new(0x001F11, 1);
+            /// <summary>
             /// 0x01 when in a water level, 0x00 otherwise
             /// </summary>
             public static readonly AddressData IsWater = new(0x000085, 1, AddressData.CacheDurations.Level);
@@ -390,16 +387,16 @@ namespace SMW_ML.Game.SuperMarioWorld
             /// </summary>
             public static readonly AddressData KeyholeTimer = new(0x001434, 1);
             /// <summary>
-            /// Screen mode: CD----Vv.
-            /// C = Collision with layer 2.
-            /// D = Disable collision with layer 1.
-            /// V = Vertical layer 2.
-            /// v = Vertical layer 1.
-            /// - = unused.
+            /// <br>Screen mode: CD----Vv.              </br>
+            /// <br>C = Collision with layer 2.         </br>
+            /// <br>D = Disable collision with layer 1. </br>
+            /// <br>V = Vertical layer 2.               </br>
+            /// <br>v = Vertical layer 1.               </br>
+            /// <br>- = unused.                         </br>
             /// </summary>
             public static readonly AddressData ScreenMode = new(0x00005B, 1, AddressData.CacheDurations.Level);
             /// <summary>
-            /// Amount of screens in level. Set to FF in Ludwig & Reznor fights
+            /// Amount of screens in level. Set to FF in Ludwig and Reznor fights
             /// </summary>
             public static readonly AddressData ScreenCount = new(0x00005D, 1, AddressData.CacheDurations.Level);
 
@@ -452,17 +449,18 @@ namespace SMW_ML.Game.SuperMarioWorld
             public static readonly AddressData ScrollCommandLayer2 = new(0x00143F, 1);
 
             /// <summary>
-            /// <br>Map16 Low Byte Table.</br>
+            /// Set to 0xFF when dying or when the level is won
+            /// </summary>
+            public static readonly AddressData LevelOver = new(0x000DDA, 1);
+
+            /// <summary>
+            /// <br>Map16 Table.</br>
             /// <br>For horizontal levels, $1B0 tiles per screen, where each screen can be indexed using the format ------y yyyyxxxx. $7E:FE00-$7E:FFFF are unused.</br>
             /// <br>For vertical levels, $200 bytes per screen, with the format --sssssx yyyyxxxx. All bytes are used.</br>
             /// <br>If layer 2 or 3 is interactive in the level, it uses screens 10-1F (0E-1B in vertical levels).</br>
+            /// <br>See <see href="https://www.smwcentral.net/?p=section&amp;a=details&amp;id=21702"/>. (Thanks, HammerBrother!)</br>
             /// </summary>
-            public static readonly AddressData Map16LowBytes = new(0x00C800, 14_336, AddressData.CacheDurations.Level);
-            /// <summary>
-            /// Map 16 High Byte Table.
-            /// Completes <see cref="Map16LowBytes"/>.
-            /// </summary>
-            public static readonly AddressData Map16HighBytes = new(0x01C800, 14_336, AddressData.CacheDurations.Level);
+            public static readonly AddressData Map16 = new(0x00C800, 14_336, AddressData.CacheDurations.Level, 0x01C800);
 
         }
 
