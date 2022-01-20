@@ -51,7 +51,7 @@ namespace SMW_ML.Neural.Training.SharpNeat
             }
             emulator.Free();
 
-            return new FitnessInfo(score.GetScore());
+            return new FitnessInfo(score.GetFinalScore());
         }
 
         /// <summary>

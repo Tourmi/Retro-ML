@@ -16,6 +16,7 @@ namespace SMW_ML.Neural.Scoring
         private double score;
 
         private double levelScore;
+        private double bestLevel;
         private uint previousXPosition;
         private uint maxXPosition;
         private uint minYPosition;
@@ -34,6 +35,8 @@ namespace SMW_ML.Neural.Scoring
         {
             score += levelScore + (1000 * levelScore / levelFrames) + minYPosition;
 
+            bestLevel = Math.Max(maxXPosition, bestLevel);
+
             shouldStop = false;
             previousXPosition = 0;
             maxXPosition = 0;
@@ -41,6 +44,7 @@ namespace SMW_ML.Neural.Scoring
             levelFrames = 0;
             moved = -1;
             minYPosition = uint.MaxValue;
+            levelScore = 0;
         }
 
         public void Update(DataGetter dataReader)
@@ -91,7 +95,10 @@ namespace SMW_ML.Neural.Scoring
             previousXPosition = newPosX;
         }
 
-        public double GetScore() => score;
+        public double GetFinalScore()
+        {
+            return score + bestLevel * 10;
+        }
 
         public bool ShouldStop => shouldStop;
     }

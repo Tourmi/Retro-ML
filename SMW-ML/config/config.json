@@ -2,7 +2,7 @@
   "isAcyclic": true,
   "activationFnName": "LeakyReLU",
   "evolutionAlgorithmSettings": {
-    "speciesCount": 20,
+    "speciesCount": 15,
     "elitismProportion": 0.15,
     "selectionProportion": 0.1,
     "offspringAsexualProportion": 0.5,
@@ -18,7 +18,7 @@
   "reproductionSexualSettings": {
     "secondaryParentGeneProbability": 0.1
   },
-  "populationSize": 100,
+  "populationSize": 25,
   "initialInterconnectionsProportion": 0.05,
   "connectionWeightScale": 5.0,
   "complexityRegulationStrategy": {
