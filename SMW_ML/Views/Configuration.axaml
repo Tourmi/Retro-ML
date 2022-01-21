@@ -1,0 +1,94 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+		xmlns:vm="clr-namespace:SMW_ML.ViewModels;assembly=SMW_ML"
+        mc:Ignorable="d" d:DesignWidth="600" d:DesignHeight="500"
+        x:Class="SMW_ML.Views.Configuration"
+        Title="Configuration"
+		Name="ConfigurationWindow">
+	<Design.DataContext>
+		<vm:ConfigurationViewModel/>
+	</Design.DataContext>
+	<Window.Styles>
+		<StyleInclude Source="/Styles/MainStyles.axaml" />
+
+		<Style Selector="StackPanel.stackPanelItems">
+			<Setter Property="Margin" Value="15,0,0,0"/>
+			<Setter Property="HorizontalAlignment" Value="Stretch"/>
+		</Style>
+		<Style Selector="TextBlock.h1">
+			<Setter Property="FontWeight" Value="Bold"/>
+			<Setter Property="FontSize" Value="14"/>
+		</Style>
+		<Style Selector="TextBlock.p">
+			<Setter Property="FontSize" Value="12"/>
+			<Setter Property="Margin" Value="5"/>
+			<Setter Property="VerticalAlignment" Value="Center"/>
+		</Style>
+		<Style Selector="RadioButton.content">
+			<Setter Property="FontSize" Value="12"/>
+		</Style>
+		<Style Selector="ComboBox.comboBox">
+			<Setter Property="HorizontalAlignment" Value="Stretch"/>
+			<Setter Property="Margin" Value="5"/>
+		</Style>
+		<Style Selector="NumericUpDown.numericTextBox">
+			<Setter Property="HorizontalAlignment" Value="Left"/>
+			<Setter Property="Margin" Value="5"/>
+		</Style>
+		<Style Selector="TextBox.numberTextBox">
+			<Setter Property="HorizontalAlignment" Value="Left"/>
+			<Setter Property="Margin" Value="5"/>
+		</Style>
+		<Style Selector="Button.save">
+			<Setter Property="HorizontalAlignment" Value="Right"/>
+			<Setter Property="VerticalAlignment" Value="Bottom"/>
+			<Setter Property="Background" Value="Green"/>
+		</Style>
+		<Style Selector="Button.close">
+			<Setter Property="HorizontalAlignment" Value="Right"/>
+			<Setter Property="VerticalAlignment" Value="Bottom"/>
+			<Setter Property="Background" Value="Red"/>
+		</Style>
+	</Window.Styles>
+
+	<ScrollViewer>
+		<StackPanel Orientation="Vertical" Spacing="5" Margin="10" HorizontalAlignment="Center" VerticalAlignment="Top">
+			<TextBlock Classes="h1" Text="{Binding GeneralTrainingSettingsString}"/>
+			<Grid Margin="5" ColumnDefinitions="*,*" RowDefinitions="Auto,Auto,Auto">
+				<TextBlock Classes="p" Text="{Binding NumberOfAIString}" Grid.Row="0" Grid.Column="0"/>
+				<NumericUpDown Classes="numericTextBox" Value="{Binding NumberAI}" Minimum="0" Grid.Row="0" Grid.Column="1"/>
+			</Grid>
+			<TextBlock Classes="h1" Text="{Binding EvolutionSettingsString}"/>
+			<Grid Margin="5" ColumnDefinitions="*,*" RowDefinitions="Auto,Auto,Auto">
+				<TextBlock Classes="p" Text="{Binding SpeciesCountString}" Grid.Row="0" Grid.Column="0"/>
+				<NumericUpDown Classes="numericTextBox" Value="{Binding SpeciesCount}" Minimum="1" Grid.Row="0" Grid.Column="1"/>
+
+				<TextBlock Classes="p" Text="{Binding ElitismProportionString}" Grid.Row="1"/>
+				<TextBox Classes="numberTextBox" Text="{Binding ElitismProportion}"  Grid.Row="1" Grid.Column="1"/>
+
+				<TextBlock Classes="p" Text="{Binding SelectionProportionString}" Grid.Row="2"/>
+				<TextBox Classes="numberTextBox" Text="{Binding SelectionProportion}"  Grid.Row="2" Grid.Column="1"/>
+			</Grid>
+			
+			<TextBlock Classes="h1" Text="AI Objectives"/>
+			<StackPanel Classes="stackPanelItems">
+				<RadioButton Classes="content" Content="Best Time"/>
+				<RadioButton Classes="content" Content="Best Score"/>
+				<RadioButton Classes="content" Content="Maximize Lives"/>
+				<RadioButton Classes="content" Content="Maximize Coins"/>
+				<RadioButton Classes="content" Content="All Dragon Pieces"/>
+			</StackPanel>
+			<TextBlock Classes="h1" Text="When to stop the training?"/>
+			<StackPanel Classes="stackPanelItems">
+				<ComboBox Classes="comboBox" Items="{Binding StopTrainingItems}" Width="200" HorizontalAlignment="Left" SelectedItem="{Binding StopTrainingSelectedItem}"/>
+				<NumericUpDown Classes="numericTextBox" IsEnabled="{Binding !IsStopManually}" Minimum="0"/>
+			</StackPanel>
+			<StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+				<Button Classes="close" Command="{Binding CloseSettings}" CommandParameter="{Binding ElementName=ConfigurationWindow}" Content="{Binding ButtonCloseString}"/>
+				<Button Classes="save" Command="{Binding SaveSettings}" CommandParameter="{Binding ElementName=ConfigurationWindow}" Content="{Binding ButtonSaveString}"/>
+			</StackPanel>
+		</StackPanel>
+	</ScrollViewer>
+</Window>

@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
 using System.Text;
+using System.Windows.Input;
 
 namespace SMW_ML.ViewModels
 {
@@ -12,7 +13,7 @@ namespace SMW_ML.ViewModels
     {
         private readonly INeuralTrainer trainer;
         private bool isTrainingRunning = false;
-
+ 
         public MainWindowViewModel()
         {
             trainer = new SharpNeatTrainer();
@@ -32,6 +33,13 @@ namespace SMW_ML.ViewModels
         {
             trainer.StopTraining();
             IsTrainingRunning = false;
+        }
+
+        public string OpenSettingsString => "Training Configuration";
+        public void OpenConfigSettings()
+        {
+            var configViewModel = new ConfigurationViewModel();
+            configViewModel.ShowWindow();
         }
 
         [DataMember]
