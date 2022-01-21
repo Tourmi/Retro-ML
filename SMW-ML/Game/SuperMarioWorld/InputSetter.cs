@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace SMW_ML.Game.SuperMarioWorld
 {
-    internal class InputSetter
+    public class InputSetter
     {
         private const bool USE_BIAS = true;
         private const bool USE_POS_X = false;
@@ -29,17 +29,17 @@ namespace SMW_ML.Game.SuperMarioWorld
         /// <summary>
         /// Horizontal distance in tiles from Mario to check
         /// </summary>
-        private const int GRID_X_DIST = 5;
+        private const int GRID_X_DIST = 3;
         /// <summary>
         /// Vertical distance in tiles from Mario to check
         /// </summary>
-        private const int GRID_Y_DIST = 5;
+        private const int GRID_Y_DIST = 3;
         private const int GRID_WIDTH = GRID_X_DIST * 2 + 1;
         private const int GRID_HEIGHT = GRID_Y_DIST * 2 + 1;
 
-        private DataGetter dataReader;
+        private DataFetcher dataReader;
 
-        public InputSetter(DataGetter dataReader)
+        public InputSetter(DataFetcher dataReader)
         {
             this.dataReader = dataReader;
         }

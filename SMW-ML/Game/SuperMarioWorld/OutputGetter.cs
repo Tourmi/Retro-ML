@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace SMW_ML.Game.SuperMarioWorld
 {
-    internal class OutputGetter
+    public class OutputGetter
     {
         private const bool USE_SHOULDERS = false;
         private const bool USE_START = false;

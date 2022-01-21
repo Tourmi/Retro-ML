@@ -47,7 +47,7 @@ namespace SMW_ML.Neural.Scoring
             levelScore = 0;
         }
 
-        public void Update(DataGetter dataReader)
+        public void Update(DataFetcher dataReader)
         {
             uint newPosX = dataReader.GetPositionX();
 
@@ -97,7 +97,7 @@ namespace SMW_ML.Neural.Scoring
 
         public double GetFinalScore()
         {
-            return score + bestLevel * 10;
+            return score + bestLevel * 2;
         }
 
         public bool ShouldStop => shouldStop;

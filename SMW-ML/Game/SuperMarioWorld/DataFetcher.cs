@@ -8,7 +8,7 @@ using static SMW_ML.Game.SuperMarioWorld.Addresses;
 
 namespace SMW_ML.Game.SuperMarioWorld
 {
-    internal class DataGetter
+    public class DataFetcher
     {
         private const int INTERNAL_CLOCK_LENGTH = 3;
         private const int TILE_SIZE = 0x10;
@@ -27,7 +27,7 @@ namespace SMW_ML.Game.SuperMarioWorld
 
         private int internal_clock_timer = INTERNAL_CLOCK_LENGTH;
 
-        public DataGetter(IEmulatorAdapter emulator)
+        public DataFetcher(IEmulatorAdapter emulator)
         {
             this.emulator = emulator;
             frameCache = new();
@@ -68,7 +68,7 @@ namespace SMW_ML.Game.SuperMarioWorld
         public bool IsOnGround() => ReadSingle(Player.IsOnGround) != 0 || ReadSingle(Player.IsOnSolidSprite) != 0;
         public bool CanAct() => ReadSingle(Player.PlayerAnimationState) == Player.PlayerAnimationStates.NONE;
         public bool IsDead() => ReadSingle(Player.PlayerAnimationState) == Player.PlayerAnimationStates.DYING;
-        public bool WonLevel() => ReadSingle(Level.LevelOver) == 0xFF && !IsDead();
+        public bool WonLevel() => ReadSingle(Level.EndLevelTimer) != 0;
         public bool IsInWater() => ReadSingle(Player.IsInWater) != 0;
         public bool CanJumpOutOfWater() => ReadSingle(Player.CanJumpOutOfWater) != 0;
         public bool IsSinking() => ReadSingle(Player.AirFlag) == 0x24;

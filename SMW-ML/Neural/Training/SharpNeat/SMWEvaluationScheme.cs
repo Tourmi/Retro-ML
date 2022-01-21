@@ -13,14 +13,11 @@ namespace SMW_ML.Neural.Training.SharpNeat
 {
     internal class SMWEvaluationScheme : IBlackBoxEvaluationScheme<double>
     {
-        private readonly IEmulatorAdapter emulator;
-        private readonly DataGetter dataReader;
-        private readonly InputSetter inputSetter;
-        private readonly OutputGetter outputGetter;
+        private readonly EmulatorManager emulatorManager;
 
-        public int InputCount => inputSetter.GetInputCount();
+        public int InputCount => emulatorManager.GetInputCount();
 
-        public int OutputCount => outputGetter.GetOutputCount();
+        public int OutputCount => emulatorManager.GetOutputCount();
 
         public bool IsDeterministic => true; // Change if using random levels
 
@@ -31,15 +28,12 @@ namespace SMW_ML.Neural.Training.SharpNeat
         //We need an emulator instance for every AI.
         public bool EvaluatorsHaveState => true;
 
-        public SMWEvaluationScheme(IEmulatorAdapter emulator, DataGetter dataReader, InputSetter inputSetter, OutputGetter outputGetter)
+        public SMWEvaluationScheme(EmulatorManager emulatorManager)
         {
-            this.emulator = emulator;
-            this.dataReader = dataReader;
-            this.inputSetter = inputSetter;
-            this.outputGetter = outputGetter;
+            this.emulatorManager = emulatorManager;
         }
 
-        public IPhenomeEvaluator<IBlackBox<double>> CreateEvaluator() => new SMWPhenomeEvaluator(emulator, dataReader, inputSetter, outputGetter);
+        public IPhenomeEvaluator<IBlackBox<double>> CreateEvaluator() => new SMWPhenomeEvaluator(emulatorManager);
 
         public bool TestForStopCondition(FitnessInfo fitnessInfo) => false;
     }

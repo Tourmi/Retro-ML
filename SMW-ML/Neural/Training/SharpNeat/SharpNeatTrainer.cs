@@ -27,10 +27,10 @@ namespace SMW_ML.Neural.Training.SharpNeat
         /// <summary>
         /// Neural training using the SharpNEAT library
         /// </summary>
-        public SharpNeatTrainer(IEmulatorAdapter emulator)
+        public SharpNeatTrainer(EmulatorManager emulatorManager)
         {
             syncSemaphore = new Semaphore(1, 1);
-            experimentFactory = new SMWExperimentFactory(emulator);
+            experimentFactory = new SMWExperimentFactory(emulatorManager);
         }
 
         /// <summary>

@@ -20,17 +20,16 @@ namespace SMW_ML.Neural.Training.SharpNeat
     {
         public string Id => "smw-experiment-factory";
 
-        private IEmulatorAdapter emulator;
+        private EmulatorManager emulatorManager;
 
-        public SMWExperimentFactory(IEmulatorAdapter emulator)
+        public SMWExperimentFactory(EmulatorManager emulator)
         {
-            this.emulator = emulator;
+            this.emulatorManager = emulator;
         }
 
         public INeatExperiment<double> CreateExperiment(JsonElement configElem)
         {
-            var dataReader = new DataGetter(emulator);
-            var evalScheme = new SMWEvaluationScheme(emulator, dataReader, new InputSetter(dataReader), new OutputGetter());
+            var evalScheme = new SMWEvaluationScheme(emulatorManager);
 
             var experiment = new NeatExperiment<double>(evalScheme, this.Id)
             {

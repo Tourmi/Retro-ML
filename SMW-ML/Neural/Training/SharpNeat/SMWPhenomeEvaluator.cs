@@ -15,41 +15,49 @@ namespace SMW_ML.Neural.Training.SharpNeat
 {
     internal class SMWPhenomeEvaluator : IPhenomeEvaluator<IBlackBox<double>>
     {
-        private readonly IEmulatorAdapter emulator;
-        private readonly DataGetter dataReader;
-        private readonly InputSetter inputSetter;
-        private readonly OutputGetter outputGetter;
+        private readonly EmulatorManager emulatorManager;
+        private IEmulatorAdapter? emulator;
+        private DataFetcher? dataFetcher;
+        private InputSetter? inputSetter;
+        private OutputGetter? outputGetter;
 
-        public SMWPhenomeEvaluator(IEmulatorAdapter emulator, DataGetter dataReader, InputSetter inputSetter, OutputGetter outputGetter)
+        public SMWPhenomeEvaluator(EmulatorManager emulatorManager)
         {
-            this.emulator = emulator;
-            this.dataReader = dataReader;
-            this.inputSetter = inputSetter;
-            this.outputGetter = outputGetter;
+            this.emulatorManager = emulatorManager;
         }
 
         public FitnessInfo Evaluate(IBlackBox<double> phenome)
         {
             Score score = new();
 
-            emulator.Reserve();
+            emulator = emulatorManager.WaitOne();
+            dataFetcher = emulator.GetDataFetcher();
+            inputSetter = emulator.GetInputSetter();
+            outputGetter = emulator.GetOutputGetter();
+
             var saveStates = emulator.GetStates();
             foreach (var state in saveStates)
             {
+                if (!state.Contains("yoshi-island")) continue;
                 emulator.LoadState(state);
                 emulator.NextFrame();
-                dataReader.NextLevel();
+                dataFetcher.NextLevel();
 
                 while (!score.ShouldStop)
                 {
                     DoFrame(phenome);
 
-                    score.Update(dataReader);
-                    dataReader.NextFrame();
+                    score.Update(dataFetcher);
+                    dataFetcher.NextFrame();
                 }
                 score.LevelDone();
             }
-            emulator.Free();
+
+            dataFetcher = null;
+            inputSetter = null;
+            outputGetter = null;
+            emulatorManager.FreeOne(emulator);
+            emulator = null;
 
             return new FitnessInfo(score.GetFinalScore());
         }
@@ -61,12 +69,12 @@ namespace SMW_ML.Neural.Training.SharpNeat
         private void DoFrame(IBlackBox<double> phenome)
         {
             phenome.ResetState();
-            inputSetter.SetInputs(phenome.InputVector);
+            inputSetter!.SetInputs(phenome.InputVector);
 
             phenome.Activate();
 
-            emulator.SendInput(outputGetter.GetControllerInput(phenome.OutputVector));
-            emulator.NextFrame();
+            emulator!.SendInput(outputGetter!.GetControllerInput(phenome.OutputVector));
+            emulator!.NextFrame();
         }
     }
 }

@@ -449,11 +449,6 @@ namespace SMW_ML.Game.SuperMarioWorld
             public static readonly AddressData ScrollCommandLayer2 = new(0x00143F, 1);
 
             /// <summary>
-            /// Set to 0xFF when dying or when the level is won
-            /// </summary>
-            public static readonly AddressData LevelOver = new(0x000DDA, 1);
-
-            /// <summary>
             /// <br>Map16 Table.</br>
             /// <br>For horizontal levels, $1B0 tiles per screen, where each screen can be indexed using the format ------y yyyyxxxx. $7E:FE00-$7E:FFFF are unused.</br>
             /// <br>For vertical levels, $200 bytes per screen, with the format --sssssx yyyyxxxx. All bytes are used.</br>

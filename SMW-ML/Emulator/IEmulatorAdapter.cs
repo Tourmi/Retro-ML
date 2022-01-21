@@ -1,7 +1,10 @@
-﻿using SMW_ML.Game;
+﻿using SMW_ML.Arduino;
+using SMW_ML.Game;
+using SMW_ML.Game.SuperMarioWorld;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -47,12 +50,13 @@ namespace SMW_ML.Emulator
         /// <param name="saveState"></param>
         void LoadState(string saveState);
         /// <summary>
-        /// Reserves the emulator instance
+        /// Sets the arduino previewer to use with the adapter
         /// </summary>
-        void Reserve();
-        /// <summary>
-        /// Frees up the emulator instance
-        /// </summary>
-        void Free();
+        /// <param name="arduinoPreviewer"></param>
+        void SetArduinoPreviewer(ArduinoPreviewer arduinoPreviewer);
+
+        DataFetcher GetDataFetcher();
+        InputSetter GetInputSetter();
+        OutputGetter GetOutputGetter();
     }
 }

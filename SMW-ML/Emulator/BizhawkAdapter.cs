@@ -1,5 +1,6 @@
 ﻿using SMW_ML.Arduino;
 using SMW_ML.Game;
+using SMW_ML.Game.SuperMarioWorld;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -27,46 +28,37 @@ namespace SMW_ML.Emulator
             public const string SEND_INPUT = "send_input {0}";
         }
 
-        private const int SOCKET_PORT = 11000;
-        private const int MAX_CONNECTIONS = 1;
-
-        private readonly Semaphore sem;
-        private readonly Socket server;
         private readonly Socket client;
-        private readonly ArduinoPreviewer? arduinoPreviewer;
+        private ArduinoPreviewer? arduinoPreviewer;
 
-        private readonly string savestatesPath;
+        private readonly DataFetcher dataFetcher;
+        private readonly InputSetter inputSetter;
+        private readonly OutputGetter outputGetter;
+
         private readonly string[] savestates;
 
-        public BizhawkAdapter(string pathToEmulator, string pathToLuaScript, string pathToROM, string pathToBizhawkConfig, string savestatesPath)
+        public BizhawkAdapter(string pathToEmulator, string pathToLuaScript, string pathToROM, string pathToBizhawkConfig, string savestatesPath, string socketIP, string socketPort, Socket server)
         {
-            sem = new Semaphore(1, 1);
-
-            if (ArduinoPreviewer.ArduinoAvailable())
-            {
-                arduinoPreviewer = new ArduinoPreviewer();
-            }
-
-            IPHostEntry ipHostInfo = Dns.GetHostEntry(Dns.GetHostName());
-            IPAddress ipAddress = ipHostInfo.AddressList.Last();
-            IPEndPoint localEndPoint = new IPEndPoint(ipAddress, SOCKET_PORT);
-
-            server = new Socket(ipAddress.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
-            server.Bind(localEndPoint);
-            server.Listen(MAX_CONNECTIONS);
-
             ProcessStartInfo startInfo = new(pathToEmulator);
-            startInfo.ArgumentList.Add($"--socket_port={SOCKET_PORT}");
-            startInfo.ArgumentList.Add($"--socket_ip={ipAddress}");
+            startInfo.ArgumentList.Add($"--socket_port={socketPort}");
+            startInfo.ArgumentList.Add($"--socket_ip={socketIP}");
             startInfo.ArgumentList.Add($"--lua={pathToLuaScript}");
-            startInfo.ArgumentList.Add($"--chromeless");
+            //startInfo.ArgumentList.Add($"--chromeless");
             startInfo.ArgumentList.Add($"--config={pathToBizhawkConfig}");
             startInfo.ArgumentList.Add(pathToROM);
             Process.Start(startInfo);
 
             client = server.Accept();
-            this.savestatesPath = savestatesPath;
             savestates = Directory.GetFiles(savestatesPath);
+
+            dataFetcher = new DataFetcher(this);
+            inputSetter = new InputSetter(dataFetcher);
+            outputGetter = new OutputGetter();
+        }
+
+        public void SetArduinoPreviewer(ArduinoPreviewer arduinoPreviewer)
+        {
+            this.arduinoPreviewer = arduinoPreviewer;
         }
 
         public void LoadRom(string path)
@@ -109,22 +101,13 @@ namespace SMW_ML.Emulator
             SendCommand(Commands.SEND_INPUT, input);
         }
 
-        public void Reserve() => sem.WaitOne();
-
-        public void Free() => sem.Release();
-
         public void Dispose()
         {
-            sem.Dispose();
-
             SendCommand(Commands.EXIT);
 
             client.Shutdown(SocketShutdown.Both);
             client.Close();
             client.Dispose();
-
-            server.Close();
-            server.Dispose();
 
             arduinoPreviewer?.Dispose();
         }
@@ -145,5 +128,11 @@ namespace SMW_ML.Emulator
 
             return buffer;
         }
+
+        public DataFetcher GetDataFetcher() => dataFetcher;
+
+        public InputSetter GetInputSetter() => inputSetter;
+
+        public OutputGetter GetOutputGetter() => outputGetter;
     }
 }

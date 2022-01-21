@@ -7,18 +7,19 @@ using System;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
 using System.Text;
+using System.Threading;
 
 namespace SMW_ML.ViewModels
 {
     internal class MainWindowViewModel : ViewModelBase
     {
         private INeuralTrainer? trainer;
-        private IEmulatorAdapter? emulator;
+        private EmulatorManager? emulatorManager;
         private bool isTrainingRunning = false;
 
         public MainWindowViewModel()
         {
-            
+
         }
 
         public string Greeting => "Super Mario World - Machine Learning";
@@ -27,23 +28,18 @@ namespace SMW_ML.ViewModels
         public void StartTraining()
         {
             IsTrainingRunning = true;
-            emulator = new BizhawkAdapter(
-                pathToEmulator: DefaultPaths.EMULATOR, 
-                pathToLuaScript: DefaultPaths.EMULATOR_ADAPTER, 
-                pathToROM: DefaultPaths.ROM, 
-                pathToBizhawkConfig: DefaultPaths.EMULATOR_CONFIG, 
-                savestatesPath: DefaultPaths.SAVESTATES_DIR
-            );
-            trainer = new SharpNeatTrainer(emulator);
-            trainer.StartTraining("config/config.json");
+            emulatorManager = new(12);
+            trainer = new SharpNeatTrainer(emulatorManager);
+            Thread t = new Thread(() => trainer.StartTraining("config/config.json"));
+            t.Start();
         }
 
         public string Stop => "Stop Training";
         public void StopTraining()
         {
             trainer?.StopTraining();
-            emulator?.Dispose();
-            emulator = null;
+            emulatorManager?.Dispose();
+            emulatorManager = null;
             trainer = null;
             IsTrainingRunning = false;
         }
