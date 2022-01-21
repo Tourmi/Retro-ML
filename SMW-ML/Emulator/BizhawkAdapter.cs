@@ -37,6 +37,8 @@ namespace SMW_ML.Emulator
 
         private readonly string[] savestates;
 
+        private bool waitForOkay = true;
+
         public BizhawkAdapter(string pathToEmulator, string pathToLuaScript, string pathToROM, string pathToBizhawkConfig, string savestatesPath, string socketIP, string socketPort, Socket server)
         {
             ProcessStartInfo startInfo = new(pathToEmulator);
@@ -103,9 +105,9 @@ namespace SMW_ML.Emulator
 
         public void Dispose()
         {
+            waitForOkay = false;
             SendCommand(Commands.EXIT);
 
-            client.Shutdown(SocketShutdown.Both);
             client.Close();
             client.Dispose();
 
@@ -117,8 +119,11 @@ namespace SMW_ML.Emulator
             string newCommand = string.Format(command, args);
             newCommand = newCommand.Length + " " + newCommand;
             client.Send(newCommand.Select(s => (byte)s).ToArray());
-            byte[] okayByte = new byte[1];
-            client.Receive(okayByte);
+            if (waitForOkay)
+            {
+                byte[] okayByte = new byte[1];
+                client.Receive(okayByte);
+            }
         }
 
         private byte[] Read(uint amount)

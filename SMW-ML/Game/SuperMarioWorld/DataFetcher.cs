@@ -1,4 +1,5 @@
 ﻿using SMW_ML.Emulator;
+using SMW_ML.Game.SuperMarioWorld.Data;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -66,8 +67,8 @@ namespace SMW_ML.Game.SuperMarioWorld
         public uint GetPositionX() => ToUnsignedInteger(Read(Player.PositionX));
         public uint GetPositionY() => ToUnsignedInteger(Read(Player.PositionY));
         public bool IsOnGround() => ReadSingle(Player.IsOnGround) != 0 || ReadSingle(Player.IsOnSolidSprite) != 0;
-        public bool CanAct() => ReadSingle(Player.PlayerAnimationState) == Player.PlayerAnimationStates.NONE;
-        public bool IsDead() => ReadSingle(Player.PlayerAnimationState) == Player.PlayerAnimationStates.DYING;
+        public bool CanAct() => ReadSingle(Player.PlayerAnimationState) == PlayerAnimationStates.NONE;
+        public bool IsDead() => ReadSingle(Player.PlayerAnimationState) == PlayerAnimationStates.DYING;
         public bool WonLevel() => ReadSingle(Level.EndLevelTimer) != 0;
         public bool IsInWater() => ReadSingle(Player.IsInWater) != 0;
         public bool CanJumpOutOfWater() => ReadSingle(Player.CanJumpOutOfWater) != 0;
@@ -99,6 +100,28 @@ namespace SMW_ML.Game.SuperMarioWorld
                 for (int j = 0; j < result.GetLength(1); j++)
                 {
                     result[i, j] = walkableTiles.Contains(nearbyTilesCache[i, j]);
+                }
+            }
+
+            return result;
+        }
+        public bool[,] GetDangerousTilesAroundPosition(int x_dist, int y_dist)
+        {
+            bool[,] result = new bool[x_dist * 2 + 1, y_dist * 2 + 1];
+
+            var spriteStatuses = Read(Addresses.Sprite.Statuses);
+            var aliveIndexes = spriteStatuses.Select((s, i) => (s, i)).Where(si => SpriteStatuses.CanBeDangerous(si.s)).Select(si => si.i).ToArray();
+            var sprites = GetSprites(aliveIndexes);
+
+            foreach (var sprite in sprites)
+            {
+                var xSpriteDist = (sprite.XPos - (int)GetPositionX()) / TILE_SIZE;
+                var ySpriteDist = (sprite.YPos - (int)GetPositionY()) / TILE_SIZE;
+
+                //Is the sprite distance between the bounds that Mario can see?
+                if (xSpriteDist <= x_dist && ySpriteDist <= y_dist && xSpriteDist >= -x_dist && ySpriteDist >= -y_dist)
+                {
+                    result[ySpriteDist + y_dist, xSpriteDist + x_dist] = true;
                 }
             }
 
@@ -150,6 +173,27 @@ namespace SMW_ML.Game.SuperMarioWorld
             }
 
             return result;
+        }
+
+        private Data.Sprite[] GetSprites(int[] indexes)
+        {
+            var sprites = new Data.Sprite[indexes.Length];
+
+            byte[] numbers = Read(Addresses.Sprite.SpriteNumbers);
+            ushort[] xPositions = ReadLowHighBytes(Addresses.Sprite.XPositions);
+            ushort[] yPositions = ReadLowHighBytes(Addresses.Sprite.YPositions);
+
+            for(int i = 0; i < indexes.Length; i++)
+            {
+                sprites[i] = new Data.Sprite
+                {
+                    Number = numbers[indexes[i]],
+                    XPos = xPositions[indexes[i]],
+                    YPos = yPositions[indexes[i]]
+                };
+            }
+
+            return sprites;
         }
 
         private ushort[] ReadLowHighBytes(AddressData addressData)

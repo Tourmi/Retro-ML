@@ -24,16 +24,16 @@ namespace SMW_ML.Game.SuperMarioWorld
         private const bool USE_WAS_DIALOG_TRIGGERED = true;
 
         private const bool USE_TILE_GRID = true;
-        private const bool USE_ENEMY_GRID = false;
+        private const bool USE_ENEMY_GRID = true;
 
         /// <summary>
         /// Horizontal distance in tiles from Mario to check
         /// </summary>
-        private const int GRID_X_DIST = 3;
+        private const int GRID_X_DIST = 4;
         /// <summary>
         /// Vertical distance in tiles from Mario to check
         /// </summary>
-        private const int GRID_Y_DIST = 3;
+        private const int GRID_Y_DIST = 4;
         private const int GRID_WIDTH = GRID_X_DIST * 2 + 1;
         private const int GRID_HEIGHT = GRID_Y_DIST * 2 + 1;
 
@@ -113,12 +113,12 @@ namespace SMW_ML.Game.SuperMarioWorld
             }
             if (USE_ENEMY_GRID)
             {
+                var dangerousTiles = dataReader.GetDangerousTilesAroundPosition(GRID_X_DIST, GRID_Y_DIST);
                 for (int i = 0; i < GRID_HEIGHT; i++)
                 {
                     for (int j = 0; j < GRID_WIDTH; j++)
                     {
-                        //TODO : check if enemy at position
-                        inputs[currOffset++] = 0;
+                        inputs[currOffset++] = dangerousTiles[i, j] ? 1 : 0;
                     }
                 }
             }

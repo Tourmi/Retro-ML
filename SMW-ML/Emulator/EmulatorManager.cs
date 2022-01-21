@@ -17,7 +17,7 @@ namespace SMW_ML.Emulator
         private const int SOCKET_PORT = 11000;
         private const int MAX_CONNECTIONS = 100;
 
-        private readonly IEmulatorAdapter[] adapters;
+        private readonly IEmulatorAdapter?[] adapters;
         private readonly bool[] adaptersTaken;
 
         private readonly Semaphore sem;
@@ -54,7 +54,7 @@ namespace SMW_ML.Emulator
 
             if (ArduinoPreviewer.ArduinoAvailable())
             {
-                adapters[0].SetArduinoPreviewer(new ArduinoPreviewer());
+                adapters[0]!.SetArduinoPreviewer(new ArduinoPreviewer());
             }
         }
 
@@ -90,16 +90,31 @@ namespace SMW_ML.Emulator
             sem.Release();
         }
 
+        /// <summary>
+        /// Only call this once training has fully stopped
+        /// </summary>
         public void Dispose()
         {
-            foreach (var emu in adapters)
+            while (adaptersTaken.Any(a => a))
             {
-                emu.Dispose();
+                Thread.Sleep(100);
             }
+
+            sem.WaitOne();
+
+            for (int i = 0; i < adapters.Length; i++)
+            {
+                adapters[i]?.Dispose();
+                adapters[i] = null;
+            }
+
+            server?.Dispose();
+
+            sem.Release();
         }
 
-        public int GetInputCount() => adapters[0].GetInputSetter().GetInputCount();
+        public int GetInputCount() => adapters[0]!.GetInputSetter().GetInputCount();
 
-        public int GetOutputCount() => adapters[0].GetOutputGetter().GetOutputCount();
+        public int GetOutputCount() => adapters[0]!.GetOutputGetter().GetOutputCount();
     }
 }
