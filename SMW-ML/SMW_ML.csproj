@@ -26,6 +26,7 @@
 		<PackageReference Include="Avalonia.ReactiveUI" Version="0.10.11" />
 		<PackageReference Include="Redzen" Version="13.0.0" />
 		<PackageReference Include="System.IO.Ports" Version="6.0.0" />
+		<PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
 	</ItemGroup>
 	<ItemGroup>
 		<Reference Include="SharpNeat">
@@ -44,7 +45,7 @@
 		<Copy SourceFiles="@(Emulator)" DestinationFolder="$(TargetDir)\emu\%(RecursiveDir)" />
 		<Message Text="Copied Emulator to emu\" Importance="high" />
 
-		<Copy SourceFiles="@(ROM)" DestinationFolder="$(TargetDir)" />
+		<Copy Condition="Exists('$(TargetDir)\smw.sfc')" SourceFiles="@(ROM)" DestinationFolder="$(TargetDir)" />
 		<Message Text="Copied ROM to project root" Condition="Exists('$(TargetDir)\smw.sfc')" Importance="high" />
 	</Target>
 </Project>

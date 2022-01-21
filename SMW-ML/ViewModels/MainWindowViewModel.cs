@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Runtime.Serialization;
 using System.Text;
 using System.Threading;
+using System.Windows.Input;
 
 namespace SMW_ML.ViewModels
 {
@@ -16,7 +17,7 @@ namespace SMW_ML.ViewModels
         private INeuralTrainer? trainer;
         private EmulatorManager? emulatorManager;
         private bool isTrainingRunning = false;
-
+ 
         public MainWindowViewModel()
         {
 
@@ -42,6 +43,13 @@ namespace SMW_ML.ViewModels
             emulatorManager = null;
             trainer = null;
             IsTrainingRunning = false;
+        }
+
+        public string OpenSettingsString => "Training Configuration";
+        public void OpenConfigSettings()
+        {
+            var configViewModel = new ConfigurationViewModel();
+            configViewModel.ShowWindow();
         }
 
         [DataMember]
