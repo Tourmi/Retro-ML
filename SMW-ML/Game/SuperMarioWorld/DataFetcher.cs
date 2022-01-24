@@ -115,6 +115,7 @@ namespace SMW_ML.Game.SuperMarioWorld
 
             foreach (var sprite in sprites)
             {
+                if (!SpriteNumbers.IsDangerous(sprite.Number)) continue;
                 var xSpriteDist = (sprite.XPos / TILE_SIZE - (int)GetPositionX() / TILE_SIZE);
                 var ySpriteDist = (sprite.YPos / TILE_SIZE - (int)GetPositionY() / TILE_SIZE);
 
@@ -183,7 +184,7 @@ namespace SMW_ML.Game.SuperMarioWorld
             ushort[] xPositions = ReadLowHighBytes(Addresses.Sprite.XPositions);
             ushort[] yPositions = ReadLowHighBytes(Addresses.Sprite.YPositions);
 
-            for(int i = 0; i < indexes.Length; i++)
+            for (int i = 0; i < indexes.Length; i++)
             {
                 sprites[i] = new Data.Sprite
                 {
