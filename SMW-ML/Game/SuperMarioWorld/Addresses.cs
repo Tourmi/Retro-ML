@@ -116,24 +116,6 @@ namespace SMW_ML.Game.SuperMarioWorld
             /// </summary>
             public static readonly AddressData PlayerAnimationState = new(0x000071, 1);
 
-            public static class PlayerAnimationStates
-            {
-                public const byte NONE = 0x00;
-                public const byte FLASHING = 0x01;
-                public const byte GET_MUSHROOM = 0x02;
-                public const byte GET_FEATHER = 0x03;
-                public const byte GET_FIRE_FLOWER = 0x04;
-                public const byte ENTER_HORIZONTAL_PIPE = 0x05;
-                public const byte ENTER_VERTICAL_PIPE = 0x06;
-                public const byte SHOOT_FROM_PIPE = 0x07;
-                public const byte YOSHI_WINGS = 0x08;
-                public const byte DYING = 0x09;
-                public const byte CASTLE_ENTRANCE_MOVE = 0x0A;
-                public const byte PLAYER_FROZEN = 0x0B;
-                public const byte CASTLE_DESTRUCTIONS_MOVE = 0x0C;
-                public const byte ENTER_DOOR = 0x0D;
-            }
-
             /// <summary>
             /// Counts down while the player is invulnerable  (due to taking damage)
             /// </summary>
@@ -193,11 +175,11 @@ namespace SMW_ML.Game.SuperMarioWorld
             /// <summary>
             /// 16-bit sprite X positions
             /// </summary>
-            public static readonly AddressData XPositions = new(0x0000D8, 12, highByteLocation: 0x0014E0);
+            public static readonly AddressData XPositions = new(0x0000E4, 12, highByteLocation: 0x0014E0);
             /// <summary>
             /// 16-bit sprite Y positions
             /// </summary>
-            public static readonly AddressData YPositions = new(0x0000E4, 12, highByteLocation: 0x0014D4);
+            public static readonly AddressData YPositions = new(0x0000D8, 12, highByteLocation: 0x0014D4);
             /// <summary>
             /// 0x01 if the sprite is on Yoshi's tongue
             /// </summary>

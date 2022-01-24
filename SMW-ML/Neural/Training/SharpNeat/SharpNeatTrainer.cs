@@ -10,6 +10,7 @@ using SharpNeat.Neat;
 using System.Threading;
 using SharpNeat.Neat.EvolutionAlgorithm;
 using SMW_ML.Emulator;
+using System.Diagnostics;
 
 namespace SMW_ML.Neural.Training.SharpNeat
 {
@@ -22,7 +23,9 @@ namespace SMW_ML.Neural.Training.SharpNeat
         private NeatEvolutionAlgorithm<double>? currentAlgo;
         private bool stopFlag = false;
 
-        public bool IsTraining => currentExperiment != null || currentAlgo != null;
+        private bool isTraining = false;
+
+        public bool IsTraining => isTraining;
 
         /// <summary>
         /// Neural training using the SharpNEAT library
@@ -67,12 +70,14 @@ namespace SMW_ML.Neural.Training.SharpNeat
 
         private void Training()
         {
+            isTraining = true;
             syncSemaphore.WaitOne();
             while (!stopFlag)
             {
                 currentAlgo!.PerformOneGeneration();
             }
             syncSemaphore.Release();
+            isTraining = false;
         }
     }
 }

@@ -17,7 +17,6 @@ namespace SMW_ML.Neural.Scoring
 
         private double levelScore;
         private double bestLevel;
-        private uint previousXPosition;
         private uint maxXPosition;
         private uint minYPosition;
         private bool shouldStop = false;
@@ -28,17 +27,16 @@ namespace SMW_ML.Neural.Scoring
 
         public Score()
         {
-            score = 1;
+            score = 0;
         }
 
         public void LevelDone()
         {
-            score += levelScore + (1000 * levelScore / levelFrames) + minYPosition;
+            score += levelScore;
 
             bestLevel = Math.Max(maxXPosition, bestLevel);
 
             shouldStop = false;
-            previousXPosition = 0;
             maxXPosition = 0;
             immobileFrames = 0;
             levelFrames = 0;
@@ -59,7 +57,7 @@ namespace SMW_ML.Neural.Scoring
                 if (immobileFrames >= MAX_IMMOBILE_FRAMES && moved < 1 || immobileFrames >= MAX_IMMOBILE_FRAMES_IF_ALREADY_MOVED)
                 {
                     shouldStop = true;
-                    levelFrames = MAX_TRAINING_FRAMES * 2;
+                    levelFrames = MAX_TRAINING_FRAMES;
                     return;
                 }
             }
@@ -71,7 +69,7 @@ namespace SMW_ML.Neural.Scoring
 
             if (newPosX > maxXPosition)
             {
-                levelScore += newPosX - previousXPosition;
+                levelScore += (newPosX - maxXPosition) / 16.0;
                 maxXPosition = newPosX;
                 moved++;
             }
@@ -79,11 +77,12 @@ namespace SMW_ML.Neural.Scoring
             if (dataReader.IsDead())
             {
                 shouldStop = true;
+                levelScore -= 5;
                 return;
             } else if (dataReader.WonLevel())
             {
                 shouldStop = true;
-                levelScore *= 10;
+                levelScore += MAX_TRAINING_FRAMES - levelFrames;
                 return;
             }
 
@@ -92,7 +91,6 @@ namespace SMW_ML.Neural.Scoring
             {
                 shouldStop = true;
             }
-            previousXPosition = newPosX;
         }
 
         public double GetFinalScore()
