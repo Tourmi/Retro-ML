@@ -115,8 +115,8 @@ namespace SMW_ML.Game.SuperMarioWorld
 
             foreach (var sprite in sprites)
             {
-                var xSpriteDist = (sprite.XPos - (int)GetPositionX()) / TILE_SIZE;
-                var ySpriteDist = (sprite.YPos - (int)GetPositionY()) / TILE_SIZE;
+                var xSpriteDist = (sprite.XPos / TILE_SIZE - (int)GetPositionX() / TILE_SIZE);
+                var ySpriteDist = (sprite.YPos / TILE_SIZE - (int)GetPositionY() / TILE_SIZE);
 
                 //Is the sprite distance between the bounds that Mario can see?
                 if (xSpriteDist <= x_dist && ySpriteDist <= y_dist && xSpriteDist >= -x_dist && ySpriteDist >= -y_dist)
@@ -132,8 +132,8 @@ namespace SMW_ML.Game.SuperMarioWorld
         {
             ushort[,] result = new ushort[x_dist * 2 + 1, y_dist * 2 + 1];
             //We add half a tile to get the middle of the player's tile
-            var offsetX = (GetPositionX() + TILE_SIZE / 2) / TILE_SIZE;
-            var offsetY = (GetPositionY() + TILE_SIZE / 2) / TILE_SIZE;
+            var offsetX = GetPositionX() / TILE_SIZE;
+            var offsetY = (GetPositionY() + TILE_SIZE) / TILE_SIZE;
 
             byte screensCount = ReadSingle(Level.ScreenCount);
 

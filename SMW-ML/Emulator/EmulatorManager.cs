@@ -106,6 +106,7 @@ namespace SMW_ML.Emulator
             {
                 adapters[i]?.Dispose();
                 adapters[i] = null;
+                Thread.Sleep(100);
             }
 
             server?.Dispose();
