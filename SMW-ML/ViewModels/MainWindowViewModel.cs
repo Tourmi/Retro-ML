@@ -29,9 +29,9 @@ namespace SMW_ML.ViewModels
         public void StartTraining()
         {
             IsTrainingRunning = true;
-            emulatorManager = new(12);
+            emulatorManager = new(6);
             trainer = new SharpNeatTrainer(emulatorManager);
-            Thread t = new Thread(() => trainer.StartTraining("config/config.json"));
+            Thread t = new Thread(() => trainer.StartTraining(DefaultPaths.CONFIG));
             t.Start();
         }
 

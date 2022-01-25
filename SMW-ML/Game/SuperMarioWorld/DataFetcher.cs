@@ -61,13 +61,15 @@ namespace SMW_ML.Game.SuperMarioWorld
         public void NextLevel()
         {
             levelCache.Clear();
+            frameCache.Clear();
             internal_clock_timer = INTERNAL_CLOCK_LENGTH;
         }
 
         public uint GetPositionX() => ToUnsignedInteger(Read(Player.PositionX));
         public uint GetPositionY() => ToUnsignedInteger(Read(Player.PositionY));
         public bool IsOnGround() => ReadSingle(Player.IsOnGround) != 0 || ReadSingle(Player.IsOnSolidSprite) != 0;
-        public bool CanAct() => ReadSingle(Player.PlayerAnimationState) == PlayerAnimationStates.NONE;
+        public bool CanAct() => ReadSingle(Player.PlayerAnimationState) == PlayerAnimationStates.NONE ||
+                                ReadSingle(Player.PlayerAnimationState) == PlayerAnimationStates.FLASHING;
         public bool IsDead() => ReadSingle(Player.PlayerAnimationState) == PlayerAnimationStates.DYING;
         public bool WonLevel() => ReadSingle(Level.EndLevelTimer) != 0;
         public bool IsInWater() => ReadSingle(Player.IsInWater) != 0;
@@ -79,6 +81,7 @@ namespace SMW_ML.Game.SuperMarioWorld
         public bool IsAtMaxSpeed() => ReadSingle(Player.DashTimer) == 0x70;
         public bool WasInternalClockTriggered() => internal_clock_timer == 0;
         public bool WasDialogBoxOpened() => ReadSingle(Level.TextBoxTriggered) != 0;
+        public bool IsWaterLevel() => ReadSingle(Level.IsWater) != 0;
         public bool[,] GetWalkableTilesAroundPosition(int x_dist, int y_dist)
         {
             bool[,] result = new bool[x_dist * 2 + 1, y_dist * 2 + 1];

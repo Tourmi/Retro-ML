@@ -12,7 +12,7 @@ namespace SMW_ML.Game.SuperMarioWorld
     /// <br>HUGE thanks to <see href="https://www.smwcentral.net/?p=memorymap&amp;game=smw">SMWCentral</see> for making those values available</br>
     /// <br>Thanks to HammerBrother for the C800 memory maps! <see href="https://www.smwcentral.net/?p=section&amp;a=details&amp;id=21702"/></br>
     /// </summary>
-    internal static class Addresses
+    public static class Addresses
     {
         public struct AddressData
         {
@@ -99,20 +99,20 @@ namespace SMW_ML.Game.SuperMarioWorld
             public static readonly AddressData IsInLakituCloud = new(0x0018C2, 1);
 
             /// <summary>
-            /// 00	None: the player is able to move freely.
-            /// 01	Flashing as if the player is hurt by an enemy.
-            /// 02	Get Mushroom animation.
-            /// 03	Get Feather animation. (Note: to make it work, write to $1496 also.)
-            /// 04	Get Fire Flower animation. (Note: to make it work, write to $149B also.)
-            /// 05	Enter a horizontal Warp Pipe.
-            /// 06	Enter a vertical Warp Pipe.
-            /// 07	Shoot from a slanted pipe.
-            /// 08	Shoot up into the sky. (Yoshi Wings)
-            /// 09	End level without activating overworld events. (Dying)
-            /// 0A Castle entrance moves.
-            /// 0B	Freeze player (used during the bowser defeated cutscene, and also disables HDMA).
-            /// 0C Castle destruction moves.
-            /// 0D	Enter a door.
+            /// <br>00	None: the player is able to move freely.                                         </br>
+            /// <br>01	Flashing as if the player is hurt by an enemy.                                   </br>
+            /// <br>02	Get Mushroom animation.                                                          </br>
+            /// <br>03	Get Feather animation. (Note: to make it work, write to $1496 also.)             </br>
+            /// <br>04	Get Fire Flower animation. (Note: to make it work, write to $149B also.)         </br>
+            /// <br>05	Enter a horizontal Warp Pipe.                                                    </br>
+            /// <br>06	Enter a vertical Warp Pipe.                                                      </br>
+            /// <br>07	Shoot from a slanted pipe.                                                       </br>
+            /// <br>08	Shoot up into the sky. (Yoshi Wings)                                             </br>
+            /// <br>09	End level without activating overworld events. (Dying)                           </br>
+            /// <br>0A  Castle entrance moves.                                                           </br>
+            /// <br>0B	Freeze player (used during the bowser defeated cutscene, and also disables HDMA).</br>
+            /// <br>0C  Castle destruction moves.                                                        </br>
+            /// <br>0D	Enter a door.                                                                    </br>
             /// </summary>
             public static readonly AddressData PlayerAnimationState = new(0x000071, 1);
 
