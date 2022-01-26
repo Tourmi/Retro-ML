@@ -1,0 +1,34 @@
+default:
+  image: mcr.microsoft.com/dotnet/sdk:6.0
+
+stages:
+  - build-dependencies
+  - build
+  - test
+  - deploy
+  
+
+build-sharpneat:
+  stage: build-dependencies
+  script:
+    - echo "building SharpNeat"
+
+build-emu:
+  stage: build-dependencies
+  script:
+    - echo "building Bizhawk"
+    
+build-app:
+  stage: build
+  script:
+    - echo "building SMW-ML"
+    
+test-app:
+  stage: test
+  script:
+    - echo "running tests"
+    
+deploy-app:
+  stage: deploy
+  script:
+    - echo "deploying artifacts"
