@@ -12,6 +12,7 @@ using System.Text;
 using System.Threading.Tasks;
 using SMW_ML.Models.Config;
 using System.ComponentModel;
+using SMW_ML.Utils;
 
 namespace SMW_ML.ViewModels
 {
@@ -171,7 +172,7 @@ namespace SMW_ML.ViewModels
             SharpNeatModel.PopulationSize = NumberAI;
 
             string output = JsonConvert.SerializeObject(SharpNeatModel, Formatting.Indented);
-            File.WriteAllText("config/sharpNeatConfig.json", output);
+            File.WriteAllText(DefaultPaths.SHARPNEAT_CONFIG, output);
         }
 
         /// <summary>
@@ -179,7 +180,7 @@ namespace SMW_ML.ViewModels
         /// </summary>
         private void DeserializeConfig()
         {
-            string configJSon = File.ReadAllText("config/sharpNeatConfig.json");
+            string configJSon = File.ReadAllText(DefaultPaths.SHARPNEAT_CONFIG);
             SharpNeatModel = JsonConvert.DeserializeObject<SharpNeatModel>(configJSon);
             if (SharpNeatModel == null) { return; }
 

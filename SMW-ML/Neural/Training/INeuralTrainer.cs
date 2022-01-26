@@ -14,5 +14,8 @@ namespace SMW_ML.Neural.Training
         bool IsTraining { get; }
         void StartTraining(string configPath);
         void StopTraining();
+
+        void LoadPopulation(string path);
+        void SavePopulation(string path);
     }
 }

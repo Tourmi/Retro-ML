@@ -1,6 +1,7 @@
 using Avalonia.Controls;
 using Avalonia.Controls.Templates;
 using SMW_ML.ViewModels;
+using SMW_ML.Views;
 using System;
 
 namespace SMW_ML
@@ -25,6 +26,11 @@ namespace SMW_ML
         public bool Match(object data)
         {
             return data is ViewModelBase;
+        }
+
+        public static Window GetMainWindow()
+        {
+            return (Window)Activator.CreateInstance(typeof(MainWindow))!;
         }
     }
 }

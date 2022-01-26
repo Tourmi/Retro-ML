@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace SMW_ML.Emulator
 {
-    internal class EmulatorManager : IDisposable
+    internal class EmulatorManager
     {
         private const int SOCKET_PORT = 11000;
         private const int MAX_CONNECTIONS = 100;
@@ -21,7 +21,7 @@ namespace SMW_ML.Emulator
         private readonly bool[] adaptersTaken;
 
         private readonly Semaphore sem;
-        private readonly Socket server;
+        private Socket? server;
 
         public EmulatorManager(int numberOfEmulators)
         {
@@ -29,7 +29,10 @@ namespace SMW_ML.Emulator
             this.adaptersTaken = new bool[adapters.Length];
 
             sem = new Semaphore(1, 1);
+        }
 
+        public void Init()
+        {
             IPHostEntry ipHostInfo = Dns.GetHostEntry(Dns.GetHostName());
             IPAddress ipAddress = ipHostInfo.AddressList.Last();
             IPEndPoint localEndPoint = new(ipAddress, SOCKET_PORT);
@@ -93,7 +96,7 @@ namespace SMW_ML.Emulator
         /// <summary>
         /// Only call this once training has fully stopped
         /// </summary>
-        public void Dispose()
+        public void Clean()
         {
             while (adaptersTaken.Any(a => a))
             {
@@ -114,8 +117,8 @@ namespace SMW_ML.Emulator
             sem.Release();
         }
 
-        public int GetInputCount() => adapters[0]!.GetInputSetter().GetInputCount();
+        public int GetInputCount() => new InputSetter(null).GetInputCount();
 
-        public int GetOutputCount() => adapters[0]!.GetOutputGetter().GetOutputCount();
+        public int GetOutputCount() => new OutputGetter().GetOutputCount();
     }
 }

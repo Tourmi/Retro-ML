@@ -11,7 +11,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SMW_ML.Neural.Training.SharpNeat
+namespace SMW_ML.Neural.Training.SharpNeatImpl
 {
     internal class SMWPhenomeEvaluator : IPhenomeEvaluator<IBlackBox<double>>
     {

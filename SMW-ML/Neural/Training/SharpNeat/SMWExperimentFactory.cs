@@ -14,7 +14,7 @@ using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
 
-namespace SMW_ML.Neural.Training.SharpNeat
+namespace SMW_ML.Neural.Training.SharpNeatImpl
 {
     internal class SMWExperimentFactory : INeatExperimentFactory
     {

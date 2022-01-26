@@ -11,17 +11,28 @@ using System.Threading;
 using SharpNeat.Neat.EvolutionAlgorithm;
 using SMW_ML.Emulator;
 using System.Diagnostics;
+using System.IO;
+using Newtonsoft.Json;
+using SharpNeat.Neat.Genome.IO;
+using SharpNeat.Neat.Genome;
+using SharpNeat.NeuralNets.Double.ActivationFunctions;
+using SMW_ML.Utils;
 
-namespace SMW_ML.Neural.Training.SharpNeat
+namespace SMW_ML.Neural.Training.SharpNeatImpl
 {
     internal class SharpNeatTrainer : INeuralTrainer
     {
         private readonly SMWExperimentFactory experimentFactory;
         private readonly Semaphore syncSemaphore;
+        private readonly EmulatorManager emulatorManager;
 
         private INeatExperiment<double>? currentExperiment;
         private NeatEvolutionAlgorithm<double>? currentAlgo;
         private bool stopFlag = false;
+
+        private MetaNeatGenome<double> metaGenome;
+        private INeatGenomeBuilder<double> genomeBuilder;
+        private List<NeatGenome<double>> genomes;
 
         private bool isTraining = false;
 
@@ -33,7 +44,16 @@ namespace SMW_ML.Neural.Training.SharpNeat
         public SharpNeatTrainer(EmulatorManager emulatorManager)
         {
             syncSemaphore = new Semaphore(1, 1);
+            this.emulatorManager = emulatorManager;
             experimentFactory = new SMWExperimentFactory(emulatorManager);
+
+            metaGenome = new MetaNeatGenome<double>(
+                    inputNodeCount: emulatorManager.GetInputCount(),
+                    outputNodeCount: emulatorManager.GetOutputCount(),
+                    isAcyclic: true,
+                    activationFn: new LeakyReLU());
+            genomeBuilder = NeatGenomeBuilderFactory<double>.Create(metaGenome);
+            genomes = new List<NeatGenome<double>>();
         }
 
         /// <summary>
@@ -49,11 +69,19 @@ namespace SMW_ML.Neural.Training.SharpNeat
             }
 
             currentExperiment = experimentFactory.CreateExperiment(JsonUtils.LoadUtf8(configPath).RootElement);
-            currentAlgo = NeatUtils.CreateNeatEvolutionAlgorithm(currentExperiment);
-
+            currentExperiment.ActivationFnName = nameof(LeakyReLU);
+            currentExperiment.IsAcyclic = true;
             stopFlag = false;
 
-            currentAlgo.Initialise();
+            if (genomes.Any())
+            {
+                currentAlgo = NeatUtils.CreateNeatEvolutionAlgorithm(currentExperiment, new NeatPopulation<double>(metaGenome, genomeBuilder, genomes));
+            }
+            else
+            {
+                currentAlgo = NeatUtils.CreateNeatEvolutionAlgorithm(currentExperiment);
+            }
+
             new Thread(Training).Start();
         }
 
@@ -61,23 +89,48 @@ namespace SMW_ML.Neural.Training.SharpNeat
         {
             stopFlag = true;
             syncSemaphore.WaitOne();
-
-            currentAlgo = null;
-            currentExperiment = null;
-
             syncSemaphore.Release();
         }
 
         private void Training()
         {
             isTraining = true;
+
             syncSemaphore.WaitOne();
+            currentAlgo!.Initialise();
+            SavePopulation(DefaultPaths.CURRENT_POPULATION);
+
             while (!stopFlag)
             {
                 currentAlgo!.PerformOneGeneration();
+
+                SavePopulation(DefaultPaths.CURRENT_POPULATION);
             }
+
             syncSemaphore.Release();
             isTraining = false;
+        }
+
+        public void LoadPopulation(string path)
+        {
+            NeatPopulationLoader<double> npl = new(NeatGenomeLoaderFactory.CreateLoaderDouble(metaGenome));
+            genomes = npl.LoadFromZipArchive(path);
+        }
+
+        public void SavePopulation(string path)
+        {
+            path = Path.GetFullPath(path);
+            string filename = Path.GetFileName(path);
+
+            if (File.Exists(path))
+            {
+                File.Copy(path, path + ".backup", true);
+                File.Delete(path);
+            }
+
+            genomes = currentAlgo!.Population.GenomeList;
+
+            NeatPopulationSaver<double>.SaveToZipArchive(genomes, path[..path.IndexOf(filename)], filename, System.IO.Compression.CompressionLevel.Fastest);
         }
     }
 }

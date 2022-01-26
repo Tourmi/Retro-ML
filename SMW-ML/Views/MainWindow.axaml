@@ -16,6 +16,8 @@
 		<TextBlock Text="{Binding Greeting}" HorizontalAlignment="Center"/>
 		<Button Command="{Binding StartTraining}" Content="{Binding Start}" IsEnabled="{Binding !IsTrainingRunning}" HorizontalAlignment="Center"/>
 		<Button Command="{Binding StopTraining}" Content="{Binding Stop}" IsEnabled="{Binding IsTrainingRunning}" HorizontalAlignment="Center"/>
+		<Button Command="{Binding LoadPopulation}" Content="{Binding LoadPopulationString}" IsEnabled="{Binding !IsTrainingRunning}" HorizontalAlignment="Center"/>
+		<Button Command="{Binding SavePopulation}" Content="{Binding SavePopulationString}" IsEnabled="{Binding CanSaveTraining}" HorizontalAlignment="Center"/>
 		<Button Command="{Binding OpenConfigSettings}" Content="{Binding OpenSettingsString}" IsEnabled="True"  HorizontalAlignment="Center" />
 	</StackPanel>
 
