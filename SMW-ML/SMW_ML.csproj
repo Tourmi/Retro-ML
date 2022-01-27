@@ -39,6 +39,14 @@
 			<ExcludeFromSingleFile>true</ExcludeFromSingleFile>
 		</None>
 	</ItemGroup>
+	<ItemGroup>
+	  <Compile Update="Views\MainPageView.axaml.cs">
+	    <DependentUpon>MainPageView.axaml</DependentUpon>
+	  </Compile>
+	  <Compile Update="Views\TrainingPageView.axaml.cs">
+	    <DependentUpon>TrainingPageView.axaml</DependentUpon>
+	  </Compile>
+	</ItemGroup>
 
 	<Target Name="CopyEmulator" AfterTargets="AfterCompile">
 		<Error Condition="!Exists('..\Submodules\BizHawk\output\EmuHawk.exe')" Text="The emulator (..\Submodules\BizHawk\output\EmuHawk.exe) is missing, or was not built! " />
