@@ -439,6 +439,15 @@ namespace SMW_ML.Game.SuperMarioWorld
             /// </summary>
             public static readonly AddressData Map16 = new(0x00C800, 14_336, AddressData.CacheDurations.Level, 0x01C800);
 
+            public static class Header
+            {
+                public static readonly AddressData LevelMode = new(0x001925, 1, AddressData.CacheDurations.Level);
+                public static readonly AddressData FGPalette = new(0x00192D, 1, AddressData.CacheDurations.Level);
+                public static readonly AddressData SpritePalette = new(0x00192E, 1, AddressData.CacheDurations.Level);
+                public static readonly AddressData BackgroundColor = new(0x00192F, 1, AddressData.CacheDurations.Level);
+                public static readonly AddressData BackgroundPalette = new(0x001930, 1, AddressData.CacheDurations.Level);
+                public static readonly AddressData TilesetSetting = new(0x001931, 1, AddressData.CacheDurations.Level);
+            }
         }
 
         public static class Counters

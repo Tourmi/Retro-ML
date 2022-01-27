@@ -17,8 +17,6 @@ namespace SMW_ML.Game.SuperMarioWorld
         private const int SCREEN_HEIGHT_HORIZONTAL = 0x1B;
         private const int SCREEN_HEIGHT_VERTICAL = 0x10;
 
-        private readonly HashSet<ushort> walkableTiles;
-
         private readonly IEmulatorAdapter emulator;
         private readonly Dictionary<uint, byte[]> frameCache;
         private readonly Dictionary<uint, byte[]> levelCache;
@@ -34,10 +32,6 @@ namespace SMW_ML.Game.SuperMarioWorld
             frameCache = new();
             levelCache = new();
             map16Caches = new Dictionary<ushort, ushort[]>();
-
-            walkableTiles = new HashSet<ushort>();
-            walkableTiles.UnionWith(Enumerable.Range(0x100, 0x12F - 0x100).Select(i => (ushort)i));
-            walkableTiles.UnionWith(Enumerable.Range(0x130, 0x16E - 0x130).Select(i => (ushort)i));
         }
 
         /// <summary>
@@ -84,29 +78,9 @@ namespace SMW_ML.Game.SuperMarioWorld
         public bool IsWaterLevel() => ReadSingle(Level.IsWater) != 0;
         public bool[,] GetWalkableTilesAroundPosition(int x_dist, int y_dist)
         {
-            bool[,] result = new bool[x_dist * 2 + 1, y_dist * 2 + 1];
-            ushort levelNumber = ReadSingle(Level.Number);
-            if (levelNumber > 0x24) levelNumber += 0xDC;
-
-            if (!map16Caches.ContainsKey(levelNumber))
-            {
-                map16Caches[levelNumber] = ReadLowHighBytes(Level.Map16);
-            }
-
-            if (nearbyTilesCache == null)
-            {
-                nearbyTilesCache = GetNearbyTiles(map16Caches[levelNumber], x_dist, y_dist);
-            }
-
-            for (int i = 0; i < result.GetLength(0); i++)
-            {
-                for (int j = 0; j < result.GetLength(1); j++)
-                {
-                    result[i, j] = walkableTiles.Contains(nearbyTilesCache[i, j]);
-                }
-            }
-
-            return result;
+            byte levelTileset = ReadSingle(Level.Header.TilesetSetting);
+            var tileset = Tileset.GetWalkableTiles(levelTileset);
+            return GetTilesAroundPosition(x_dist, y_dist, tileset);
         }
         public bool[,] GetDangerousTilesAroundPosition(int x_dist, int y_dist)
         {
@@ -126,6 +100,45 @@ namespace SMW_ML.Game.SuperMarioWorld
                 if (xSpriteDist <= x_dist && ySpriteDist <= y_dist && xSpriteDist >= -x_dist && ySpriteDist >= -y_dist)
                 {
                     result[ySpriteDist + y_dist, xSpriteDist + x_dist] = true;
+                }
+            }
+
+            byte levelTileset = ReadSingle(Level.Header.TilesetSetting);
+            var tileset = Tileset.GetDangerousTiles(levelTileset);
+
+            var dangerousTiles = GetTilesAroundPosition(x_dist, y_dist, tileset);
+            for (int i = 0; i < dangerousTiles.GetLength(0); i++)
+            {
+                for (int j = 0; j < dangerousTiles.GetLength(1); j++)
+                {
+                    result[i, j] |= dangerousTiles[i, j];
+                }
+            }
+
+            return result;
+        }
+
+        private bool[,] GetTilesAroundPosition(int x_dist, int y_dist, IEnumerable<ushort> tileset)
+        {
+            bool[,] result = new bool[x_dist * 2 + 1, y_dist * 2 + 1];
+            ushort levelNumber = ReadSingle(Level.Number);
+            if (levelNumber > 0x24) levelNumber += 0xDC;
+
+            if (!map16Caches.ContainsKey(levelNumber))
+            {
+                map16Caches[levelNumber] = ReadLowHighBytes(Level.Map16);
+            }
+
+            if (nearbyTilesCache == null)
+            {
+                nearbyTilesCache = GetNearbyTiles(map16Caches[levelNumber], x_dist, y_dist);
+            }
+
+            for (int i = 0; i < result.GetLength(0); i++)
+            {
+                for (int j = 0; j < result.GetLength(1); j++)
+                {
+                    result[i, j] = tileset.Contains(nearbyTilesCache[i, j]);
                 }
             }
 

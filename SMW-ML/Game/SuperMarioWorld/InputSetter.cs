@@ -29,11 +29,11 @@ namespace SMW_ML.Game.SuperMarioWorld
         /// <summary>
         /// Horizontal distance in tiles from Mario to check
         /// </summary>
-        private const int GRID_X_DIST = 4;
+        private const int GRID_X_DIST = 6;
         /// <summary>
         /// Vertical distance in tiles from Mario to check
         /// </summary>
-        private const int GRID_Y_DIST = 4;
+        private const int GRID_Y_DIST = 6;
         private const int GRID_WIDTH = GRID_X_DIST * 2 + 1;
         private const int GRID_HEIGHT = GRID_Y_DIST * 2 + 1;
 
