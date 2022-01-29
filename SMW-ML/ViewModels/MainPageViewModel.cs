@@ -70,7 +70,6 @@ namespace SMW_ML.ViewModels
             configViewModel.ShowWindow();
         }
 
-        [DataMember]
         public bool CanSaveTraining
         {
             get => canSaveTraining;

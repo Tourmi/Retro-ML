@@ -7,6 +7,7 @@ using SMW_ML.Models.Config;
 using SMW_ML.Neural.Training;
 using SMW_ML.Neural.Training.SharpNeatImpl;
 using SMW_ML.Utils;
+using SMW_ML.ViewModels.Neural;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -27,7 +28,8 @@ namespace SMW_ML.ViewModels
         public TrainingPageViewModel()
         {
             //TODO : use config to setup training
-            emulatorManager = new(3);
+            NeuralNetwork = new NetworkViewModel();
+            emulatorManager = new(1);
             trainer = new SharpNeatTrainer(emulatorManager);
         }
 
@@ -51,6 +53,8 @@ namespace SMW_ML.ViewModels
         {
             trainer.SavePopulation(path);
         }
+
+        public ViewModelBase NeuralNetwork { get; set; }
 
         public static string Status => "Currently training AIs";
 
