@@ -146,6 +146,17 @@ namespace SMW_ML.ViewModels
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(IsButtonSaveEnabled)));
             }
         }
+
+        private bool _isDataGridErrorVisible;
+        public bool IsDataGridErrorVisible
+        {
+            get { return _isDataGridErrorVisible; }
+            set
+            {
+                this.RaiseAndSetIfChanged(ref _isDataGridErrorVisible, value);
+            }
+        }
+
         private string? _aiObjectiveSelectedItem;
         public string? SelectedObjective
         {
@@ -261,14 +272,14 @@ namespace SMW_ML.ViewModels
         /// <summary>
         /// Shows the configuration window
         /// </summary>
-        public void ShowWindow()
+        public void ShowWindow(Window mainWindow)
         {
             var window = new Configuration();
             window.DataContext = this;
             window.Width = 700;
-            window.Height = 480;
+            window.Height = 520;
             window.WindowStartupLocation = WindowStartupLocation.CenterScreen;
-            window.Show();
+            window.ShowDialog(mainWindow);
         }
 
 
@@ -484,10 +495,12 @@ namespace SMW_ML.ViewModels
             if (ErrorList != null && ErrorList.Count > 0)
             {
                 IsButtonSaveEnabled = false;
+                IsDataGridErrorVisible = true;
             }
             else
             {
                 IsButtonSaveEnabled = true;
+                IsDataGridErrorVisible = false;
             }
         }
 

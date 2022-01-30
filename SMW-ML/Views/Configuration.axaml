@@ -135,7 +135,8 @@
 				Background="#cfcfcf"
 				AlternatingRowBackground="#e8e8e8"
 				HorizontalGridLinesBrush="White"
-				GridLinesVisibility="Horizontal">
+				GridLinesVisibility="Horizontal"
+				IsVisible="{Binding IsDataGridErrorVisible}">
 				<DataGrid.Columns>
 					<DataGridTextColumn Header="Field Error"
 										Foreground="Red" FontWeight="Bold" FontSize="14"

@@ -1,3 +1,4 @@
+using Avalonia.Controls;
 using ReactiveUI;
 using SMW_ML.Emulator;
 using SMW_ML.Neural.Training;
@@ -46,10 +47,10 @@ namespace SMW_ML.ViewModels
         }
 
         public string OpenSettingsString => "Training Configuration";
-        public void OpenConfigSettings()
+        public void OpenConfigSettings(Window mainWindow)
         {
             var configViewModel = new ConfigurationViewModel();
-            configViewModel.ShowWindow();
+            configViewModel.ShowWindow(mainWindow);
         }
 
         [DataMember]

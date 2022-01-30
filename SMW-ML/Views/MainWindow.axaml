@@ -6,7 +6,8 @@
         mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
         x:Class="SMW_ML.Views.MainWindow"
         Icon="/Assets/avalonia-logo.ico"
-        Title="SMW_ML">
+        Title="SMW_ML"
+		x:Name="MainWindow">
 
 	<Design.DataContext>
 		<vm:MainWindowViewModel/>
@@ -16,7 +17,7 @@
 		<TextBlock Text="{Binding Greeting}" HorizontalAlignment="Center"/>
 		<Button Command="{Binding StartTraining}" Content="{Binding Start}" IsEnabled="{Binding !IsTrainingRunning}" HorizontalAlignment="Center"/>
 		<Button Command="{Binding StopTraining}" Content="{Binding Stop}" IsEnabled="{Binding IsTrainingRunning}" HorizontalAlignment="Center"/>
-		<Button Command="{Binding OpenConfigSettings}" Content="{Binding OpenSettingsString}" IsEnabled="True"  HorizontalAlignment="Center" />
+		<Button Command="{Binding OpenConfigSettings}" CommandParameter="{Binding ElementName=MainWindow}" Content="{Binding OpenSettingsString}" IsEnabled="True"  HorizontalAlignment="Center" />
 	</StackPanel>
 
 </Window>
