@@ -13,6 +13,11 @@
 	</Design.DataContext>
 
 	<UserControl.Styles>
+		<Style Selector="ItemsControl.middlenodes > ContentPresenter">
+			<Setter Property="Canvas.Left" Value="{Binding PositionX}"/>
+			<Setter Property="Canvas.Top" Value="{Binding PositionY}"/>
+		</Style>
+		
 		<Style Selector="StackPanel.nodes">
 			<Setter Property="Orientation" Value="Horizontal"/>
 			<Setter Property="MinHeight" Value="{Binding GridSize}"/>
@@ -44,6 +49,7 @@
 			<Setter Property="BorderThickness" Value="5"/>
 			<Setter Property="BorderBrush" Value="#EEE"/>
 		</Style>
+		<!--Red node-->
 		<Style Selector=".red Border.node Border">
 			<Setter Property="BorderBrush" Value="#E00"/>
 		</Style>
@@ -129,7 +135,7 @@
 
 		</DockPanel>
 		<!--Middle nodes-->
-		<ItemsControl Classes="nodes" Items="{Binding MiddleNodes}">
+		<ItemsControl Classes="nodes middlenodes" Items="{Binding MiddleNodes}">
 			<ItemsControl.ItemsPanel>
 				<ItemsPanelTemplate>
 					<Canvas Background="Transparent" Width="1800" Height="800"/>
@@ -138,9 +144,8 @@
 
 			<ItemsControl.ItemTemplate>
 				<DataTemplate>
-					<!--TODO Find a way to fix canvas for middle nodes-->
-					<Border Classes="node" IsEnabled="{Binding Active}" Canvas.Left="{Binding PositionX}" Canvas.Top="{Binding PositionY}">
-						<Border>
+					<Border Classes="node">
+						<Border BorderBrush="#aca">
 							<Rectangle Fill="{Binding $parent.BorderBrush}"/>
 						</Border>
 					</Border>

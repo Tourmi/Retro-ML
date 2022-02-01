@@ -2,7 +2,11 @@
 using Avalonia.Collections;
 using Avalonia.Controls;
 using Avalonia.Controls.Shapes;
+using Avalonia.Threading;
 using ReactiveUI;
+using SharpNeat.BlackBox;
+using SMW_ML.Game.SuperMarioWorld;
+using SMW_ML.Models.Config;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -30,15 +34,17 @@ namespace SMW_ML.ViewModels.Neural
             public static int GridSize => NetworkViewModel.GridSize;
             public static int LeftOffset => NetworkViewModel.LeftOffset;
 
-            private Node[] nodes;
-
-            public NodeGroupViewModel(string name, bool useRed = false, int gridWidth = 1, int gridHeight = 1, int positionX = 0, int positionY = 0)
+            public NodeGroupViewModel(string name, bool useRed = false, int gridWidth = 1, int gridHeight = 1)
             {
                 Name = name;
                 UseRed = useRed;
                 GridWidth = gridWidth;
                 GridHeight = gridHeight;
-                Nodes = nodes = new Node[GridWidth * GridHeight];
+                Nodes = new ObservableCollection<Node>();
+                for (int i = 0; i < gridWidth * gridHeight; i++)
+                {
+                    Nodes.Add(new Node());
+                }
             }
 
             public string Name { get; }
@@ -46,11 +52,7 @@ namespace SMW_ML.ViewModels.Neural
             public int GridWidth { get; }
             public int GridHeight { get; }
 
-            public Node[] Nodes
-            {
-                get => nodes;
-                set => this.RaiseAndSetIfChanged(ref nodes, value);
-            }
+            public ObservableCollection<Node> Nodes { get; set; }
         }
 
         public class ConnectionViewModel : ViewModelBase
@@ -95,62 +97,74 @@ namespace SMW_ML.ViewModels.Neural
         public static int TotalWidth => 1800;
         public static int TotalHeight => 800;
 
-        public static int NodeSize => 18;
-        public static int GridSize => 20;
+        public static int NodeSize => 13;
+        public static int GridSize => 15;
         public static int LeftOffset => 100;
-        public static int SpacingBetweenInputs => 10;
+        public static int SpacingBetweenInputs => 5;
 
         private Node[] middleNodes;
+        private bool runningUpdate = false;
 
-        public NetworkViewModel()
+        public NetworkViewModel() : this(new NeuralConfig())
         {
-            Inputs = new ObservableCollection<NodeGroupViewModel>
-            {
-                new("Tiles", false, 11, 11),
-                new("Dangers", true, 11, 11),
-                new("On Ground")
-            };
-            Inputs.First().Nodes[3] = new Node() { Active = true };
-            Inputs.Skip(1).First().Nodes[73] = new Node() { Active = true };
-            Inputs.First().Nodes[13] = new Node() { Active = true };
-            Inputs.First().Nodes[55] = new Node() { Active = true };
-            Inputs.Skip(1).First().Nodes[34] = new Node() { Active = true };
-            Inputs.First().Nodes[67] = new Node() { Active = true };
-            Inputs.First().Nodes[100] = new Node() { Active = true };
 
-            Outputs = new ObservableCollection<NodeGroupViewModel>()
-            {
-                new("A"),
-                new("B"),
-                new("X"),
-                new("Y"),
-                new("Left"),
-                new("Right"),
-                new("Up"),
-                new("Down"),
-                new("Left Shoulder"),
-                new("Right Shoulder"),
-                new("Start"),
-                new("Select"),
-            };
+        }
 
-            Connections = new ObservableCollection<ConnectionViewModel>()
-            {
-                new(new Point((LeftOffset + GridSize / 2) + GridSize * 0, GridSize / 2 + GridSize * 0), new Point(TotalWidth - (LeftOffset + GridSize / 2), GridSize / 2), true, 0.4),
-                new(new Point((LeftOffset + GridSize / 2) + GridSize * 1, GridSize / 2 + GridSize * 2), new Point(TotalWidth - (LeftOffset + GridSize / 2), GridSize / 2), true, 1),
-                new(new Point((LeftOffset + GridSize / 2) + GridSize * 5, GridSize / 2 + GridSize * 4), new Point(TotalWidth - (LeftOffset + GridSize / 2), GridSize / 2 + (SpacingBetweenInputs + GridSize) * 4), false, 0.5),
-                new(new Point((LeftOffset + GridSize / 2) + GridSize * 1, GridSize / 2 + GridSize * 6), new Point(TotalWidth - (LeftOffset + GridSize / 2), GridSize / 2 + (SpacingBetweenInputs + GridSize) * 2), false, 1),
-                new(new Point((LeftOffset + GridSize / 2) + GridSize * 3, GridSize / 2 + GridSize * 7), new Point(TotalWidth - (LeftOffset + GridSize / 2), GridSize / 2 + (SpacingBetweenInputs + GridSize) * 2), true, 0.3),
-                new(new Point((LeftOffset + GridSize / 2) + GridSize * 2, GridSize / 2 + GridSize * 2), new Point(TotalWidth - (LeftOffset + GridSize / 2), GridSize / 2 + (SpacingBetweenInputs + GridSize) * 7), false, 0.3),
-                new(new Point((LeftOffset + GridSize / 2) + GridSize * 1, GridSize / 2 + GridSize * 3), new Point(TotalWidth - (LeftOffset + GridSize / 2), GridSize / 2 + (SpacingBetweenInputs + GridSize) * 3), true, 1),
-            };
+        public NetworkViewModel(NeuralConfig config)
+        {
+            Inputs = new ObservableCollection<NodeGroupViewModel>();
 
-            MiddleNodes = middleNodes = new Node[]
+            foreach (var node in config.InputNodes)
             {
-                new() {Active = true, PositionX = 500, PositionY = 500},
-                new() {Active = false, PositionX = 250, PositionY = 750},
-                new() {Active = true, PositionX = 250, PositionY = 750}
-            };
+                if (!node.ShouldUse) continue;
+                Inputs.Add(new NodeGroupViewModel(node.Name, node.Name == "Dangers", node.TotalWidth, node.TotalHeight));
+            }
+
+            Outputs = new ObservableCollection<NodeGroupViewModel>();
+            foreach (var node in config.OutputNodes)
+            {
+                if (!node.ShouldUse) continue;
+                Outputs.Add(new(node.Name));
+            }
+        }
+
+        public void UpdateNodes(IVector<double> inputs, IVector<double> outputs)
+        {
+            if (runningUpdate) return;
+            runningUpdate = true;
+            Dispatcher.UIThread.Post(() =>
+            {
+                int startIndex = 0;
+                using var delay = DelayChangeNotifications();
+                foreach (var nodeGroup in Inputs)
+                {
+                    for (int i = 0; i < nodeGroup.Nodes.Count; i++)
+                    {
+                        bool shouldBeActive = inputs[i + startIndex] > 0;
+                        if (nodeGroup.Nodes[i].Active != shouldBeActive)
+                        {
+                            nodeGroup.Nodes[i] = new Node() { Active = shouldBeActive };
+                        }
+                    }
+
+                    startIndex += nodeGroup.Nodes.Count;
+                }
+                startIndex = 0;
+                foreach (var nodeGroup in Outputs)
+                {
+                    for (int i = 0; i < nodeGroup.Nodes.Count; i++)
+                    {
+                        bool shouldBeActive = outputs[i + startIndex] > 0;
+                        if (nodeGroup.Nodes[i].Active != shouldBeActive)
+                        {
+                            nodeGroup.Nodes[i] = new Node() { Active = shouldBeActive };
+                        }
+                    }
+
+                    startIndex += nodeGroup.Nodes.Count;
+                }
+                runningUpdate = false;
+            });
         }
 
         public ObservableCollection<NodeGroupViewModel> Inputs { get; }

@@ -25,4 +25,10 @@
     <Folder Include="Utils\" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Reference Include="SharpNeat">
+      <HintPath>..\Submodules\SharpNEAT\src\SharpNeat\bin\Release\net6.0\SharpNeat.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
 </Project>

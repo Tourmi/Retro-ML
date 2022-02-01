@@ -1,4 +1,5 @@
 ﻿using SharpNeat.BlackBox;
+using SMW_ML.Models.Config;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,16 +10,15 @@ namespace SMW_ML.Game.SuperMarioWorld
 {
     public class OutputGetter
     {
-        private const bool USE_SHOULDERS = false;
-        private const bool USE_START = false;
-        private const bool USE_SELECT = false;
+        private readonly List<OutputNode> outputNodes;
 
         private const bool ALLOW_OPPOSITE_DIRECTIONS = false;
 
-        private const double ACTIVATION_THRESHOLD = 0.1;
+        private const double ACTIVATION_THRESHOLD = 0;
 
-        public OutputGetter()
+        public OutputGetter(NeuralConfig config)
         {
+            outputNodes = config.OutputNodes;
         }
 
         public Input GetControllerInput(IVector<double> outputs)
@@ -27,19 +27,11 @@ namespace SMW_ML.Game.SuperMarioWorld
             int currIndex = 0;
             int controllerIndex = 0;
 
-            for(; currIndex < GetOutputCount() && controllerIndex < Input.BUTTON_COUNT; currIndex++, controllerIndex++)
+            int outputCount = GetOutputCount();
+
+            for(; currIndex < outputCount && controllerIndex < Input.BUTTON_COUNT; currIndex++, controllerIndex++)
             {
-                if (!USE_SHOULDERS && (controllerIndex == 8 || controllerIndex == 9))
-                {
-                    currIndex--;
-                    continue;
-                }
-                if (!USE_START && (controllerIndex == 10))
-                {
-                    currIndex--;
-                    continue;
-                }
-                if (!USE_SELECT && (controllerIndex == 11))
+                if (!outputNodes[controllerIndex].ShouldUse)
                 {
                     currIndex--;
                     continue;
@@ -73,11 +65,10 @@ namespace SMW_ML.Game.SuperMarioWorld
         public int GetOutputCount()
         {
             int count = 0;
-            count += 4; //buttons
-            count += 4; //Dpad
-            if (USE_SHOULDERS) count += 2;
-            if (USE_START) count += 1;
-            if (USE_SELECT) count += 1;
+            foreach (var output in  outputNodes)
+            {
+                if (output.ShouldUse) count++;
+            }
 
             return count;
         }

@@ -1,4 +1,5 @@
 ﻿using SharpNeat.BlackBox;
+using SMW_ML.Models.Config;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,117 +10,38 @@ namespace SMW_ML.Game.SuperMarioWorld
 {
     public class InputSetter
     {
-        private const bool USE_BIAS = true;
-        private const bool USE_POS_X = false;
-        private const bool USE_POS_Y = false;
-        private const bool USE_IS_ON_GROUND = true;
-        private const bool USE_IS_IN_WATER = true;
-        private const bool USE_IS_RAISING = true;
-        private const bool USE_IS_SINKING = true;
-        private const bool USE_CAN_JUMP_OUT_OF_WATER = true;
-        private const bool USE_IS_CARRYING_SOMETHING = true;
-        private const bool USE_CAN_CLIMB = true;
-        private const bool USE_IS_AT_MAX_SPEED = true;
-        private const bool USE_INTERNAL_CLOCK = true;
-        private const bool USE_WAS_DIALOG_TRIGGERED = true;
-
-        private const bool USE_TILE_GRID = true;
-        private const bool USE_ENEMY_GRID = true;
-
-        /// <summary>
-        /// Horizontal distance in tiles from Mario to check
-        /// </summary>
-        private const int GRID_X_DIST = 6;
-        /// <summary>
-        /// Vertical distance in tiles from Mario to check
-        /// </summary>
-        private const int GRID_Y_DIST = 6;
-        private const int GRID_WIDTH = GRID_X_DIST * 2 + 1;
-        private const int GRID_HEIGHT = GRID_Y_DIST * 2 + 1;
+        private readonly List<InputNode> inputNodes;
 
         private DataFetcher dataReader;
 
-        public InputSetter(DataFetcher dataReader)
+        public InputSetter(DataFetcher dataReader, NeuralConfig config)
         {
             this.dataReader = dataReader;
+            inputNodes = config.InputNodes;
         }
 
         public void SetInputs(IVector<double> inputs)
         {
             int currOffset = 0;
-            if (USE_BIAS)
-            {
-                inputs[currOffset++] = 1; //Bias
-            }
-            if (USE_POS_X)
-            {
-                inputs[currOffset++] = dataReader.GetPositionX();
-            }
-            if (USE_POS_Y)
-            {
-                inputs[currOffset++] = dataReader.GetPositionY();
-            }
-            if (USE_IS_ON_GROUND)
-            {
-                inputs[currOffset++] = dataReader.IsOnGround() ? 1 : 0;
-            }
-            if (USE_IS_IN_WATER)
-            {
-                inputs[currOffset++] = dataReader.IsInWater() ? 1 : 0;
-            }
-            if (USE_IS_RAISING)
-            {
-                inputs[currOffset++] = dataReader.IsRaising() ? 1 : 0;
-            }
-            if (USE_IS_SINKING)
-            {
-                inputs[currOffset++] = dataReader.IsSinking() ? 1 : 0;
-            }
-            if (USE_CAN_JUMP_OUT_OF_WATER)
-            {
-                inputs[currOffset++] = dataReader.CanJumpOutOfWater() ? 1 : 0;
-            }
-            if (USE_IS_CARRYING_SOMETHING)
-            {
-                inputs[currOffset++] = dataReader.IsCarryingSomething() ? 1 : 0;
-            }
-            if (USE_CAN_CLIMB)
-            {
-                inputs[currOffset++] = dataReader.CanClimb() ? 1 : 0;
-            }
-            if (USE_IS_AT_MAX_SPEED)
-            {
-                inputs[currOffset++] = dataReader.IsAtMaxSpeed() ? 1 : 0;
-            }
-            if (USE_INTERNAL_CLOCK)
-            {
-                inputs[currOffset++] = dataReader.WasInternalClockTriggered() ? 1 : 0;
-            }
-            if (USE_WAS_DIALOG_TRIGGERED)
-            {
-                inputs[currOffset++] = dataReader.WasDialogBoxOpened() ? 1 : 0;
-            }
 
-            if (USE_TILE_GRID)
+            foreach (var input in inputNodes)
             {
-                var walkableTiles = dataReader.GetWalkableTilesAroundPosition(GRID_X_DIST, GRID_Y_DIST);
-                for (int i = 0; i < GRID_HEIGHT; i++)
+                if (!input.ShouldUse) continue;
+
+                if (input.IsMultipleInputs)
                 {
-                    for (int j = 0; j < GRID_WIDTH; j++)
+                    var inputStates = input.GetStates(dataReader);
+                    for (int i = 0; i < inputStates.GetLength(0); i++)
                     {
-                        inputs[currOffset++] = walkableTiles[i, j] ? 1 : 0;
+                        for (int j = 0; j < inputStates.GetLength(1); j++)
+                        {
+                            inputs[currOffset++] = inputStates[i, j] ? 1 : 0;
+                        }
                     }
                 }
-            }
-            if (USE_ENEMY_GRID)
-            {
-                var dangerousTiles = dataReader.GetDangerousTilesAroundPosition(GRID_X_DIST, GRID_Y_DIST);
-                for (int i = 0; i < GRID_HEIGHT; i++)
+                else
                 {
-                    for (int j = 0; j < GRID_WIDTH; j++)
-                    {
-                        inputs[currOffset++] = dangerousTiles[i, j] ? 1 : 0;
-                    }
+                    inputs[currOffset++] = input.GetState(dataReader) ? 1 : 0;
                 }
             }
         }
@@ -127,21 +49,11 @@ namespace SMW_ML.Game.SuperMarioWorld
         public int GetInputCount()
         {
             int count = 0;
-            if (USE_BIAS) count++;
-            if (USE_POS_X) count++;
-            if (USE_POS_Y) count++;
-            if (USE_IS_ON_GROUND) count++;
-            if (USE_TILE_GRID) count += GRID_WIDTH * GRID_HEIGHT;
-            if (USE_ENEMY_GRID) count += GRID_WIDTH * GRID_HEIGHT;
-            if (USE_IS_IN_WATER) count++;
-            if (USE_IS_RAISING) count++;
-            if (USE_IS_SINKING) count++;
-            if (USE_CAN_JUMP_OUT_OF_WATER) count++;
-            if (USE_IS_CARRYING_SOMETHING) count++;
-            if (USE_CAN_CLIMB) count++;
-            if (USE_IS_AT_MAX_SPEED) count++;
-            if (USE_INTERNAL_CLOCK) count++;
-            if (USE_WAS_DIALOG_TRIGGERED) count++;
+
+            foreach(var input in inputNodes)
+            {
+                if (input.ShouldUse) count += input.TotalWidth * input.TotalHeight;
+            }
 
             return count;
         }

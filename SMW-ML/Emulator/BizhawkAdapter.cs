@@ -1,6 +1,8 @@
-﻿using SMW_ML.Arduino;
+﻿using SharpNeat.BlackBox;
+using SMW_ML.Arduino;
 using SMW_ML.Game;
 using SMW_ML.Game.SuperMarioWorld;
+using SMW_ML.Models.Config;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -16,6 +18,8 @@ namespace SMW_ML.Emulator
 {
     internal class BizhawkAdapter : IEmulatorAdapter
     {
+        public event Action<IVector<double>, IVector<double>> LinkedNetworkActivated;
+
         private static class Commands
         {
             public const string EXIT = "exit";
@@ -39,7 +43,7 @@ namespace SMW_ML.Emulator
 
         private bool waitForOkay = true;
 
-        public BizhawkAdapter(string pathToEmulator, string pathToLuaScript, string pathToROM, string pathToBizhawkConfig, string savestatesPath, string socketIP, string socketPort, Socket server)
+        public BizhawkAdapter(string pathToEmulator, string pathToLuaScript, string pathToROM, string pathToBizhawkConfig, string savestatesPath, string socketIP, string socketPort, Socket server, NeuralConfig neuralConfig)
         {
             ProcessStartInfo startInfo = new(pathToEmulator);
             startInfo.ArgumentList.Add($"--socket_port={socketPort}");
@@ -54,8 +58,8 @@ namespace SMW_ML.Emulator
             savestates = Directory.GetFiles(savestatesPath);
 
             dataFetcher = new DataFetcher(this);
-            inputSetter = new InputSetter(dataFetcher);
-            outputGetter = new OutputGetter();
+            inputSetter = new InputSetter(dataFetcher, neuralConfig);
+            outputGetter = new OutputGetter(neuralConfig);
         }
 
         public void SetArduinoPreviewer(ArduinoPreviewer arduinoPreviewer)
@@ -132,6 +136,11 @@ namespace SMW_ML.Emulator
             client.Receive(buffer, (int)amount, SocketFlags.None);
 
             return buffer;
+        }
+
+        public void NetworkUpdated(IBlackBox<double> blackbox)
+        {
+            LinkedNetworkActivated?.Invoke(blackbox.InputVector, blackbox.OutputVector);
         }
 
         public DataFetcher GetDataFetcher() => dataFetcher;

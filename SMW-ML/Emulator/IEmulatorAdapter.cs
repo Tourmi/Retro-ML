@@ -1,4 +1,5 @@
-﻿using SMW_ML.Arduino;
+﻿using SharpNeat.BlackBox;
+using SMW_ML.Arduino;
 using SMW_ML.Game;
 using SMW_ML.Game.SuperMarioWorld;
 using System;
@@ -12,6 +13,8 @@ namespace SMW_ML.Emulator
 {
     public interface IEmulatorAdapter : IDisposable
     {
+        event Action<IVector<double>, IVector<double>> LinkedNetworkActivated;
+
         /// <summary>
         /// Reads the game memory at the given address
         /// </summary>
@@ -54,6 +57,8 @@ namespace SMW_ML.Emulator
         /// </summary>
         /// <param name="arduinoPreviewer"></param>
         void SetArduinoPreviewer(ArduinoPreviewer arduinoPreviewer);
+
+        void NetworkUpdated(IBlackBox<double> blackbox);
 
         DataFetcher GetDataFetcher();
         InputSetter GetInputSetter();

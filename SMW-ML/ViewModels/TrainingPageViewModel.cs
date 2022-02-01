@@ -12,6 +12,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace SMW_ML.ViewModels
@@ -25,23 +26,24 @@ namespace SMW_ML.ViewModels
 
         private bool canStop = true;
 
-        public TrainingPageViewModel()
+        public TrainingPageViewModel(NeuralConfig neuralConfig)
         {
             //TODO : use config to setup training
-            NeuralNetwork = new NetworkViewModel();
-            emulatorManager = new(1);
+            NeuralNetwork = new NetworkViewModel(neuralConfig);
+            emulatorManager = new(1, neuralConfig);
             trainer = new SharpNeatTrainer(emulatorManager);
         }
 
-        public async void Init()
+        public void Init()
         {
             CanStop = true;
 
-            await Task.Run(() =>
+            new Thread(() =>
             {
                 emulatorManager.Init();
+                emulatorManager.GetFirstEmulator().LinkedNetworkActivated += NeuralNetwork.UpdateNodes;
                 trainer.StartTraining(DefaultPaths.SHARPNEAT_CONFIG);
-            });
+            }).Start();
         }
 
         public void LoadPopulation(string path)
@@ -54,7 +56,7 @@ namespace SMW_ML.ViewModels
             trainer.SavePopulation(path);
         }
 
-        public ViewModelBase NeuralNetwork { get; set; }
+        public NetworkViewModel NeuralNetwork { get; set; }
 
         public static string Status => "Currently training AIs";
 

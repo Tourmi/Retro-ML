@@ -49,6 +49,7 @@ namespace SMW_ML.Neural.Training.SharpNeatImpl
 
                     score.Update(dataFetcher);
                     dataFetcher.NextFrame();
+                    emulator.NetworkUpdated(phenome);
                 }
                 score.LevelDone();
             }

@@ -11,7 +11,7 @@ namespace SMW_ML.Game.SuperMarioWorld
 {
     public class DataFetcher
     {
-        private const int INTERNAL_CLOCK_LENGTH = 3;
+        private const int INTERNAL_CLOCK_LENGTH = 4;
         private const int TILE_SIZE = 0x10;
         private const int SCREEN_WIDTH = 0x10;
         private const int SCREEN_HEIGHT_HORIZONTAL = 0x1B;
@@ -25,6 +25,7 @@ namespace SMW_ML.Game.SuperMarioWorld
         private ushort[,]? nearbyTilesCache;
 
         private int internal_clock_timer = INTERNAL_CLOCK_LENGTH;
+        private bool internalClockOn = false;
 
         public DataFetcher(IEmulatorAdapter emulator)
         {
@@ -40,11 +41,12 @@ namespace SMW_ML.Game.SuperMarioWorld
         public void NextFrame()
         {
             frameCache.Clear();
-            internal_clock_timer--;
-            if (internal_clock_timer < 0)
+            if (internal_clock_timer <= 0)
             {
                 internal_clock_timer = INTERNAL_CLOCK_LENGTH;
+                internalClockOn = !internalClockOn;
             }
+            internal_clock_timer--;
 
             nearbyTilesCache = null;
         }
@@ -57,6 +59,7 @@ namespace SMW_ML.Game.SuperMarioWorld
             levelCache.Clear();
             frameCache.Clear();
             internal_clock_timer = INTERNAL_CLOCK_LENGTH;
+            internalClockOn = false;
         }
 
         public uint GetPositionX() => ToUnsignedInteger(Read(Player.PositionX));
@@ -73,7 +76,7 @@ namespace SMW_ML.Game.SuperMarioWorld
         public bool IsCarryingSomething() => ReadSingle(Player.IsCarryingSomething) != 0;
         public bool CanClimb() => (ReadSingle(Player.CanClimb) & 0b00001011 | ReadSingle(Player.CanClimbOnAir)) != 0;
         public bool IsAtMaxSpeed() => ReadSingle(Player.DashTimer) == 0x70;
-        public bool WasInternalClockTriggered() => internal_clock_timer == 0;
+        public bool WasInternalClockTriggered() => internalClockOn;
         public bool WasDialogBoxOpened() => ReadSingle(Level.TextBoxTriggered) != 0;
         public bool IsWaterLevel() => ReadSingle(Level.IsWater) != 0;
         public bool[,] GetWalkableTilesAroundPosition(int x_dist, int y_dist)
