@@ -1,0 +1,7 @@
+﻿{
+  "multithread": 1,
+  "arduinoCommunicationPort": "COM3",
+  "AIObjective": "Best Score",
+  "StopTrainingCondition": "Manually",
+  "StopTrainingConditionValue": null
+}

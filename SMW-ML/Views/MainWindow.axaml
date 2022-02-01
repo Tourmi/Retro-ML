@@ -8,5 +8,17 @@
         Icon="/Assets/avalonia-logo.ico"
         Title="Super Mario World - Machine Learning"
 		Content="{Binding Content}">
+		x:Name="MainWindow">
+
+	<Design.DataContext>
+		<vm:MainWindowViewModel/>
+	</Design.DataContext>
+
+	<StackPanel Orientation="Vertical" Spacing="5" HorizontalAlignment="Center" VerticalAlignment="Center" >
+		<TextBlock Text="{Binding Greeting}" HorizontalAlignment="Center"/>
+		<Button Command="{Binding StartTraining}" Content="{Binding Start}" IsEnabled="{Binding !IsTrainingRunning}" HorizontalAlignment="Center"/>
+		<Button Command="{Binding StopTraining}" Content="{Binding Stop}" IsEnabled="{Binding IsTrainingRunning}" HorizontalAlignment="Center"/>
+		<Button Command="{Binding OpenConfigSettings}" CommandParameter="{Binding ElementName=MainWindow}" Content="{Binding OpenSettingsString}" IsEnabled="True"  HorizontalAlignment="Center" />
+	</StackPanel>
 
 </Window>

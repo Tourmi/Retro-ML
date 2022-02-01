@@ -9,8 +9,6 @@
 
 	<ItemGroup>
 		<Emulator Include="..\Submodules\BizHawk\output\**\*.*" />
-	</ItemGroup>
-	<ItemGroup>
 		<ROM Include="smw.sfc" />
 	</ItemGroup>
 
@@ -20,10 +18,12 @@
 	</ItemGroup>
 	<ItemGroup>
 		<PackageReference Include="Avalonia" Version="0.10.11" />
+		<PackageReference Include="Avalonia.Controls.DataGrid" Version="0.10.11" />
 		<PackageReference Include="Avalonia.Desktop" Version="0.10.11" />
 		<!--Condition below is needed to remove Avalonia.Diagnostics package from build output in Release configuration.-->
 		<PackageReference Condition="'$(Configuration)' == 'Debug'" Include="Avalonia.Diagnostics" Version="0.10.11" />
 		<PackageReference Include="Avalonia.ReactiveUI" Version="0.10.11" />
+		<PackageReference Include="Avalonia.Remote.Protocol" Version="0.10.11" />
 		<PackageReference Include="Redzen" Version="13.0.0" />
 		<PackageReference Include="System.IO.Ports" Version="6.0.0" />
 		<PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
@@ -53,7 +53,7 @@
 		<Copy SourceFiles="@(Emulator)" DestinationFolder="$(TargetDir)\emu\%(RecursiveDir)" />
 		<Message Text="Copied Emulator to emu\" Importance="high" />
 
-		<Copy Condition="Exists('$(TargetDir)\smw.sfc')" SourceFiles="@(ROM)" DestinationFolder="$(TargetDir)" />
+		<Copy Condition="Exists('smw.sfc')" SourceFiles="@(ROM)" DestinationFolder="$(TargetDir)" />
 		<Message Text="Copied ROM to project root" Condition="Exists('$(TargetDir)\smw.sfc')" Importance="high" />
 	</Target>
 </Project>

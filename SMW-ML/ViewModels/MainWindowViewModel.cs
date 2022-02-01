@@ -1,3 +1,4 @@
+using Avalonia.Controls;
 using ReactiveUI;
 
 namespace SMW_ML.ViewModels
@@ -47,6 +48,13 @@ namespace SMW_ML.ViewModels
         {
             Content = mainPageViewModel;
             mainPageViewModel.CanSaveTraining = true;
+        }
+
+        public string OpenSettingsString => "Training Configuration";
+        public void OpenConfigSettings(Window mainWindow)
+        {
+            var configViewModel = new ConfigurationViewModel();
+            configViewModel.ShowWindow(mainWindow);
         }
     }
 }

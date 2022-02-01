@@ -10,7 +10,7 @@ namespace SMW_ML.Arduino
 {
     public class ArduinoPreviewer : IDisposable
     {
-        private const string SERIAL_PORT = "COM3";
+        private const string SERIAL_PORT = "COM4";
         private const int SERIAL_BAUD = 9600;
 
         private SerialPort serial;

@@ -2,11 +2,12 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:local="clr-namespace:SMW_ML"
              x:Class="SMW_ML.App">
-    <Application.DataTemplates>
-        <local:ViewLocator/>
-    </Application.DataTemplates>
+	<Application.DataTemplates>
+		<local:ViewLocator/>
+	</Application.DataTemplates>
 
-    <Application.Styles>
-        <FluentTheme Mode="Light"/>
-    </Application.Styles>
+	<Application.Styles>
+		<FluentTheme Mode="Light"/>
+		<StyleInclude Source="avares://Avalonia.Controls.DataGrid/Themes/Default.xaml"/>
+	</Application.Styles>
 </Application>
