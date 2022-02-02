@@ -1,5 +1,6 @@
 ﻿using NUnit.Framework;
 using SMW_ML.Game.SuperMarioWorld;
+using SMW_ML.Models.Config;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,7 +17,7 @@ namespace SMW_ML_TEST.Game.SuperMarioWorld
         [SetUp]
         public void SetUp()
         {
-            outputGetter = new OutputGetter();
+            outputGetter = new OutputGetter(new NeuralConfig());
         }
 
         [Test]

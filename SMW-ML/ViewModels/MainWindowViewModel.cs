@@ -1,5 +1,6 @@
 using Avalonia.Controls;
 using ReactiveUI;
+using SMW_ML.Models.Config;
 
 namespace SMW_ML.ViewModels
 {
@@ -22,7 +23,7 @@ namespace SMW_ML.ViewModels
             mainPageViewModel.OnStartTrainingCalled += HandleStartTraining;
             mainPageViewModel.OnLoadPopulation += HandleLoadPopulation;
             mainPageViewModel.OnSavePopulation += HandleSavePopulation;
-            trainingPageViewModel = new TrainingPageViewModel();
+            trainingPageViewModel = new TrainingPageViewModel(new NeuralConfig());
             trainingPageViewModel.OnStopTraining += HandleStopTraining;
 
             Content = mainPageViewModel;

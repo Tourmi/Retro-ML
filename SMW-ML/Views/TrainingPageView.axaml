@@ -1,19 +1,29 @@
 <Window xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:vm="clr-namespace:SMW_ML.ViewModels;assembly=SMW_ML"
+		xmlns:neural="clr-namespace:SMW_ML.Views.Neural;assembly=SMW_ML" 
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
-        x:Class="SMW_ML.Views.TrainingPageView">
-
+        mc:Ignorable="d" d:DesignWidth="1800" d:DesignHeight="1000"
+        x:Class="SMW_ML.Views.TrainingPageView" >
+	<Window.Styles>
+		<Style Selector="Canvas">
+			<Setter Property="Background" Value="LightGray"/>
+		</Style>
+	</Window.Styles>
 	
 	<Design.DataContext>
 		<vm:TrainingPageViewModel/>
 	</Design.DataContext>
-
-	<StackPanel Orientation="Vertical" Spacing="5" HorizontalAlignment="Center" VerticalAlignment="Center" >
-		<TextBlock Text="{Binding Status}" HorizontalAlignment="Center"/>
-		<Button Command="{Binding StopTraining}" Content="{Binding Stop}" IsEnabled="{Binding CanStop}" HorizontalAlignment="Center"/>
-	</StackPanel>
+	
+	<DockPanel LastChildFill="True">
+		
+		<StackPanel Spacing="5" DockPanel.Dock="Bottom" Margin="20">
+			<TextBlock Text="{Binding Status}" HorizontalAlignment="Center"/>
+			<Button Command="{Binding StopTraining}" Content="{Binding Stop}" IsEnabled="{Binding CanStop}" HorizontalAlignment="Center"/>
+		</StackPanel>
+		
+		<ContentControl DockPanel.Dock="Top" Content="{Binding NeuralNetwork}"/>
+	</DockPanel>
 
 </Window>

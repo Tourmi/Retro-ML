@@ -1,7 +1,9 @@
-﻿using SMW_ML.Arduino;
+﻿using SharpNeat.BlackBox;
+using SMW_ML.Arduino;
 using SMW_ML.Emulator;
 using SMW_ML.Game;
 using SMW_ML.Game.SuperMarioWorld;
+using SMW_ML.Models.Config;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -19,8 +21,8 @@ namespace SMW_ML_TEST.Emulator
         public MockEmulatorAdapter()
         {
             DataFetcher = new DataFetcher(this);
-            InputSetter = new InputSetter(DataFetcher);
-            OutputGetter = new OutputGetter();
+            InputSetter = new InputSetter(DataFetcher, new NeuralConfig());
+            OutputGetter = new OutputGetter(new NeuralConfig());
 
             Memory = new Dictionary<uint, byte>();
         }
@@ -98,11 +100,19 @@ namespace SMW_ML_TEST.Emulator
         }
 
         public int SendInputCallCount = 0;
+
+        public event Action<IVector<double>, IVector<double>> LinkedNetworkActivated;
+
         public void SendInput(Input input)
         {
             SendInputCallCount++;
         }
 
         public void SetArduinoPreviewer(ArduinoPreviewer arduinoPreviewer) { }
+
+        public void NetworkUpdated(IBlackBox<double> blackbox)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

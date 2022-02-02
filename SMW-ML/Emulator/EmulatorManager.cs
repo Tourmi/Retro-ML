@@ -1,5 +1,6 @@
 ﻿using SMW_ML.Arduino;
 using SMW_ML.Game.SuperMarioWorld;
+using SMW_ML.Models.Config;
 using SMW_ML.Utils;
 using System;
 using System.Collections.Generic;
@@ -14,6 +15,8 @@ namespace SMW_ML.Emulator
 {
     internal class EmulatorManager
     {
+        private readonly NeuralConfig neuralConfig;
+
         private const int SOCKET_PORT = 11000;
         private const int MAX_CONNECTIONS = 100;
 
@@ -23,12 +26,13 @@ namespace SMW_ML.Emulator
         private readonly Semaphore sem;
         private Socket? server;
 
-        public EmulatorManager(int numberOfEmulators)
+        public EmulatorManager(int numberOfEmulators, NeuralConfig neuralConfig)
         {
             this.adapters = new IEmulatorAdapter[numberOfEmulators];
             this.adaptersTaken = new bool[adapters.Length];
 
             sem = new Semaphore(1, 1);
+            this.neuralConfig = neuralConfig;
         }
 
         public void Init()
@@ -51,7 +55,8 @@ namespace SMW_ML.Emulator
                     savestatesPath: DefaultPaths.SAVESTATES_DIR,
                     socketIP: ipAddress.ToString(),
                     socketPort: SOCKET_PORT.ToString(),
-                    server);
+                    server,
+                    neuralConfig);
             }
 
 
@@ -93,6 +98,11 @@ namespace SMW_ML.Emulator
             sem.Release();
         }
 
+        public IEmulatorAdapter GetFirstEmulator()
+        {
+            return adapters[0]!;
+        }
+
         /// <summary>
         /// Only call this once training has fully stopped
         /// </summary>
@@ -117,8 +127,8 @@ namespace SMW_ML.Emulator
             sem.Release();
         }
 
-        public int GetInputCount() => new InputSetter(null).GetInputCount();
+        public int GetInputCount() => new InputSetter(null, neuralConfig).GetInputCount();
 
-        public int GetOutputCount() => new OutputGetter().GetOutputCount();
+        public int GetOutputCount() => new OutputGetter(neuralConfig).GetOutputCount();
     }
 }
