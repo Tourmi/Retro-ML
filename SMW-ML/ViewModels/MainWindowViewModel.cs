@@ -50,11 +50,6 @@ namespace SMW_ML.ViewModels
             mainPageViewModel.CanSaveTraining = true;
         }
 
-        public string OpenSettingsString => "Training Configuration";
-        public void OpenConfigSettings(Window mainWindow)
-        {
-            var configViewModel = new ConfigurationViewModel();
-            configViewModel.ShowWindow(mainWindow);
-        }
+        
     }
 }

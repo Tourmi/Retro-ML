@@ -15,7 +15,7 @@
 		<Button Command="{Binding StartTraining}" Content="{Binding Start}" IsEnabled="{Binding !IsTrainingRunning}" HorizontalAlignment="Center"/>
 		<Button Command="{Binding LoadPopulation}" Content="{Binding LoadPopulationString}" HorizontalAlignment="Center"/>
 		<Button Command="{Binding SavePopulation}" Content="{Binding SavePopulationString}" IsEnabled="{Binding CanSaveTraining}" HorizontalAlignment="Center"/>
-		<Button Command="{Binding OpenConfigSettings}" Content="{Binding OpenSettingsString}" IsEnabled="True"  HorizontalAlignment="Center" />
+		<Button Command="{Binding OpenConfigSettings}" Content="{Binding OpenSettingsString}" CommandParameter="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Window}}}" IsEnabled="True"  HorizontalAlignment="Center" />
 	</StackPanel>
 
 </Window>

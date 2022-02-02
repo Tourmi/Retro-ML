@@ -64,10 +64,10 @@ namespace SMW_ML.ViewModels
         }
 
         public string OpenSettingsString => "Training Configuration";
-        public void OpenConfigSettings()
+        public void OpenConfigSettings(Window mainPage)
         {
             var configViewModel = new ConfigurationViewModel();
-            configViewModel.ShowWindow();
+            configViewModel.ShowWindow(mainPage);
         }
 
         [DataMember]
