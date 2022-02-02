@@ -5,30 +5,34 @@ stages:
   - build-dependencies
   - build
   - test
-  - deploy
   
-
 build-sharpneat:
   stage: build-dependencies
   script:
-    - echo "building SharpNeat"
-
+    - cd .\Submodules\SharpNEAT\src\
+    - dotnet build --configuration Release
+    - cd .\..\..\..\
+    
 build-emu:
   stage: build-dependencies
   script:
-    - echo "building Bizhawk"
+    - cd .\Submodules\BizHawk\Dist\
+    - .\QuickTestBuildAndPackage.bat
+    - cd .\..\..\..\
     
 build-app:
   stage: build
+  artifacts:
+    paths:
+      - .\SMW-ML\bin\Release\net6.0\
   script:
-    - echo "building SMW-ML"
+    - cd .\SMW-ML\
+    - dotnet build --configuration Release
+    - cd .\..\
     
 test-app:
   stage: test
   script:
-    - echo "running tests"
-    
-deploy-app:
-  stage: deploy
-  script:
-    - echo "deploying artifacts"
+    - cd .\SMW_ML_TEST\
+    - dotnet test
+    - cd .\..\
