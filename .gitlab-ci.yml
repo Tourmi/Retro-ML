@@ -10,7 +10,6 @@ stages:
 build-sharpneat:
   stage: build-dependencies
   artifacts:
-    public: false
     paths:
       - .\Submodules\SharpNEAT\src\SharpNeat\bin\Release\net6.0\SharpNeat.dll
   script:
@@ -21,7 +20,6 @@ build-sharpneat:
 build-emu:
   stage: build-dependencies
   artifacts:
-    public: false
     paths:
       - .\Submodules\BizHawk\output\
   script:
@@ -45,6 +43,8 @@ build-app:
     
 test-app:
   stage: test
+  allow_failure:
+    exit_codes: 1
   script:
     - cd .\SMW_ML_TEST\
     - dotnet test
