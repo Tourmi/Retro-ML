@@ -1,5 +1,6 @@
 variables:
   GIT_SUBMODULE_STRATEGY: normal
+  GIT_CLONE_PATH: $CI_BUILDS_DIR\smw-ml
 
 stages:
   - build-dependencies
@@ -8,6 +9,9 @@ stages:
   
 build-sharpneat:
   stage: build-dependencies
+  artifacts:
+    paths:
+      - .\Submodules\SharpNEAT\src\SharpNeat\bin\Release\net6.0\SharpNeat.dll
   script:
     - cd .\Submodules\SharpNEAT\src\
     - dotnet build --configuration Release
@@ -15,6 +19,9 @@ build-sharpneat:
     
 build-emu:
   stage: build-dependencies
+  artifacts:
+    paths:
+      - .\Submodules\BizHawk\output\
   script:
     - cd .\Submodules\BizHawk\Dist\
     - .\QuickTestBuildAndPackage.bat
@@ -22,7 +29,11 @@ build-emu:
     
 build-app:
   stage: build
+  dependencies:
+    - build-emu
+    - build-sharpneat
   artifacts:
+    name: smw-ml-build
     paths:
       - .\SMW-ML\bin\Release\net6.0\
   script:
