@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace SMW_ML.Models.Config
 {
-    public class NeuralConfig
+    internal class NeuralConfig
     {
         public List<InputNode> InputNodes { get; set; }
         public List<OutputNode> OutputNodes { get; set; }
