@@ -1,20 +1,30 @@
 ﻿using NUnit.Framework;
 using SMW_ML.Utils;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SMW_ML_TEST.Utils
 {
     [TestFixture]
     internal class ReflectionToolTest
     {
+        private string? testField1;
+        private int? testField2;
+        private bool[,]? testField3;
+
         [Test]
         public void GetFieldTest()
         {
-            ReflectionTool.GetField<string>("", "");
+            testField1 = "hello";
+            testField2 = 37;
+            testField3 = new bool[,] {
+                { true, true, false },
+                { true, false, true },
+                { false, true, true },
+            };
+
+
+            Assert.AreEqual(testField1, ReflectionTool.GetField<string>(this, nameof(testField1)));
+            Assert.AreEqual(testField2, ReflectionTool.GetField<int>(this, nameof(testField2)));
+            Assert.AreEqual(testField3, ReflectionTool.GetField<bool[,]>(this, nameof(testField3)));
         }
     }
 }
