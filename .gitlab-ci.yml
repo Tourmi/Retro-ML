@@ -45,7 +45,11 @@ test-app:
   stage: test
   allow_failure:
     exit_codes: 1
+  artifacts:
+    name: test-results
+    paths:
+      - .\SMW_ML_TEST\TestResults\
   script:
     - cd .\SMW_ML_TEST\
-    - dotnet test
+    - dotnet test --logger trx
     - cd .\..\
