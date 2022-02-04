@@ -2,7 +2,7 @@
 
 namespace SMW_ML.Game.SuperMarioWorld
 {
-    public class InputNode
+    internal class InputNode
     {
         private readonly Func<DataFetcher, bool>? getStateFunction;
         private readonly Func<DataFetcher, bool[,]>? getStatesFunction;

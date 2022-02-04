@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace SMW_ML.Emulator
 {
-    public interface IEmulatorAdapter : IDisposable
+    internal interface IEmulatorAdapter : IDisposable
     {
         event Action<IVector<double>, IVector<double>> LinkedNetworkActivated;
 

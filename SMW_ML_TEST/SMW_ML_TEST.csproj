@@ -22,7 +22,6 @@
     <Folder Include="Game\SuperMarioWorld\Data\" />
     <Folder Include="Neural\Scoring\" />
     <Folder Include="Neural\Training\SharpNeat\" />
-    <Folder Include="Utils\" />
   </ItemGroup>
 
   <ItemGroup>

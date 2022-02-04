@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace SMW_ML.Game
 {
-    public class Input
+    internal class Input
     {
         public const int BUTTON_COUNT = 12;
 

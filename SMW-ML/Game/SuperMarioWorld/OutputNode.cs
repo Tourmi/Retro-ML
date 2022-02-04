@@ -1,6 +1,6 @@
 ﻿namespace SMW_ML.Game.SuperMarioWorld
 {
-    public class OutputNode
+    internal class OutputNode
     {
         public string Name { get; }
         public bool ShouldUse { get; }

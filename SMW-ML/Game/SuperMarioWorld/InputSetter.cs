@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace SMW_ML.Game.SuperMarioWorld
 {
-    public class InputSetter
+    internal class InputSetter
     {
         private readonly List<InputNode> inputNodes;
 

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace SMW_ML.Models
 {
-    public class Error
+    internal class Error
     {
         public Error()
         {

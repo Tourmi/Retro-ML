@@ -8,6 +8,10 @@
 	</PropertyGroup>
 
 	<ItemGroup>
+		<InternalsVisibleTo Include="$(AssemblyName)_TEST" />
+	</ItemGroup>
+	
+	<ItemGroup>
 		<Emulator Include="..\Submodules\BizHawk\output\**\*.*" />
 		<ROM Include="smw.sfc" />
 	</ItemGroup>

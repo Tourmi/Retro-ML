@@ -9,7 +9,7 @@ using static SMW_ML.Game.SuperMarioWorld.Addresses;
 
 namespace SMW_ML.Game.SuperMarioWorld
 {
-    public class DataFetcher
+    internal class DataFetcher
     {
         private const int INTERNAL_CLOCK_LENGTH = 4;
         private const int TILE_SIZE = 0x10;

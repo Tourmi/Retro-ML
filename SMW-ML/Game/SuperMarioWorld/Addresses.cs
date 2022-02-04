@@ -12,7 +12,7 @@ namespace SMW_ML.Game.SuperMarioWorld
     /// <br>HUGE thanks to <see href="https://www.smwcentral.net/?p=memorymap&amp;game=smw">SMWCentral</see> for making those values available</br>
     /// <br>Thanks to HammerBrother for the C800 memory maps! <see href="https://www.smwcentral.net/?p=section&amp;a=details&amp;id=21702"/></br>
     /// </summary>
-    public static class Addresses
+    internal static class Addresses
     {
         public struct AddressData
         {

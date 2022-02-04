@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace SMW_ML.Game.SuperMarioWorld
 {
-    public class OutputGetter
+    internal class OutputGetter
     {
         private readonly List<OutputNode> outputNodes;
 
