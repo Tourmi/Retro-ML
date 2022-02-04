@@ -1,19 +1,14 @@
-﻿using SharpNeat.BlackBox;
-using SMW_ML.Arduino;
+﻿using SMW_ML.Arduino;
 using SMW_ML.Game;
 using SMW_ML.Game.SuperMarioWorld;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net.Sockets;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SMW_ML.Emulator
 {
-    internal interface IEmulatorAdapter : IDisposable
+    public interface IEmulatorAdapter : IDisposable
     {
-        event Action<IVector<double>, IVector<double>> LinkedNetworkActivated;
+        event Action<double[], double[]>? LinkedNetworkActivated;
+        event Action<(int sourceNode, int targetNode, double weight)[][], int[]>? ChangedLinkedNetwork;
 
         /// <summary>
         /// Reads the game memory at the given address
@@ -56,12 +51,23 @@ namespace SMW_ML.Emulator
         /// Sets the arduino previewer to use with the adapter
         /// </summary>
         /// <param name="arduinoPreviewer"></param>
-        void SetArduinoPreviewer(ArduinoPreviewer arduinoPreviewer);
+        internal void SetArduinoPreviewer(ArduinoPreviewer arduinoPreviewer);
 
-        void NetworkUpdated(IBlackBox<double> blackbox);
+        /// <summary>
+        /// Called whenever both the inputs and outputs in the network changed
+        /// </summary>
+        /// <param name="inputs"></param>
+        /// <param name="outputs"></param>
+        void NetworkUpdated(double[] inputs, double[] outputs);
+        /// <summary>
+        /// Called whenever the trained network is changed.
+        /// </summary>
+        /// <param name="connectionLayers"></param>
+        /// <param name="outputIds"></param>
+        void NetworkChanged((int sourceNode, int targetNode, double weight)[][] connectionLayers, int[] outputIds);
 
-        DataFetcher GetDataFetcher();
-        InputSetter GetInputSetter();
-        OutputGetter GetOutputGetter();
+        internal DataFetcher GetDataFetcher();
+        internal InputSetter GetInputSetter();
+        internal OutputGetter GetOutputGetter();
     }
 }

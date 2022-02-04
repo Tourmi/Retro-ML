@@ -30,7 +30,7 @@ namespace SMW_ML.ViewModels
         {
             //TODO : use config to setup training
             NeuralNetwork = new NetworkViewModel(neuralConfig);
-            emulatorManager = new(1, neuralConfig);
+            emulatorManager = new(6, neuralConfig);
             trainer = new SharpNeatTrainer(emulatorManager);
         }
 
@@ -42,6 +42,7 @@ namespace SMW_ML.ViewModels
             {
                 emulatorManager.Init();
                 emulatorManager.GetFirstEmulator().LinkedNetworkActivated += NeuralNetwork.UpdateNodes;
+                emulatorManager.GetFirstEmulator().ChangedLinkedNetwork += NeuralNetwork.UpdateTopology;
                 trainer.StartTraining(DefaultPaths.SHARPNEAT_CONFIG);
             }).Start();
         }

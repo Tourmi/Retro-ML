@@ -13,6 +13,10 @@
 	</Design.DataContext>
 
 	<UserControl.Styles>
+		<Style Selector="TextBlock">
+			<Setter Property="Foreground" Value="White"/>
+		</Style>
+		
 		<Style Selector="ItemsControl.middlenodes > ContentPresenter">
 			<Setter Property="Canvas.Left" Value="{Binding PositionX}"/>
 			<Setter Property="Canvas.Top" Value="{Binding PositionY}"/>

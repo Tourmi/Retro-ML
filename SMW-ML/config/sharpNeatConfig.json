@@ -10,23 +10,23 @@
     "interspeciesMatingProportion": 0.2
   },
   "reproductionAsexualSettings": {
-    "connectionWeightMutationProbability": 0.7,
+    "connectionWeightMutationProbability": 0.3,
     "addNodeMutationProbability": 0.1,
-    "addConnectionMutationProbability": 0.1,
-    "deleteConnectionMutationProbability": 0.1
+    "addConnectionMutationProbability": 0.3,
+    "deleteConnectionMutationProbability": 0.3
   },
   "reproductionSexualSettings": {
     "secondaryParentGeneProbability": 0.5
   },
   "populationSize": 100,
-  "initialInterconnectionsProportion": 0.05,
+  "initialInterconnectionsProportion": 0,
   "connectionWeightScale": 5.0,
   "complexityRegulationStrategy": {
     "strategyName": "relative",
     "relativeComplexityCeiling": 40,
     "minSimplifcationGenerations": 5
   },
-  "degreeOfParallelism": 100,
+  "degreeOfParallelism": -1,
   "enableHardwareAcceleratedNeuralNets": false,
   "enableHardwareAcceleratedActivationFunctions": false
 }

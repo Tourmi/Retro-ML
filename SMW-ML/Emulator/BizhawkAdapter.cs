@@ -18,7 +18,8 @@ namespace SMW_ML.Emulator
 {
     internal class BizhawkAdapter : IEmulatorAdapter
     {
-        public event Action<IVector<double>, IVector<double>> LinkedNetworkActivated;
+        public event Action<double[], double[]>? LinkedNetworkActivated;
+        public event Action<(int sourceNode, int targetNode, double weight)[][], int[]>? ChangedLinkedNetwork;
 
         private static class Commands
         {
@@ -138,9 +139,14 @@ namespace SMW_ML.Emulator
             return buffer;
         }
 
-        public void NetworkUpdated(IBlackBox<double> blackbox)
+        public void NetworkUpdated(double[] inputs, double[] outputs)
         {
-            LinkedNetworkActivated?.Invoke(blackbox.InputVector, blackbox.OutputVector);
+            LinkedNetworkActivated?.Invoke(inputs, outputs);
+        }
+
+        public void NetworkChanged((int sourceNode, int targetNode, double weight)[][] connectionLayers, int[] outputIds)
+        {
+            ChangedLinkedNetwork?.Invoke(connectionLayers, outputIds);
         }
 
         public DataFetcher GetDataFetcher() => dataFetcher;
@@ -148,5 +154,6 @@ namespace SMW_ML.Emulator
         public InputSetter GetInputSetter() => inputSetter;
 
         public OutputGetter GetOutputGetter() => outputGetter;
+
     }
 }

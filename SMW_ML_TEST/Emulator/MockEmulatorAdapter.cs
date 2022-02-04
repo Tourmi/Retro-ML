@@ -12,6 +12,9 @@ namespace SMW_ML_TEST.Emulator
 {
     internal class MockEmulatorAdapter : IEmulatorAdapter
     {
+        public event Action<double[], double[]>? LinkedNetworkActivated;
+        public event Action<(int sourceNode, int targetNode, double weight)[][], int[]>? ChangedLinkedNetwork;
+
         public DataFetcher DataFetcher;
         public InputSetter InputSetter;
         public OutputGetter OutputGetter;
@@ -101,8 +104,6 @@ namespace SMW_ML_TEST.Emulator
 
         public int SendInputCallCount = 0;
 
-        public event Action<IVector<double>, IVector<double>> LinkedNetworkActivated;
-
         public void SendInput(Input input)
         {
             SendInputCallCount++;
@@ -110,7 +111,12 @@ namespace SMW_ML_TEST.Emulator
 
         public void SetArduinoPreviewer(ArduinoPreviewer arduinoPreviewer) { }
 
-        public void NetworkUpdated(IBlackBox<double> blackbox)
+        public void NetworkUpdated(double[] inputs, double[] outputs)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void NetworkChanged((int sourceNode, int targetNode, double weight)[][] connectionLayers, int[] outputIds)
         {
             throw new NotImplementedException();
         }

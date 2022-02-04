@@ -11,7 +11,7 @@ namespace SMW_ML.Game.SuperMarioWorld
 {
     internal class DataFetcher
     {
-        private const int INTERNAL_CLOCK_LENGTH = 4;
+        public const int INTERNAL_CLOCK_LENGTH = 8;
         private const int TILE_SIZE = 0x10;
         private const int SCREEN_WIDTH = 0x10;
         private const int SCREEN_HEIGHT_HORIZONTAL = 0x1B;
