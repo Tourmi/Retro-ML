@@ -19,8 +19,8 @@ namespace SMW_ML.Models.Config
 
         public NeuralConfig()
         {
-            GridDistanceX = 6;
-            GridDistanceY = 6;
+            GridDistanceX = 4;
+            GridDistanceY = 4;
 
             InputNodes = new List<InputNode>()
             {
@@ -34,8 +34,8 @@ namespace SMW_ML.Models.Config
                 new InputNode("Carrying", true, (dataFetcher) => dataFetcher.IsCarryingSomething()),
                 new InputNode("Can Climb", true, (dataFetcher) => dataFetcher.CanClimb()),
                 new InputNode("Max Speed", true, (dataFetcher) => dataFetcher.IsAtMaxSpeed()),
-                new InputNode("Internal Clock", true, (dataFetcher) => dataFetcher.IsOnGround()),
                 new InputNode("Message Box", true, (dataFetcher) => dataFetcher.WasDialogBoxOpened()),
+                new InputNode("Internal Clock", true, (dataFetcher) => dataFetcher.WasInternalClockTriggered()),
                 new InputNode("Bias", true, (dataFetcher) => true)
             };
 
