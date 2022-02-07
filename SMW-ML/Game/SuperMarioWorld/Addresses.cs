@@ -430,6 +430,11 @@ namespace SMW_ML.Game.SuperMarioWorld
             /// </summary>
             public static readonly AddressData ScrollCommandLayer2 = new(0x00143F, 1);
 
+            public static readonly AddressData Layer1X = new(0x00001A, 2);
+            public static readonly AddressData Layer1Y = new(0x00001C, 2);
+            public static readonly AddressData Layer2X = new(0x00001E, 2);
+            public static readonly AddressData Layer2Y = new(0x000020, 2);
+
             /// <summary>
             /// <br>Map16 Table.</br>
             /// <br>For horizontal levels, $1B0 tiles per screen, where each screen can be indexed using the format ------y yyyyxxxx. $7E:FE00-$7E:FFFF are unused.</br>
@@ -438,6 +443,7 @@ namespace SMW_ML.Game.SuperMarioWorld
             /// <br>See <see href="https://www.smwcentral.net/?p=section&amp;a=details&amp;id=21702"/>. (Thanks, HammerBrother!)</br>
             /// </summary>
             public static readonly AddressData Map16 = new(0x00C800, 14_336, AddressData.CacheDurations.Level, 0x01C800);
+
 
             public static class Header
             {

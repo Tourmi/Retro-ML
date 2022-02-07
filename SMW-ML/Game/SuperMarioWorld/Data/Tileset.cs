@@ -15,9 +15,9 @@ namespace SMW_ML.Game.SuperMarioWorld.Data
         private static readonly ReadOnlyDictionary<byte, Tileset> tilesets = new(new Dictionary<byte, Tileset>()
         {
             [0x0] = new Tileset(defaultSolidTiles, defaultDangerousTiles),
-            [0x1] = new Tileset(defaultSolidTiles, defaultDangerousTiles.Union(new ushort[] { 0x159, 0x15A, 0x15B, 0x15C, 0x1C1, 0x1C2, 0x1C3, 0x1C4})),
+            [0x1] = new Tileset(defaultSolidTiles, defaultDangerousTiles.Union(new ushort[] { 0x159, 0x15A, 0x15B, 0x15C, 0x1C1, 0x1C2, 0x1C3, 0x1C4, 0x166, 0x167, 0x168, 0x169 })),
             [0x2] = new Tileset(defaultSolidTiles, defaultDangerousTiles),
-            [0x3] = new Tileset(defaultSolidTiles.Except(new ushort[] { 0x159, 0x15A, 0x15B, 0x1D2, 0x1D3, 0x1D4, 0x1D5, 0x1D6, 0x1D7 }), defaultDangerousTiles.Union(new ushort[] { 0x159, 0x15A, 0x15B, 0x1D2, 0x1D3, 0x1D4, 0x1D5, 0x1D6, 0x1D7})),
+            [0x3] = new Tileset(defaultSolidTiles.Except(new ushort[] { 0x159, 0x15A, 0x15B, 0x1D2, 0x1D3, 0x1D4, 0x1D5, 0x1D6, 0x1D7 }), defaultDangerousTiles.Union(new ushort[] { 0x159, 0x15A, 0x15B, 0x1D2, 0x1D3, 0x1D4, 0x1D5, 0x1D6, 0x1D7 })),
             [0x4] = new Tileset(defaultSolidTiles, defaultDangerousTiles),
             [0x5] = new Tileset(defaultSolidTiles, defaultDangerousTiles),
             [0x6] = new Tileset(defaultSolidTiles, defaultDangerousTiles),

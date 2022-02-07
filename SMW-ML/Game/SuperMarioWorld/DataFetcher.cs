@@ -23,6 +23,7 @@ namespace SMW_ML.Game.SuperMarioWorld
 
         private readonly Dictionary<ushort, ushort[]> map16Caches;
         private ushort[,]? nearbyTilesCache;
+        private ushort[,]? nearbyLayer2TilesCache;
         private ushort currLevelNumber;
 
         private int internal_clock_timer = INTERNAL_CLOCK_LENGTH;
@@ -50,6 +51,7 @@ namespace SMW_ML.Game.SuperMarioWorld
             internal_clock_timer--;
 
             nearbyTilesCache = null;
+            nearbyLayer2TilesCache = null;
         }
 
         /// <summary>
@@ -134,7 +136,20 @@ namespace SMW_ML.Game.SuperMarioWorld
 
             if (nearbyTilesCache == null)
             {
-                nearbyTilesCache = GetNearbyTiles(map16Caches[levelNumber], x_dist, y_dist);
+                nearbyTilesCache = GetNearbyTiles(map16Caches[levelNumber], x_dist, y_dist, (int)GetPositionX() / TILE_SIZE, (int)(GetPositionY() + TILE_SIZE) / TILE_SIZE, 0);
+            }
+
+            //If layer 2 is interactive
+            if (nearbyLayer2TilesCache == null && (ReadSingle(Level.ScreenMode) & 0b10000000) != 0)
+            {
+                bool isLayer2Vertical = (ReadSingle(Level.ScreenMode) & 0b00000010) != 0;
+                int layer2ScreenStart = isLayer2Vertical ? 0x0E : 0x10;
+                int offsetX = (int)GetPositionX()
+                    + ((int)ToUnsignedInteger(Read(Level.Layer2X)) - (int)ToUnsignedInteger(Read(Level.Layer1X)));
+                int offsetY = (int)(GetPositionY() + TILE_SIZE)
+                    + ((int)ToUnsignedInteger(Read(Level.Layer2Y)) - (int)ToUnsignedInteger(Read(Level.Layer1Y)));
+
+                nearbyLayer2TilesCache = GetNearbyTiles(map16Caches[levelNumber], x_dist, y_dist, offsetX / TILE_SIZE, offsetY / TILE_SIZE, layer2ScreenStart);
             }
 
             for (int i = 0; i < result.GetLength(0); i++)
@@ -142,28 +157,31 @@ namespace SMW_ML.Game.SuperMarioWorld
                 for (int j = 0; j < result.GetLength(1); j++)
                 {
                     result[i, j] = tileset.Contains(nearbyTilesCache[i, j]);
+                    if (nearbyLayer2TilesCache != null)
+                    {
+                        result[i, j] |= tileset.Contains(nearbyLayer2TilesCache[i, j]);
+                    }
                 }
             }
 
             return result;
         }
 
-        private ushort[,] GetNearbyTiles(ushort[] map16Cache, int x_dist, int y_dist)
+        private ushort[,] GetNearbyTiles(ushort[] map16Cache, int x_dist, int y_dist, int offsetX, int offsetY, int screenStart)
         {
             ushort[,] result = new ushort[x_dist * 2 + 1, y_dist * 2 + 1];
-            //We add half a tile to get the middle of the player's tile
-            var offsetX = GetPositionX() / TILE_SIZE;
-            var offsetY = (GetPositionY() + TILE_SIZE) / TILE_SIZE;
 
             byte screensCount = ReadSingle(Level.ScreenCount);
 
             bool isVertical = (ReadSingle(Level.ScreenMode) & 0b00000001) != 0;
             if (isVertical)
             {
+                offsetY += screenStart * SCREEN_HEIGHT_VERTICAL;
+
                 for (int y = -y_dist; y <= y_dist; y++)
                 {
                     //Snap the Y coordinate to a valid tile
-                    var tileYToRead = Math.Min(Math.Max(0x00, y + offsetY), SCREEN_HEIGHT_VERTICAL * screensCount - 1);
+                    var tileYToRead = Math.Min(Math.Max(screenStart * SCREEN_HEIGHT_VERTICAL, y + offsetY), (screenStart * SCREEN_HEIGHT_VERTICAL) + SCREEN_HEIGHT_VERTICAL * screensCount - 1);
                     for (int x = -x_dist; x <= x_dist; x++)
                     {
                         //Snap the X coordinate to a valid tile
@@ -173,10 +191,10 @@ namespace SMW_ML.Game.SuperMarioWorld
                         result[y + y_dist, x + x_dist] = map16Cache[index];
                     }
                 }
-
             }
             else
             {
+                offsetX += screenStart * SCREEN_WIDTH;
                 for (int y = -y_dist; y <= y_dist; y++)
                 {
                     //Snap the Y coordinate to a valid tile
@@ -184,7 +202,7 @@ namespace SMW_ML.Game.SuperMarioWorld
                     for (int x = -x_dist; x <= x_dist; x++)
                     {
                         //Snap the X coordinate to a valid tile
-                        var tileXToRead = Math.Min(Math.Max(0x00, x + offsetX), SCREEN_WIDTH * screensCount - 1);
+                        var tileXToRead = Math.Min(Math.Max(screenStart * SCREEN_WIDTH, x + offsetX), (screenStart * SCREEN_WIDTH) + SCREEN_WIDTH * screensCount - 1);
 
                         var index = SCREEN_HEIGHT_HORIZONTAL * SCREEN_WIDTH * (tileXToRead / SCREEN_WIDTH) + tileYToRead * SCREEN_WIDTH + (tileXToRead % SCREEN_WIDTH);
                         result[y + y_dist, x + x_dist] = map16Cache[index];
