@@ -44,12 +44,20 @@
 		</None>
 	</ItemGroup>
 	<ItemGroup>
+	  <Compile Update="Views\Components\MessageBox.axaml.cs">
+	    <DependentUpon>MessageBox.axaml</DependentUpon>
+	  </Compile>
 	  <Compile Update="Views\MainPageView.axaml.cs">
 	    <DependentUpon>MainPageView.axaml</DependentUpon>
 	  </Compile>
 	  <Compile Update="Views\TrainingPageView.axaml.cs">
 	    <DependentUpon>TrainingPageView.axaml</DependentUpon>
 	  </Compile>
+	</ItemGroup>
+	<ItemGroup>
+	  <None Update="Views\Components\MessageBox.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </None>
 	</ItemGroup>
 
 	<Target Name="CopyEmulator" AfterTargets="AfterCompile">

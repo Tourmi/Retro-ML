@@ -1,6 +1,7 @@
 using Avalonia.Controls;
 using ReactiveUI;
 using SMW_ML.Models.Config;
+using SMW_ML.Views.Components;
 
 namespace SMW_ML.ViewModels
 {
@@ -34,9 +35,16 @@ namespace SMW_ML.ViewModels
             trainingPageViewModel.SavePopulation(path);
         }
 
-        public void HandleLoadPopulation(string path)
+        public async void HandleLoadPopulation(string path)
         {
-            trainingPageViewModel.LoadPopulation(path);
+            try
+            {
+                trainingPageViewModel.LoadPopulation(path);
+            }
+            catch
+            {
+                await MessageBox.Show(null, "Could not load the population. The current configuration might be invalid for the population.", "Error", MessageBox.MessageBoxButtons.Ok);
+            }
         }
 
         public void HandleStartTraining()
@@ -51,6 +59,6 @@ namespace SMW_ML.ViewModels
             mainPageViewModel.CanSaveTraining = true;
         }
 
-        
+
     }
 }
