@@ -109,6 +109,20 @@ namespace SMW_ML.Game.SuperMarioWorld
                 }
             }
 
+            var extendedSprites = GetExtendedSprites();
+            foreach (var extendedSprite in extendedSprites)
+            {
+                if (!extendedSprite.IsDangerous()) continue;
+                var xSpriteDist = (extendedSprite.XPos / TILE_SIZE - (int)GetPositionX() / TILE_SIZE);
+                var ySpriteDist = (extendedSprite.YPos / TILE_SIZE - (int)GetPositionY() / TILE_SIZE);
+
+                //Is the sprite distance between the bounds that Mario can see?
+                if (xSpriteDist <= x_dist && ySpriteDist <= y_dist && xSpriteDist >= -x_dist && ySpriteDist >= -y_dist)
+                {
+                    result[ySpriteDist + y_dist, xSpriteDist + x_dist] = true;
+                }
+            }
+
             byte levelTileset = ReadSingle(Level.Header.TilesetSetting);
             var tileset = Tileset.GetDangerousTiles(levelTileset);
 
@@ -232,6 +246,26 @@ namespace SMW_ML.Game.SuperMarioWorld
             }
 
             return sprites;
+        }
+
+        private Data.ExtendedSprite[] GetExtendedSprites()
+        {
+            var extendedSprites = new Data.ExtendedSprite[Addresses.ExtendedSprite.Numbers.Length];
+            byte[] numbers = Read(Addresses.ExtendedSprite.Numbers);
+            ushort[] xPositions = ReadLowHighBytes(Addresses.ExtendedSprite.XPositions);
+            ushort[] yPositions = ReadLowHighBytes(Addresses.ExtendedSprite.YPositions);
+
+            for (int i = 0; i < extendedSprites.Length; i++)
+            {
+                extendedSprites[i] = new Data.ExtendedSprite()
+                {
+                    Number = numbers[i],
+                    XPos = xPositions[i],
+                    YPos = yPositions[i]
+                };
+            }
+
+            return extendedSprites;
         }
 
         /// <summary>
