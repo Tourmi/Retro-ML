@@ -43,7 +43,7 @@ namespace SMW_ML.Game.SuperMarioWorld.Data
         public const byte CREATING_EATING_BLOCK = 0xB1;
         public const byte CARROT_TOP_UP_RIGHT = 0xB7;
         public const byte CARROT_TOP_UP_LEFT = 0xB8;
-        public const byte MESSAGE_BOX = 0xB8;
+        public const byte MESSAGE_BOX = 0xB9;
         public const byte TIMED_LIFT = 0xBA;
         public const byte CASTLE_BLOCK = 0xBB;
         public const byte LAVA_PLATFORM = 0xC0;
