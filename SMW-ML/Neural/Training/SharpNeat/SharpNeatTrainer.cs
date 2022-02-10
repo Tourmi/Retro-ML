@@ -17,11 +17,15 @@ using SharpNeat.Neat.Genome.IO;
 using SharpNeat.Neat.Genome;
 using SharpNeat.NeuralNets.Double.ActivationFunctions;
 using SMW_ML.Utils;
+using SharpNeat.EvolutionAlgorithm;
+using SMW_ML.Neural.Training.SharpNeat;
 
 namespace SMW_ML.Neural.Training.SharpNeatImpl
 {
     internal class SharpNeatTrainer : INeuralTrainer
     {
+        public event Action<TrainingStatistics>? OnStatisticsUpdated;
+
         private readonly SMWExperimentFactory experimentFactory;
         private readonly Semaphore syncSemaphore;
         private readonly EmulatorManager emulatorManager;
@@ -37,6 +41,7 @@ namespace SMW_ML.Neural.Training.SharpNeatImpl
         private bool isTraining = false;
 
         public bool IsTraining => isTraining;
+        public TrainingStatistics TrainingStatistics { get; set; }
 
         /// <summary>
         /// Neural training using the SharpNEAT library
@@ -104,6 +109,8 @@ namespace SMW_ML.Neural.Training.SharpNeatImpl
             {
                 currentAlgo!.PerformOneGeneration();
 
+                OnStatisticsUpdated?.Invoke(GetTrainingStatistics());
+
                 SavePopulation(DefaultPaths.CURRENT_POPULATION);
             }
 
@@ -132,5 +139,13 @@ namespace SMW_ML.Neural.Training.SharpNeatImpl
 
             NeatPopulationSaver<double>.SaveToZipArchive(genomes, path[..path.IndexOf(filename)], filename, System.IO.Compression.CompressionLevel.Fastest);
         }
+
+        private TrainingStatistics GetTrainingStatistics()
+        {
+            TrainingStatistics = new TrainingStatistics();
+            TrainingStatistics.AddStat("Best Complexity", currentAlgo.Population.Stats.BestComplexity);
+            return TrainingStatistics;
+        }
+
     }
 }

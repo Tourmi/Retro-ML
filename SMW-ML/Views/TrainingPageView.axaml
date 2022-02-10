@@ -6,14 +6,46 @@
         mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
         x:Class="SMW_ML.Views.TrainingPageView">
 
-	
+
 	<Design.DataContext>
 		<vm:TrainingPageViewModel/>
 	</Design.DataContext>
+	<TabControl TabStripPlacement="Top">
+		<TabItem Header="Training" FontSize="16">
+			<StackPanel Orientation="Vertical" Spacing="5" HorizontalAlignment="Center" VerticalAlignment="Center" >
+				<TextBlock Text="{Binding Status}" HorizontalAlignment="Center"/>
+				<Button Command="{Binding StopTraining}" Content="{Binding Stop}" IsEnabled="{Binding CanStop}" HorizontalAlignment="Center"/>
+			</StackPanel>
+		</TabItem>
+		<TabItem Header="Statistics" FontSize="16">
+			<DataGrid
+				ScrollViewer.VerticalScrollBarVisibility="Visible"
+				Margin="5"
+				Foreground="Black"
+				FontSize="16" Height="150"
+				IsReadOnly="True"
+				Items="{Binding TrainingStatistics}"
+				HorizontalAlignment="Left"
+				AutoGenerateColumns="False"
+				FontWeight="Bold"
+				Background="#cfcfcf"
+				AlternatingRowBackground="#e8e8e8"
+				HorizontalGridLinesBrush="White"
+				GridLinesVisibility="Horizontal">
+				<DataGrid.Columns>
+					<DataGridTextColumn Header="Stat"
+										FontWeight="Bold" FontSize="14"
+										Binding="{Binding Name}"
+										Width="*"/>
+					<DataGridTextColumn Header="Value"
+										FontSize="14"
+										Binding="{Binding Value}"
+										Width="3.5*"
+										FontWeight="Normal"/>
+				</DataGrid.Columns>
+			</DataGrid>
+		</TabItem>
+	</TabControl>
 
-	<StackPanel Orientation="Vertical" Spacing="5" HorizontalAlignment="Center" VerticalAlignment="Center" >
-		<TextBlock Text="{Binding Status}" HorizontalAlignment="Center"/>
-		<Button Command="{Binding StopTraining}" Content="{Binding Stop}" IsEnabled="{Binding CanStop}" HorizontalAlignment="Center"/>
-	</StackPanel>
 
 </Window>
