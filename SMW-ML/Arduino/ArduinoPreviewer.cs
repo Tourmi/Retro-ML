@@ -10,14 +10,13 @@ namespace SMW_ML.Arduino
 {
     internal class ArduinoPreviewer : IDisposable
     {
-        private const string SERIAL_PORT = "COM4";
         private const int SERIAL_BAUD = 9600;
 
         private SerialPort serial;
 
-        public ArduinoPreviewer()
+        public ArduinoPreviewer(string port)
         {
-            serial = new SerialPort(SERIAL_PORT, SERIAL_BAUD);
+            serial = new SerialPort(port, SERIAL_BAUD);
             serial.Open();
         }
 
@@ -31,6 +30,6 @@ namespace SMW_ML.Arduino
             serial.Dispose();
         }
 
-        public static bool ArduinoAvailable() => SerialPort.GetPortNames().Contains(SERIAL_PORT);
+        public static bool ArduinoAvailable(string port) => SerialPort.GetPortNames().Contains(port);
     }
 }

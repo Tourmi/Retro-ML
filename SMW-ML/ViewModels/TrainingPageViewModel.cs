@@ -1,6 +1,7 @@
 ﻿using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Threading;
+using Newtonsoft.Json;
 using ReactiveUI;
 using SMW_ML.Emulator;
 using SMW_ML.Models.Config;
@@ -10,6 +11,7 @@ using SMW_ML.Utils;
 using SMW_ML.ViewModels.Neural;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -21,21 +23,30 @@ namespace SMW_ML.ViewModels
     {
         public event Action? OnStopTraining;
 
-        private readonly INeuralTrainer trainer;
-        private readonly EmulatorManager emulatorManager;
+        private INeuralTrainer trainer;
+        private EmulatorManager emulatorManager;
+        private NetworkViewModel neuralNetwork;
 
         private bool canStop = true;
 
-        public TrainingPageViewModel(NeuralConfig neuralConfig)
+        public TrainingPageViewModel()
         {
             //TODO : use config to setup training
-            NeuralNetwork = new NetworkViewModel(neuralConfig);
-            emulatorManager = new(6, neuralConfig);
-            trainer = new SharpNeatTrainer(emulatorManager);
+
+
+
+
         }
 
-        public void Init()
+        public void Init(NeuralConfig neuralConfig)
         {
+            string appConfigJson = File.ReadAllText(DefaultPaths.APP_CONFIG);
+            ApplicationConfig appConfig = JsonConvert.DeserializeObject<ApplicationConfig>(appConfigJson)!;
+
+            NeuralNetwork = new NetworkViewModel(neuralConfig);
+            emulatorManager = new(appConfig, neuralConfig);
+            trainer = new SharpNeatTrainer(emulatorManager);
+
             CanStop = true;
 
             new Thread(() =>
@@ -57,7 +68,11 @@ namespace SMW_ML.ViewModels
             trainer.SavePopulation(path);
         }
 
-        public NetworkViewModel NeuralNetwork { get; set; }
+        public NetworkViewModel NeuralNetwork
+        {
+            get => neuralNetwork;
+            set => this.RaiseAndSetIfChanged(ref neuralNetwork, value);
+        }
 
         public static string Status => "Currently training AIs";
 

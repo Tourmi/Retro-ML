@@ -24,7 +24,7 @@ namespace SMW_ML.ViewModels
             mainPageViewModel.OnStartTrainingCalled += HandleStartTraining;
             mainPageViewModel.OnLoadPopulation += HandleLoadPopulation;
             mainPageViewModel.OnSavePopulation += HandleSavePopulation;
-            trainingPageViewModel = new TrainingPageViewModel(new NeuralConfig());
+            trainingPageViewModel = new TrainingPageViewModel();
             trainingPageViewModel.OnStopTraining += HandleStopTraining;
 
             Content = mainPageViewModel;
@@ -50,7 +50,7 @@ namespace SMW_ML.ViewModels
         public void HandleStartTraining()
         {
             Content = trainingPageViewModel;
-            trainingPageViewModel.Init();
+            trainingPageViewModel.Init(new NeuralConfig());
         }
 
         public void HandleStopTraining()

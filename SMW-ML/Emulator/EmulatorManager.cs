@@ -26,9 +26,13 @@ namespace SMW_ML.Emulator
         private readonly Semaphore sem;
         private Socket? server;
 
-        public EmulatorManager(int numberOfEmulators, NeuralConfig neuralConfig)
+        private ApplicationConfig applicationConfig;
+
+        public EmulatorManager(ApplicationConfig appConfig, NeuralConfig neuralConfig)
         {
-            this.adapters = new IEmulatorAdapter[numberOfEmulators];
+            applicationConfig = appConfig;
+
+            this.adapters = new IEmulatorAdapter[appConfig.Multithread];
             this.adaptersTaken = new bool[adapters.Length];
 
             sem = new Semaphore(1, 1);
@@ -60,9 +64,9 @@ namespace SMW_ML.Emulator
             }
 
 
-            if (ArduinoPreviewer.ArduinoAvailable())
+            if (ArduinoPreviewer.ArduinoAvailable(applicationConfig.ArduinoCommunicationPort))
             {
-                adapters[0]!.SetArduinoPreviewer(new ArduinoPreviewer());
+                adapters[0]!.SetArduinoPreviewer(new ArduinoPreviewer(applicationConfig.ArduinoCommunicationPort));
             }
         }
 

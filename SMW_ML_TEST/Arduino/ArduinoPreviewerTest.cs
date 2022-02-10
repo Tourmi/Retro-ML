@@ -11,12 +11,12 @@ namespace SMW_ML_TEST.Arduino
         [SetUp]
         public void SetUp()
         {
-            if (!ArduinoPreviewer.ArduinoAvailable())
+            if (!ArduinoPreviewer.ArduinoAvailable("COM4"))
             {
                 Assert.Ignore("No arduinos are currently available on a serial port");
             }
 
-            previewer = new ArduinoPreviewer();
+            previewer = new ArduinoPreviewer("COM4");
         }
 
         [Test]

@@ -94,16 +94,19 @@
 						</Grid>
 					</StackPanel>
 				</TabItem>
+				<!--
 				<TabItem Header="{Binding TabItemBizhawk}">
 
 				</TabItem>
+				-->
 				<TabItem Header="{Binding TabItemApp}">
 					<StackPanel Orientation="Vertical" Spacing="5" Margin="10" HorizontalAlignment="Left" VerticalAlignment="Top">
 						<TextBlock Classes="h1" Text="Multithread"/>
 						<NumericUpDown Classes="numericTextBox" Value="{Binding Multithread}" Minimum="1"/>
 						<TextBlock Classes="h1" Text="Communication Port with Arduino"/>
 						<TextBox Classes="numericTextBox" Text="{Binding ArduinoPort}"/>
-						<TextBlock Classes="h1" Text="AI Objectives"/>
+						<!-- 
+							<TextBlock Classes="h1" Text="AI Objectives"/>
 						<StackPanel Classes="stackPanelItems">
 							<ListBox Items="{Binding ListOfObjectives}"
 									 SelectedItem="{Binding SelectedObjective}"
@@ -114,6 +117,8 @@
 							<ComboBox Classes="comboBox" Items="{Binding StopTrainingItems}" Width="200" HorizontalAlignment="Left" SelectedItem="{Binding StopTrainingSelectedItem}"/>
 							<NumericUpDown Classes="numericTextBox" Value="{Binding StopTrainingConditionValue}" IsEnabled="{Binding !IsStopManually}" Minimum="0"/>
 						</StackPanel>
+						-->
+
 					</StackPanel>
 				</TabItem>
 			</TabControl>
