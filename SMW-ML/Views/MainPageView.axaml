@@ -1,0 +1,21 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="clr-namespace:SMW_ML.ViewModels;assembly=SMW_ML"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+        x:Class="SMW_ML.Views.MainPageView">
+
+	<Design.DataContext>
+		<vm:MainPageViewModel/>
+	</Design.DataContext>
+
+	<StackPanel Orientation="Vertical" Spacing="5" HorizontalAlignment="Center" VerticalAlignment="Center" >
+		<TextBlock Text="{Binding Greeting}" HorizontalAlignment="Center"/>
+		<Button Command="{Binding StartTraining}" Content="{Binding Start}" IsEnabled="{Binding !IsTrainingRunning}" HorizontalAlignment="Center"/>
+		<Button Command="{Binding LoadPopulation}" Content="{Binding LoadPopulationString}" HorizontalAlignment="Center"/>
+		<Button Command="{Binding SavePopulation}" Content="{Binding SavePopulationString}" IsEnabled="{Binding CanSaveTraining}" HorizontalAlignment="Center"/>
+		<Button Command="{Binding OpenConfigSettings}" Content="{Binding OpenSettingsString}" CommandParameter="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Window}}}" IsEnabled="True"  HorizontalAlignment="Center" />
+	</StackPanel>
+
+</Window>

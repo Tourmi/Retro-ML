@@ -1,0 +1,32 @@
+{
+  "isAcyclic": true,
+  "activationFnName": "SReLU",
+  "evolutionAlgorithmSettings": {
+    "speciesCount": 20,
+    "elitismProportion": 0.25,
+    "selectionProportion": 0.25,
+    "offspringAsexualProportion": 0.5,
+    "offspringSexualProportion": 0.5,
+    "interspeciesMatingProportion": 0.2
+  },
+  "reproductionAsexualSettings": {
+    "connectionWeightMutationProbability": 0.3,
+    "addNodeMutationProbability": 0.1,
+    "addConnectionMutationProbability": 0.3,
+    "deleteConnectionMutationProbability": 0.3
+  },
+  "reproductionSexualSettings": {
+    "secondaryParentGeneProbability": 0.5
+  },
+  "populationSize": 100,
+  "initialInterconnectionsProportion": 0,
+  "connectionWeightScale": 5.0,
+  "complexityRegulationStrategy": {
+    "strategyName": "relative",
+    "relativeComplexityCeiling": 40,
+    "minSimplifcationGenerations": 5
+  },
+  "degreeOfParallelism": -1,
+  "enableHardwareAcceleratedNeuralNets": false,
+  "enableHardwareAcceleratedActivationFunctions": false
+}

@@ -1,0 +1,55 @@
+variables:
+  GIT_SUBMODULE_STRATEGY: normal
+  GIT_CLONE_PATH: $CI_BUILDS_DIR\smw-ml
+
+stages:
+  - build-dependencies
+  - build
+  - test
+  
+build-sharpneat:
+  stage: build-dependencies
+  artifacts:
+    paths:
+      - .\Submodules\SharpNEAT\src\SharpNeat\bin\Release\net6.0\SharpNeat.dll
+  script:
+    - cd .\Submodules\SharpNEAT\src\
+    - dotnet build --configuration Release
+    - cd .\..\..\..\
+    
+build-emu:
+  stage: build-dependencies
+  artifacts:
+    paths:
+      - .\Submodules\BizHawk\output\
+  script:
+    - cd .\Submodules\BizHawk\Dist\
+    - .\QuickTestBuildAndPackage.bat
+    - cd .\..\..\..\
+    
+build-app:
+  stage: build
+  dependencies:
+    - build-emu
+    - build-sharpneat
+  artifacts:
+    name: smw-ml-build
+    paths:
+      - .\SMW-ML\bin\Release\net6.0\
+  script:
+    - cd .\SMW-ML\
+    - dotnet build --configuration Release
+    - cd .\..\
+    
+test-app:
+  stage: test
+  allow_failure:
+    exit_codes: 1
+  artifacts:
+    name: test-results
+    paths:
+      - .\SMW_ML_TEST\TestResults\
+  script:
+    - cd .\SMW_ML_TEST\
+    - dotnet test --logger trx
+    - cd .\..\
