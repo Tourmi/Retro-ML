@@ -45,17 +45,5 @@ namespace SMW_ML.Game.SuperMarioWorld
                 }
             }
         }
-
-        public int GetInputCount()
-        {
-            int count = 0;
-
-            foreach(var input in inputNodes)
-            {
-                if (input.ShouldUse) count += input.TotalWidth * input.TotalHeight;
-            }
-
-            return count;
-        }
     }
 }

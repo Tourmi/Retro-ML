@@ -131,8 +131,8 @@ namespace SMW_ML.Emulator
             sem.Release();
         }
 
-        public int GetInputCount() => new InputSetter(null, neuralConfig).GetInputCount();
+        public int GetInputCount() => neuralConfig.GetInputCount();
 
-        public int GetOutputCount() => new OutputGetter(neuralConfig).GetOutputCount();
+        public int GetOutputCount() => neuralConfig.GetOutputCount();
     }
 }

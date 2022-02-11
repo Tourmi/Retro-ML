@@ -55,5 +55,28 @@ namespace SMW_ML.Models.Config
                 new OutputNode("Select", false),
             };
         }
+
+        public int GetInputCount()
+        {
+            int count = 0;
+
+            foreach (var input in InputNodes)
+            {
+                if (input.ShouldUse) count += input.TotalWidth * input.TotalHeight;
+            }
+
+            return count;
+        }
+
+        public int GetOutputCount()
+        {
+            int count = 0;
+            foreach (var output in OutputNodes)
+            {
+                if (output.ShouldUse) count++;
+            }
+
+            return count;
+        }
     }
 }

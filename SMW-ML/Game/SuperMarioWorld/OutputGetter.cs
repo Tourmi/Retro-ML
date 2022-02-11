@@ -11,6 +11,7 @@ namespace SMW_ML.Game.SuperMarioWorld
     internal class OutputGetter
     {
         private readonly List<OutputNode> outputNodes;
+        private readonly NeuralConfig neuralConfig;
 
         private const bool ALLOW_OPPOSITE_DIRECTIONS = false;
 
@@ -19,6 +20,7 @@ namespace SMW_ML.Game.SuperMarioWorld
         public OutputGetter(NeuralConfig config)
         {
             outputNodes = config.OutputNodes;
+            neuralConfig = config;
         }
 
         public Input GetControllerInput(IVector<double> outputs)
@@ -27,7 +29,7 @@ namespace SMW_ML.Game.SuperMarioWorld
             int currIndex = 0;
             int controllerIndex = 0;
 
-            int outputCount = GetOutputCount();
+            int outputCount = neuralConfig.GetOutputCount();
 
             for(; currIndex < outputCount && controllerIndex < Input.BUTTON_COUNT; currIndex++, controllerIndex++)
             {
@@ -60,17 +62,6 @@ namespace SMW_ML.Game.SuperMarioWorld
             }
 
             return controllerInput;
-        }
-
-        public int GetOutputCount()
-        {
-            int count = 0;
-            foreach (var output in  outputNodes)
-            {
-                if (output.ShouldUse) count++;
-            }
-
-            return count;
         }
     }
 }
