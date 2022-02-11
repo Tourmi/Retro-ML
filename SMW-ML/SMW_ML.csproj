@@ -44,6 +44,9 @@
 		</None>
 	</ItemGroup>
 	<ItemGroup>
+	  <Compile Update="Views\Components\ScoreFactorView.axaml.cs">
+	    <DependentUpon>ScoreFactorView.axaml</DependentUpon>
+	  </Compile>
 	  <Compile Update="Views\Components\MessageBox.axaml.cs">
 	    <DependentUpon>MessageBox.axaml</DependentUpon>
 	  </Compile>

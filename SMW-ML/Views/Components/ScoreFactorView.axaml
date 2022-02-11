@@ -1,0 +1,20 @@
+﻿<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="600" d:DesignHeight="200"
+			 xmlns:vm="clr-namespace:SMW_ML.ViewModels.Components;assembly=SMW_ML"
+             x:Class="SMW_ML.Views.Components.ScoreFactorView">
+	<UserControl.Styles>
+		<StyleInclude Source="/Styles/MainStyles.axaml" />
+	</UserControl.Styles>
+	<StackPanel>
+		<TextBlock Classes="h1" Text="{Binding Name}"/>
+		<StackPanel Margin="5" Orientation="Horizontal" VerticalAlignment="Center" Spacing="10">
+			<TextBlock Text="{Binding EnabledString}" VerticalAlignment="Center"/>
+			<CheckBox IsEnabled="{Binding CanBeDisabled}" IsChecked="{Binding IsEnabled}" VerticalAlignment="Center"/>
+			<TextBlock Text="{Binding MultiplierString}" VerticalAlignment="Center"/>
+			<NumericUpDown Value="{Binding Multiplier}" ShowButtonSpinner="False"/>
+		</StackPanel>
+	</StackPanel>
+</UserControl>

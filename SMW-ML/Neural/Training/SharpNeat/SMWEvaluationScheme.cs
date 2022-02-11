@@ -3,6 +3,7 @@ using SharpNeat.Evaluation;
 using SMW_ML.Emulator;
 using SMW_ML.Game;
 using SMW_ML.Game.SuperMarioWorld;
+using SMW_ML.Models.Config;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,6 +15,7 @@ namespace SMW_ML.Neural.Training.SharpNeatImpl
     internal class SMWEvaluationScheme : IBlackBoxEvaluationScheme<double>
     {
         private readonly EmulatorManager emulatorManager;
+        private readonly ApplicationConfig appConfig;
 
         public int InputCount => emulatorManager.GetInputCount();
 
@@ -28,12 +30,13 @@ namespace SMW_ML.Neural.Training.SharpNeatImpl
         //We need an emulator instance for every AI.
         public bool EvaluatorsHaveState => true;
 
-        public SMWEvaluationScheme(EmulatorManager emulatorManager)
+        public SMWEvaluationScheme(EmulatorManager emulatorManager, ApplicationConfig appConfig)
         {
             this.emulatorManager = emulatorManager;
+            this.appConfig = appConfig;
         }
 
-        public IPhenomeEvaluator<IBlackBox<double>> CreateEvaluator() => new SMWPhenomeEvaluator(emulatorManager);
+        public IPhenomeEvaluator<IBlackBox<double>> CreateEvaluator() => new SMWPhenomeEvaluator(emulatorManager, appConfig);
 
         public bool TestForStopCondition(FitnessInfo fitnessInfo) => false;
     }

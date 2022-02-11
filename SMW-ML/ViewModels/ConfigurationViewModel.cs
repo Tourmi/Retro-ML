@@ -16,24 +16,33 @@ using SMW_ML.Models;
 using Avalonia;
 using System.Runtime.CompilerServices;
 using Avalonia.Data;
+using SMW_ML.Utils;
+using SMW_ML.Neural.Scoring;
+using SMW_ML.ViewModels.Components;
 
 namespace SMW_ML.ViewModels
 {
     internal class ConfigurationViewModel : ViewModelBase
     {
+        private static readonly JsonSerializerSettings JSON_CONFIG = new()
+        {
+            TypeNameHandling = TypeNameHandling.Auto,
+            ObjectCreationHandling = ObjectCreationHandling.Replace
+        };
 
         #region Strings
-        public string NumberOfAIString => "Number of AI";
-        public string GeneralTrainingSettingsString => "Training Settings";
-        public string EvolutionSettingsString => "Evolution Algorithm Settings";
-        public string SpeciesCountString => "Species Count";
-        public string ButtonSaveString => "Save";
-        public string ButtonCloseString => "Close";
-        public string ElitismProportionString => "Elitism Proportion";
-        public string SelectionProportionString => "Selection Proportion";
-        public string TabItemSharpNeat => "Neural Network";
-        public string TabItemBizhawk => "Emulator";
-        public string TabItemApp => "Application";
+        public static string NumberOfAIString => "Number of AI";
+        public static string GeneralTrainingSettingsString => "Training Settings";
+        public static string EvolutionSettingsString => "Evolution Algorithm Settings";
+        public static string SpeciesCountString => "Species Count";
+        public static string ButtonSaveString => "Save";
+        public static string ButtonCloseString => "Close";
+        public static string ElitismProportionString => "Elitism Proportion";
+        public static string SelectionProportionString => "Selection Proportion";
+        public static string TabItemSharpNeat => "Neural Network";
+        public static string TabItemBizhawk => "Emulator";
+        public static string TabItemApp => "Application";
+        public static string TabItemObjectives => "Objectives";
 
         #endregion
 
@@ -113,6 +122,7 @@ namespace SMW_ML.ViewModels
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(SelectionProportion)));
             }
         }
+        public List<IScoreFactor> ScoreFactors;
 
         private string? _stopTrainingSelectedItem;
         public string? StopTrainingSelectedItem
@@ -157,17 +167,6 @@ namespace SMW_ML.ViewModels
             }
         }
 
-        private string? _aiObjectiveSelectedItem;
-        public string? SelectedObjective
-        {
-            get => _aiObjectiveSelectedItem;
-            set
-            {
-                this.RaiseAndSetIfChanged(ref _aiObjectiveSelectedItem, value);
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(SelectedObjective)));
-            }
-        }
-
         private int? _stopTrainingConditionValue;
         [DataMember(IsRequired = true)]
         public int? StopTrainingConditionValue
@@ -180,9 +179,9 @@ namespace SMW_ML.ViewModels
             }
         }
 
-        private string _arduinoPort;
+        private string? _arduinoPort;
         [DataMember]
-        public string ArduinoPort
+        public string? ArduinoPort
         {
             get => _arduinoPort;
             set
@@ -192,15 +191,13 @@ namespace SMW_ML.ViewModels
             }
         }
 
+        public List<ScoreFactorViewModel>? Objectives { get; set; }
 
-        public event PropertyChangedEventHandler PropertyChanged;
+
+        public new event PropertyChangedEventHandler PropertyChanged;
         protected void OnPropertyChanged(string name)
         {
-            PropertyChangedEventHandler handler = PropertyChanged;
-            if (handler != null)
-            {
-                handler(this, new PropertyChangedEventArgs(name));
-            }
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
         }
 
 
@@ -223,12 +220,8 @@ namespace SMW_ML.ViewModels
             };
 
             ErrorList = new ObservableCollection<Error>();
-            ErrorList.Add(new Error()
-            {
-                Description = "asd",
-                FieldError = "lfd"
-            });
-            this.PropertyChanged += HandlePropertyChanged;
+            PropertyChanged += HandlePropertyChanged;
+            ScoreFactors = new List<IScoreFactor>();
 
             //Initialize the properties with the current config
             if (!Design.IsDesignMode)
@@ -274,11 +267,13 @@ namespace SMW_ML.ViewModels
         /// </summary>
         public void ShowWindow(Window mainWindow)
         {
-            var window = new Configuration();
-            window.DataContext = this;
-            window.Width = 700;
-            window.Height = 520;
-            window.WindowStartupLocation = WindowStartupLocation.CenterScreen;
+            var window = new Configuration
+            {
+                DataContext = this,
+                Width = 700,
+                Height = 520,
+                WindowStartupLocation = WindowStartupLocation.CenterOwner
+            };
             window.ShowDialog(mainWindow);
         }
 
@@ -296,7 +291,7 @@ namespace SMW_ML.ViewModels
             SharpNeatModel.PopulationSize = NumberAI;
 
             string sharpNeatOutput = JsonConvert.SerializeObject(SharpNeatModel, Formatting.Indented);
-            File.WriteAllText("config/sharpNeatConfig.json", sharpNeatOutput);
+            File.WriteAllText(DefaultPaths.SHARPNEAT_CONFIG, sharpNeatOutput);
 
             //Tab Emulator
 
@@ -304,14 +299,23 @@ namespace SMW_ML.ViewModels
             //Tab Application
             if (ApplicationConfig == null) { return; }
 
-            ApplicationConfig.AIObjective = SelectedObjective;
             ApplicationConfig.Multithread = Multithread;
-            ApplicationConfig.ArduinoCommunicationPort = ArduinoPort;
-            ApplicationConfig.StopTrainingCondition = StopTrainingSelectedItem;
+            ApplicationConfig.ArduinoCommunicationPort = ArduinoPort!;
+            ApplicationConfig.StopTrainingCondition = StopTrainingSelectedItem!;
             ApplicationConfig.StopTrainingConditionValue = StopTrainingConditionValue;
 
-            string appOutput = JsonConvert.SerializeObject(ApplicationConfig, Formatting.Indented);
-            File.WriteAllText("config/appConfig.json", appOutput);
+            //Tab Objectives
+            for (int i = 0; i < Objectives!.Count; i++)
+            {
+                ApplicationConfig.ScoreFactors[i].ScoreMultiplier = Objectives[i].Multiplier;
+                if (ApplicationConfig.ScoreFactors[i].CanBeDisabled)
+                {
+                    ApplicationConfig.ScoreFactors[i].IsDisabled = !Objectives[i].IsEnabled;
+                }
+            }
+
+            string appOutput = JsonConvert.SerializeObject(ApplicationConfig, Formatting.Indented, JSON_CONFIG);
+            File.WriteAllText(DefaultPaths.APP_CONFIG, appOutput);
         }
 
         /// <summary>
@@ -320,7 +324,7 @@ namespace SMW_ML.ViewModels
         private void DeserializeConfig()
         {
             //Tab NeuralNetwork
-            string configJSon = File.ReadAllText("config/sharpNeatConfig.json");
+            string configJSon = File.ReadAllText(DefaultPaths.SHARPNEAT_CONFIG);
             SharpNeatModel = JsonConvert.DeserializeObject<SharpNeatModel>(configJSon);
 
             if (SharpNeatModel == null) { return; }
@@ -331,20 +335,26 @@ namespace SMW_ML.ViewModels
             NumberAI = SharpNeatModel.PopulationSize;
 
             //Tab Emulator
-            string emulatorConfig = File.ReadAllText("config/bizhawkConfig.ini");
+            string emulatorConfig = File.ReadAllText(DefaultPaths.EMULATOR_CONFIG);
             // EmulatorConfig = JsonConvert.DeserializeObject<BizhawkConfig>(emulatorConfig);
 
             //Tab Application
-            string appConfigJson = File.ReadAllText("config/appConfig.json");
-            ApplicationConfig = JsonConvert.DeserializeObject<ApplicationConfig>(appConfigJson);
+            string appConfigJson = File.ReadAllText(DefaultPaths.APP_CONFIG);
+            ApplicationConfig = JsonConvert.DeserializeObject<ApplicationConfig>(appConfigJson, JSON_CONFIG);
 
             if (ApplicationConfig == null) { return; }
 
             Multithread = ApplicationConfig.Multithread;
             ArduinoPort = ApplicationConfig.ArduinoCommunicationPort;
-            SelectedObjective = ApplicationConfig.AIObjective;
             StopTrainingSelectedItem = ApplicationConfig.StopTrainingCondition;
             StopTrainingConditionValue = ApplicationConfig.StopTrainingConditionValue;
+
+            //Tab Objectives
+            Objectives = new List<ScoreFactorViewModel>();
+            foreach (var obj in ApplicationConfig.ScoreFactors)
+            {
+                Objectives.Add(new(obj));
+            }
         }
 
         #region Validation
@@ -353,7 +363,6 @@ namespace SMW_ML.ViewModels
             ValidateSpeciesCount();
             ValidateElitismProportion();
             ValidateSelectionProportion();
-            ValidateAIObjective();
             ValidateMultithread();
             ValidateArduinoPort();
             ValidateStopTrainingCondition();
@@ -374,16 +383,6 @@ namespace SMW_ML.ViewModels
 
         private void ValidateElitismProportion()
         {
-            double elitism;
-            bool isDouble = double.TryParse(ElitismProportion.ToString(), out elitism);
-            if (!isDouble)
-            {
-                ErrorList.Add(new Error()
-                {
-                    FieldError = "Elitism Proportion",
-                    Description = "Elitism proportion must be a number."
-                });
-            }
             if (ElitismProportion <= 0)
             {
                 ErrorList.Add(new Error()
@@ -396,16 +395,6 @@ namespace SMW_ML.ViewModels
 
         private void ValidateSelectionProportion()
         {
-            double elitism;
-            bool isDouble = double.TryParse(SelectionProportion.ToString(), out elitism);
-            if (!isDouble)
-            {
-                ErrorList.Add(new Error()
-                {
-                    FieldError = "Selection Proportion",
-                    Description = "Selection proportion must be a number."
-                });
-            }
             if (SelectionProportion <= 0)
             {
                 ErrorList.Add(new Error()
@@ -440,18 +429,6 @@ namespace SMW_ML.ViewModels
             }
         }
 
-        private void ValidateAIObjective()
-        {
-            if (string.IsNullOrEmpty(SelectedObjective))
-            {
-                ErrorList.Add(new Error()
-                {
-                    FieldError = "AI Objective",
-                    Description = "You must select an objective."
-                });
-            }
-        }
-
         private void ValidateStopTrainingValue()
         {
             if (StopTrainingSelectedItem != null && !StopTrainingSelectedItem.Equals("Manually"))
@@ -481,7 +458,7 @@ namespace SMW_ML.ViewModels
         #endregion
 
         #region Events
-        private void HandlePropertyChanged(object sender, PropertyChangedEventArgs e)
+        private void HandlePropertyChanged(object? sender, PropertyChangedEventArgs e)
         {
             if (e.PropertyName == nameof(ErrorList))
                 return;
@@ -492,7 +469,7 @@ namespace SMW_ML.ViewModels
 
             ValidateFields();
 
-            if (ErrorList != null && ErrorList.Count > 0)
+            if (ErrorList.Count > 0)
             {
                 IsButtonSaveEnabled = false;
                 IsDataGridErrorVisible = true;

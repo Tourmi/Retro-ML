@@ -15,7 +15,13 @@ namespace SMW_ML.Neural.Scoring
         private double currScore = 0;
 
         public bool ShouldStop => shouldStop;
-        public double ScoreFactor { get; set; }
+        public double ScoreMultiplier { get; set; }
+
+        public string Name => "Stopped moving";
+
+        public bool CanBeDisabled => true;
+
+        public bool IsDisabled { get; set; }
 
         public double GetFinalScore() => currScore;
 
@@ -31,7 +37,7 @@ namespace SMW_ML.Neural.Scoring
                 if (immobileFrames >= MAX_IMMOBILE_FRAMES && moved < 1 || immobileFrames >= MAX_IMMOBILE_FRAMES_IF_ALREADY_MOVED)
                 {
                     shouldStop = true;
-                    currScore += ScoreFactor;
+                    currScore += ScoreMultiplier;
                 }
             }
             else

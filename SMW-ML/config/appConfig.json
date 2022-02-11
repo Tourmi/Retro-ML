@@ -1,7 +1,33 @@
 ﻿{
-  "multithread": 1,
-  "arduinoCommunicationPort": "COM3",
-  "AIObjective": "Best Score",
+  "Multithread": 1,
+  "ArduinoCommunicationPort": "COM3",
   "StopTrainingCondition": "Manually",
-  "StopTrainingConditionValue": null
+  "StopTrainingConditionValue": null,
+  "ScoreFactors": [
+    {
+      "$type": "SMW_ML.Neural.Scoring.DiedScoreFactor, SMW_ML",
+      "ScoreMultiplier": -10.0,
+      "IsDisabled": false
+    },
+    {
+      "$type": "SMW_ML.Neural.Scoring.DistanceScoreFactor, SMW_ML",
+      "ScoreMultiplier": 3.0,
+      "IsDisabled": false
+    },
+    {
+      "$type": "SMW_ML.Neural.Scoring.StopMovingScoreFactor, SMW_ML",
+      "ScoreMultiplier": -10.0,
+      "IsDisabled": false
+    },
+    {
+      "$type": "SMW_ML.Neural.Scoring.TimeTakenScoreFactor, SMW_ML",
+      "ScoreMultiplier": 1.0,
+      "IsDisabled": false
+    },
+    {
+      "$type": "SMW_ML.Neural.Scoring.WonLevelScoreFactor, SMW_ML",
+      "ScoreMultiplier": 100.0,
+      "IsDisabled": false
+    }
+  ]
 }

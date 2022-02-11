@@ -12,70 +12,13 @@
 	</Design.DataContext>
 	<Window.Styles>
 		<StyleInclude Source="/Styles/MainStyles.axaml" />
-
-		<!--Use Classes="RadioButtonListBox" in any ListBox to represent its items as RadioButtons-->
-		<Style Selector="ListBox.RadioButtonListBox">
-			<Setter Property="BorderBrush" Value="Transparent"/>
-		</Style>
-		<Style Selector="ListBox.RadioButtonListBox ListBoxItem">
-			<Setter Property="Template">
-				<Setter.Value>
-					<ControlTemplate>
-						<Border Background="White">
-							<RadioButton Content="{TemplateBinding ContentPresenter.Content}"
-										 VerticalAlignment="Center"
-										 IsChecked="{Binding Path=IsSelected,RelativeSource={RelativeSource TemplatedParent},Mode=TwoWay}"/>
-						</Border>
-					</ControlTemplate>
-				</Setter.Value>
-			</Setter>
-		</Style>
-
-		<Style Selector="StackPanel.stackPanelItems">
-			<Setter Property="Margin" Value="15,0,0,0"/>
-			<Setter Property="HorizontalAlignment" Value="Stretch"/>
-		</Style>
-		<Style Selector="TextBlock.h1">
-			<Setter Property="FontWeight" Value="Bold"/>
-			<Setter Property="FontSize" Value="14"/>
-		</Style>
-		<Style Selector="TextBlock.p">
-			<Setter Property="FontSize" Value="12"/>
-			<Setter Property="Margin" Value="5"/>
-			<Setter Property="VerticalAlignment" Value="Center"/>
-		</Style>
-		<Style Selector="RadioButton.content">
-			<Setter Property="FontSize" Value="12"/>
-		</Style>
-		<Style Selector="ComboBox.comboBox">
-			<Setter Property="HorizontalAlignment" Value="Stretch"/>
-			<Setter Property="Margin" Value="5"/>
-		</Style>
-		<Style Selector="NumericUpDown.numericTextBox">
-			<Setter Property="HorizontalAlignment" Value="Left"/>
-			<Setter Property="Margin" Value="5"/>
-		</Style>
-		<Style Selector="TextBox.numberTextBox">
-			<Setter Property="HorizontalAlignment" Value="Left"/>
-			<Setter Property="Margin" Value="5"/>
-		</Style>
-		<Style Selector="Button.save">
-			<Setter Property="HorizontalAlignment" Value="Right"/>
-			<Setter Property="VerticalAlignment" Value="Bottom"/>
-			<Setter Property="Background" Value="Green"/>
-		</Style>
-		<Style Selector="Button.close">
-			<Setter Property="HorizontalAlignment" Value="Right"/>
-			<Setter Property="VerticalAlignment" Value="Bottom"/>
-			<Setter Property="Background" Value="Red"/>
-		</Style>
 	</Window.Styles>
 	<ScrollViewer>
 		<StackPanel>
 
 			<TabControl TabStripPlacement="Left" HorizontalContentAlignment="Left">
 				<TabItem Header="{Binding TabItemSharpNeat}">
-					<StackPanel Orientation="Vertical" Spacing="5" Margin="10" HorizontalAlignment="Left" VerticalAlignment="Top">
+					<StackPanel Classes="tabContent">
 						<TextBlock Classes="h1" Text="{Binding GeneralTrainingSettingsString}"/>
 						<Grid Margin="5" ColumnDefinitions="*,*" RowDefinitions="Auto,Auto,Auto">
 							<TextBlock Classes="p" Text="{Binding NumberOfAIString}" Grid.Row="0" Grid.Column="0"/>
@@ -87,10 +30,10 @@
 							<NumericUpDown Classes="numericTextBox" Value="{Binding SpeciesCount}" Minimum="1" Maximum="{Binding NumberAI}" Grid.Row="0" Grid.Column="1"/>
 
 							<TextBlock Classes="p" Text="{Binding ElitismProportionString}" Grid.Row="1"/>
-							<TextBox Classes="numberTextBox" Text="{Binding ElitismProportion}"  Grid.Row="1" Grid.Column="1"/>
+							<NumericUpDown Classes="numericTextBox" Value="{Binding ElitismProportion}" Minimum="0.01" Increment="0.01" FormatString="0.##" ShowButtonSpinner="False" Maximum="1" Grid.Row="1" Grid.Column="1"/>
 
 							<TextBlock Classes="p" Text="{Binding SelectionProportionString}" Grid.Row="2"/>
-							<TextBox Classes="numberTextBox" Text="{Binding SelectionProportion}"  Grid.Row="2" Grid.Column="1"/>
+							<NumericUpDown Classes="numericTextBox" Value="{Binding SelectionProportion}" Minimum="0.01" Increment="0.01" FormatString="0.##" ShowButtonSpinner="False" Maximum="1" Grid.Row="2" Grid.Column="1"/>
 						</Grid>
 					</StackPanel>
 				</TabItem>
@@ -100,26 +43,27 @@
 				</TabItem>
 				-->
 				<TabItem Header="{Binding TabItemApp}">
-					<StackPanel Orientation="Vertical" Spacing="5" Margin="10" HorizontalAlignment="Left" VerticalAlignment="Top">
+					<StackPanel Classes="tabContent">
 						<TextBlock Classes="h1" Text="Multithread"/>
 						<NumericUpDown Classes="numericTextBox" Value="{Binding Multithread}" Minimum="1"/>
 						<TextBlock Classes="h1" Text="Communication Port with Arduino"/>
 						<TextBox Classes="numericTextBox" Text="{Binding ArduinoPort}"/>
-						<!-- 
-							<TextBlock Classes="h1" Text="AI Objectives"/>
-						<StackPanel Classes="stackPanelItems">
-							<ListBox Items="{Binding ListOfObjectives}"
-									 SelectedItem="{Binding SelectedObjective}"
-									 Classes="RadioButtonListBox"/>
-						</StackPanel>
 						<TextBlock Classes="h1" Text="When to stop the training?"/>
 						<StackPanel Classes="stackPanelItems">
 							<ComboBox Classes="comboBox" Items="{Binding StopTrainingItems}" Width="200" HorizontalAlignment="Left" SelectedItem="{Binding StopTrainingSelectedItem}"/>
 							<NumericUpDown Classes="numericTextBox" Value="{Binding StopTrainingConditionValue}" IsEnabled="{Binding !IsStopManually}" Minimum="0"/>
 						</StackPanel>
-						-->
 
 					</StackPanel>
+				</TabItem>
+				<TabItem Header="{Binding TabItemObjectives}">
+					<ItemsControl Items="{Binding Objectives}" >
+						<ItemsControl.ItemsPanel>
+							<ItemsPanelTemplate>
+								<StackPanel Classes="tabContent"/>
+							</ItemsPanelTemplate>
+						</ItemsControl.ItemsPanel>
+					</ItemsControl>
 				</TabItem>
 			</TabControl>
 

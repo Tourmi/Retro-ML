@@ -1,4 +1,5 @@
 ﻿using SMW_ML.Game.SuperMarioWorld;
+using System;
 
 namespace SMW_ML.Neural.Scoring
 {
@@ -8,7 +9,13 @@ namespace SMW_ML.Neural.Scoring
         private double currScore;
 
         public bool ShouldStop => shouldStop;
-        public double ScoreFactor { get; set; }
+        public double ScoreMultiplier { get; set; }
+
+        public string Name => "Won level";
+
+        public bool CanBeDisabled => false;
+
+        public bool IsDisabled { get => false; set { } }
 
         public double GetFinalScore() => currScore;
 
@@ -17,7 +24,7 @@ namespace SMW_ML.Neural.Scoring
             if (dataFetcher.WonLevel())
             {
                 shouldStop = true;
-                currScore += ScoreFactor;
+                currScore += ScoreMultiplier;
                 return;
             }
         }

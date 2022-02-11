@@ -11,7 +11,13 @@ namespace SMW_ML.Neural.Scoring
         private int levelFrames = 0;
 
         public bool ShouldStop => shouldStop;
-        public double ScoreFactor { get; set; }
+        public double ScoreMultiplier { get; set; }
+
+        public string Name => "Time taken";
+
+        public bool CanBeDisabled => true;
+
+        public bool IsDisabled { get; set; }
 
         public double GetFinalScore() => currScore;
 
@@ -26,7 +32,7 @@ namespace SMW_ML.Neural.Scoring
 
         public void LevelDone()
         {
-            currScore += (MAX_TRAINING_FRAMES - levelFrames) / 60.0 * ScoreFactor;
+            currScore += (MAX_TRAINING_FRAMES - levelFrames) / 60.0 * ScoreMultiplier;
             shouldStop = false;
             levelFrames = 0;
         }

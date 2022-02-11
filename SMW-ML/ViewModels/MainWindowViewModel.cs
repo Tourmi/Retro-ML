@@ -50,7 +50,7 @@ namespace SMW_ML.ViewModels
         public void HandleStartTraining()
         {
             Content = trainingPageViewModel;
-            trainingPageViewModel.Init(new NeuralConfig());
+            trainingPageViewModel.Init();
         }
 
         public void HandleStopTraining()

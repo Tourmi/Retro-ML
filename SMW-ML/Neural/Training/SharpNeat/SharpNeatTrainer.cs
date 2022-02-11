@@ -17,6 +17,7 @@ using SharpNeat.Neat.Genome.IO;
 using SharpNeat.Neat.Genome;
 using SharpNeat.NeuralNets.Double.ActivationFunctions;
 using SMW_ML.Utils;
+using SMW_ML.Models.Config;
 
 namespace SMW_ML.Neural.Training.SharpNeatImpl
 {
@@ -41,11 +42,11 @@ namespace SMW_ML.Neural.Training.SharpNeatImpl
         /// <summary>
         /// Neural training using the SharpNEAT library
         /// </summary>
-        public SharpNeatTrainer(EmulatorManager emulatorManager)
+        public SharpNeatTrainer(EmulatorManager emulatorManager, ApplicationConfig appConfig)
         {
             syncSemaphore = new Semaphore(1, 1);
             this.emulatorManager = emulatorManager;
-            experimentFactory = new SMWExperimentFactory(emulatorManager);
+            experimentFactory = new SMWExperimentFactory(emulatorManager, appConfig);
 
             metaGenome = new MetaNeatGenome<double>(
                     inputNodeCount: emulatorManager.GetInputCount(),

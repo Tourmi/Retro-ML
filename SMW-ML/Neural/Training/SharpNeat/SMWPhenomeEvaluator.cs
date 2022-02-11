@@ -4,6 +4,7 @@ using SharpNeat.Graphs;
 using SharpNeat.Graphs.Acyclic;
 using SMW_ML.Emulator;
 using SMW_ML.Game.SuperMarioWorld;
+using SMW_ML.Models.Config;
 using SMW_ML.Neural.Scoring;
 using System;
 using static SMW_ML.Utils.ReflectionTool;
@@ -21,15 +22,17 @@ namespace SMW_ML.Neural.Training.SharpNeatImpl
         private DataFetcher? dataFetcher;
         private InputSetter? inputSetter;
         private OutputGetter? outputGetter;
+        private ApplicationConfig appConfig;
 
-        public SMWPhenomeEvaluator(EmulatorManager emulatorManager)
+        public SMWPhenomeEvaluator(EmulatorManager emulatorManager, ApplicationConfig appConfig)
         {
             this.emulatorManager = emulatorManager;
+            this.appConfig = appConfig;
         }
 
         public FitnessInfo Evaluate(IBlackBox<double> phenome)
         {
-            Score score = new();
+            Score score = new(appConfig);
 
             emulator = emulatorManager.WaitOne();
             int[] outputMap = new int[phenome.OutputCount];
@@ -42,7 +45,7 @@ namespace SMW_ML.Neural.Training.SharpNeatImpl
             var saveStates = emulator.GetStates();
             foreach (var state in saveStates)
             {
-                if (!state.Contains("yoshi-island")) continue;
+                if (!state.Contains("yoshi-island-2")) continue;
                 emulator.LoadState(state);
                 emulator.NextFrame();
                 dataFetcher.NextLevel();

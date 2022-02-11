@@ -38,14 +38,15 @@ namespace SMW_ML.ViewModels
 
         }
 
-        public void Init(NeuralConfig neuralConfig)
+        public void Init()
         {
             string appConfigJson = File.ReadAllText(DefaultPaths.APP_CONFIG);
             ApplicationConfig appConfig = JsonConvert.DeserializeObject<ApplicationConfig>(appConfigJson)!;
 
+            NeuralConfig neuralConfig = new();
             NeuralNetwork = new NetworkViewModel(neuralConfig);
             emulatorManager = new(appConfig, neuralConfig);
-            trainer = new SharpNeatTrainer(emulatorManager);
+            trainer = new SharpNeatTrainer(emulatorManager, appConfig);
 
             CanStop = true;
 

@@ -1,4 +1,5 @@
 ﻿using SMW_ML.Game.SuperMarioWorld;
+using SMW_ML.Models.Config;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -8,16 +9,9 @@ namespace SMW_ML.Neural.Scoring
     {
         private List<IScoreFactor> scoreFactors;
 
-        public Score()
+        public Score(ApplicationConfig config)
         {
-            scoreFactors = new List<IScoreFactor>()
-            {
-                new DiedScoreFactor() { ScoreFactor = -10 },
-                new DistanceScoreFactor() { ScoreFactor = 3 },
-                new StopMovingScoreFactor() { ScoreFactor = -10 },
-                new TimeTakenScoreFactor() { ScoreFactor = 1 },
-                new WonLevelScoreFactor() { ScoreFactor = 100 }
-            };
+            scoreFactors = config.ScoreFactors;
         }
 
         public void LevelDone()

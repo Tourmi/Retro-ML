@@ -8,7 +8,13 @@ namespace SMW_ML.Neural.Scoring
         private uint maxXPosition = 0;
 
         public bool ShouldStop => false;
-        public double ScoreFactor { get; set; }
+        public double ScoreMultiplier { get; set; }
+
+        public string Name => "Distance travelled";
+
+        public bool CanBeDisabled => true;
+
+        public bool IsDisabled { get; set; }
 
         public double GetFinalScore() => currScore;
 
@@ -20,7 +26,7 @@ namespace SMW_ML.Neural.Scoring
 
             if (newPosX > maxXPosition)
             {
-                currScore += (newPosX - maxXPosition) / 16.0 * ScoreFactor;
+                currScore += (newPosX - maxXPosition) / 16.0 * ScoreMultiplier;
                 maxXPosition = newPosX;
             }
         }

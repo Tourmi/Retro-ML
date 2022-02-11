@@ -10,4 +10,51 @@
 	<Style Selector="StackPanel.RadionButtonList">
 		<Setter Property="Margin" Value="10"/>
 	</Style>
+
+	<Style Selector="StackPanel.stackPanelItems">
+		<Setter Property="Margin" Value="15,0,0,0"/>
+		<Setter Property="HorizontalAlignment" Value="Stretch"/>
+	</Style>
+	<Style Selector="StackPanel.tabContent">
+		<Setter Property="VerticalAlignment" Value="Top"/>
+		<Setter Property="HorizontalAlignment" Value="Left"/>
+		<Setter Property="Margin" Value="10"/>
+		<Setter Property="Spacing" Value="5"/>
+		<Setter Property="Orientation" Value="Vertical"/>
+	</Style>
+	<Style Selector="TextBlock.h1">
+		<Setter Property="FontWeight" Value="Bold"/>
+		<Setter Property="FontSize" Value="14"/>
+	</Style>
+	<Style Selector="TextBlock.p">
+		<Setter Property="FontSize" Value="12"/>
+		<Setter Property="Margin" Value="5"/>
+		<Setter Property="VerticalAlignment" Value="Center"/>
+	</Style>
+	<Style Selector="RadioButton.content">
+		<Setter Property="FontSize" Value="12"/>
+	</Style>
+	<Style Selector="ComboBox.comboBox">
+		<Setter Property="HorizontalAlignment" Value="Stretch"/>
+		<Setter Property="Margin" Value="5"/>
+	</Style>
+	<Style Selector="NumericUpDown.numericTextBox">
+		<Setter Property="HorizontalAlignment" Value="Left"/>
+		<Setter Property="Margin" Value="5"/>
+		<Setter Property="ClipValueToMinMax" Value="True"/>
+	</Style>
+	<Style Selector="TextBox.numberTextBox">
+		<Setter Property="HorizontalAlignment" Value="Left"/>
+		<Setter Property="Margin" Value="5"/>
+	</Style>
+	<Style Selector="Button.save">
+		<Setter Property="HorizontalAlignment" Value="Right"/>
+		<Setter Property="VerticalAlignment" Value="Bottom"/>
+		<Setter Property="Background" Value="Green"/>
+	</Style>
+	<Style Selector="Button.close">
+		<Setter Property="HorizontalAlignment" Value="Right"/>
+		<Setter Property="VerticalAlignment" Value="Bottom"/>
+		<Setter Property="Background" Value="Red"/>
+	</Style>
 </Styles>
