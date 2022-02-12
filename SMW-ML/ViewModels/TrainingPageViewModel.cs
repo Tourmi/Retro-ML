@@ -41,7 +41,7 @@ namespace SMW_ML.ViewModels
         public void Init()
         {
             string appConfigJson = File.ReadAllText(DefaultPaths.APP_CONFIG);
-            ApplicationConfig appConfig = JsonConvert.DeserializeObject<ApplicationConfig>(appConfigJson)!;
+            ApplicationConfig appConfig = JsonConvert.DeserializeObject<ApplicationConfig>(appConfigJson, new JsonSerializerSettings() { TypeNameHandling = TypeNameHandling.Auto})!;
 
             NeuralConfig neuralConfig = new();
             NeuralNetwork = new NetworkViewModel(neuralConfig);
