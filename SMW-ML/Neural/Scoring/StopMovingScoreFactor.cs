@@ -58,7 +58,7 @@ namespace SMW_ML.Neural.Scoring
 
         public object Clone()
         {
-            return new DiedScoreFactor() { IsDisabled = IsDisabled, ScoreMultiplier = ScoreMultiplier };
+            return new StopMovingScoreFactor() { IsDisabled = IsDisabled, ScoreMultiplier = ScoreMultiplier };
         }
     }
 }

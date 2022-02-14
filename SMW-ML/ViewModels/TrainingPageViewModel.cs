@@ -27,6 +27,8 @@ namespace SMW_ML.ViewModels
         private EmulatorManager emulatorManager;
         private NetworkViewModel neuralNetwork;
 
+        private string? populationToLoad;
+
         private bool canStop = true;
 
         public TrainingPageViewModel()
@@ -41,12 +43,17 @@ namespace SMW_ML.ViewModels
         public void Init()
         {
             string appConfigJson = File.ReadAllText(DefaultPaths.APP_CONFIG);
-            ApplicationConfig appConfig = JsonConvert.DeserializeObject<ApplicationConfig>(appConfigJson, new JsonSerializerSettings() { TypeNameHandling = TypeNameHandling.Auto})!;
+            ApplicationConfig appConfig = JsonConvert.DeserializeObject<ApplicationConfig>(appConfigJson, new JsonSerializerSettings() { TypeNameHandling = TypeNameHandling.Auto, ObjectCreationHandling = ObjectCreationHandling.Replace})!;
 
             NeuralConfig neuralConfig = new();
             NeuralNetwork = new NetworkViewModel(neuralConfig);
             emulatorManager = new(appConfig, neuralConfig);
             trainer = new SharpNeatTrainer(emulatorManager, appConfig);
+            if (populationToLoad != null)
+            {
+                trainer.LoadPopulation(populationToLoad);
+                populationToLoad = null;
+            }
 
             CanStop = true;
 
@@ -61,7 +68,7 @@ namespace SMW_ML.ViewModels
 
         public void LoadPopulation(string path)
         {
-            trainer.LoadPopulation(path);
+            populationToLoad = path;
         }
 
         public void SavePopulation(string path)
