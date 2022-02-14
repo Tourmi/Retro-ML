@@ -1,5 +1,6 @@
 ﻿using SMW_ML.Game.SuperMarioWorld;
 using SMW_ML.Models.Config;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -30,7 +31,7 @@ namespace SMW_ML.Neural.Scoring
             }
         }
 
-        public double GetFinalScore() => scoreFactors.Aggregate(0.0, (total, sf) => total + sf.GetFinalScore());
+        public double GetFinalScore() => Math.Max(scoreFactors.Aggregate(0.0, (total, sf) => total + sf.GetFinalScore()), 0);
 
         public bool ShouldStop => scoreFactors.Any(sf => sf.ShouldStop);
     }
