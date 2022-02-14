@@ -35,5 +35,10 @@ namespace SMW_ML.Neural.Scoring
         {
             maxXPosition = 0;
         }
+
+        public object Clone()
+        {
+            return new DistanceScoreFactor() { IsDisabled = IsDisabled, ScoreMultiplier = ScoreMultiplier };
+        }
     }
 }

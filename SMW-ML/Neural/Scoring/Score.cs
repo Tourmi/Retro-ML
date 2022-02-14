@@ -11,7 +11,7 @@ namespace SMW_ML.Neural.Scoring
 
         public Score(ApplicationConfig config)
         {
-            scoreFactors = config.ScoreFactors;
+            scoreFactors = config.GetScoreFactorClones().ToList();
         }
 
         public void LevelDone()

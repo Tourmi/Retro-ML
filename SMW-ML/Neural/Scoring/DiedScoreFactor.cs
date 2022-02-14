@@ -33,5 +33,10 @@ namespace SMW_ML.Neural.Scoring
         {
             shouldStop = false;
         }
+
+        public object Clone()
+        {
+            return new DiedScoreFactor() { ScoreMultiplier = ScoreMultiplier };
+        }
     }
 }
