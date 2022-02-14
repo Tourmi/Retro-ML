@@ -66,5 +66,8 @@ namespace SMW_ML.Models.Config
         }
 
         public string StrategyName { get; set; }
+        public int RelativeComplexityCeiling { get; set; }
+        public int MinSimplifcationGenerations { get; set; }
+  
     }
 }
