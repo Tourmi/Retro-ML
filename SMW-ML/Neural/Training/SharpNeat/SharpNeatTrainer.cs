@@ -105,6 +105,7 @@ namespace SMW_ML.Neural.Training.SharpNeatImpl
             {
                 currentAlgo!.PerformOneGeneration();
 
+                SaveBestGenome(DefaultPaths.CURRENT_GENOME);
                 SavePopulation(DefaultPaths.CURRENT_POPULATION);
             }
 
@@ -132,6 +133,19 @@ namespace SMW_ML.Neural.Training.SharpNeatImpl
             genomes = currentAlgo!.Population.GenomeList;
 
             NeatPopulationSaver<double>.SaveToZipArchive(genomes, path[..path.IndexOf(filename)], filename, System.IO.Compression.CompressionLevel.Fastest);
+        }
+
+        public void SaveBestGenome(string path)
+        {
+            path = Path.GetFullPath(path);
+
+            if (File.Exists(path))
+            {
+                File.Copy(path, path + ".backup", true);
+                File.Delete(path);
+            }
+
+            NeatGenomeSaver<double>.Save(currentAlgo!.Population.BestGenome, path);
         }
     }
 }

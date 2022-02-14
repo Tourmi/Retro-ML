@@ -17,5 +17,6 @@ namespace SMW_ML.Utils
         public const string ROM = "smw.sfc";
 
         public const string CURRENT_POPULATION = "./current.pop";
+        public const string CURRENT_GENOME = "./current_best.genome";
     }
 }

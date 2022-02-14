@@ -13,20 +13,26 @@ namespace SMW_ML.ViewModels
     internal class MainPageViewModel : ViewModelBase
     {
         public event Action? OnStartTrainingCalled;
+        public event Action? OnOpenPlayMode;
         public event Action<string>? OnSavePopulation;
         public event Action<string>? OnLoadPopulation;
 
         private bool canSaveTraining = false;
-        public string Greeting => "Super Mario World - Machine Learning";
+        public static string Greeting => "Super Mario World - Machine Learning";
 
-        public string Start => "Start Training";
+        public static string Start => "Start Training";
         public void StartTraining()
         {
             OnStartTrainingCalled?.Invoke();
         }
 
+        public static string PlayString => "Play mode";
+        public void OpenPlay()
+        {
+            OnOpenPlayMode?.Invoke();
+        }
 
-        public string LoadPopulationString => "Load population";
+        public static string LoadPopulationString => "Load population";
         public async void LoadPopulation()
         {
             OpenFileDialog fileDialog = new();
@@ -45,7 +51,7 @@ namespace SMW_ML.ViewModels
             OnLoadPopulation?.Invoke(path);
         }
 
-        public string SavePopulationString => "Save population";
+        public static string SavePopulationString => "Save population";
         public async void SavePopulation()
         {
             SaveFileDialog fileDialog = new();
@@ -63,7 +69,7 @@ namespace SMW_ML.ViewModels
             OnSavePopulation?.Invoke(path);
         }
 
-        public string OpenSettingsString => "Training Configuration";
+        public static string OpenSettingsString => "Training Configuration";
         public void OpenConfigSettings(Window mainPage)
         {
             var configViewModel = new ConfigurationViewModel();

@@ -28,12 +28,16 @@ namespace SMW_ML.Emulator
 
         private ApplicationConfig applicationConfig;
 
-        public EmulatorManager(ApplicationConfig appConfig, NeuralConfig neuralConfig)
+        public EmulatorManager(ApplicationConfig appConfig, NeuralConfig neuralConfig) : this(appConfig.Multithread, appConfig, neuralConfig)
+        {
+        }
+
+        public EmulatorManager(int emulatorCount, ApplicationConfig appConfig, NeuralConfig neuralConfig)
         {
             applicationConfig = appConfig;
 
-            this.adapters = new IEmulatorAdapter[appConfig.Multithread];
-            this.adaptersTaken = new bool[adapters.Length];
+            this.adapters = new IEmulatorAdapter[emulatorCount];
+            this.adaptersTaken = new bool[emulatorCount];
 
             sem = new Semaphore(1, 1);
             this.neuralConfig = neuralConfig;
@@ -87,6 +91,7 @@ namespace SMW_ML.Emulator
                 }
 
                 sem.Release();
+                Thread.Sleep(100);
             }
 
             return chosen;

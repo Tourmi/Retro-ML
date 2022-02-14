@@ -2,6 +2,7 @@ using Avalonia.Controls;
 using ReactiveUI;
 using SMW_ML.Models.Config;
 using SMW_ML.Views.Components;
+using System.Threading;
 
 namespace SMW_ML.ViewModels
 {
@@ -9,6 +10,7 @@ namespace SMW_ML.ViewModels
     {
         private MainPageViewModel mainPageViewModel;
         private TrainingPageViewModel trainingPageViewModel;
+        private PlayingPageViewModel playingPageViewModel;
 
         private ViewModelBase? content;
 
@@ -22,10 +24,15 @@ namespace SMW_ML.ViewModels
         {
             mainPageViewModel = new MainPageViewModel();
             mainPageViewModel.OnStartTrainingCalled += HandleStartTraining;
+            mainPageViewModel.OnOpenPlayMode += HandleOpenPlayMode;
             mainPageViewModel.OnLoadPopulation += HandleLoadPopulation;
             mainPageViewModel.OnSavePopulation += HandleSavePopulation;
+
             trainingPageViewModel = new TrainingPageViewModel();
             trainingPageViewModel.OnStopTraining += HandleStopTraining;
+
+            playingPageViewModel = new PlayingPageViewModel();
+            playingPageViewModel.OnExit += HandlePlayingExit;
 
             Content = mainPageViewModel;
         }
@@ -59,6 +66,19 @@ namespace SMW_ML.ViewModels
             mainPageViewModel.CanSaveTraining = true;
         }
 
+        public void HandleOpenPlayMode()
+        {
+            Content = playingPageViewModel;
+            new Thread(() => { playingPageViewModel.Init(); }).Start();
+        }
+
+        public void HandlePlayingExit()
+        {
+            Content = mainPageViewModel;
+            playingPageViewModel.OnExit -= HandlePlayingExit;
+            playingPageViewModel = new PlayingPageViewModel();
+            playingPageViewModel.OnExit += HandlePlayingExit;
+        }
 
     }
 }

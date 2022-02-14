@@ -6,6 +6,7 @@ using SMW_ML.Emulator;
 using SMW_ML.Game.SuperMarioWorld;
 using SMW_ML.Models.Config;
 using SMW_ML.Neural.Scoring;
+using SMW_ML.Utils.SharpNeat;
 using System;
 using static SMW_ML.Utils.ReflectionTool;
 
@@ -37,7 +38,7 @@ namespace SMW_ML.Neural.Training.SharpNeatImpl
             emulator = emulatorManager.WaitOne();
             int[] outputMap = new int[phenome.OutputCount];
             Array.Copy(phenome.OutputVector.GetField<int[]>("_map"), outputMap, phenome.OutputCount);
-            emulator.NetworkChanged(GetConnectionLayers(phenome), outputMap);
+            emulator.NetworkChanged(SharpNeatUtils.GetConnectionLayers(phenome), outputMap);
             dataFetcher = emulator.GetDataFetcher();
             inputSetter = emulator.GetInputSetter();
             outputGetter = emulator.GetOutputGetter();
@@ -45,7 +46,7 @@ namespace SMW_ML.Neural.Training.SharpNeatImpl
             var saveStates = emulator.GetStates();
             foreach (var state in saveStates)
             {
-                if (!state.Contains("yoshi-island-2")) continue;
+                if (!state.Contains("yoshi-island-1")) continue;
                 emulator.LoadState(state);
                 emulator.NextFrame();
                 dataFetcher.NextLevel();
@@ -56,7 +57,7 @@ namespace SMW_ML.Neural.Training.SharpNeatImpl
 
                     score.Update(dataFetcher);
                     dataFetcher.NextFrame();
-                    emulator.NetworkUpdated(VectorToArray(phenome.InputVector), VectorToArray(phenome.OutputVector));
+                    emulator.NetworkUpdated(SharpNeatUtils.VectorToArray(phenome.InputVector), SharpNeatUtils.VectorToArray(phenome.OutputVector));
                 }
                 score.LevelDone();
             }
@@ -83,50 +84,6 @@ namespace SMW_ML.Neural.Training.SharpNeatImpl
 
             emulator!.SendInput(outputGetter!.GetControllerInput(phenome.OutputVector));
             emulator!.NextFrame();
-        }
-
-        /// <summary>
-        /// Returns an array equivalent to the given SharpNeat Vector
-        /// </summary>
-        /// <param name="vector"></param>
-        /// <returns></returns>
-        private static double[] VectorToArray(IVector<double> vector)
-        {
-            double[] result = new double[vector.Length];
-
-            for (int i = 0; i < result.Length; i++)
-            {
-                result[i] = vector[i];
-            }
-
-            return result;
-        }
-
-        /// <summary>
-        /// Returns the connections separated by layers of the phenome
-        /// </summary>
-        /// <param name="phenome"></param>
-        /// <returns></returns>
-        private static (int sourceNode, int targetNode, double weight)[][] GetConnectionLayers(IBlackBox<double> phenome)
-        {
-            ConnectionIds connectionIds = phenome.GetField<ConnectionIds>("_connIds");
-            double[] weights = phenome.GetField<double[]>("_weightArr");
-            LayerInfo[] layerInfos = phenome.GetField<LayerInfo[]>("_layerInfoArr");
-
-            var result = new (int sourceNode, int targetNode, double weight)[layerInfos.Length][];
-            int currIndex = 0;
-            for (int i = 0; i < result.Length; i++)
-            {
-                var layerInfo = layerInfos[i];
-                result[i] = new (int sourceNode, int targetNode, double weight)[layerInfo.EndConnectionIdx - currIndex];
-                int layerIndex = currIndex;
-                for (; currIndex < layerInfo.EndConnectionIdx; currIndex++)
-                {
-                    result[i][currIndex - layerIndex] = (connectionIds.GetSourceId(currIndex), connectionIds.GetTargetId(currIndex), weights[currIndex]);
-                }
-            }
-
-            return result;
         }
     }
 }
