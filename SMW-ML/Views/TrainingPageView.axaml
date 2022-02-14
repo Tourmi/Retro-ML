@@ -31,7 +31,8 @@
 				Background="#cfcfcf"
 				AlternatingRowBackground="#e8e8e8"
 				HorizontalGridLinesBrush="White"
-				GridLinesVisibility="Horizontal">
+				GridLinesVisibility="Horizontal"
+				VerticalAlignment="Top">
 				<DataGrid.Columns>
 					<DataGridTextColumn Header="Stat"
 										FontWeight="Bold" FontSize="14"

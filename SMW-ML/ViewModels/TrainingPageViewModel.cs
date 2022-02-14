@@ -30,6 +30,7 @@ namespace SMW_ML.ViewModels
             //TODO : use config to setup training
             emulatorManager = new(3);
             trainer = new SharpNeatTrainer(emulatorManager);
+            trainer.OnStatisticsUpdated += GetStats!;
         }
 
         public async void Init()
@@ -78,9 +79,16 @@ namespace SMW_ML.ViewModels
             set => this.RaiseAndSetIfChanged(ref canStop, value);
         }
 
+        private TrainingStatistics trainingStatistics;
         public TrainingStatistics TrainingStatistics
         {
-            get => trainer.TrainingStatistics;
+            get => trainingStatistics;
+            set => this.RaiseAndSetIfChanged(ref trainingStatistics, value);
+        }
+
+        public void GetStats(object sender, EventArgs e)
+        {
+            TrainingStatistics = trainer.TrainingStatistics;
         }
 
     }

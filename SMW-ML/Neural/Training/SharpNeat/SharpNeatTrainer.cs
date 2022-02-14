@@ -24,7 +24,7 @@ namespace SMW_ML.Neural.Training.SharpNeatImpl
 {
     internal class SharpNeatTrainer : INeuralTrainer
     {
-        public event Action<TrainingStatistics>? OnStatisticsUpdated;
+        public event EventHandler OnStatisticsUpdated;
 
         private readonly SMWExperimentFactory experimentFactory;
         private readonly Semaphore syncSemaphore;
@@ -53,10 +53,10 @@ namespace SMW_ML.Neural.Training.SharpNeatImpl
             experimentFactory = new SMWExperimentFactory(emulatorManager);
 
             metaGenome = new MetaNeatGenome<double>(
-                    inputNodeCount: emulatorManager.GetInputCount(),
-                    outputNodeCount: emulatorManager.GetOutputCount(),
-                    isAcyclic: true,
-                    activationFn: new LeakyReLU());
+                   inputNodeCount: emulatorManager.GetInputCount(),
+                   outputNodeCount: emulatorManager.GetOutputCount(),
+                   isAcyclic: true,
+                   activationFn: new LeakyReLU());
             genomeBuilder = NeatGenomeBuilderFactory<double>.Create(metaGenome);
             genomes = new List<NeatGenome<double>>();
         }
@@ -109,7 +109,7 @@ namespace SMW_ML.Neural.Training.SharpNeatImpl
             {
                 currentAlgo!.PerformOneGeneration();
 
-                OnStatisticsUpdated?.Invoke(GetTrainingStatistics());
+                OnStatisticsUpdated?.Invoke();
 
                 SavePopulation(DefaultPaths.CURRENT_POPULATION);
             }
@@ -143,7 +143,7 @@ namespace SMW_ML.Neural.Training.SharpNeatImpl
         private TrainingStatistics GetTrainingStatistics()
         {
             TrainingStatistics = new TrainingStatistics();
-            TrainingStatistics.AddStat("Best Complexity", currentAlgo.Population.Stats.BestComplexity);
+            TrainingStatistics.AddStat("Best Complexity", currentAlgo!.Population.Stats.BestComplexity);
             return TrainingStatistics;
         }
 

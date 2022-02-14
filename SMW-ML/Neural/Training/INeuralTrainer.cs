@@ -13,7 +13,7 @@ namespace SMW_ML.Neural.Training
     /// </summary>
     public interface INeuralTrainer
     {
-        event Action<TrainingStatistics> OnStatisticsUpdated;
+        event EventHandler OnStatisticsUpdated;
         TrainingStatistics TrainingStatistics { get; set; }
         bool IsTraining { get; }
         void StartTraining(string configPath);
