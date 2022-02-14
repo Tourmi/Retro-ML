@@ -22,7 +22,7 @@
 				ScrollViewer.VerticalScrollBarVisibility="Visible"
 				Margin="5"
 				Foreground="Black"
-				FontSize="16" Height="150"
+				FontSize="16"
 				IsReadOnly="True"
 				Items="{Binding TrainingStatistics}"
 				HorizontalAlignment="Left"
@@ -32,17 +32,21 @@
 				AlternatingRowBackground="#e8e8e8"
 				HorizontalGridLinesBrush="White"
 				GridLinesVisibility="Horizontal"
-				VerticalAlignment="Top">
+				VerticalAlignment="Top"
+				RowHeight="50">
 				<DataGrid.Columns>
 					<DataGridTextColumn Header="Stat"
 										FontWeight="Bold" FontSize="14"
+										Foreground="Red"
 										Binding="{Binding Name}"
 										Width="*"/>
+					
 					<DataGridTextColumn Header="Value"
 										FontSize="14"
 										Binding="{Binding Value}"
 										Width="3.5*"
 										FontWeight="Normal"/>
+					
 				</DataGrid.Columns>
 			</DataGrid>
 		</TabItem>

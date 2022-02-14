@@ -11,8 +11,8 @@ namespace SMW_ML.Neural.Training.SharpNeat
     {
         public struct Stat
         {
-            public string Name;
-            public double value;
+            public string Name { get; set; }
+            public double Value { get; set; }
         }
 
         private List<Stat> stats;
@@ -30,8 +30,13 @@ namespace SMW_ML.Neural.Training.SharpNeat
             stats.Add(new Stat()
             {
                 Name = name,
-                value = value
+                Value = value
             });
+        }
+
+        public List<Stat> GetStats()
+        {
+            return stats;
         }
     }
 }

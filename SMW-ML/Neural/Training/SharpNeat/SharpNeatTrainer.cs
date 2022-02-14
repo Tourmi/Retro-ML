@@ -24,7 +24,7 @@ namespace SMW_ML.Neural.Training.SharpNeatImpl
 {
     internal class SharpNeatTrainer : INeuralTrainer
     {
-        public event EventHandler OnStatisticsUpdated;
+        public event Action<TrainingStatistics> OnStatisticsUpdated;
 
         private readonly SMWExperimentFactory experimentFactory;
         private readonly Semaphore syncSemaphore;
@@ -41,7 +41,7 @@ namespace SMW_ML.Neural.Training.SharpNeatImpl
         private bool isTraining = false;
 
         public bool IsTraining => isTraining;
-        public TrainingStatistics TrainingStatistics { get; set; }
+        //public TrainingStatistics TrainingStatistics { get; set; }
 
         /// <summary>
         /// Neural training using the SharpNEAT library
@@ -109,7 +109,8 @@ namespace SMW_ML.Neural.Training.SharpNeatImpl
             {
                 currentAlgo!.PerformOneGeneration();
 
-                OnStatisticsUpdated?.Invoke();
+//                GetTrainingStatistics();
+                OnStatisticsUpdated?.Invoke(GetTrainingStatistics());
 
                 SavePopulation(DefaultPaths.CURRENT_POPULATION);
             }
@@ -140,11 +141,12 @@ namespace SMW_ML.Neural.Training.SharpNeatImpl
             NeatPopulationSaver<double>.SaveToZipArchive(genomes, path[..path.IndexOf(filename)], filename, System.IO.Compression.CompressionLevel.Fastest);
         }
 
-        private TrainingStatistics GetTrainingStatistics()
+        public TrainingStatistics GetTrainingStatistics()
         {
-            TrainingStatistics = new TrainingStatistics();
-            TrainingStatistics.AddStat("Best Complexity", currentAlgo!.Population.Stats.BestComplexity);
-            return TrainingStatistics;
+            TrainingStatistics ts = new();
+            ts.AddStat("Best Complexity", currentAlgo!.Population.Stats.BestComplexity);
+            ts.AddStat("Best Fitness", currentAlgo!.Population.Stats.BestFitness.PrimaryFitness);
+            return ts;
         }
 
     }

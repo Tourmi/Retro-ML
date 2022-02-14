@@ -10,6 +10,7 @@ using SMW_ML.Neural.Training.SharpNeatImpl;
 using SMW_ML.Utils;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -28,9 +29,22 @@ namespace SMW_ML.ViewModels
         public TrainingPageViewModel()
         {
             //TODO : use config to setup training
-            emulatorManager = new(3);
+            emulatorManager = new(2);
+            TrainingStatistics = new ObservableCollection<TrainingStatistics.Stat>();
             trainer = new SharpNeatTrainer(emulatorManager);
-            trainer.OnStatisticsUpdated += GetStats!;
+            trainer.OnStatisticsUpdated += new Action<TrainingStatistics>(HandleGetStats);
+        }
+
+        private void HandleGetStats(TrainingStatistics stats)
+        {
+            Dispatcher.UIThread.Post(() =>
+            {
+                TrainingStatistics.Clear();
+                foreach (var stat in stats.GetStats())
+                {
+                    TrainingStatistics.Add(stat);
+                }
+            });
         }
 
         public async void Init()
@@ -79,16 +93,11 @@ namespace SMW_ML.ViewModels
             set => this.RaiseAndSetIfChanged(ref canStop, value);
         }
 
-        private TrainingStatistics trainingStatistics;
-        public TrainingStatistics TrainingStatistics
+        private ObservableCollection<TrainingStatistics.Stat> trainingStatistics;
+        public ObservableCollection<TrainingStatistics.Stat> TrainingStatistics
         {
             get => trainingStatistics;
             set => this.RaiseAndSetIfChanged(ref trainingStatistics, value);
-        }
-
-        public void GetStats(object sender, EventArgs e)
-        {
-            TrainingStatistics = trainer.TrainingStatistics;
         }
 
     }
