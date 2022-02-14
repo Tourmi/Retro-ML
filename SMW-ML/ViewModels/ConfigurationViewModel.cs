@@ -19,6 +19,7 @@ using Avalonia.Data;
 using SMW_ML.Utils;
 using SMW_ML.Neural.Scoring;
 using SMW_ML.ViewModels.Components;
+using Newtonsoft.Json.Serialization;
 
 namespace SMW_ML.ViewModels
 {
@@ -27,7 +28,8 @@ namespace SMW_ML.ViewModels
         private static readonly JsonSerializerSettings JSON_CONFIG = new()
         {
             TypeNameHandling = TypeNameHandling.Auto,
-            ObjectCreationHandling = ObjectCreationHandling.Replace
+            ObjectCreationHandling = ObjectCreationHandling.Replace,
+            ContractResolver = new DefaultContractResolver() { NamingStrategy = new CamelCaseNamingStrategy() }
         };
 
         #region Strings
@@ -290,7 +292,7 @@ namespace SMW_ML.ViewModels
             SharpNeatModel.EvolutionAlgorithmSettings.SelectionProportion = SelectionProportion;
             SharpNeatModel.PopulationSize = NumberAI;
 
-            string sharpNeatOutput = JsonConvert.SerializeObject(SharpNeatModel, Formatting.Indented);
+            string sharpNeatOutput = JsonConvert.SerializeObject(SharpNeatModel, Formatting.Indented, JSON_CONFIG);
             File.WriteAllText(DefaultPaths.SHARPNEAT_CONFIG, sharpNeatOutput);
 
             //Tab Emulator
