@@ -1,33 +1,53 @@
 ﻿{
-  "Multithread": 1,
-  "ArduinoCommunicationPort": "COM3",
-  "StopTrainingCondition": "Manually",
-  "StopTrainingConditionValue": null,
-  "ScoreFactors": [
+  "multithread": 1,
+  "arduinoCommunicationPort": "COM3",
+  "stopTrainingCondition": "Manually",
+  "stopTrainingConditionValue": null,
+  "scoreFactors": [
     {
       "$type": "SMW_ML.Neural.Scoring.DiedScoreFactor, SMW_ML",
-      "ScoreMultiplier": -10.0,
-      "IsDisabled": false
+      "scoreMultiplier": -10.0,
+      "isDisabled": false
     },
     {
       "$type": "SMW_ML.Neural.Scoring.DistanceScoreFactor, SMW_ML",
-      "ScoreMultiplier": 3.0,
-      "IsDisabled": false
+      "scoreMultiplier": 3.0,
+      "isDisabled": false
     },
     {
       "$type": "SMW_ML.Neural.Scoring.StopMovingScoreFactor, SMW_ML",
-      "ScoreMultiplier": -10.0,
-      "IsDisabled": false
+      "scoreMultiplier": -10.0,
+      "isDisabled": false
     },
     {
       "$type": "SMW_ML.Neural.Scoring.TimeTakenScoreFactor, SMW_ML",
-      "ScoreMultiplier": 1.0,
-      "IsDisabled": false
+      "scoreMultiplier": 1.0,
+      "isDisabled": false
     },
     {
       "$type": "SMW_ML.Neural.Scoring.WonLevelScoreFactor, SMW_ML",
-      "ScoreMultiplier": 100.0,
-      "IsDisabled": false
+      "scoreMultiplier": 100.0,
+      "isDisabled": false
+    },
+    {
+      "$type": "SMW_ML.Neural.Scoring.CoinsScoreFactor, SMW_ML",
+      "isDisabled": true,
+      "scoreMultiplier": 5.0
+    },
+    {
+      "$type": "SMW_ML.Neural.Scoring.YoshiCoinsScoreFactor, SMW_ML",
+      "isDisabled": true,
+      "scoreMultiplier": 15.0
+    },
+    {
+      "$type": "SMW_ML.Neural.Scoring.OneUpsScoreFactor, SMW_ML",
+      "isDisabled": true,
+      "scoreMultiplier": 30.0
+    },
+    {
+      "$type": "SMW_ML.Neural.Scoring.HighScoreScoreFactor, SMW_ML",
+      "isDisabled": true,
+      "scoreMultiplier": 1.0
     }
   ]
 }

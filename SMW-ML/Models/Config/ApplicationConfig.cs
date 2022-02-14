@@ -19,7 +19,11 @@ namespace SMW_ML.Models.Config
                 new DistanceScoreFactor() { ScoreMultiplier = 3 },
                 new StopMovingScoreFactor() { ScoreMultiplier = -10 },
                 new TimeTakenScoreFactor() { ScoreMultiplier = 1 },
-                new WonLevelScoreFactor() { ScoreMultiplier = 100 }
+                new WonLevelScoreFactor() { ScoreMultiplier = 100 },
+                new CoinsScoreFactor() { ScoreMultiplier = 5 },
+                new YoshiCoinsScoreFactor() { ScoreMultiplier = 15 },
+                new OneUpsScoreFactor() { ScoreMultiplier = 30 },
+                new HighScoreScoreFactor() { ScoreMultiplier = 1 }
             };
         }
 

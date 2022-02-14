@@ -10,6 +10,7 @@ It is important to either clone the repository recursively to include the submod
 ## Prerequisites
 * Must be on Windows
 * .NET SDK 6.0 or higher must be installed
+* Microsoft Visual C++ 2010 SP1 Runtime (x64) must be installed for Bizhawk to run
 
 ## Building the dependencies
 Run these commands starting from the root of the repository
@@ -102,3 +103,11 @@ This page lists all of the available training objectives. Some of them cannot be
   * Do not set this value too high unless you also raise the penalty for dying and not moving, as the AI might be encouraged to kill itself or idle as soon as possible to max out its score.
 * **Won level**
   * The amount of points to attribute if the AI wins a level. Ideally, this should be a high value to encourage actually finishing levels.
+* **Coins**
+  * The amount of points to give the AI per coin collected.
+* **Yoshi Coins**
+  * The amount of points to give the AI per Yoshi Coin collected
+* **1-ups**
+  * The amount of points to give the AI per 1-up collected from any source.
+* **High Score**
+  * The amount of points to give the AI for its displayed high-score, divided by 1000. So a high-score of 55200 with a multiplier of 2 will give a total amount of points of 110.4 to the AI.

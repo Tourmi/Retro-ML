@@ -82,6 +82,21 @@ namespace SMW_ML.Game.SuperMarioWorld
         public bool WasInternalClockTriggered() => internalClockOn;
         public bool WasDialogBoxOpened() => ReadSingle(Level.TextBoxTriggered) != 0;
         public bool IsWaterLevel() => ReadSingle(Level.IsWater) != 0;
+        public int GetCoins() => ReadSingle(Counters.Coins);
+        public int GetLives() => ReadSingle(Counters.Lives);
+        public int GetYoshiCoins() => ReadSingle(Counters.YoshiCoinCollected);
+        public int GetScore()
+        {
+            var scoreBytes = Read(Counters.Score);
+            int score = 0;
+            for (int i = 0; i < scoreBytes.Length; i++)
+            {
+                score += scoreBytes[i] << ((scoreBytes.Length - i - 1) * 8);
+            }
+
+            return score;
+        }
+
         public bool[,] GetWalkableTilesAroundPosition(int x_dist, int y_dist)
         {
             byte levelTileset = ReadSingle(Level.Header.TilesetSetting);
