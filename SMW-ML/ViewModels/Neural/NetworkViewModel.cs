@@ -62,10 +62,11 @@ namespace SMW_ML.ViewModels.Neural
             public static int GridSize => NetworkViewModel.GridSize;
             public static int LeftOffset => NetworkViewModel.LeftOffset;
 
-            public NodeGroupViewModel(string name, bool useRed = false, int gridWidth = 1, int gridHeight = 1)
+            public NodeGroupViewModel(string name, bool useRed = false, bool useGreen = false, int gridWidth = 1, int gridHeight = 1)
             {
                 Name = name;
                 UseRed = useRed;
+                UseGreen = useGreen;
                 GridWidth = gridWidth;
                 GridHeight = gridHeight;
                 Nodes = new ObservableCollection<Node>();
@@ -77,6 +78,7 @@ namespace SMW_ML.ViewModels.Neural
 
             public string Name { get; }
             public bool UseRed { get; }
+            public bool UseGreen { get; }
             public int GridWidth { get; }
             public int GridHeight { get; }
 
@@ -111,7 +113,7 @@ namespace SMW_ML.ViewModels.Neural
             foreach (var node in config.InputNodes)
             {
                 if (!node.ShouldUse) continue;
-                Inputs.Add(new NodeGroupViewModel(node.Name, node.Name == "Dangers", node.TotalWidth, node.TotalHeight));
+                Inputs.Add(new NodeGroupViewModel(node.Name, node.Name == "Dangers", node.Name == "Goodies", node.TotalWidth, node.TotalHeight));
             }
 
             Outputs = new ObservableCollection<NodeGroupViewModel>();

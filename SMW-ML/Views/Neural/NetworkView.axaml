@@ -55,6 +55,10 @@
 		<Style Selector=".red Border.node Border">
 			<Setter Property="BorderBrush" Value="#E00"/>
 		</Style>
+		<!--Green node-->
+		<Style Selector=".green Border.node Border">
+			<Setter Property="BorderBrush" Value="#0E0"/>
+		</Style>
 		<Style Selector="Border.node:disabled Border">
 			<Setter Property="BorderBrush" Value="#444"/>
 		</Style>
@@ -78,7 +82,7 @@
 				</ItemsControl.ItemsPanel>
 				<ItemsControl.ItemTemplate>
 					<DataTemplate>
-						<StackPanel Classes="nodes" Classes.red="{Binding UseRed}">
+						<StackPanel Classes="nodes" Classes.red="{Binding UseRed}" Classes.green="{Binding UseGreen}">
 							<TextBlock Text="{Binding Name}"/>
 							<ItemsControl Items="{Binding Nodes}">
 								<ItemsControl.ItemsPanel>

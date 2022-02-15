@@ -26,6 +26,7 @@ namespace SMW_ML.Models.Config
             {
                 new InputNode("Tiles", true, (dataFetcher) => dataFetcher.GetWalkableTilesAroundPosition(GridDistanceX, GridDistanceY), GridWidth, GridHeight),
                 new InputNode("Dangers", true, (dataFetcher) => dataFetcher.GetDangerousTilesAroundPosition(GridDistanceX, GridDistanceY), GridWidth, GridHeight),
+                new InputNode("Goodies", true, (dataFetcher) => dataFetcher.GetGoodTilesAroundPosition(GridDistanceX, GridDistanceY), GridWidth, GridHeight),
                 new InputNode("On Ground", true, (dataFetcher) => dataFetcher.IsOnGround()),
                 new InputNode("In Water", true, (dataFetcher) => dataFetcher.IsInWater()),
                 new InputNode("Raising", true, (dataFetcher) => dataFetcher.IsRaising()),

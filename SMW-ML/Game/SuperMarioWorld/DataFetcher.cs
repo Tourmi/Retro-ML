@@ -153,6 +153,42 @@ namespace SMW_ML.Game.SuperMarioWorld
             return result;
         }
 
+        public bool[,] GetGoodTilesAroundPosition(int x_dist, int y_dist)
+        {
+            bool[,] result = new bool[x_dist * 2 + 1, y_dist * 2 + 1];
+
+            var spriteStatuses = Read(Addresses.Sprite.Statuses);
+            var aliveIndexes = spriteStatuses.Select((s, i) => (s, i)).Where(si => SpriteStatuses.IsAlive(si.s)).Select(si => si.i).ToArray();
+            var sprites = GetSprites(aliveIndexes);
+
+            foreach (var sprite in sprites)
+            {
+                if (!SpriteNumbers.IsGood(sprite.Number)) continue;
+                var xSpriteDist = (sprite.XPos / TILE_SIZE - (int)GetPositionX() / TILE_SIZE);
+                var ySpriteDist = (sprite.YPos / TILE_SIZE - (int)GetPositionY() / TILE_SIZE);
+
+                //Is the sprite distance between the bounds that Mario can see?
+                if (xSpriteDist <= x_dist && ySpriteDist <= y_dist && xSpriteDist >= -x_dist && ySpriteDist >= -y_dist)
+                {
+                    result[ySpriteDist + y_dist, xSpriteDist + x_dist] = true;
+                }
+            }
+
+            byte levelTileset = ReadSingle(Level.Header.TilesetSetting);
+            var tileset = Tileset.GetGoodTiles(levelTileset);
+
+            var dangerousTiles = GetTilesAroundPosition(x_dist, y_dist, tileset);
+            for (int i = 0; i < dangerousTiles.GetLength(0); i++)
+            {
+                for (int j = 0; j < dangerousTiles.GetLength(1); j++)
+                {
+                    result[i, j] |= dangerousTiles[i, j];
+                }
+            }
+
+            return result;
+        }
+
         private bool[,] GetTilesAroundPosition(int x_dist, int y_dist, IEnumerable<ushort> tileset)
         {
             bool[,] result = new bool[x_dist * 2 + 1, y_dist * 2 + 1];

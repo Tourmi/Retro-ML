@@ -29,6 +29,18 @@ namespace SMW_ML.Game.SuperMarioWorld.Data
         public const byte WALL_SPRING_LEFT = 0x6B;
         public const byte WALL_SPRING_RIGHT = 0x6C;
         public const byte INVISIBLE_SOLID_BLOCK = 0x6D;
+        public const byte MUSHROOM = 0x74;
+        public const byte FLOWER = 0x75;
+        public const byte STAR = 0x76;
+        public const byte FEATHER = 0x77;
+        public const byte ONE_UP = 0x78;
+        public const byte GOAL_TAPE = 0x7B;
+        public const byte P_BALLOON = 0x7D;
+        public const byte FLYING_RED_COIN_OR_WINGS = 0x7E;
+        public const byte FLYING_1_UP = 0x7F;
+        public const byte FLYING_KEY = 0x80;
+        public const byte FLYING_BLOCK_1 = 0x83;
+        public const byte FLYING_BLOCK_2 = 0x84;
         public const byte LAKITU_CLOUD = 0x87;
         public const byte LAYER_3_CAGE = 0x88;
         public const byte LAYER_3_SMASH = 0x89;
@@ -108,8 +120,40 @@ namespace SMW_ML.Game.SuperMarioWorld.Data
                 FALLING_GREY_PLATFORM or
                 SPOTLIGHT or
                 INVISIBLE_MUSHROOM or
-                LIGHT_SWITCH => false,
+                LIGHT_SWITCH 
+                => false,
                 _ => true,
+            };
+        }
+
+        public static bool IsGood(byte number)
+        {
+            return number switch
+            {
+                MOVING_COIN or
+                YOSHI_EGG or
+                BABY_YOSHI or
+                SPRINGBOARD or
+                YOSHI or
+                PSWITCH or
+                DIRECTIONAL_COINS or
+                GOAL_SPHERE or
+                LAKITU_CLOUD or
+                INVISIBLE_SOLID_BLOCK or
+                MUSHROOM or
+                FLOWER or
+                STAR or
+                FEATHER or
+                ONE_UP or
+                GOAL_TAPE or
+                P_BALLOON or
+                FLYING_RED_COIN_OR_WINGS or
+                FLYING_1_UP or
+                FLYING_KEY or
+                FLYING_BLOCK_1 or
+                FLYING_BLOCK_2
+                => true,
+                _ => false
             };
         }
     }
