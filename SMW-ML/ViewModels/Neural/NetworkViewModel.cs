@@ -19,6 +19,8 @@ namespace SMW_ML.ViewModels.Neural
 {
     internal class NetworkViewModel : ViewModelBase
     {
+        private const int MAX_CONNECTIONS = 2000;
+
         public struct Node
         {
             public static int NodeSize => NetworkViewModel.NodeSize;
@@ -142,57 +144,64 @@ namespace SMW_ML.ViewModels.Neural
                 MiddleNodes.Clear();
                 Connections.Clear();
 
-                var inputPositions = GetPositions(true);
-                var outputPositions = GetPositions(false);
-
-                Dictionary<int, Point> nodePositions = new();
-                for (int i = 0; i < inputPositions.Length; i++)
+                if (!CheckTooComplex(connectionLayers))
                 {
-                    nodePositions[i] = inputPositions[i];
+                    UpdateTopologyUI(connectionLayers, outputIds);
                 }
-                for (int i = 0; i < outputPositions.Length; i++)
-                {
-                    nodePositions[outputIds[i]] = outputPositions[i];
-                }
-
-                double middleXOffset = currConnectionLayers.Length > 2 ? (TotalWidth / 3.0) / currConnectionLayers.Length - 2 : 0;
-                double middleStartX = TotalWidth / 3.0 - middleXOffset; //We subtract one offset, since layer 0 is usually the input nodes
-
-                List<(int source, int target, double weight)> connectionsToAdd = new();
-
-                for (int i = 0; i < currConnectionLayers.Length; i++)
-                {
-                    var currLayer = currConnectionLayers[i];
-
-                    for (int j = 0; j < currLayer.Length; j++)
-                    {
-                        var (sourceNode, targetNode, weight) = currLayer[j];
-
-                        if (!nodePositions.ContainsKey(sourceNode))
-                        {
-                            nodePositions[sourceNode] = new Point(middleStartX + i * middleXOffset, Random.Shared.NextDouble() * (TotalHeight - GridSize) + GridSize);
-                            MiddleNodes.Add(new Node(false, nodePositions[sourceNode].X, nodePositions[sourceNode].Y));
-                        }
-
-                        connectionsToAdd.Add((sourceNode, targetNode, weight));
-                    }
-                }
-
-                // Add the connections
-                foreach (var (source, target, weight) in connectionsToAdd)
-                {
-                    //If the target doesn't exist, put it at the right
-                    if (!nodePositions.ContainsKey(target))
-                    {
-                        nodePositions[target] = new Point(middleStartX + (currConnectionLayers.Length - 1) * middleXOffset, Random.Shared.NextDouble() * (TotalHeight - GridSize) + GridSize);
-                        MiddleNodes.Add(new Node(false, nodePositions[target].X, nodePositions[target].Y));
-                    }
-
-                    Connections.Add(new Connection(nodePositions[source] + middleOfNode, nodePositions[target] + middleOfNode, weight >= 0, Math.Abs(weight) / 5.0 + 0.3));
-                }
-
                 runningTopologyUpdate = false;
             });
+        }
+
+        private void UpdateTopologyUI((int sourceNode, int targetNode, double weight)[][] connectionLayers, int[] outputIds)
+        {
+            var inputPositions = GetPositions(true);
+            var outputPositions = GetPositions(false);
+
+            Dictionary<int, Point> nodePositions = new();
+            for (int i = 0; i < inputPositions.Length; i++)
+            {
+                nodePositions[i] = inputPositions[i];
+            }
+            for (int i = 0; i < outputPositions.Length; i++)
+            {
+                nodePositions[outputIds[i]] = outputPositions[i];
+            }
+
+            double middleXOffset = currConnectionLayers!.Length > 2 ? (TotalWidth / 3.0) / currConnectionLayers.Length - 2 : 0;
+            double middleStartX = TotalWidth / 3.0 - middleXOffset; //We subtract one offset, since layer 0 is usually the input nodes
+
+            List<(int source, int target, double weight)> connectionsToAdd = new();
+
+            for (int i = 0; i < currConnectionLayers.Length; i++)
+            {
+                var currLayer = currConnectionLayers[i];
+
+                for (int j = 0; j < currLayer.Length; j++)
+                {
+                    var (sourceNode, targetNode, weight) = currLayer[j];
+
+                    if (!nodePositions.ContainsKey(sourceNode))
+                    {
+                        nodePositions[sourceNode] = new Point(middleStartX + i * middleXOffset, Random.Shared.NextDouble() * (TotalHeight - GridSize));
+                        MiddleNodes.Add(new Node(false, nodePositions[sourceNode].X, nodePositions[sourceNode].Y));
+                    }
+
+                    connectionsToAdd.Add((sourceNode, targetNode, weight));
+                }
+            }
+
+            // Add the connections
+            foreach (var (source, target, weight) in connectionsToAdd)
+            {
+                //If the target doesn't exist, put it at the right
+                if (!nodePositions.ContainsKey(target))
+                {
+                    nodePositions[target] = new Point(middleStartX + (currConnectionLayers.Length - 1) * middleXOffset, Random.Shared.NextDouble() * (TotalHeight - GridSize));
+                    MiddleNodes.Add(new Node(false, nodePositions[target].X, nodePositions[target].Y));
+                }
+
+                Connections.Add(new Connection(nodePositions[source] + middleOfNode, nodePositions[target] + middleOfNode, weight >= 0, Math.Abs(weight) / 5.0 + 0.3));
+            }
         }
 
         private bool IsSameTopology((int sourceNode, int targetNode, double weight)[][] connectionLayers)
@@ -275,6 +284,7 @@ namespace SMW_ML.ViewModels.Neural
                 runningUpdate = false;
             });
         }
+
         private void UpdateNodes(IEnumerable<NodeGroupViewModel> nodeGroups, double[] states)
         {
             int startIndex = 0;
@@ -291,12 +301,30 @@ namespace SMW_ML.ViewModels.Neural
 
                 startIndex += nodeGroup.Nodes.Count;
             }
+        }
 
+        private bool CheckTooComplex((int, int, double)[][] connectionLayers)
+        {
+            bool result;
+            int totalConnections = 0;
+            foreach (var layer in connectionLayers)
+            {
+                totalConnections += layer.Length;
+            }
+            result = totalConnections > MAX_CONNECTIONS;
+            TooComplex = result;
+            return result;
         }
 
         public ObservableCollection<NodeGroupViewModel> Inputs { get; }
         public ObservableCollection<Node> MiddleNodes { get; }
         public ObservableCollection<NodeGroupViewModel> Outputs { get; }
         public ObservableCollection<Connection> Connections { get; }
+        private bool tooComplex;
+        public bool TooComplex
+        {
+            get => tooComplex;
+            set => this.RaiseAndSetIfChanged(ref tooComplex, value);
+        }
     }
 }
