@@ -40,7 +40,7 @@ To run the application, you first need to copy a Super Mario World rom file to t
 
 ### Main page
 
-#### ![Image of the main page of the application](docs/mainApp.png)
+![Image of the main page of the application](docs/mainApp.png)  
 * **[Start training](#training-page)**
 * **Load population**
   * Loads an existing population (xyz.pop) into the program. Allows to continue training a population after closing and reopening the application.
@@ -50,17 +50,32 @@ To run the application, you first need to copy a Super Mario World rom file to t
 
 ### Training Page
 
-#### ![Image of the training page](docs/training-training.png)
+![Image of the training page](docs/training-training.png)  
 When entering this page, the training of AIs will be started automatically, using the [app's configuration](#configuration). Note that the UI might be unresponsive if too many emulator instances are running at once. Please do not close any emulators manually, as this will break the application.
 * **Neural Network visualization**
   * Shows the first emulator's neural network structure and values. When the emulators finish booting, the emulator being represented will be the one on the bottom. The refresh rate of the preview will depend on the computer's performances, and having too many emulators running at once will affect it.
 * **Stop Training**
   * Will stop training at the end of the current generation. Please be patient if the population size is big, and not many emulators are running at once. It will return to the [main page](#main-page) once it is done.
 
+### Play Mode
+
+![Image of the play mode page](docs/playmode.png)
+This page is used to make specific genomes play on specific levels, both of them being manually selected. It is a good way to check the abilities of a genome on levels that aren't part of its training-set.
+* **Load Genome**
+  * Loads the genome to use for the play mode. Selecting a new genome while the play mode is running reloads the save state and starts it again using the new genome.
+* **Load save state**
+  * Loads the save state to use for the play mode. Selecting a new save state while the play mode is running will load it into the emulator right away.
+* **Start**
+  * Loads the save state and starts up the AI. Can only be started when a save state and a genome have been provided.
+* **Stop**
+  * Stops the current AI from running.
+* **Exit**
+  * Exits play mode. Only enabled once play mode has been stopped.
+
 ### Configuration
 
 #### Neural Network
-![Image of the neural network configuration menu](docs/config-neural.png)
+![Image of the neural network configuration menu](docs/config-neural.png)  
 * **Number of AIs**
   * Determines the total population size of the training. Making it too big will make evolution really slow, while making it too small will make break-throughs extremely rare.
 * **Species count**
@@ -71,7 +86,7 @@ When entering this page, the training of AIs will be started automatically, usin
   * The percentage of AIs to keep between each generation, within a species. Should be higher than 0, but lower or equal to 1. New AIs will be created within the species based on the AIs that are kept.
 
 #### Application
-![Image of the app configuration menu](docs/config-app.png)
+![Image of the app configuration menu](docs/config-app.png)  
 * **Multithread**
   * This is the amount of emulators which will be booted while training. It is recommended to not put this value higher than the amount of cores within your computer, as performance will be greatly affected. For the fastest training, at the cost of using up all of the CPU resources available, set to the exact amount of cores in your computer. Otherwise, set to a lower value.
 * **Communication Port with Arduino**
@@ -83,7 +98,7 @@ When entering this page, the training of AIs will be started automatically, usin
   * By clicking the button, you can select the save states you want to use for training. At least one must be selected.
 
 #### Objectives
-![Image of the objectives configuration menu](docs/config-objectives.png)
+![Image of the objectives configuration menu](docs/config-objectives.png)  
 This page lists all of the available training objectives. Some of them cannot be disabled, but the multiplier can be set to 0 so it won't affect the score, at least. The values pictured are the recommended values when training AIs from nothing, but you may experiment at your leisure.
 * **Enabled**
   * Whether or not this objective will affect the score.
