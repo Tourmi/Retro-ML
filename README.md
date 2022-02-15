@@ -77,6 +77,10 @@ When entering this page, the training of AIs will be started automatically, usin
 * **Communication Port with Arduino**
   * Communication port with an Arduino that's connected to the PC. Should be left like it is if no arduinos are connected. Used so we can preview the inputs on an actual physical controller.
   * [See ./ArduinoSNESController](ArduinoSNESController)
+* **When to stop the training**
+  * UNIMPLEMENTED
+* **Save states to use**
+  * By clicking the button, you can select the save states you want to use for training. At least one must be selected.
 
 #### Objectives
 ![Image of the objectives configuration menu](docs/config-objectives.png)

@@ -8,6 +8,7 @@ using SMW_ML.Models.Config;
 using SMW_ML.Neural.Scoring;
 using SMW_ML.Utils.SharpNeat;
 using System;
+using System.IO;
 using static SMW_ML.Utils.ReflectionTool;
 
 namespace SMW_ML.Neural.Training.SharpNeatImpl
@@ -43,11 +44,10 @@ namespace SMW_ML.Neural.Training.SharpNeatImpl
             inputSetter = emulator.GetInputSetter();
             outputGetter = emulator.GetOutputGetter();
 
-            var saveStates = emulator.GetStates();
+            var saveStates = appConfig.SaveStates;
             foreach (var state in saveStates)
             {
-                if (!state.Contains("yoshi-island-1")) continue;
-                emulator.LoadState(state);
+                emulator.LoadState(Path.GetFullPath(state));
                 emulator.NextFrame();
                 dataFetcher.NextLevel();
 

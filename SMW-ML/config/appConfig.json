@@ -49,5 +49,11 @@
       "isDisabled": true,
       "scoreMultiplier": 1.0
     }
+  ],
+  "saveStates": [
+    "config\\SaveStates\\yoshi-island-1.State",
+    "config\\SaveStates\\yoshi-island-2.State",
+    "config\\SaveStates\\yoshi-island-3.State",
+    "config\\SaveStates\\yoshi-island-4.State"
   ]
 }

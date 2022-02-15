@@ -193,6 +193,23 @@ namespace SMW_ML.ViewModels
             }
         }
 
+        private List<string> saveStates;
+        private string saveStatePreview;
+        public string SaveStates
+        {
+            get => saveStatePreview;
+            set
+            {
+                this.RaiseAndSetIfChanged(ref saveStatePreview, value);
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(SaveStates)));
+            }
+        }
+        private void SetSaveStates(List<string> saveStates)
+        {
+            this.saveStates = saveStates;
+            SaveStates = string.Join("\n", saveStates);
+        }
+
         public List<ScoreFactorViewModel>? Objectives { get; set; }
 
 
@@ -224,6 +241,7 @@ namespace SMW_ML.ViewModels
             ErrorList = new ObservableCollection<Error>();
             PropertyChanged += HandlePropertyChanged;
             ScoreFactors = new List<IScoreFactor>();
+            saveStates = new List<string>();
 
             //Initialize the properties with the current config
             if (!Design.IsDesignMode)
@@ -305,6 +323,7 @@ namespace SMW_ML.ViewModels
             ApplicationConfig.ArduinoCommunicationPort = ArduinoPort!;
             ApplicationConfig.StopTrainingCondition = StopTrainingSelectedItem!;
             ApplicationConfig.StopTrainingConditionValue = StopTrainingConditionValue;
+            ApplicationConfig.SaveStates = saveStates;
 
             //Tab Objectives
             for (int i = 0; i < Objectives!.Count; i++)
@@ -351,12 +370,35 @@ namespace SMW_ML.ViewModels
             StopTrainingSelectedItem = ApplicationConfig.StopTrainingCondition;
             StopTrainingConditionValue = ApplicationConfig.StopTrainingConditionValue;
 
+            SetSaveStates(ApplicationConfig.SaveStates);
+
             //Tab Objectives
             Objectives = new List<ScoreFactorViewModel>();
             foreach (var obj in ApplicationConfig.ScoreFactors)
             {
                 Objectives.Add(new(obj));
             }
+        }
+
+        public async void SelectSaveStates()
+        {
+            OpenFileDialog fileDialog = new();
+            fileDialog.Filters.Add(new FileDialogFilter() { Name = "Save states", Extensions = { "State" } });
+            fileDialog.AllowMultiple = true;
+            fileDialog.Directory = Path.GetFullPath("./config/SaveStates");
+
+            string[]? paths = await fileDialog.ShowAsync(ViewLocator.GetMainWindow());
+
+            List<string> saveStates = new List<string>();
+            if (paths == null)
+            {
+                return;
+            }
+            foreach (string path in paths)
+            {
+                saveStates.Add(path);
+            }
+            SetSaveStates(saveStates);
         }
 
         #region Validation
@@ -369,6 +411,7 @@ namespace SMW_ML.ViewModels
             ValidateArduinoPort();
             ValidateStopTrainingCondition();
             ValidateStopTrainingValue();
+            ValidateSaveStates();
         }
 
         private void ValidateSpeciesCount()
@@ -454,6 +497,18 @@ namespace SMW_ML.ViewModels
                 {
                     FieldError = "Stop Training Condition",
                     Description = "You must select a stop training condition."
+                });
+            }
+        }
+
+        private void ValidateSaveStates()
+        {
+            if (!saveStates.Any())
+            {
+                ErrorList.Add(new Error()
+                {
+                    FieldError = "Save States",
+                    Description = "You must select at least one save state for training"
                 });
             }
         }

@@ -53,6 +53,10 @@
 							<ComboBox Classes="comboBox" Items="{Binding StopTrainingItems}" Width="200" HorizontalAlignment="Left" SelectedItem="{Binding StopTrainingSelectedItem}"/>
 							<NumericUpDown Classes="numericTextBox" Value="{Binding StopTrainingConditionValue}" IsEnabled="{Binding !IsStopManually}" Minimum="0"/>
 						</StackPanel>
+						<TextBlock Classes="h1" Text="Save states to use"/>
+						<Button Command="{Binding SelectSaveStates}" Content="Select save states"/>
+						<TextBlock Text="Selected: "/>
+						<TextBlock Text="{Binding SaveStates}"/>
 
 					</StackPanel>
 				</TabItem>

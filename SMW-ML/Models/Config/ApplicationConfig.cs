@@ -25,6 +25,7 @@ namespace SMW_ML.Models.Config
                 new OneUpsScoreFactor() { ScoreMultiplier = 30 },
                 new HighScoreScoreFactor() { ScoreMultiplier = 1 }
             };
+            SaveStates = new List<string>();
         }
 
         public int Multithread { get; set; }
@@ -32,6 +33,7 @@ namespace SMW_ML.Models.Config
         public string StopTrainingCondition { get; set; }
         public int? StopTrainingConditionValue { get; set; }
         public List<IScoreFactor> ScoreFactors { get; set; }
+        public List<string> SaveStates { get; set; }
 
         public IEnumerable<IScoreFactor> GetScoreFactorClones()
         {
