@@ -42,6 +42,7 @@ To run the application, you first need to copy a Super Mario World rom file to t
 
 ![Image of the main page of the application](docs/mainApp.png)  
 * **[Start training](#training-page)**
+* **[Play mode](#play-mode)**
 * **Load population**
   * Loads an existing population (xyz.pop) into the program. Allows to continue training a population after closing and reopening the application.
 * **Save population**
