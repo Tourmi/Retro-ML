@@ -438,9 +438,10 @@ namespace SMW_ML.ViewModels
             {
                 return;
             }
+            string localPath = Path.GetFullPath(".");
             foreach (string path in paths)
             {
-                saveStates.Add(path);
+                saveStates.Add(Path.GetFullPath(path).Replace(localPath, "").Trim('/', '\\'));
             }
             SetSaveStates(saveStates);
         }
