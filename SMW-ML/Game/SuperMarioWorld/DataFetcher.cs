@@ -105,7 +105,7 @@ namespace SMW_ML.Game.SuperMarioWorld
         }
         public bool[,] GetDangerousTilesAroundPosition(int x_dist, int y_dist)
         {
-            bool[,] result = new bool[x_dist * 2 + 1, y_dist * 2 + 1];
+            bool[,] result = new bool[y_dist * 2 + 1, x_dist * 2 + 1];
 
             var spriteStatuses = Read(Addresses.Sprite.Statuses);
             var aliveIndexes = spriteStatuses.Select((s, i) => (s, i)).Where(si => SpriteStatuses.CanBeDangerous(si.s)).Select(si => si.i).ToArray();
@@ -155,7 +155,7 @@ namespace SMW_ML.Game.SuperMarioWorld
 
         public bool[,] GetGoodTilesAroundPosition(int x_dist, int y_dist)
         {
-            bool[,] result = new bool[x_dist * 2 + 1, y_dist * 2 + 1];
+            bool[,] result = new bool[y_dist * 2 + 1, x_dist * 2 + 1];
 
             var spriteStatuses = Read(Addresses.Sprite.Statuses);
             var aliveIndexes = spriteStatuses.Select((s, i) => (s, i)).Where(si => SpriteStatuses.IsAlive(si.s)).Select(si => si.i).ToArray();
@@ -191,7 +191,7 @@ namespace SMW_ML.Game.SuperMarioWorld
 
         private bool[,] GetTilesAroundPosition(int x_dist, int y_dist, IEnumerable<ushort> tileset)
         {
-            bool[,] result = new bool[x_dist * 2 + 1, y_dist * 2 + 1];
+            bool[,] result = new bool[y_dist * 2 + 1, x_dist * 2 + 1];
             ushort levelNumber = GetLevelNumber();
 
             if (!map16Caches.ContainsKey(levelNumber))
@@ -234,7 +234,7 @@ namespace SMW_ML.Game.SuperMarioWorld
 
         private ushort[,] GetNearbyTiles(ushort[] map16Cache, int x_dist, int y_dist, int offsetX, int offsetY, int screenStart)
         {
-            ushort[,] result = new ushort[x_dist * 2 + 1, y_dist * 2 + 1];
+            ushort[,] result = new ushort[y_dist * 2 + 1, x_dist * 2 + 1];
 
             byte screensCount = ReadSingle(Level.ScreenCount);
 
