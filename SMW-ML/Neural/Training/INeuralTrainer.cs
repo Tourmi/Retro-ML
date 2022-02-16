@@ -1,4 +1,6 @@
-﻿using System;
+﻿using SharpNeat.EvolutionAlgorithm;
+using SMW_ML.Neural.Training.SharpNeat;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -11,6 +13,7 @@ namespace SMW_ML.Neural.Training
     /// </summary>
     public interface INeuralTrainer
     {
+        event Action<TrainingStatistics>? OnStatisticsUpdated;
         bool IsTraining { get; }
         void StartTraining(string configPath);
         void StopTraining();

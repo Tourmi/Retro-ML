@@ -17,12 +17,16 @@ using SharpNeat.Neat.Genome.IO;
 using SharpNeat.Neat.Genome;
 using SharpNeat.NeuralNets.Double.ActivationFunctions;
 using SMW_ML.Utils;
+using SharpNeat.EvolutionAlgorithm;
+using SMW_ML.Neural.Training.SharpNeat;
 using SMW_ML.Models.Config;
 
 namespace SMW_ML.Neural.Training.SharpNeatImpl
 {
     internal class SharpNeatTrainer : INeuralTrainer
     {
+        public event Action<TrainingStatistics>? OnStatisticsUpdated;
+
         private readonly SMWExperimentFactory experimentFactory;
         private readonly Semaphore syncSemaphore;
         private readonly EmulatorManager emulatorManager;
@@ -49,10 +53,10 @@ namespace SMW_ML.Neural.Training.SharpNeatImpl
             experimentFactory = new SMWExperimentFactory(emulatorManager, appConfig);
 
             metaGenome = new MetaNeatGenome<double>(
-                    inputNodeCount: emulatorManager.GetInputCount(),
-                    outputNodeCount: emulatorManager.GetOutputCount(),
-                    isAcyclic: true,
-                    activationFn: new LeakyReLU());
+                   inputNodeCount: emulatorManager.GetInputCount(),
+                   outputNodeCount: emulatorManager.GetOutputCount(),
+                   isAcyclic: true,
+                   activationFn: new LeakyReLU());
             genomeBuilder = NeatGenomeBuilderFactory<double>.Create(metaGenome);
             genomes = new List<NeatGenome<double>>();
         }
@@ -98,12 +102,15 @@ namespace SMW_ML.Neural.Training.SharpNeatImpl
             isTraining = true;
 
             syncSemaphore.WaitOne();
+            OnStatisticsUpdated?.Invoke(GetTrainingStatistics());
             currentAlgo!.Initialise();
             SavePopulation(DefaultPaths.CURRENT_POPULATION);
 
             while (!stopFlag)
             {
                 currentAlgo!.PerformOneGeneration();
+
+                OnStatisticsUpdated?.Invoke(GetTrainingStatistics());
 
                 SaveBestGenome(DefaultPaths.CURRENT_GENOME);
                 SavePopulation(DefaultPaths.CURRENT_POPULATION);
@@ -133,6 +140,22 @@ namespace SMW_ML.Neural.Training.SharpNeatImpl
             genomes = currentAlgo!.Population.GenomeList;
 
             NeatPopulationSaver<double>.SaveToZipArchive(genomes, path[..path.IndexOf(filename)], filename, System.IO.Compression.CompressionLevel.Fastest);
+        }
+
+        public TrainingStatistics GetTrainingStatistics()
+        {
+            TrainingStatistics ts = new();
+
+            ts.AddStat("Current Generation", currentAlgo!.Stats.Generation + 1);
+            ts.AddStat("Best Genome's Fitness", currentAlgo!.Population.Stats.BestFitness.PrimaryFitness);
+            ts.AddStat("Best Genome's Complexity", currentAlgo!.Population.Stats.BestComplexity);
+            ts.AddStat("Mean Fitness", currentAlgo!.Population.Stats.MeanFitness);
+            ts.AddStat("Mean Complexity", currentAlgo!.Population.Stats.MeanComplexity);
+            ts.AddStat("Maximum Complexity", currentAlgo!.Population!.Stats.MaxComplexity);
+            ts.AddStat("Evaluations per second", currentAlgo!.Stats.EvaluationsPerSec);
+            ts.AddStat("Total evaluations so far", currentAlgo!.Stats.TotalEvaluationCount);
+
+            return ts;
         }
 
         public void SaveBestGenome(string path)

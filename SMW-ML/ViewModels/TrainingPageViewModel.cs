@@ -6,12 +6,14 @@ using ReactiveUI;
 using SMW_ML.Emulator;
 using SMW_ML.Models.Config;
 using SMW_ML.Neural.Training;
+using SMW_ML.Neural.Training.SharpNeat;
 using SMW_ML.Neural.Training.SharpNeatImpl;
 using SMW_ML.Utils;
 using SMW_ML.ViewModels.Neural;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -25,20 +27,41 @@ namespace SMW_ML.ViewModels
 
         private INeuralTrainer trainer;
         private EmulatorManager emulatorManager;
-        private NetworkViewModel neuralNetwork;
-
         private string? populationToLoad;
 
-        private bool canStop = true;
+        #region Strings
+        public static string Status => "Currently training AIs";
+        public static string Stop => "Stop Training";
+        #endregion
 
+        #region Properties
+
+        private bool canStop = true;
+        public bool CanStop
+        {
+            get => canStop;
+            set => this.RaiseAndSetIfChanged(ref canStop, value);
+        }
+
+        private NetworkViewModel neuralNetwork;
+        public NetworkViewModel NeuralNetwork
+        {
+            get => neuralNetwork;
+            set => this.RaiseAndSetIfChanged(ref neuralNetwork, value);
+        }
+
+        public ObservableCollection<TrainingStatistics.Stat> TrainingStatistics { get; set; }
+
+        #endregion
+
+        #region Constructor
         public TrainingPageViewModel()
         {
-            //TODO : use config to setup training
-
-
-
-
+            TrainingStatistics = new ObservableCollection<TrainingStatistics.Stat>();
         }
+        #endregion
+
+        #region  Methods
 
         public void Init()
         {
@@ -49,6 +72,7 @@ namespace SMW_ML.ViewModels
             NeuralNetwork = new NetworkViewModel(neuralConfig);
             emulatorManager = new(appConfig, neuralConfig);
             trainer = new SharpNeatTrainer(emulatorManager, appConfig);
+            trainer.OnStatisticsUpdated += HandleGetStats;
             if (populationToLoad != null)
             {
                 trainer.LoadPopulation(populationToLoad);
@@ -76,15 +100,6 @@ namespace SMW_ML.ViewModels
             trainer.SavePopulation(path);
         }
 
-        public NetworkViewModel NeuralNetwork
-        {
-            get => neuralNetwork;
-            set => this.RaiseAndSetIfChanged(ref neuralNetwork, value);
-        }
-
-        public static string Status => "Currently training AIs";
-
-        public static string Stop => "Stop Training";
         public async void StopTraining()
         {
             if (!CanStop) return;
@@ -101,10 +116,22 @@ namespace SMW_ML.ViewModels
                 OnStopTraining?.Invoke();
             });
         }
-        public bool CanStop
+        #endregion
+
+        #region Events
+
+        private void HandleGetStats(TrainingStatistics stats)
         {
-            get => canStop;
-            set => this.RaiseAndSetIfChanged(ref canStop, value);
+            Dispatcher.UIThread.Post(() =>
+            {
+                TrainingStatistics.Clear();
+                foreach (var stat in stats.GetStats())
+                {
+                    TrainingStatistics.Add(stat);
+                }
+            });
         }
+        #endregion
+
     }
 }

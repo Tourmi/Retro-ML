@@ -14,15 +14,51 @@
 	<Design.DataContext>
 		<vm:TrainingPageViewModel/>
 	</Design.DataContext>
-	
-	<DockPanel LastChildFill="True">
+
+	<TabControl TabStripPlacement="Top">
+		<TabItem Header="Training" FontSize="16">
+			<DockPanel LastChildFill="True">
+				<StackPanel Spacing="5" DockPanel.Dock="Bottom" Margin="20">
+					<TextBlock Text="{Binding Status}" HorizontalAlignment="Center"/>
+					<Button Command="{Binding StopTraining}" Content="{Binding Stop}" IsEnabled="{Binding CanStop}" HorizontalAlignment="Center"/>
+				</StackPanel>
 		
-		<StackPanel Spacing="5" DockPanel.Dock="Bottom" Margin="20">
-			<TextBlock Text="{Binding Status}" HorizontalAlignment="Center"/>
-			<Button Command="{Binding StopTraining}" Content="{Binding Stop}" IsEnabled="{Binding CanStop}" HorizontalAlignment="Center"/>
-		</StackPanel>
-		
-		<ContentControl DockPanel.Dock="Top" Content="{Binding NeuralNetwork}"/>
-	</DockPanel>
+				<ContentControl DockPanel.Dock="Top" Content="{Binding NeuralNetwork}"/>
+			</DockPanel>
+		</TabItem>
+
+		<TabItem Header="Statistics" FontSize="16">
+			<DataGrid
+				ScrollViewer.VerticalScrollBarVisibility="Visible"
+				Margin="5"
+				Foreground="Black"
+				FontSize="16"
+				IsReadOnly="True"
+				Items="{Binding TrainingStatistics}"
+				HorizontalAlignment="Left"
+				AutoGenerateColumns="False"
+				FontWeight="Bold"
+				Background="#cfcfcf"
+				RowBackground="White"
+				AlternatingRowBackground="#e8e8e8"
+				HorizontalGridLinesBrush="White"
+				GridLinesVisibility="Horizontal"
+				VerticalAlignment="Top"
+				RowHeight="50">
+				<DataGrid.Columns>
+					<DataGridTextColumn Header="Stat"
+										FontWeight="Bold" FontSize="14"
+										Binding="{Binding Name}"
+										Width="*"/>
+					
+					<DataGridTextColumn Header="Value"
+										FontSize="14"
+										Binding="{Binding Value}"
+										Width="3.5*"
+										FontWeight="Normal"/>
+				</DataGrid.Columns>
+			</DataGrid>
+		</TabItem>
+	</TabControl>
 
 </Window>
