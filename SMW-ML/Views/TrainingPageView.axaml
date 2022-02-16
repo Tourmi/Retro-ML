@@ -29,6 +29,7 @@
 				AutoGenerateColumns="False"
 				FontWeight="Bold"
 				Background="#cfcfcf"
+				RowBackground="White"
 				AlternatingRowBackground="#e8e8e8"
 				HorizontalGridLinesBrush="White"
 				GridLinesVisibility="Horizontal"
@@ -37,7 +38,6 @@
 				<DataGrid.Columns>
 					<DataGridTextColumn Header="Stat"
 										FontWeight="Bold" FontSize="14"
-										Foreground="Red"
 										Binding="{Binding Name}"
 										Width="*"/>
 					

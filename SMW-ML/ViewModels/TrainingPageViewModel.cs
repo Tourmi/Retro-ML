@@ -24,29 +24,36 @@ namespace SMW_ML.ViewModels
         private readonly INeuralTrainer trainer;
         private readonly EmulatorManager emulatorManager;
 
-        private bool canStop = true;
+        #region Strings
+        public static string Status => "Currently training AIs";
+        public static string Stop => "Stop Training";
+        #endregion
 
+        #region Properties
+
+        private bool canStop = true;
+        public bool CanStop
+        {
+            get => canStop;
+            set => this.RaiseAndSetIfChanged(ref canStop, value);
+        }
+
+        public ObservableCollection<TrainingStatistics.Stat> TrainingStatistics { get; set; }
+
+        #endregion
+
+        #region Constructor
         public TrainingPageViewModel()
         {
             //TODO : use config to setup training
             emulatorManager = new(2);
             TrainingStatistics = new ObservableCollection<TrainingStatistics.Stat>();
             trainer = new SharpNeatTrainer(emulatorManager);
-            trainer.OnStatisticsUpdated += new Action<TrainingStatistics>(HandleGetStats);
+            trainer.OnStatisticsUpdated += HandleGetStats;
         }
+        #endregion
 
-        private void HandleGetStats(TrainingStatistics stats)
-        {
-            Dispatcher.UIThread.Post(() =>
-            {
-                TrainingStatistics.Clear();
-                foreach (var stat in stats.GetStats())
-                {
-                    TrainingStatistics.Add(stat);
-                }
-            });
-        }
-
+        #region  Methods
         public async void Init()
         {
             CanStop = true;
@@ -68,9 +75,6 @@ namespace SMW_ML.ViewModels
             trainer.SavePopulation(path);
         }
 
-        public static string Status => "Currently training AIs";
-
-        public static string Stop => "Stop Training";
         public async void StopTraining()
         {
             if (!CanStop) return;
@@ -87,18 +91,22 @@ namespace SMW_ML.ViewModels
                 OnStopTraining?.Invoke();
             });
         }
-        public bool CanStop
-        {
-            get => canStop;
-            set => this.RaiseAndSetIfChanged(ref canStop, value);
-        }
+        #endregion
 
-        private ObservableCollection<TrainingStatistics.Stat> trainingStatistics;
-        public ObservableCollection<TrainingStatistics.Stat> TrainingStatistics
+        #region Events
+
+        private void HandleGetStats(TrainingStatistics stats)
         {
-            get => trainingStatistics;
-            set => this.RaiseAndSetIfChanged(ref trainingStatistics, value);
+            Dispatcher.UIThread.Post(() =>
+            {
+                TrainingStatistics.Clear();
+                foreach (var stat in stats.GetStats())
+                {
+                    TrainingStatistics.Add(stat);
+                }
+            });
         }
+        #endregion
 
     }
 }

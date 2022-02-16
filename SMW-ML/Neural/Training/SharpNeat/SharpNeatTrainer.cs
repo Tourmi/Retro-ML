@@ -24,7 +24,7 @@ namespace SMW_ML.Neural.Training.SharpNeatImpl
 {
     internal class SharpNeatTrainer : INeuralTrainer
     {
-        public event Action<TrainingStatistics> OnStatisticsUpdated;
+        public event Action<TrainingStatistics>? OnStatisticsUpdated;
 
         private readonly SMWExperimentFactory experimentFactory;
         private readonly Semaphore syncSemaphore;
@@ -41,7 +41,6 @@ namespace SMW_ML.Neural.Training.SharpNeatImpl
         private bool isTraining = false;
 
         public bool IsTraining => isTraining;
-        //public TrainingStatistics TrainingStatistics { get; set; }
 
         /// <summary>
         /// Neural training using the SharpNEAT library
@@ -102,6 +101,7 @@ namespace SMW_ML.Neural.Training.SharpNeatImpl
             isTraining = true;
 
             syncSemaphore.WaitOne();
+            OnStatisticsUpdated?.Invoke(GetTrainingStatistics());
             currentAlgo!.Initialise();
             SavePopulation(DefaultPaths.CURRENT_POPULATION);
 
@@ -109,7 +109,6 @@ namespace SMW_ML.Neural.Training.SharpNeatImpl
             {
                 currentAlgo!.PerformOneGeneration();
 
-//                GetTrainingStatistics();
                 OnStatisticsUpdated?.Invoke(GetTrainingStatistics());
 
                 SavePopulation(DefaultPaths.CURRENT_POPULATION);
@@ -144,10 +143,17 @@ namespace SMW_ML.Neural.Training.SharpNeatImpl
         public TrainingStatistics GetTrainingStatistics()
         {
             TrainingStatistics ts = new();
-            ts.AddStat("Best Complexity", currentAlgo!.Population.Stats.BestComplexity);
-            ts.AddStat("Best Fitness", currentAlgo!.Population.Stats.BestFitness.PrimaryFitness);
+
+            ts.AddStat("Current Generation", currentAlgo!.Stats.Generation + 1);
+            ts.AddStat("Best Genome's Fitness", currentAlgo!.Population.Stats.BestFitness.PrimaryFitness);
+            ts.AddStat("Best Genome's Complexity", currentAlgo!.Population.Stats.BestComplexity);
+            ts.AddStat("Mean Fitness", currentAlgo!.Population.Stats.MeanFitness);
+            ts.AddStat("Mean Complexity", currentAlgo!.Population.Stats.MeanComplexity);
+            ts.AddStat("Maximum Complexity", currentAlgo!.Population!.Stats.MaxComplexity);
+            ts.AddStat("Evaluations per second", currentAlgo!.Stats.EvaluationsPerSec);
+            ts.AddStat("Total evaluations so far", currentAlgo!.Stats.TotalEvaluationCount);
+
             return ts;
         }
-
     }
 }
