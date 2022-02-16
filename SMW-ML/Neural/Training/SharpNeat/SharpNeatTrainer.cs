@@ -152,7 +152,7 @@ namespace SMW_ML.Neural.Training.SharpNeatImpl
             ts.AddStat("Mean Fitness", currentAlgo!.Population.Stats.MeanFitness);
             ts.AddStat("Mean Complexity", currentAlgo!.Population.Stats.MeanComplexity);
             ts.AddStat("Maximum Complexity", currentAlgo!.Population!.Stats.MaxComplexity);
-            ts.AddStat("Evaluations per second", currentAlgo!.Stats.EvaluationsPerSec);
+            ts.AddStat("Evaluations per minute", currentAlgo!.Stats.EvaluationsPerSec * 60);
             ts.AddStat("Total evaluations so far", currentAlgo!.Stats.TotalEvaluationCount);
 
             return ts;

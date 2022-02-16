@@ -39,8 +39,8 @@ To run the application, you first need to copy a Super Mario World rom file to t
 ## Using the application
 
 ### Main page
-
 ![Image of the main page of the application](docs/mainApp.png)  
+
 * **[Start training](#training-page)**
 * **[Play mode](#play-mode)**
 * **Load population**
@@ -50,17 +50,40 @@ To run the application, you first need to copy a Super Mario World rom file to t
 * **[Training Configuration](#configuration)**
 
 ### Training Page
-
-![Image of the training page](docs/training-training.png)  
 When entering this page, the training of AIs will be started automatically, using the [app's configuration](#configuration). Note that the UI might be unresponsive if too many emulator instances are running at once. Please do not close any emulators manually, as this will break the application.
+
+#### Training Tab
+![Image of the training page's training tab](docs/training-training.png)  
+
 * **Neural Network visualization**
   * Shows the first emulator's neural network structure and values. When the emulators finish booting, the emulator being represented will be the one on the bottom. The refresh rate of the preview will depend on the computer's performances, and having too many emulators running at once will affect it.
 * **Stop Training**
   * Will stop training at the end of the current generation. Please be patient if the population size is big, and not many emulators are running at once. It will return to the [main page](#main-page) once it is done.
+  
+#### Statistics Tab
+![Image of the training page's statistics tab](docs/training-stats.png)  
+
+This tab shows statistics of the current training session. They are updated at the end of every generation.
+* **Current generation**
+  * Shows the current generation number. Note that this number is reset whenever starting a new training session, even after loading an existing population.
+* **Best genome's fitness**
+  * The best AI's current score.
+* **Best genome's complexity**
+  * The amount of connections in the neural network of the best AI.
+* **Mean fitness**
+  * The average score of all the AIs.
+* **Mean complexity**
+  * The average complexity (amount of connections in the neural network) of all the AIs.
+* **Maximum complexity**
+  * The maximum complexity of all the AIs.
+* **Evaluations per minute**
+  * The amount of AIs that are evaluated per minute.
+* **Total evaluations so far**
+  * The amount of AIs evaluated since the start of training.
 
 ### Play Mode
+![Image of the play mode page](docs/playmode.png)  
 
-![Image of the play mode page](docs/playmode.png)
 This page is used to make specific genomes play on specific levels, both of them being manually selected. It is a good way to check the abilities of a genome on levels that aren't part of its training-set.
 * **Load Genome**
   * Loads the genome to use for the play mode. Selecting a new genome while the play mode is running reloads the save state and starts it again using the new genome.
@@ -77,6 +100,7 @@ This page is used to make specific genomes play on specific levels, both of them
 
 #### Training
 ![Image of the neural network configuration menu](docs/config-training.png)  
+
 * **Number of AIs**
   * Determines the total population size of the training. Making it too big will make evolution really slow, while making it too small will make break-throughs extremely rare.
 * **Species count**
@@ -88,6 +112,7 @@ This page is used to make specific genomes play on specific levels, both of them
 
 #### Application
 ![Image of the app configuration menu](docs/config-app.png)  
+
 * **Multithread**
   * This is the amount of emulators which will be booted while training. It is recommended to not put this value higher than the amount of cores within your computer, as performance will be greatly affected. For the fastest training, at the cost of using up all of the CPU resources available, set to the exact amount of cores in your computer. Otherwise, set to a lower value.
 * **Communication Port with Arduino**
@@ -100,6 +125,7 @@ This page is used to make specific genomes play on specific levels, both of them
 
 #### Objectives
 ![Image of the objectives configuration menu](docs/config-objectives.png)  
+
 This page lists all of the available training objectives. Some of them cannot be disabled, but the multiplier can be set to 0 so it won't affect the score, at least. The values pictured are the recommended values when training AIs from nothing, but you may experiment at your leisure.
 * **Enabled**
   * Whether or not this objective will affect the score.
@@ -108,6 +134,7 @@ This page lists all of the available training objectives. Some of them cannot be
   * The amount by which to multiply the objective's score.
 
 ##### Objectives information
+
 * **Died**
   * The amount of points to attribute to an AI that died. 
   * It is recommended to set this value to a negative value to discourage AIs from killing themselves.
@@ -134,6 +161,7 @@ This page lists all of the available training objectives. Some of them cannot be
   
 #### Neural
 ![Image of the neural configuration menu](docs/config-neural.png)  
+
 This page lists all of the inputs and outputs that can be toggled for the neural networks, as well as the distance (in tiles) that the AI can see.  
 ⚠ Changing any of these values will make previously trained AIs incompatible with the application ⚠
 * **View distance horizontal**
