@@ -1,1 +1,2 @@
-*.axaml linguist-detectable
+**/*.axaml linguist-language=XML
+**/*.axaml linguist-detectable
