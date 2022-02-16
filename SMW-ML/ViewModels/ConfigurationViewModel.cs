@@ -41,7 +41,7 @@ namespace SMW_ML.ViewModels
         public static string ButtonCloseString => "Close";
         public static string ElitismProportionString => "Elitism Proportion";
         public static string SelectionProportionString => "Selection Proportion";
-        public static string TabItemSharpNeat => "Neural Network";
+        public static string TabItemSharpNeat => "Training";
         public static string TabItemBizhawk => "Emulator";
         public static string TabItemApp => "Application";
         public static string TabItemObjectives => "Objectives";

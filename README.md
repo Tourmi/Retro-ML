@@ -75,8 +75,8 @@ This page is used to make specific genomes play on specific levels, both of them
 
 ### Configuration
 
-#### Neural Network
-![Image of the neural network configuration menu](docs/config-neural.png)  
+#### Training
+![Image of the neural network configuration menu](docs/config-training.png)  
 * **Number of AIs**
   * Determines the total population size of the training. Making it too big will make evolution really slow, while making it too small will make break-throughs extremely rare.
 * **Species count**
@@ -131,3 +131,29 @@ This page lists all of the available training objectives. Some of them cannot be
   * The amount of points to give the AI per 1-up collected from any source.
 * **High Score**
   * The amount of points to give the AI for its displayed high-score, divided by 1000. So a high-score of 55200 with a multiplier of 2 will give a total amount of points of 110.4 to the AI.
+  
+#### Neural
+![Image of the neural configuration menu](docs/config-neural.png)  
+This page lists all of the inputs and outputs that can be toggled for the neural networks, as well as the distance (in tiles) that the AI can see.  
+⚠ Changing any of these values will make previously trained AIs incompatible with the application ⚠
+* **View distance horizontal**
+  * The horizontal distance that the AI can see for, in tiles, not including the tile the AI is on. This means that if we set both the horizontal and vertical distances to 4, a 9x9 grid of inputs will be used.
+* **View distance vertical**
+  * The vertical distance that the AI can see for, in tiles, not including the tile the AI is on. This means that if we set both the horizontal and vertical distances to 4, a 9x9 grid of inputs will be used.
+* **Input nodes**
+  * Tiles : The tiles the AI can stand on. V*H total nodes.
+  * Dangers : The dangerous tiles around the AI. Includes dangerous tiles as well as dangerous sprites. V*H total nodes.
+  * Goodies : The "good" tiles around the AI. Includes coins, powerups, blocks that contain items. V*H total nodes.
+  * On ground : Whether or not the AI is touching the ground.
+  * In water : Whether or not the AI is in water
+  * Raising : Whether or not the AI is raising, both out of a jump as well as while swimming.
+  * Sinking : Whether or not the AI is falling, both out of a jump as well as while swimming.
+  * Can jump out of water : Whether or not the AI will get out of the water by jumping.
+  * Carrying : Whether or not the AI is carrying something.
+  * Can Climb : ⚠Not guaranteed to always be right. Whether or not the AI can climb at the moment.
+  * Max Speed : Whether or not the AI has reached maximum speed.
+  * Message box : Whether or not there currently is a message box open.
+  * Internal clock : Timed bias value. Alternates between on and off every couple frames.
+  * Bias : Bias value. Always on.
+* **Output nodes**
+  * The output nodes are self-explanatory, there is one for each button available on an SNES controller.
