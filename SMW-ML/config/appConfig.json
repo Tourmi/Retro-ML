@@ -55,5 +55,37 @@
     "config\\SaveStates\\yoshi-island-2.State",
     "config\\SaveStates\\yoshi-island-3.State",
     "config\\SaveStates\\yoshi-island-4.State"
-  ]
+  ],
+  "neuralConfig": {
+    "enabledStates": [
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      false,
+      false,
+      false,
+      false
+    ],
+    "gridDistanceX": 4,
+    "gridDistanceY": 4
+  }
 }

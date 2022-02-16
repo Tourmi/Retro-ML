@@ -45,6 +45,7 @@ namespace SMW_ML.ViewModels
         public static string TabItemBizhawk => "Emulator";
         public static string TabItemApp => "Application";
         public static string TabItemObjectives => "Objectives";
+        public static string TabItemNeural => "Neural";
 
         #endregion
 
@@ -212,6 +213,20 @@ namespace SMW_ML.ViewModels
 
         public List<ScoreFactorViewModel>? Objectives { get; set; }
 
+        private int viewDistanceHorizontal;
+        public int ViewDistanceHorizontal
+        {
+            get => viewDistanceHorizontal;
+            set => this.RaiseAndSetIfChanged(ref viewDistanceHorizontal, value);
+        }
+        private int viewDistanceVertical;
+        public int ViewDistanceVertical
+        {
+            get => viewDistanceVertical;
+            set => this.RaiseAndSetIfChanged(ref viewDistanceVertical, value);
+        }
+        public List<InputOutputConfigViewModel>? NeuralConfigs { get; set; }
+
 
         public new event PropertyChangedEventHandler PropertyChanged;
         protected void OnPropertyChanged(string name)
@@ -335,6 +350,21 @@ namespace SMW_ML.ViewModels
                 }
             }
 
+            //Tab Neural
+
+            ApplicationConfig.NeuralConfig.GridDistanceX = ViewDistanceHorizontal;
+            ApplicationConfig.NeuralConfig.GridDistanceY = ViewDistanceVertical;
+            int inputCount = ApplicationConfig.NeuralConfig.InputNodes.Count;
+            int outputCount = ApplicationConfig.NeuralConfig.OutputNodes.Count;
+            for (int i = 0; i < inputCount; i++)
+            {
+                ApplicationConfig.NeuralConfig.EnabledStates[i] = NeuralConfigs![i].IsEnabled;
+            }
+            for (int i = inputCount; i < inputCount + outputCount; i++)
+            {
+                ApplicationConfig.NeuralConfig.EnabledStates[i] = NeuralConfigs![i].IsEnabled;
+            }
+
             string appOutput = JsonConvert.SerializeObject(ApplicationConfig, Formatting.Indented, JSON_CONFIG);
             File.WriteAllText(DefaultPaths.APP_CONFIG, appOutput);
         }
@@ -364,6 +394,7 @@ namespace SMW_ML.ViewModels
             ApplicationConfig = JsonConvert.DeserializeObject<ApplicationConfig>(appConfigJson, JSON_CONFIG);
 
             if (ApplicationConfig == null) { return; }
+            ApplicationConfig.NeuralConfig.InitNodes();
 
             Multithread = ApplicationConfig.Multithread;
             ArduinoPort = ApplicationConfig.ArduinoCommunicationPort;
@@ -378,6 +409,19 @@ namespace SMW_ML.ViewModels
             {
                 Objectives.Add(new(obj));
             }
+
+            //Tab Neural
+            NeuralConfigs = new List<InputOutputConfigViewModel>();
+            foreach (var input in ApplicationConfig.NeuralConfig.InputNodes)
+            {
+                NeuralConfigs.Add(new(input));
+            }
+            foreach (var output in ApplicationConfig.NeuralConfig.OutputNodes)
+            {
+                NeuralConfigs.Add(new(output));
+            }
+            ViewDistanceHorizontal = ApplicationConfig.NeuralConfig.GridDistanceX;
+            ViewDistanceVertical = ApplicationConfig.NeuralConfig.GridDistanceY;
         }
 
         public async void SelectSaveStates()

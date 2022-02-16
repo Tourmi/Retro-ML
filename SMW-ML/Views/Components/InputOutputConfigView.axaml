@@ -1,0 +1,25 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+			 xmlns:vm="clr-namespace:SMW_ML.ViewModels.Components;assembly=SMW_ML"
+             x:Class="SMW_ML.Views.Components.InputOutputConfigView">
+	
+	<UserControl.Styles>
+		<StyleInclude Source="/Styles/MainStyles.axaml" />
+	</UserControl.Styles>
+	
+	<StackPanel>
+		<StackPanel Orientation="Horizontal" VerticalAlignment="Center" Spacing="10">
+			<TextBlock Text="Enabled: " VerticalAlignment="Center"/>
+			<CheckBox IsChecked="{Binding IsEnabled}" VerticalAlignment="Center"/>
+			<TextBlock Text="Type: " VerticalAlignment="Center"/>
+			<TextBlock Text="Input" FontWeight="UltraBold" IsVisible="{Binding IsInput}" VerticalAlignment="Center" Width="60"/>
+			<TextBlock Text="Output" FontWeight="UltraBold" IsVisible="{Binding IsOutput}" VerticalAlignment="Center" Width="60"/>
+			<TextBlock Text="Name: " VerticalAlignment="Center"/>
+			<TextBlock Classes="h1" Text="{Binding Name}" VerticalAlignment="Center"/>
+		</StackPanel>
+	</StackPanel>
+</UserControl>
+

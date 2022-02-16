@@ -65,10 +65,10 @@ namespace SMW_ML.ViewModels
         {
             string appConfigJson = File.ReadAllText(DefaultPaths.APP_CONFIG);
             ApplicationConfig appConfig = JsonConvert.DeserializeObject<ApplicationConfig>(appConfigJson, new JsonSerializerSettings() { TypeNameHandling = TypeNameHandling.Auto, ObjectCreationHandling = ObjectCreationHandling.Replace })!;
+            appConfig.NeuralConfig.InitNodes();
 
-            NeuralConfig neuralConfig = new();
-            NeuralNetwork = new NetworkViewModel(neuralConfig);
-            emulatorManager = new(1, appConfig, neuralConfig);
+            NeuralNetwork = new NetworkViewModel(appConfig.NeuralConfig);
+            emulatorManager = new(1, appConfig);
             neuralPlayer = new SharpNeatPlayer(emulatorManager);
             emulatorManager.GetFirstEmulator().LinkedNetworkActivated += NeuralNetwork.UpdateNodes;
             emulatorManager.GetFirstEmulator().ChangedLinkedNetwork += NeuralNetwork.UpdateTopology;

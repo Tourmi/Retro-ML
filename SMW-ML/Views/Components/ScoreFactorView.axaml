@@ -5,9 +5,11 @@
              mc:Ignorable="d" d:DesignWidth="600" d:DesignHeight="200"
 			 xmlns:vm="clr-namespace:SMW_ML.ViewModels.Components;assembly=SMW_ML"
              x:Class="SMW_ML.Views.Components.ScoreFactorView">
+	
 	<UserControl.Styles>
 		<StyleInclude Source="/Styles/MainStyles.axaml" />
 	</UserControl.Styles>
+	
 	<StackPanel>
 		<TextBlock Classes="h1" Text="{Binding Name}"/>
 		<StackPanel Margin="5" Orientation="Horizontal" VerticalAlignment="Center" Spacing="10">

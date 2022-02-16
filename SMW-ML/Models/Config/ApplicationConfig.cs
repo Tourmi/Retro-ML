@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
 
 namespace SMW_ML.Models.Config
 {
@@ -26,6 +27,8 @@ namespace SMW_ML.Models.Config
                 new HighScoreScoreFactor() { ScoreMultiplier = 1 }
             };
             SaveStates = new List<string>();
+
+            NeuralConfig = new NeuralConfig();
         }
 
         public int Multithread { get; set; }
@@ -34,6 +37,8 @@ namespace SMW_ML.Models.Config
         public int? StopTrainingConditionValue { get; set; }
         public List<IScoreFactor> ScoreFactors { get; set; }
         public List<string> SaveStates { get; set; }
+        [JsonProperty]
+        internal NeuralConfig NeuralConfig { get; set; }
 
         public IEnumerable<IScoreFactor> GetScoreFactorClones()
         {

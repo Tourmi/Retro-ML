@@ -15,8 +15,6 @@ namespace SMW_ML.Emulator
 {
     internal class EmulatorManager
     {
-        private readonly NeuralConfig neuralConfig;
-
         private const int SOCKET_PORT = 11000;
         private const int MAX_CONNECTIONS = 100;
 
@@ -28,11 +26,11 @@ namespace SMW_ML.Emulator
 
         private ApplicationConfig applicationConfig;
 
-        public EmulatorManager(ApplicationConfig appConfig, NeuralConfig neuralConfig) : this(appConfig.Multithread, appConfig, neuralConfig)
+        public EmulatorManager(ApplicationConfig appConfig) : this(appConfig.Multithread, appConfig)
         {
         }
 
-        public EmulatorManager(int emulatorCount, ApplicationConfig appConfig, NeuralConfig neuralConfig)
+        public EmulatorManager(int emulatorCount, ApplicationConfig appConfig)
         {
             applicationConfig = appConfig;
 
@@ -40,7 +38,6 @@ namespace SMW_ML.Emulator
             this.adaptersTaken = new bool[emulatorCount];
 
             sem = new Semaphore(1, 1);
-            this.neuralConfig = neuralConfig;
         }
 
         public void Init()
@@ -64,7 +61,7 @@ namespace SMW_ML.Emulator
                     socketIP: ipAddress.ToString(),
                     socketPort: SOCKET_PORT.ToString(),
                     server,
-                    neuralConfig);
+                    applicationConfig.NeuralConfig);
             }
 
 
@@ -136,8 +133,8 @@ namespace SMW_ML.Emulator
             sem.Release();
         }
 
-        public int GetInputCount() => neuralConfig.GetInputCount();
+        public int GetInputCount() => applicationConfig.NeuralConfig.GetInputCount();
 
-        public int GetOutputCount() => neuralConfig.GetOutputCount();
+        public int GetOutputCount() => applicationConfig.NeuralConfig.GetOutputCount();
     }
 }
