@@ -35,7 +35,7 @@ namespace SMW_ML.Game.SuperMarioWorld
         }
 
         public bool GetState(DataFetcher dataFetcher) => getStateFunction!.Invoke(dataFetcher);
-        
+
         public bool[,] GetStates(DataFetcher dataFetcher) => getStatesFunction!.Invoke(dataFetcher);
     }
 }

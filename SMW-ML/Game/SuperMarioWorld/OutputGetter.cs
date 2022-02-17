@@ -1,10 +1,6 @@
 ﻿using SharpNeat.BlackBox;
 using SMW_ML.Models.Config;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SMW_ML.Game.SuperMarioWorld
 {
@@ -31,7 +27,7 @@ namespace SMW_ML.Game.SuperMarioWorld
 
             int outputCount = neuralConfig.GetOutputCount();
 
-            for(; currIndex < outputCount && controllerIndex < Input.BUTTON_COUNT; currIndex++, controllerIndex++)
+            for (; currIndex < outputCount && controllerIndex < Input.BUTTON_COUNT; currIndex++, controllerIndex++)
             {
                 if (!outputNodes[controllerIndex].ShouldUse)
                 {

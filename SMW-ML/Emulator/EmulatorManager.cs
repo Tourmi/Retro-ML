@@ -1,15 +1,11 @@
 ﻿using SMW_ML.Arduino;
-using SMW_ML.Game.SuperMarioWorld;
 using SMW_ML.Models.Config;
 using SMW_ML.Utils;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Sockets;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 
 namespace SMW_ML.Emulator
 {

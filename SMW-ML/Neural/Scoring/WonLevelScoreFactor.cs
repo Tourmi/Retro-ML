@@ -1,5 +1,4 @@
 ﻿using SMW_ML.Game.SuperMarioWorld;
-using System;
 
 namespace SMW_ML.Neural.Scoring
 {

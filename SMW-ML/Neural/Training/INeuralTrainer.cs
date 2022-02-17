@@ -1,10 +1,5 @@
-﻿using SharpNeat.EvolutionAlgorithm;
-using SMW_ML.Neural.Training.SharpNeat;
+﻿using SMW_ML.Neural.Training.SharpNeat;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SMW_ML.Neural.Training
 {

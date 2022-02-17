@@ -3,8 +3,6 @@ using SMW_ML.Game.SuperMarioWorld.Data;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using static SMW_ML.Game.SuperMarioWorld.Addresses;
 
 namespace SMW_ML.Game.SuperMarioWorld

@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace SMW_ML.Game.SuperMarioWorld.Data
+﻿namespace SMW_ML.Game.SuperMarioWorld.Data
 {
     internal static class PlayerAnimationStates
     {

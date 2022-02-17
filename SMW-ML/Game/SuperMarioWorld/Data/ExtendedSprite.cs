@@ -1,14 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SMW_ML.Game.SuperMarioWorld.Data
 {
     internal struct ExtendedSprite
     {
-        private static readonly byte[] DANGEROUS_SPRITES = new byte[] { 0x02, 0x03, 0x04, 0x06, 0x08, 0x0B, 0x0C, 0x0D};
+        private static readonly byte[] DANGEROUS_SPRITES = new byte[] { 0x02, 0x03, 0x04, 0x06, 0x08, 0x0B, 0x0C, 0x0D };
 
         /// <summary>
         /// <br>00	(empty)                                        </br>

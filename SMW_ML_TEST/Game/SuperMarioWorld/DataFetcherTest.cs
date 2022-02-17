@@ -166,7 +166,7 @@ namespace SMW_ML_TEST.Game.SuperMarioWorld
         [Test]
         public void WasInternalClockTriggered()
         {
-            for(int i = 0; i < DataFetcher.INTERNAL_CLOCK_LENGTH; i++)
+            for (int i = 0; i < DataFetcher.INTERNAL_CLOCK_LENGTH; i++)
             {
                 dataFetcher!.NextFrame();
                 Assert.False(dataFetcher!.WasInternalClockTriggered());

@@ -1,25 +1,19 @@
 ﻿using Avalonia.Controls;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
 using ReactiveUI;
+using SMW_ML.Models;
+using SMW_ML.Models.Config;
+using SMW_ML.Neural.Scoring;
+using SMW_ML.Utils;
+using SMW_ML.ViewModels.Components;
 using SMW_ML.Views;
-using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Runtime.Serialization;
-using System.Text;
-using System.Threading.Tasks;
-using SMW_ML.Models.Config;
-using System.ComponentModel;
-using SMW_ML.Models;
-using Avalonia;
-using System.Runtime.CompilerServices;
-using Avalonia.Data;
-using SMW_ML.Utils;
-using SMW_ML.Neural.Scoring;
-using SMW_ML.ViewModels.Components;
-using Newtonsoft.Json.Serialization;
 
 namespace SMW_ML.ViewModels
 {

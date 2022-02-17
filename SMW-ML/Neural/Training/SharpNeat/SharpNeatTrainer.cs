@@ -1,25 +1,19 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Text.Json;
-using SharpNeat.Experiments;
+﻿using SharpNeat.Experiments;
 using SharpNeat.IO;
 using SharpNeat.Neat;
-using System.Threading;
 using SharpNeat.Neat.EvolutionAlgorithm;
-using SMW_ML.Emulator;
-using System.Diagnostics;
-using System.IO;
-using Newtonsoft.Json;
-using SharpNeat.Neat.Genome.IO;
 using SharpNeat.Neat.Genome;
+using SharpNeat.Neat.Genome.IO;
 using SharpNeat.NeuralNets.Double.ActivationFunctions;
-using SMW_ML.Utils;
-using SharpNeat.EvolutionAlgorithm;
-using SMW_ML.Neural.Training.SharpNeat;
+using SMW_ML.Emulator;
 using SMW_ML.Models.Config;
+using SMW_ML.Neural.Training.SharpNeat;
+using SMW_ML.Utils;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Threading;
 
 namespace SMW_ML.Neural.Training.SharpNeatImpl
 {

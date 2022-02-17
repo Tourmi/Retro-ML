@@ -1,6 +1,4 @@
-﻿using System.Threading.Tasks;
-using Avalonia.Controls;
-using Avalonia.Interactivity;
+﻿using Avalonia.Controls;
 using Avalonia.Markup.Xaml;
 
 namespace SMW_ML.Views.Components

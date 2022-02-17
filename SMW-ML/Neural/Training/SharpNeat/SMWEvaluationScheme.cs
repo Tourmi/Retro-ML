@@ -1,14 +1,8 @@
 ﻿using SharpNeat.BlackBox;
 using SharpNeat.Evaluation;
 using SMW_ML.Emulator;
-using SMW_ML.Game;
-using SMW_ML.Game.SuperMarioWorld;
 using SMW_ML.Models.Config;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SMW_ML.Neural.Training.SharpNeatImpl
 {

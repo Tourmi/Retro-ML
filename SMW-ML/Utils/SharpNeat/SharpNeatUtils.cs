@@ -1,11 +1,6 @@
 ﻿using SharpNeat.BlackBox;
 using SharpNeat.Graphs;
 using SharpNeat.Graphs.Acyclic;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SMW_ML.Utils.SharpNeat
 {

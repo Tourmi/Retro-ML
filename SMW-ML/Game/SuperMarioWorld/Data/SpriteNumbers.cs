@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace SMW_ML.Game.SuperMarioWorld.Data
+﻿namespace SMW_ML.Game.SuperMarioWorld.Data
 {
     internal static class SpriteNumbers
     {
@@ -120,7 +114,7 @@ namespace SMW_ML.Game.SuperMarioWorld.Data
                 FALLING_GREY_PLATFORM or
                 SPOTLIGHT or
                 INVISIBLE_MUSHROOM or
-                LIGHT_SWITCH 
+                LIGHT_SWITCH
                 => false,
                 _ => true,
             };

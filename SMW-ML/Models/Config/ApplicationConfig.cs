@@ -1,10 +1,6 @@
-﻿using SMW_ML.Neural.Scoring;
-using System;
+﻿using Newtonsoft.Json;
+using SMW_ML.Neural.Scoring;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Newtonsoft.Json;
 
 namespace SMW_ML.Models.Config
 {

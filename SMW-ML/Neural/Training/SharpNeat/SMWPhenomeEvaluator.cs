@@ -1,7 +1,5 @@
 ﻿using SharpNeat.BlackBox;
 using SharpNeat.Evaluation;
-using SharpNeat.Graphs;
-using SharpNeat.Graphs.Acyclic;
 using SMW_ML.Emulator;
 using SMW_ML.Game.SuperMarioWorld;
 using SMW_ML.Models.Config;

@@ -1,19 +1,11 @@
 ﻿using Avalonia;
-using Avalonia.Collections;
-using Avalonia.Controls;
-using Avalonia.Controls.Shapes;
 using Avalonia.Threading;
 using ReactiveUI;
-using SharpNeat.BlackBox;
-using SMW_ML.Game.SuperMarioWorld;
 using SMW_ML.Models.Config;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.ComponentModel;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SMW_ML.ViewModels.Neural
 {

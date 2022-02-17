@@ -8,12 +8,8 @@ using SMW_ML.Neural.Play.SharpNeat;
 using SMW_ML.Utils;
 using SMW_ML.ViewModels.Neural;
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 
 namespace SMW_ML.ViewModels
 {

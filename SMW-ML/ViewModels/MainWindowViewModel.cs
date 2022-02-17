@@ -1,6 +1,4 @@
-using Avalonia.Controls;
 using ReactiveUI;
-using SMW_ML.Models.Config;
 using SMW_ML.Views.Components;
 using System.Threading;
 

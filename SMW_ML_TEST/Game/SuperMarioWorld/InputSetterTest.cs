@@ -2,11 +2,6 @@
 using SMW_ML.Game.SuperMarioWorld;
 using SMW_ML.Models.Config;
 using SMW_ML_TEST.Emulator;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SMW_ML_TEST.Game.SuperMarioWorld
 {

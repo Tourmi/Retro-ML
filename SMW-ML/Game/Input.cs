@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SMW_ML.Game
 {
@@ -11,18 +7,18 @@ namespace SMW_ML.Game
         public const int BUTTON_COUNT = 12;
 
         private static readonly Buttons[] buttons = new Buttons[] {
-            Buttons.A, 
-            Buttons.B, 
-            Buttons.X, 
-            Buttons.Y, 
-            Buttons.Left, 
-            Buttons.Right, 
-            Buttons.Up, 
-            Buttons.Down, 
-            Buttons.LeftShoulder, 
-            Buttons.RightShoulder, 
-            Buttons.Start, 
-            Buttons.Select 
+            Buttons.A,
+            Buttons.B,
+            Buttons.X,
+            Buttons.Y,
+            Buttons.Left,
+            Buttons.Right,
+            Buttons.Up,
+            Buttons.Down,
+            Buttons.LeftShoulder,
+            Buttons.RightShoulder,
+            Buttons.Start,
+            Buttons.Select
         };
 
         public enum Buttons
@@ -80,7 +76,7 @@ namespace SMW_ML.Game
         public override string ToString()
         {
             string output = "";
-            for (int i =0; i < inputMask.Length; i++)
+            for (int i = 0; i < inputMask.Length; i++)
             {
                 if (inputMask[i])
                 {
