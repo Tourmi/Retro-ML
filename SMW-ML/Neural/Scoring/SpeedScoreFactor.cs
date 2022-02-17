@@ -18,11 +18,12 @@ namespace SMW_ML.Neural.Scoring
         public void Update(DataFetcher dataFetcher)
         {
             maxX = Math.Max(maxX, dataFetcher.GetPositionX());
+            framesTaken++;
         }
 
         public void LevelDone()
         {
-            currScore += (maxX / 16.0) / (framesTaken / 60.0) * ScoreMultiplier;
+            currScore += (maxX / 16.0) / (Math.Min(framesTaken, 1) / 60.0) * ScoreMultiplier;
             framesTaken = 0;
             maxX = 0;
         }
