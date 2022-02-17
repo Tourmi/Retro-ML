@@ -21,7 +21,12 @@
     },
     {
       "$type": "SMW_ML.Neural.Scoring.TimeTakenScoreFactor, SMW_ML",
-      "scoreMultiplier": 1.0,
+      "scoreMultiplier": 0,
+      "isDisabled": false
+    },
+    {
+      "$type": "SMW_ML.Neural.Scoring.SpeedScoreFactor, SMW_ML",
+      "scoreMultiplier": 10.0,
       "isDisabled": false
     },
     {

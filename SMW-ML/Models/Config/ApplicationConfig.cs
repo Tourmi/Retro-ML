@@ -10,18 +10,7 @@ namespace SMW_ML.Models.Config
         {
             StopTrainingCondition = "";
             ArduinoCommunicationPort = "COM3";
-            ScoreFactors = new List<IScoreFactor>()
-            {
-                new DiedScoreFactor() { ScoreMultiplier = -10 },
-                new DistanceScoreFactor() { ScoreMultiplier = 3 },
-                new StopMovingScoreFactor() { ScoreMultiplier = -10 },
-                new TimeTakenScoreFactor() { ScoreMultiplier = 1 },
-                new WonLevelScoreFactor() { ScoreMultiplier = 100 },
-                new CoinsScoreFactor() { ScoreMultiplier = 5 },
-                new YoshiCoinsScoreFactor() { ScoreMultiplier = 15 },
-                new OneUpsScoreFactor() { ScoreMultiplier = 30 },
-                new HighScoreScoreFactor() { ScoreMultiplier = 1 }
-            };
+            ScoreFactors = new List<IScoreFactor>();
             SaveStates = new List<string>();
 
             NeuralConfig = new NeuralConfig();
