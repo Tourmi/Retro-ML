@@ -54,28 +54,39 @@ namespace SMW_ML.ViewModels
 
         public void HandleStartTraining()
         {
+            trainingPageViewModel.IsEnabled = false;
             Content = trainingPageViewModel;
             trainingPageViewModel.Init();
+            trainingPageViewModel.IsEnabled = true;
         }
 
         public void HandleStopTraining()
         {
+            mainPageViewModel.IsEnabled = false;
             Content = mainPageViewModel;
             mainPageViewModel.CanSaveTraining = true;
+            mainPageViewModel.IsEnabled = true;
         }
 
         public void HandleOpenPlayMode()
         {
+            playingPageViewModel.IsEnabled = false;
             Content = playingPageViewModel;
-            new Thread(() => { playingPageViewModel.Init(); }).Start();
+            new Thread(() =>
+            {
+                playingPageViewModel.Init();
+                playingPageViewModel.IsEnabled = true;
+            }).Start();
         }
 
         public void HandlePlayingExit()
         {
+            mainPageViewModel.IsEnabled = false;
             Content = mainPageViewModel;
             playingPageViewModel.OnExit -= HandlePlayingExit;
             playingPageViewModel = new PlayingPageViewModel();
             playingPageViewModel.OnExit += HandlePlayingExit;
+            mainPageViewModel.IsEnabled = true;
         }
 
     }

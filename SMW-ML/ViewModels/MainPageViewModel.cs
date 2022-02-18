@@ -30,6 +30,7 @@ namespace SMW_ML.ViewModels
         public static string LoadPopulationString => "Load population";
         public async void LoadPopulation()
         {
+            IsEnabled = false;
             OpenFileDialog fileDialog = new();
             fileDialog.Filters.Add(new FileDialogFilter() { Name = "Population", Extensions = { "pop" } });
             fileDialog.AllowMultiple = false;
@@ -40,15 +41,18 @@ namespace SMW_ML.ViewModels
 
             if (string.IsNullOrWhiteSpace(path))
             {
+                IsEnabled = true;
                 return;
             }
 
             OnLoadPopulation?.Invoke(path);
+            IsEnabled = true;
         }
 
         public static string SavePopulationString => "Save population";
         public async void SavePopulation()
         {
+            IsEnabled = false;
             SaveFileDialog fileDialog = new();
             fileDialog.Filters.Add(new() { Name = "Population", Extensions = { "pop" } });
             fileDialog.Directory = Path.GetFullPath(".");
@@ -58,10 +62,12 @@ namespace SMW_ML.ViewModels
 
             if (string.IsNullOrWhiteSpace(path))
             {
+                IsEnabled = true;
                 return;
             }
 
             OnSavePopulation?.Invoke(path);
+            IsEnabled = true;
         }
 
         public static string OpenSettingsString => "Training Configuration";

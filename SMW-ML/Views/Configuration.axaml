@@ -6,7 +6,8 @@
         mc:Ignorable="d" d:DesignWidth="700" d:DesignHeight="500"
         x:Class="SMW_ML.Views.Configuration"
         Title="Configuration"
-		Name="ConfigurationWindow">
+		Name="ConfigurationWindow"
+		IsEnabled="{Binding IsEnabled}">
 	<Design.DataContext>
 		<vm:ConfigurationViewModel/>
 	</Design.DataContext>
