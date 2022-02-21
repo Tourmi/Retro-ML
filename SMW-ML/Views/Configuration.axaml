@@ -37,11 +37,28 @@
 						</Grid>
 					</StackPanel>
 				</TabItem>
-				<!--
-				<TabItem Header="{Binding TabItemBizhawk}">
 
+				<TabItem Header="{Binding TabItemBizhawk}">
+					<StackPanel Classes="tabContent">
+						<TextBlock Classes="h1" Text="Emulator Settings"/>
+						<Grid Margin="5" ColumnDefinitions="*,*" RowDefinitions="Auto,Auto,Auto,Auto,Auto">
+							
+							<TextBlock Classes="p" Text="Sound Enabled" Grid.Row="1"/>
+							<CheckBox IsChecked="{Binding SoundEnabled}" Grid.Row="1" Grid.Column="2" VerticalAlignment="Center" Margin="5" />
+							
+							<TextBlock Classes="p" Text="Sound Volume" Grid.Row="2"/>
+							<NumericUpDown Classes="numericTextBox" Value="{Binding SoundVolume}" Minimum="0" Increment="0.01" FormatString="0.##" ShowButtonSpinner="False" Maximum="100" Grid.Row="2" Grid.Column="1"/>
+							
+							<TextBlock Classes="p" Text="Unlimited Framerate" Grid.Row="3"/>
+							<CheckBox IsChecked="{Binding Unthrottled}" Grid.Row="3" Grid.Column="2" VerticalAlignment="Center" Margin="5" />
+							
+							<TextBlock Classes="p" Text="Zoom Factor" Grid.Row="4"/>
+							<NumericUpDown Classes="numericTextBox" Value="{Binding ZoomFactor}" Minimum="1" ShowButtonSpinner="True" Maximum="4" Grid.Row="4" Grid.Column="1"/>
+						
+						</Grid>
+					</StackPanel>
 				</TabItem>
-				-->
+
 				<TabItem Header="{Binding TabItemApp}">
 					<StackPanel Classes="tabContent">
 						<TextBlock Classes="h1" Text="Multithread"/>

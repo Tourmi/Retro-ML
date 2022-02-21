@@ -1,25 +1,19 @@
 ﻿using Avalonia.Controls;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
 using ReactiveUI;
+using SMW_ML.Models;
+using SMW_ML.Models.Config;
+using SMW_ML.Neural.Scoring;
+using SMW_ML.Utils;
+using SMW_ML.ViewModels.Components;
 using SMW_ML.Views;
-using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Runtime.Serialization;
-using System.Text;
-using System.Threading.Tasks;
-using SMW_ML.Models.Config;
-using System.ComponentModel;
-using SMW_ML.Models;
-using Avalonia;
-using System.Runtime.CompilerServices;
-using Avalonia.Data;
-using SMW_ML.Utils;
-using SMW_ML.Neural.Scoring;
-using SMW_ML.ViewModels.Components;
-using Newtonsoft.Json.Serialization;
 
 namespace SMW_ML.ViewModels
 {
@@ -193,6 +187,50 @@ namespace SMW_ML.ViewModels
             }
         }
 
+        public bool _soundEnabled;
+        public bool SoundEnabled
+        {
+            get => _soundEnabled;
+            set
+            {
+                this.RaiseAndSetIfChanged(ref _soundEnabled, value);
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(SoundEnabled)));
+            }
+        }
+
+        private float _soundVolume;
+        public float SoundVolume
+        {
+            get => _soundVolume;
+            set
+            {
+                this.RaiseAndSetIfChanged(ref _soundVolume, value);
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(SoundVolume)));
+            }
+        }
+
+        private bool _unthrottled;
+        public bool Unthrottled
+        {
+            get => _unthrottled;
+            set
+            {
+                this.RaiseAndSetIfChanged(ref _unthrottled, value);
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Unthrottled)));
+            }
+        }
+
+        private int _zoomFactor;
+        public int ZoomFactor
+        {
+            get => _zoomFactor;
+            set
+            {
+                this.RaiseAndSetIfChanged(ref _zoomFactor, value);
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(ZoomFactor)));
+            }
+        }
+
         private List<string> saveStates;
         private string saveStatePreview;
         public string SaveStates
@@ -204,6 +242,7 @@ namespace SMW_ML.ViewModels
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(SaveStates)));
             }
         }
+
         private void SetSaveStates(List<string> saveStates)
         {
             this.saveStates = saveStates;
@@ -314,7 +353,12 @@ namespace SMW_ML.ViewModels
             File.WriteAllText(DefaultPaths.SHARPNEAT_CONFIG, sharpNeatOutput);
 
             //Tab Emulator
-
+            var bizHawkConfig = new BizhawkConfig(DefaultPaths.EMULATOR_CONFIG);
+            bizHawkConfig.SoundEnabled = SoundEnabled;
+            bizHawkConfig.Volume = SoundVolume;
+            bizHawkConfig.Unthrottled = Unthrottled;
+            bizHawkConfig.ZoomFactor = ZoomFactor;
+            bizHawkConfig.Serialize();
 
             //Tab Application
             if (ApplicationConfig == null) { return; }
@@ -356,8 +400,8 @@ namespace SMW_ML.ViewModels
             NumberAI = SharpNeatModel.PopulationSize;
 
             //Tab Emulator
-            string emulatorConfig = File.ReadAllText(DefaultPaths.EMULATOR_CONFIG);
-            // EmulatorConfig = JsonConvert.DeserializeObject<BizhawkConfig>(emulatorConfig);
+            var bizhawkConfig = new BizhawkConfig(DefaultPaths.EMULATOR_CONFIG);
+            SoundVolume = bizhawkConfig.Volume;
 
             //Tab Application
             string appConfigJson = File.ReadAllText(DefaultPaths.APP_CONFIG);
