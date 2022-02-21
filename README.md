@@ -151,7 +151,7 @@ This page lists all of the available training objectives. Some of them cannot be
   * It is recommended to leave this value at 0 if the [Speed](#Speed) objective is used.
 * **Speed**
   * Gives points based on the speed of the AI. 
-  * The formula is (\{Maximum Tiles distance\} / \{Seconds taken\}) \* \{Multiplier\}
+  * The formula is `(Maximum Tiles distance / Seconds taken) * Multiplier`
 * **Won level**
   * The amount of points to attribute if the AI wins a level. Ideally, this should be a high value to encourage actually finishing levels.
 * **Coins**
@@ -161,8 +161,8 @@ This page lists all of the available training objectives. Some of them cannot be
 * **1-ups**
   * The amount of points to give the AI per 1-up collected from any source.
 * **High Score**
-  * The amount of points to give the AI for its displayed high-score.
-  * The formula is (\{Displayed High Score\} / 1000) \* \{Multiplier\}
+  * The amount of points to give the AI for its in-game high-score.
+  * The formula is `(In-game High Score / 1000) * Multiplier`
   * So a high-score of 55200 with a multiplier of 2 will give a total amount of points of 110.4 to the AI.
   
 #### Neural
@@ -170,14 +170,14 @@ This page lists all of the available training objectives. Some of them cannot be
 
 This page lists all of the inputs and outputs that can be toggled for the neural networks, as well as the distance (in tiles) that the AI can see.  
 ⚠ Changing any of these values will make previously trained AIs incompatible with the application ⚠
-* **View distance horizontal**
+* **View distance horizontal** `VDH`
   * The horizontal distance that the AI can see for, in tiles, not including the tile the AI is on. This means that if we set both the horizontal and vertical distances to 4, a 9x9 grid of inputs will be used.
-* **View distance vertical**
+* **View distance vertical** `VDV`
   * The vertical distance that the AI can see for, in tiles, not including the tile the AI is on. This means that if we set both the horizontal and vertical distances to 4, a 9x9 grid of inputs will be used.
 * **Input nodes**
-  * Tiles : The tiles the AI can stand on. V*H total nodes.
-  * Dangers : The dangerous tiles around the AI. Includes dangerous tiles as well as dangerous sprites. V*H total nodes.
-  * Goodies : The "good" tiles around the AI. Includes coins, powerups, blocks that contain items. V*H total nodes.
+  * Tiles : The tiles the AI can stand on. `(VDH * 2 + 1) * (VDV * 2 + 1)` total nodes.
+  * Dangers : The dangerous tiles around the AI. Includes dangerous tiles as well as dangerous sprites. `(VDH * 2 + 1) * (VDV * 2 + 1)` total nodes.
+  * Goodies : The "good" tiles around the AI. Includes coins, powerups, blocks that contain items. `(VDH * 2 + 1) * (VDV * 2 + 1)` total nodes.
   * On ground : Whether or not the AI is touching the ground.
   * In water : Whether or not the AI is in water
   * Raising : Whether or not the AI is raising, both out of a jump as well as while swimming.
