@@ -44,6 +44,7 @@
         public const byte GHOST_HOUSE_EXIT = 0x8D;
         public const byte INVISIBLE_WARP_HOLE = 0x8E;
         public const byte SCALE_PLATFORMS = 0x8F;
+        public const byte HAMMER_BRO_PLATFORM = 0x9C;
         public const byte CHAINED_GREY_PLATFORM = 0xA3;
         public const byte IGGY_BALL = 0xA7;
         public const byte CREATING_EATING_BLOCK = 0xB1;
@@ -101,6 +102,7 @@
                 GHOST_HOUSE_EXIT or
                 INVISIBLE_WARP_HOLE or
                 SCALE_PLATFORMS or
+                HAMMER_BRO_PLATFORM or
                 CHAINED_GREY_PLATFORM or
                 IGGY_BALL or
                 CREATING_EATING_BLOCK or
@@ -147,6 +149,33 @@
                 FLYING_BLOCK_1 or
                 FLYING_BLOCK_2
                 => true,
+                _ => false
+            };
+        }
+
+        public static bool IsSolid(byte number)
+        {
+            if (number >= PLATFORMS_MIN && number <= PLATFORMS_MAX) return true;
+
+            return number switch
+            {
+                DOLPHIN_LONG or
+                DOLPHIN_SHORT or
+                DOLPHIN_VERTICAL or
+                GROWING_PIPE or
+                SCALE_PLATFORMS or
+                HAMMER_BRO_PLATFORM or
+                CHAINED_GREY_PLATFORM or
+                CREATING_EATING_BLOCK or
+                CARROT_TOP_UP_LEFT or
+                CARROT_TOP_UP_RIGHT or
+                MESSAGE_BOX or
+                TIMED_LIFT or
+                CASTLE_BLOCK or
+                LAVA_PLATFORM or
+                FLYING_GREY_PLATFORM or
+                FALLING_GREY_PLATFORM or
+                LIGHT_SWITCH => true,
                 _ => false
             };
         }

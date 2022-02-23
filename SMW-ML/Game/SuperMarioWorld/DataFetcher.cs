@@ -97,10 +97,33 @@ namespace SMW_ML.Game.SuperMarioWorld
 
         public bool[,] GetWalkableTilesAroundPosition(int x_dist, int y_dist)
         {
+            bool[,] result = new bool[y_dist * 2 + 1, x_dist * 2 + 1];
+
+            var spriteStatuses = Read(Addresses.Sprite.Statuses);
+            var aliveIndexes = spriteStatuses.Select((s, i) => (s, i)).Where(si => SpriteStatuses.IsAlive(si.s)).Select(si => si.i).ToArray();
+            var sprites = GetSprites(aliveIndexes);
+
+            foreach (var sprite in sprites)
+            {
+                if (!SpriteNumbers.IsSolid(sprite.Number)) continue;
+                SetSpriteTiles(x_dist, y_dist, result, sprite);
+            }
+
             byte levelTileset = ReadSingle(Level.Header.TilesetSetting);
             var tileset = Tileset.GetWalkableTiles(levelTileset);
-            return GetTilesAroundPosition(x_dist, y_dist, tileset);
+            var walkableTiles = GetTilesAroundPosition(x_dist, y_dist, tileset);
+
+            for (int i = 0; i < walkableTiles.GetLength(0); i++)
+            {
+                for (int j = 0; j < walkableTiles.GetLength(1); j++)
+                {
+                    result[i, j] |= walkableTiles[i, j];
+                }
+            }
+
+            return result;
         }
+
         public bool[,] GetDangerousTilesAroundPosition(int x_dist, int y_dist)
         {
             bool[,] result = new bool[y_dist * 2 + 1, x_dist * 2 + 1];
