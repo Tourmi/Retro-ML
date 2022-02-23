@@ -183,13 +183,13 @@ namespace SMW_ML.Game.SuperMarioWorld
         private void SetSpriteTiles(int x_dist, int y_dist, bool[,] tilesArray, Data.Sprite sprite)
         {
             var clipping = sprite.GetSpriteClipping();
-            int minX = sprite.XPos - (TILE_SIZE / 2) + clipping.X;
+            int minX = sprite.XPos + clipping.X;
             int minY = sprite.YPos + clipping.Y;
-            int maxX = minX + clipping.Width;
-            int maxY = minY + clipping.Height;
+            int maxX = minX + clipping.Width - 1;
+            int maxY = minY + clipping.Height - 1;
 
             int marioXPosition = (int)GetPositionX() / TILE_SIZE;
-            int marioYPosition = (int)GetPositionY() / TILE_SIZE;
+            int marioYPosition = (int)(GetPositionY() + TILE_SIZE) / TILE_SIZE;
 
             var xMinDist = (minX / TILE_SIZE) - marioXPosition;
             var yMinDist = (minY / TILE_SIZE) - marioYPosition;
