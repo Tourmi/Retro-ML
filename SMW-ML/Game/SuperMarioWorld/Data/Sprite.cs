@@ -1,9 +1,83 @@
-﻿namespace SMW_ML.Game.SuperMarioWorld.Data
+﻿using System.Drawing;
+
+namespace SMW_ML.Game.SuperMarioWorld.Data
 {
     internal struct Sprite
     {
+        private const byte SPRITE_CLIPPING_MASK = 0b0011_1111;
+
         /// <summary>
-        /// Sprite ID. See <see href="https://docs.google.com/spreadsheets/d/1YuEyTkBXl-BvXyAf6C7EPXo20CdVlbwUttp2RXHoY2U/edit#gid=0"/> for more information
+        /// <br>Huge thanks to imamelia @ SMWCentral (<see href="https://www.smwcentral.net/?p=section&amp;a=details&amp;id=4749"/>). </br>
+        /// <br>Ordered array which contains all the possible sprite clippings under this format</br>
+        /// <br>Index 0: Width, 1: Height, 2: x offset, 3: y offset</br>
+        /// <br>Since the values are in bytes, and the offsets can be negative, make sure to cast the offsets to signed bytes before use</br>
+        /// </summary>
+        private static readonly byte[][] SpriteClippings = new byte[][]
+        {
+            new byte[] { 0x0C, 0x0A, 0x02, 0x03 }, //00
+            new byte[] { 0x0C, 0x15, 0x02, 0x03 }, //01
+            new byte[] { 0x10, 0x12, 0x10, 0xFE },
+            new byte[] { 0x08, 0x08, 0x14, 0x08 },
+            new byte[] { 0x30, 0x0E, 0x00, 0xFE },
+            new byte[] { 0x50, 0x0E, 0x00, 0xFE },
+            new byte[] { 0x0E, 0x18, 0x01, 0x02 },
+            new byte[] { 0x28, 0x30, 0x08, 0x08 },
+            new byte[] { 0x20, 0x10, 0xF8, 0xFE },
+            new byte[] { 0x14, 0x1E, 0xFE, 0x08 },
+            new byte[] { 0x01, 0x02, 0x03, 0x07 },
+            new byte[] { 0x03, 0x03, 0x06, 0x06 },
+            new byte[] { 0x0D, 0x16, 0x01, 0xFE },
+            new byte[] { 0x0F, 0x10, 0x00, 0xFC },
+            new byte[] { 0x14, 0x14, 0x06, 0x06 },
+            new byte[] { 0x24, 0x12, 0x02, 0xFE },
+            new byte[] { 0x0F, 0x20, 0x00, 0xFE },
+            new byte[] { 0x40, 0x40, 0xE8, 0xE8 },
+            new byte[] { 0x08, 0x34, 0xFC, 0x10 },
+            new byte[] { 0x08, 0x74, 0xFC, 0x10 },
+            new byte[] { 0x18, 0x0C, 0x04, 0x02 },
+            new byte[] { 0x0F, 0x0E, 0x00, 0xFE },
+            new byte[] { 0x18, 0x18, 0xFC, 0xF4 },
+            new byte[] { 0x0C, 0x45, 0x02, 0x08 },
+            new byte[] { 0x0C, 0x3A, 0x02, 0x13 },
+            new byte[] { 0x0C, 0x2A, 0x02, 0x23 },
+            new byte[] { 0x0C, 0x1A, 0x02, 0x33 },
+            new byte[] { 0x0C, 0x0A, 0x02, 0x43 },
+            new byte[] { 0x0A, 0x30, 0x00, 0x0A },
+            new byte[] { 0x1C, 0x1B, 0x02, 0xFD },
+            new byte[] { 0x30, 0x20, 0xE0, 0xF8 },
+            new byte[] { 0x30, 0x12, 0xF0, 0xFC },
+            new byte[] { 0x08, 0x18, 0xFC, 0xE8 },
+            new byte[] { 0x08, 0x18, 0xFC, 0x10 },
+            new byte[] { 0x10, 0x10, 0x00, 0x00 },
+            new byte[] { 0x20, 0x20, 0xF8, 0xE8 },
+            new byte[] { 0x38, 0x38, 0xF4, 0x20 },
+            new byte[] { 0x3C, 0x14, 0xF2, 0x04 },
+            new byte[] { 0x20, 0x08, 0x00, 0x58 },
+            new byte[] { 0x18, 0x18, 0xFC, 0xFC },
+            new byte[] { 0x1C, 0x28, 0xF2, 0xE8 },
+            new byte[] { 0x20, 0x1B, 0xF0, 0xFC },
+            new byte[] { 0x0C, 0x13, 0x02, 0xF8 },
+            new byte[] { 0x10, 0x4C, 0x00, 0x02 },
+            new byte[] { 0x10, 0x10, 0xF8, 0xF8 },
+            new byte[] { 0x08, 0x04, 0x04, 0x04 },
+            new byte[] { 0x1C, 0x22, 0x02, 0xFE },
+            new byte[] { 0x1C, 0x20, 0x02, 0xFE },
+            new byte[] { 0x10, 0x1C, 0x08, 0xF2 },
+            new byte[] { 0x30, 0x12, 0x00, 0xFE },
+            new byte[] { 0x30, 0x12, 0x00, 0xFE },
+            new byte[] { 0x40, 0x12, 0x00, 0xFE },
+            new byte[] { 0x08, 0x08, 0xFC, 0xFC },
+            new byte[] { 0x12, 0x20, 0x03, 0x00 },
+            new byte[] { 0x34, 0x2E, 0x08, 0x08 },
+            new byte[] { 0x0F, 0x14, 0x00, 0xF8 },
+            new byte[] { 0x20, 0x28, 0x08, 0x10 },
+            new byte[] { 0x08, 0x0A, 0x04, 0x03 },
+            new byte[] { 0x20, 0x10, 0xF8, 0x10 },
+            new byte[] { 0x10, 0x0D, 0x00, 0x00 }, //3B
+        };
+
+        /// <summary>
+        /// Sprite ID. See <see href="https://docs.google.com/spreadsheets/d/1YuEyTkBXl-BvXyAf6C7EPXo20CdVlbwUttp2RXHoY2U/edit#gid=0"/> for more information.
         /// </summary>
         public byte Number { get; set; }
         /// <summary>
@@ -95,5 +169,17 @@
         /// <br>p=Make platform passable from below</br>
         /// </summary>
         public byte Properties6 { get; set; }
+
+        /// <summary>
+        /// Returns this sprite's bounding rectangle
+        /// </summary>
+        /// <returns></returns>
+        public Rectangle GetSpriteClipping()
+        {
+            byte index = (byte)(Properties2 & SPRITE_CLIPPING_MASK);
+            var clip = SpriteClippings[index];
+
+            return new Rectangle(unchecked((sbyte)clip[2]), unchecked((sbyte)clip[3]), clip[0], clip[1]);
+        }
     }
 }

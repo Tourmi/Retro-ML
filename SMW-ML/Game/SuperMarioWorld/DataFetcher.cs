@@ -112,14 +112,7 @@ namespace SMW_ML.Game.SuperMarioWorld
             foreach (var sprite in sprites)
             {
                 if (!SpriteNumbers.IsDangerous(sprite.Number)) continue;
-                var xSpriteDist = (sprite.XPos / TILE_SIZE - (int)GetPositionX() / TILE_SIZE);
-                var ySpriteDist = (sprite.YPos / TILE_SIZE - (int)GetPositionY() / TILE_SIZE);
-
-                //Is the sprite distance between the bounds that Mario can see?
-                if (xSpriteDist <= x_dist && ySpriteDist <= y_dist && xSpriteDist >= -x_dist && ySpriteDist >= -y_dist)
-                {
-                    result[ySpriteDist + y_dist, xSpriteDist + x_dist] = true;
-                }
+                SetSpriteTiles(x_dist, y_dist, result, sprite);
             }
 
             var extendedSprites = GetExtendedSprites();
@@ -162,14 +155,7 @@ namespace SMW_ML.Game.SuperMarioWorld
             foreach (var sprite in sprites)
             {
                 if (!SpriteNumbers.IsGood(sprite.Number)) continue;
-                var xSpriteDist = (sprite.XPos / TILE_SIZE - (int)GetPositionX() / TILE_SIZE);
-                var ySpriteDist = (sprite.YPos / TILE_SIZE - (int)GetPositionY() / TILE_SIZE);
-
-                //Is the sprite distance between the bounds that Mario can see?
-                if (xSpriteDist <= x_dist && ySpriteDist <= y_dist && xSpriteDist >= -x_dist && ySpriteDist >= -y_dist)
-                {
-                    result[ySpriteDist + y_dist, xSpriteDist + x_dist] = true;
-                }
+                SetSpriteTiles(x_dist, y_dist, result, sprite);
             }
 
             byte levelTileset = ReadSingle(Level.Header.TilesetSetting);
@@ -185,6 +171,42 @@ namespace SMW_ML.Game.SuperMarioWorld
             }
 
             return result;
+        }
+
+        /// <summary>
+        /// Sets the tiles in <paramref name="tilesArray"/> to true based on the <paramref name="sprite"/>'s position and size.
+        /// </summary>
+        /// <param name="x_dist"></param>
+        /// <param name="y_dist"></param>
+        /// <param name="tilesArray"></param>
+        /// <param name="sprite"></param>
+        private void SetSpriteTiles(int x_dist, int y_dist, bool[,] tilesArray, Data.Sprite sprite)
+        {
+            var clipping = sprite.GetSpriteClipping();
+            int minX = sprite.XPos - (TILE_SIZE / 2) + clipping.X;
+            int minY = sprite.YPos + clipping.Y;
+            int maxX = minX + clipping.Width;
+            int maxY = minY + clipping.Height;
+
+            int marioXPosition = (int)GetPositionX() / TILE_SIZE;
+            int marioYPosition = (int)GetPositionY() / TILE_SIZE;
+
+            var xMinDist = (minX / TILE_SIZE) - marioXPosition;
+            var yMinDist = (minY / TILE_SIZE) - marioYPosition;
+            var xMaxDist = (maxX / TILE_SIZE) - marioXPosition;
+            var yMaxDist = (maxY / TILE_SIZE) - marioYPosition;
+
+            for (int ySpriteDist = yMinDist; ySpriteDist <= yMaxDist; ySpriteDist++)
+            {
+                for (int xSpriteDist = xMinDist; xSpriteDist <= xMaxDist; xSpriteDist++)
+                {
+                    //Is the sprite distance between the bounds that Mario can see?
+                    if (xSpriteDist <= x_dist && ySpriteDist <= y_dist && xSpriteDist >= -x_dist && ySpriteDist >= -y_dist)
+                    {
+                        tilesArray[ySpriteDist + y_dist, xSpriteDist + x_dist] = true;
+                    }
+                }
+            }
         }
 
         private bool[,] GetTilesAroundPosition(int x_dist, int y_dist, IEnumerable<ushort> tileset)
@@ -283,6 +305,7 @@ namespace SMW_ML.Game.SuperMarioWorld
             byte[] numbers = Read(Addresses.Sprite.SpriteNumbers);
             ushort[] xPositions = ReadLowHighBytes(Addresses.Sprite.XPositions);
             ushort[] yPositions = ReadLowHighBytes(Addresses.Sprite.YPositions);
+            byte[] props2 = Read(Addresses.Sprite.SpritesProperties2);
 
             for (int i = 0; i < indexes.Length; i++)
             {
@@ -290,7 +313,8 @@ namespace SMW_ML.Game.SuperMarioWorld
                 {
                     Number = numbers[indexes[i]],
                     XPos = xPositions[indexes[i]],
-                    YPos = yPositions[indexes[i]]
+                    YPos = yPositions[indexes[i]],
+                    Properties2 = props2[indexes[i]]
                 };
             }
 
