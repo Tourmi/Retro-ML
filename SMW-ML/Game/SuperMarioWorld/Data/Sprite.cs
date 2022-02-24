@@ -1,4 +1,5 @@
-﻿using System.Drawing;
+﻿using System;
+using System.Drawing;
 
 namespace SMW_ML.Game.SuperMarioWorld.Data
 {
@@ -171,6 +172,23 @@ namespace SMW_ML.Game.SuperMarioWorld.Data
         public byte Properties6 { get; set; }
 
         /// <summary>
+        /// View <see href="https://docs.google.com/spreadsheets/d/1YuEyTkBXl-BvXyAf6C7EPXo20CdVlbwUttp2RXHoY2U/edit#gid=0"/> for information.
+        /// </summary>
+        public byte Misc151C { get; set; }
+        /// <summary>
+        /// View <see href="https://docs.google.com/spreadsheets/d/1YuEyTkBXl-BvXyAf6C7EPXo20CdVlbwUttp2RXHoY2U/edit#gid=0"/> for information.
+        /// </summary>
+        public byte Misc1528 { get; set; }
+        /// <summary>
+        /// View <see href="https://docs.google.com/spreadsheets/d/1YuEyTkBXl-BvXyAf6C7EPXo20CdVlbwUttp2RXHoY2U/edit#gid=0"/> for information.
+        /// </summary>
+        public byte Misc1602 { get; set; }
+        /// <summary>
+        /// View <see href="https://docs.google.com/spreadsheets/d/1YuEyTkBXl-BvXyAf6C7EPXo20CdVlbwUttp2RXHoY2U/edit#gid=0"/> for information.
+        /// </summary>
+        public byte Misc187B { get; set; }
+
+        /// <summary>
         /// Returns this sprite's bounding rectangle
         /// </summary>
         /// <returns></returns>
@@ -180,6 +198,39 @@ namespace SMW_ML.Game.SuperMarioWorld.Data
             var clip = SpriteClippings[index];
 
             return new Rectangle(unchecked((sbyte)clip[2]), unchecked((sbyte)clip[3]), clip[0], clip[1]);
+        }
+
+        public Point GetSpriteRotationOffset()
+        {
+            if (Number == SpriteNumbers.CHAINED_GREY_PLATFORM)
+            {
+                const double radianRatio = Math.Tau / 512.0;
+                //HIGH  LOW    REAL     DIR     VEC     XCalc       Ycalc
+                //0     0      0        DOWN     0   1  Sin(0)      Cos(0)
+                //0     128    128      RIGHT    1   0  Sin(90)     Cos(90)
+                //1     0      256      UP       0  -1  Sin(180)    Cos(180)
+                //1     128    384      LEFT    -1   0  Sin(270)    Cos(270)
+                ushort angle = (ushort)(Misc151C << 8 | Misc1602); //Misc151C is high angle byte, Misc1602 is low angle byte
+                byte length = Misc187B; //Misc187B is the total length of the chain, in pixels
+                (var sin, var cos) = Math.SinCos(radianRatio * angle);
+                int offsetX = (int)(length * sin);
+                int offsetY = (int)(length * cos);
+
+                return new Point(offsetX, offsetY);
+            }
+            else if (Number == SpriteNumbers.REVOLVING_PLATFORM)
+            {
+                //HIGH  LOW    REAL     DIR     VEC     XCalc       Ycalc
+                //EVEN  0      0        RIGHT    1   0  
+                //EVEN  128    128      DOWN     0   1  
+                //ODD   0      256      LEFT    -1   0  
+                //ODD   128    384      UP       0  -1  
+
+                //Revolving platforms are HELL
+                //TODO : Do revolving platforms as well
+            }
+
+            return Point.Empty;
         }
     }
 }

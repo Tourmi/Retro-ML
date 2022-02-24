@@ -242,6 +242,23 @@
             public static readonly AddressData SpritesProperties6 = new(0x00190F, 12);
 
             /// <summary>
+            /// View <see href="https://docs.google.com/spreadsheets/d/1YuEyTkBXl-BvXyAf6C7EPXo20CdVlbwUttp2RXHoY2U/edit#gid=0"/> for information.
+            /// </summary>
+            public static readonly AddressData Misc151C = new(0x00151C, 12);
+            /// <summary>
+            /// View <see href="https://docs.google.com/spreadsheets/d/1YuEyTkBXl-BvXyAf6C7EPXo20CdVlbwUttp2RXHoY2U/edit#gid=0"/> for information.
+            /// </summary>
+            public static readonly AddressData Misc1528 = new(0x001528, 12);
+            /// <summary>
+            /// View <see href="https://docs.google.com/spreadsheets/d/1YuEyTkBXl-BvXyAf6C7EPXo20CdVlbwUttp2RXHoY2U/edit#gid=0"/> for information.
+            /// </summary>
+            public static readonly AddressData Misc1602 = new(0x001602, 12);
+            /// <summary>
+            /// View <see href="https://docs.google.com/spreadsheets/d/1YuEyTkBXl-BvXyAf6C7EPXo20CdVlbwUttp2RXHoY2U/edit#gid=0"/> for information.
+            /// </summary>
+            public static readonly AddressData Misc187B = new(0x00187B, 12);
+
+            /// <summary>
             /// 0x00 : No shooter
             /// 0x01 : Bullet bill shooter
             /// 0x02 : Torpedo bill shooter

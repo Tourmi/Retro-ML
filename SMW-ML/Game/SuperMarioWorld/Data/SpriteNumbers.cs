@@ -61,6 +61,7 @@
         public const byte LIGHT_SWITCH = 0xC8;
 
         public const byte PLATFORMS_MIN = 0x55;
+        public const byte REVOLVING_PLATFORM = 0x5F;
         public const byte PLATFORMS_MAX = 0x63;
         public const byte POWERUPS_ETC_MIN = 0x74;
         public const byte POWERUPS_ETC_MAX = 0x84;
@@ -176,6 +177,16 @@
                 FLYING_GREY_PLATFORM or
                 FALLING_GREY_PLATFORM or
                 LIGHT_SWITCH => true,
+                _ => false
+            };
+        }
+
+        public static bool RotatesAroundOrigin(byte number)
+        {
+            return number switch
+            {
+                REVOLVING_PLATFORM or
+                CHAINED_GREY_PLATFORM => true,
                 _ => false
             };
         }

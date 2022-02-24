@@ -206,8 +206,9 @@ namespace SMW_ML.Game.SuperMarioWorld
         private void SetSpriteTiles(int x_dist, int y_dist, bool[,] tilesArray, Data.Sprite sprite)
         {
             var clipping = sprite.GetSpriteClipping();
-            int minX = sprite.XPos + clipping.X;
-            int minY = sprite.YPos + clipping.Y;
+            var rotationOffset = sprite.GetSpriteRotationOffset();
+            int minX = sprite.XPos + clipping.X + rotationOffset.X;
+            int minY = sprite.YPos + clipping.Y + rotationOffset.Y;
             int maxX = minX + clipping.Width - 1;
             int maxY = minY + clipping.Height - 1;
 
@@ -329,6 +330,10 @@ namespace SMW_ML.Game.SuperMarioWorld
             ushort[] xPositions = ReadLowHighBytes(Addresses.Sprite.XPositions);
             ushort[] yPositions = ReadLowHighBytes(Addresses.Sprite.YPositions);
             byte[] props2 = Read(Addresses.Sprite.SpritesProperties2);
+            byte[] misc151C = Read(Addresses.Sprite.Misc151C);
+            byte[] misc1528 = Read(Addresses.Sprite.Misc1528);
+            byte[] misc1602 = Read(Addresses.Sprite.Misc1602);
+            byte[] misc187B = Read(Addresses.Sprite.Misc187B);
 
             for (int i = 0; i < indexes.Length; i++)
             {
@@ -337,7 +342,11 @@ namespace SMW_ML.Game.SuperMarioWorld
                     Number = numbers[indexes[i]],
                     XPos = xPositions[indexes[i]],
                     YPos = yPositions[indexes[i]],
-                    Properties2 = props2[indexes[i]]
+                    Properties2 = props2[indexes[i]],
+                    Misc151C = misc151C[indexes[i]],
+                    Misc1528 = misc1528[indexes[i]],
+                    Misc1602 = misc1602[indexes[i]],
+                    Misc187B = misc187B[indexes[i]]
                 };
             }
 
