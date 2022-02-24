@@ -1,6 +1,5 @@
 ﻿using SMW_ML.Game.SuperMarioWorld;
 using SMW_ML.Models.Config;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -31,7 +30,19 @@ namespace SMW_ML.Neural.Scoring
             }
         }
 
-        public double GetFinalScore() => Math.Max(scoreFactors.Aggregate(0.0, (total, sf) => total + sf.GetFinalScore()), 0);
+        public double GetFinalScore()
+        {
+            var score = scoreFactors.Aggregate(0.0, (total, sf) => total + sf.GetFinalScore());
+
+            //If the score is negative, force it to a value between 0 and 1
+            //Else, add 1, so a positive score remains bigger than a negative one
+            //We need to do this since SharpNeat has no support for negative fitness
+            if (score < 0) score = -1 / (score - 1);
+            else score += 1;
+
+            return score;
+        }
+
 
         public bool ShouldStop => scoreFactors.Any(sf => sf.ShouldStop);
     }

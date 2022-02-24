@@ -6,6 +6,7 @@ namespace SMW_ML.Neural.Scoring
     {
         private double currScore;
         private uint maxXPosition = 0;
+        private bool inited = false;
 
         public bool ShouldStop => false;
         public double ScoreMultiplier { get; set; }
@@ -21,6 +22,11 @@ namespace SMW_ML.Neural.Scoring
         public void Update(DataFetcher dataFetcher)
         {
             uint newPosX = dataFetcher.GetPositionX();
+            if (!inited)
+            {
+                inited = true;
+                maxXPosition = newPosX;
+            }
 
             //TODO : Do something about entering sub-areas
 
@@ -34,6 +40,7 @@ namespace SMW_ML.Neural.Scoring
         public void LevelDone()
         {
             maxXPosition = 0;
+            inited = false;
         }
 
         public object Clone()
