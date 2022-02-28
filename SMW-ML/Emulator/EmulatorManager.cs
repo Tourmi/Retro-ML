@@ -1,15 +1,11 @@
 ﻿using SMW_ML.Arduino;
-using SMW_ML.Game.SuperMarioWorld;
 using SMW_ML.Models.Config;
 using SMW_ML.Utils;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Sockets;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 
 namespace SMW_ML.Emulator
 {
@@ -43,7 +39,7 @@ namespace SMW_ML.Emulator
             this.neuralConfig = neuralConfig;
         }
 
-        public void Init()
+        public void Init(bool trainingMode)
         {
             IPHostEntry ipHostInfo = Dns.GetHostEntry(Dns.GetHostName());
             IPAddress ipAddress = ipHostInfo.AddressList.Last();
@@ -59,7 +55,7 @@ namespace SMW_ML.Emulator
                     pathToEmulator: DefaultPaths.EMULATOR,
                     pathToLuaScript: DefaultPaths.EMULATOR_ADAPTER,
                     pathToROM: DefaultPaths.ROM,
-                    pathToBizhawkConfig: DefaultPaths.EMULATOR_CONFIG,
+                    pathToBizhawkConfig: trainingMode ? DefaultPaths.EMULATOR_CONFIG : DefaultPaths.EMULATOR_PLAY_CONFIG,
                     savestatesPath: DefaultPaths.SAVESTATES_DIR,
                     socketIP: ipAddress.ToString(),
                     socketPort: SOCKET_PORT.ToString(),

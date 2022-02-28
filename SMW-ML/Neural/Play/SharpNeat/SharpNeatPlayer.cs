@@ -5,16 +5,11 @@ using SharpNeat.Neat.Genome.IO;
 using SharpNeat.NeuralNets.Double.ActivationFunctions;
 using SMW_ML.Emulator;
 using SMW_ML.Game.SuperMarioWorld;
-using SMW_ML.Models.Config;
 using SMW_ML.Utils;
 using SMW_ML.Utils.SharpNeat;
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 
 namespace SMW_ML.Neural.Play.SharpNeat
 {
@@ -44,7 +39,7 @@ namespace SMW_ML.Neural.Play.SharpNeat
                     isAcyclic: true,
                     activationFn: new LeakyReLU());
             this.emulatorManager = emulatorManager;
-            emulatorManager.Init();
+            emulatorManager.Init(true);
             emulator = emulatorManager.WaitOne();
             syncSemaphore = new Semaphore(1, 1);
 
