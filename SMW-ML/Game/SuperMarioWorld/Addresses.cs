@@ -244,6 +244,10 @@
             /// <summary>
             /// View <see href="https://docs.google.com/spreadsheets/d/1YuEyTkBXl-BvXyAf6C7EPXo20CdVlbwUttp2RXHoY2U/edit#gid=0"/> for information.
             /// </summary>
+            public static readonly AddressData MiscC2 = new(0x0000C2, 12);
+            /// <summary>
+            /// View <see href="https://docs.google.com/spreadsheets/d/1YuEyTkBXl-BvXyAf6C7EPXo20CdVlbwUttp2RXHoY2U/edit#gid=0"/> for information.
+            /// </summary>
             public static readonly AddressData Misc151C = new(0x00151C, 12);
             /// <summary>
             /// View <see href="https://docs.google.com/spreadsheets/d/1YuEyTkBXl-BvXyAf6C7EPXo20CdVlbwUttp2RXHoY2U/edit#gid=0"/> for information.

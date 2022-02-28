@@ -61,6 +61,8 @@
         public const byte LIGHT_SWITCH = 0xC8;
 
         public const byte PLATFORMS_MIN = 0x55;
+        public const byte TURNBLOCK_BRIDGE_HV = 0x59;
+        public const byte TURNBLOCK_BRIDGE_H = 0x5A;
         public const byte REVOLVING_PLATFORM = 0x5F;
         public const byte PLATFORMS_MAX = 0x63;
         public const byte POWERUPS_ETC_MIN = 0x74;

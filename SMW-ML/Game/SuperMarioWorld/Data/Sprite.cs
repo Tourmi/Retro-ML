@@ -5,6 +5,7 @@ namespace SMW_ML.Game.SuperMarioWorld.Data
 {
     internal struct Sprite
     {
+        private const int REVOLVING_PLATFORM_LENGTH = 5 * 16;
         private const byte SPRITE_CLIPPING_MASK = 0b0011_1111;
 
         /// <summary>
@@ -174,6 +175,10 @@ namespace SMW_ML.Game.SuperMarioWorld.Data
         /// <summary>
         /// View <see href="https://docs.google.com/spreadsheets/d/1YuEyTkBXl-BvXyAf6C7EPXo20CdVlbwUttp2RXHoY2U/edit#gid=0"/> for information.
         /// </summary>
+        public byte MiscC2 { get; set; }
+        /// <summary>
+        /// View <see href="https://docs.google.com/spreadsheets/d/1YuEyTkBXl-BvXyAf6C7EPXo20CdVlbwUttp2RXHoY2U/edit#gid=0"/> for information.
+        /// </summary>
         public byte Misc151C { get; set; }
         /// <summary>
         /// View <see href="https://docs.google.com/spreadsheets/d/1YuEyTkBXl-BvXyAf6C7EPXo20CdVlbwUttp2RXHoY2U/edit#gid=0"/> for information.
@@ -196,20 +201,52 @@ namespace SMW_ML.Game.SuperMarioWorld.Data
         {
             byte index = (byte)(Properties2 & SPRITE_CLIPPING_MASK);
             var clip = SpriteClippings[index];
+            if (Number == SpriteNumbers.REVOLVING_PLATFORM)
+            {
+                clip = SpriteClippings[0x33];
+            }
+            if (Number == SpriteNumbers.TURNBLOCK_BRIDGE_H || Number == SpriteNumbers.TURNBLOCK_BRIDGE_HV)
+            {
+                var mode = MiscC2 % 4;
+                byte distance = Misc151C;
+                //Index 0: Width, 1: Height, 2: x offset, 3: y offset
+                if (mode < 2) //Horizontal
+                {
+                    clip = new byte[] { (byte)(distance * 2 + 16), 16, (byte)-distance, 0 };
+                }
+                else //Vertical
+                {
+                    clip = new byte[] { 16, (byte)(distance * 2 + 16), 0, (byte)-distance };
+                }
+            }
 
             return new Rectangle(unchecked((sbyte)clip[2]), unchecked((sbyte)clip[3]), clip[0], clip[1]);
         }
 
+        /// <summary>
+        /// Some sprites need their position corrected. 
+        /// For now, only Revolving platforms need their position corrected.
+        /// </summary>
+        public void CorrectSpritePosition()
+        {
+            if (Number == SpriteNumbers.REVOLVING_PLATFORM)
+            {
+                XPos -= REVOLVING_PLATFORM_LENGTH + 16;
+                YPos -= 16;
+            }
+        }
+
         public Point GetSpriteRotationOffset()
         {
+            const double radianRatio = Math.Tau / 512.0;
             if (Number == SpriteNumbers.CHAINED_GREY_PLATFORM)
             {
-                const double radianRatio = Math.Tau / 512.0;
-                //HIGH  LOW    REAL     DIR     VEC     XCalc       Ycalc
-                //0     0      0        DOWN     0   1  Sin(0)      Cos(0)
-                //0     128    128      RIGHT    1   0  Sin(90)     Cos(90)
-                //1     0      256      UP       0  -1  Sin(180)    Cos(180)
-                //1     128    384      LEFT    -1   0  Sin(270)    Cos(270)
+                /* HIGH  LOW    REAL     DIR     VECTOR     XCalc       Ycalc
+                 * 0     0      0        DOWN     0,  1     Sin(0)      Cos(0)
+                 * 0     128    128      RIGHT    1,  0     Sin(90)     Cos(90)
+                 * 1     0      256      UP       0, -1     Sin(180)    Cos(180)
+                 * 1     128    384      LEFT    -1,  0     Sin(270)    Cos(270)
+                 */
                 ushort angle = (ushort)(Misc151C << 8 | Misc1602); //Misc151C is high angle byte, Misc1602 is low angle byte
                 byte length = Misc187B; //Misc187B is the total length of the chain, in pixels
                 (var sin, var cos) = Math.SinCos(radianRatio * angle);
@@ -220,14 +257,18 @@ namespace SMW_ML.Game.SuperMarioWorld.Data
             }
             else if (Number == SpriteNumbers.REVOLVING_PLATFORM)
             {
-                //HIGH  LOW    REAL     DIR     VEC     XCalc       Ycalc
-                //EVEN  0      0        RIGHT    1   0  
-                //EVEN  128    128      DOWN     0   1  
-                //ODD   0      256      LEFT    -1   0  
-                //ODD   128    384      UP       0  -1  
+                /* HIGH  LOW    REAL     DIR     VECTOR     XCalc       Ycalc
+                 * 0     0      0        RIGHT    1,  0     Cos(0)      Sin(0)
+                 * 0     128    128      DOWN     0,  1     Cos(90)     Sin(90)
+                 * 1     0      256      LEFT    -1,  0     Cos(180)    Sin(180)
+                 * 1     128    384      UP       0, -1     Cos(270)    Sin(270)
+                 */
+                ushort angle = (ushort)(Misc1528 << 8 | Misc151C); //Misc1528 is high angle byte, Misc151C is low angle byte.
+                (var sin, var cos) = Math.SinCos(radianRatio * angle);
+                int offsetX = (int)(REVOLVING_PLATFORM_LENGTH * cos);
+                int offsetY = (int)(REVOLVING_PLATFORM_LENGTH * sin);
 
-                //Revolving platforms are HELL
-                //TODO : Do revolving platforms as well
+                return new Point(offsetX, offsetY);
             }
 
             return Point.Empty;
