@@ -1,6 +1,5 @@
 ﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
-using SMW_ML.Utils;
 using System.IO;
 
 namespace SMW_ML.Models.Config
@@ -48,15 +47,27 @@ namespace SMW_ML.Models.Config
             get => (int)data!.TargetZoomFactors.SNES;
             set => data!.TargetZoomFactors.SNES = value;
         }
+
+        public int DispMethod
+        {
+            get => (int)data!.DispMethod;
+            set => data!.DispMethod = value;
+        }
+
+        public int DispSpeedupFeatures
+        {
+            get => (int)data!.DispSpeedupFeatures;
+            set => data!.DispSpeedupFeatures = value;
+        }
+
         #endregion
 
         #region Methods
-        public void Serialize()
+        public void Serialize(string path)
         {
             string emulatorCfg = JsonConvert.SerializeObject(data, Formatting.Indented, JSON_CONFIG);
-            File.WriteAllText(DefaultPaths.EMULATOR_CONFIG, emulatorCfg);
+            File.WriteAllText(path, emulatorCfg);
         }
-
         #endregion
 
     }
