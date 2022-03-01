@@ -140,14 +140,14 @@ namespace SMW_ML.Neural.Training.SharpNeatImpl
         {
             TrainingStatistics ts = new();
 
-            ts.AddStat("Current Generation", currentAlgo!.Stats.Generation + 1);
-            ts.AddStat("Best Genome's Fitness", currentAlgo!.Population.Stats.BestFitness.PrimaryFitness);
-            ts.AddStat("Best Genome's Complexity", currentAlgo!.Population.Stats.BestComplexity);
-            ts.AddStat("Mean Fitness", currentAlgo!.Population.Stats.MeanFitness);
-            ts.AddStat("Mean Complexity", currentAlgo!.Population.Stats.MeanComplexity);
-            ts.AddStat("Maximum Complexity", currentAlgo!.Population!.Stats.MaxComplexity);
-            ts.AddStat("Evaluations per minute", currentAlgo!.Stats.EvaluationsPerSec * 60);
-            ts.AddStat("Total evaluations so far", currentAlgo!.Stats.TotalEvaluationCount);
+            ts.AddStat(TrainingStatistics.CURRENT_GEN, currentAlgo!.Stats.Generation + 1);
+            ts.AddStat(TrainingStatistics.BEST_GENOME_FITNESS, currentAlgo!.Population.Stats.BestFitness.PrimaryFitness);
+            ts.AddStat(TrainingStatistics.BEST_GENOME_COMPLEXITY, currentAlgo!.Population.Stats.BestComplexity);
+            ts.AddStat(TrainingStatistics.MEAN_FITNESS, currentAlgo!.Population.Stats.MeanFitness);
+            ts.AddStat(TrainingStatistics.MEAN_COMPLEXITY, currentAlgo!.Population.Stats.MeanComplexity);
+            ts.AddStat(TrainingStatistics.MAX_COMPLEXITY, currentAlgo!.Population!.Stats.MaxComplexity);
+            ts.AddStat(TrainingStatistics.EVALS_PER_MINUTE, currentAlgo!.Stats.EvaluationsPerSec * 60);
+            ts.AddStat(TrainingStatistics.TOTAL_EVALUATIONS, currentAlgo!.Stats.TotalEvaluationCount);
 
             return ts;
         }

@@ -8,6 +8,7 @@ using SMW_ML.Neural.Training.SharpNeat;
 using SMW_ML.Neural.Training.SharpNeatImpl;
 using SMW_ML.Utils;
 using SMW_ML.ViewModels.Neural;
+using SMW_ML.ViewModels.Statistics;
 using System;
 using System.Collections.ObjectModel;
 using System.IO;
@@ -47,12 +48,15 @@ namespace SMW_ML.ViewModels
 
         public ObservableCollection<TrainingStatistics.Stat> TrainingStatistics { get; set; }
 
+        public TrainingChartViewModel TrainingChart { get; set; }
+
         #endregion
 
         #region Constructor
         public TrainingPageViewModel()
         {
             TrainingStatistics = new ObservableCollection<TrainingStatistics.Stat>();
+            TrainingChart = new TrainingChartViewModel();
         }
         #endregion
 
@@ -81,6 +85,7 @@ namespace SMW_ML.ViewModels
                 emulatorManager.Init();
                 emulatorManager.GetFirstEmulator().LinkedNetworkActivated += NeuralNetwork.UpdateNodes;
                 emulatorManager.GetFirstEmulator().ChangedLinkedNetwork += NeuralNetwork.UpdateTopology;
+                TrainingChart.ClearData();
                 trainer.StartTraining(DefaultPaths.SHARPNEAT_CONFIG);
             }).Start();
         }
@@ -119,11 +124,14 @@ namespace SMW_ML.ViewModels
         {
             Dispatcher.UIThread.Post(() =>
             {
+                using var delay = DelayChangeNotifications();
+
                 TrainingStatistics.Clear();
                 foreach (var stat in stats.GetStats())
                 {
                     TrainingStatistics.Add(stat);
                 }
+                TrainingChart.AddGeneration(stats);
             });
         }
         #endregion
