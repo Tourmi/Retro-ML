@@ -1,4 +1,5 @@
-﻿using Avalonia.Threading;
+﻿using Avalonia.Controls;
+using Avalonia.Threading;
 using Newtonsoft.Json;
 using ReactiveUI;
 using SMW_ML.Emulator;
@@ -9,6 +10,7 @@ using SMW_ML.Neural.Training.SharpNeatImpl;
 using SMW_ML.Utils;
 using SMW_ML.ViewModels.Neural;
 using SMW_ML.ViewModels.Statistics;
+using SMW_ML.Views.Components;
 using System;
 using System.Collections.ObjectModel;
 using System.IO;
@@ -19,24 +21,47 @@ namespace SMW_ML.ViewModels
 {
     internal class TrainingPageViewModel : ViewModelBase
     {
-        public event Action? OnStopTraining;
+        public event Action? OnExit;
 
         private INeuralTrainer trainer;
         private EmulatorManager emulatorManager;
         private string? populationToLoad;
 
         #region Strings
-        public static string Status => "Currently training AIs";
-        public static string Stop => "Stop Training";
+        public static string StartString => "Start Training";
+        public static string StopString => "Stop Training";
+        public static string SavePopulationString => "Save population";
+        public static string LoadPopulationString => "Load population";
+        public static string ExitString => "Exit";
         #endregion
 
         #region Properties
 
-        private bool canStop = true;
+        private bool canStart = true;
+        public bool CanStart
+        {
+            get => canStart;
+            set => this.RaiseAndSetIfChanged(ref canStart, value);
+        }
+
+        private bool canStop = false;
         public bool CanStop
         {
             get => canStop;
             set => this.RaiseAndSetIfChanged(ref canStop, value);
+        }
+        private bool canLoadTraining = true;
+        public bool CanLoadTraining
+        {
+            get => canLoadTraining;
+            set => this.RaiseAndSetIfChanged(ref canLoadTraining, value);
+        }
+
+        private bool canSaveTraining = false;
+        public bool CanSaveTraining
+        {
+            get => canSaveTraining;
+            set => this.RaiseAndSetIfChanged(ref canSaveTraining, value);
         }
 
         private NetworkViewModel neuralNetwork;
@@ -60,10 +85,14 @@ namespace SMW_ML.ViewModels
         }
         #endregion
 
-        #region  Methods
+        #region Methods
 
-        public void Init()
+        public void StartTraining()
         {
+            if (!CanStart) return;
+            CanStart = false;
+            CanLoadTraining = false;
+            CanSaveTraining = false;
             string appConfigJson = File.ReadAllText(DefaultPaths.APP_CONFIG);
             ApplicationConfig appConfig = JsonConvert.DeserializeObject<ApplicationConfig>(appConfigJson, new JsonSerializerSettings() { TypeNameHandling = TypeNameHandling.Auto, ObjectCreationHandling = ObjectCreationHandling.Replace })!;
             appConfig.NeuralConfig.InitNodes();
@@ -74,11 +103,16 @@ namespace SMW_ML.ViewModels
             trainer.OnStatisticsUpdated += HandleGetStats;
             if (populationToLoad != null)
             {
-                trainer.LoadPopulation(populationToLoad);
-                populationToLoad = null;
+                try
+                {
+                    trainer.LoadPopulation(populationToLoad);
+                    populationToLoad = null;
+                }
+                catch
+                {
+                    MessageBox.Show(null, "Failed to load specified population. Is it compatible with the current Input/Output neuron settings?", "Warning", MessageBox.MessageBoxButtons.Ok);
+                }
             }
-
-            CanStop = true;
 
             new Thread(() =>
             {
@@ -88,16 +122,49 @@ namespace SMW_ML.ViewModels
                 TrainingChart.ClearData();
                 trainer.StartTraining(DefaultPaths.SHARPNEAT_CONFIG);
             }).Start();
+
+            CanStop = true;
         }
 
-        public void LoadPopulation(string path)
+        public async void LoadPopulation()
         {
+            IsEnabled = false;
+            OpenFileDialog fileDialog = new();
+            fileDialog.Filters.Add(new FileDialogFilter() { Name = "Population", Extensions = { "pop" } });
+            fileDialog.AllowMultiple = false;
+            fileDialog.Directory = Path.GetFullPath(".");
+
+            string[]? paths = await fileDialog.ShowAsync(ViewLocator.GetMainWindow());
+            string path = paths?[0] ?? "";
+
+            if (string.IsNullOrWhiteSpace(path))
+            {
+                IsEnabled = true;
+                return;
+            }
+
             populationToLoad = path;
+            IsEnabled = true;
         }
 
-        public void SavePopulation(string path)
+        public async void SavePopulation()
         {
+            IsEnabled = false;
+            SaveFileDialog fileDialog = new();
+            fileDialog.Filters.Add(new() { Name = "Population", Extensions = { "pop" } });
+            fileDialog.Directory = Path.GetFullPath(".");
+            fileDialog.InitialFileName = "population";
+
+            string? path = await fileDialog.ShowAsync(ViewLocator.GetMainWindow());
+
+            if (string.IsNullOrWhiteSpace(path))
+            {
+                IsEnabled = true;
+                return;
+            }
+
             trainer.SavePopulation(path);
+            IsEnabled = true;
         }
 
         public async void StopTraining()
@@ -109,11 +176,19 @@ namespace SMW_ML.ViewModels
             {
                 trainer?.StopTraining();
                 emulatorManager?.Clean();
+                CanStart = true;
+                CanSaveTraining = true;
+                CanLoadTraining = true;
             });
+        }
+
+        public void Exit()
+        {
+            if (!CanStart) return;
 
             Dispatcher.UIThread.Post(() =>
             {
-                OnStopTraining?.Invoke();
+                OnExit?.Invoke();
             });
         }
         #endregion

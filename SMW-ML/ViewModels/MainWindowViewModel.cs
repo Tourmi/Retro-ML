@@ -1,5 +1,4 @@
 using ReactiveUI;
-using SMW_ML.Views.Components;
 using System.Threading;
 
 namespace SMW_ML.ViewModels
@@ -21,13 +20,11 @@ namespace SMW_ML.ViewModels
         public MainWindowViewModel()
         {
             mainPageViewModel = new MainPageViewModel();
-            mainPageViewModel.OnStartTrainingCalled += HandleStartTraining;
+            mainPageViewModel.OnStartTrainingCalled += HandleTrainingEnter;
             mainPageViewModel.OnOpenPlayMode += HandleOpenPlayMode;
-            mainPageViewModel.OnLoadPopulation += HandleLoadPopulation;
-            mainPageViewModel.OnSavePopulation += HandleSavePopulation;
 
             trainingPageViewModel = new TrainingPageViewModel();
-            trainingPageViewModel.OnStopTraining += HandleStopTraining;
+            trainingPageViewModel.OnExit += HandleTrainingExit;
 
             playingPageViewModel = new PlayingPageViewModel();
             playingPageViewModel.OnExit += HandlePlayingExit;
@@ -35,36 +32,17 @@ namespace SMW_ML.ViewModels
             Content = mainPageViewModel;
         }
 
-        public void HandleSavePopulation(string path)
-        {
-            trainingPageViewModel.SavePopulation(path);
-        }
-
-        public async void HandleLoadPopulation(string path)
-        {
-            try
-            {
-                trainingPageViewModel.LoadPopulation(path);
-            }
-            catch
-            {
-                await MessageBox.Show(null, "Could not load the population. The current configuration might be invalid for the population.", "Error", MessageBox.MessageBoxButtons.Ok);
-            }
-        }
-
-        public void HandleStartTraining()
+        public void HandleTrainingEnter()
         {
             trainingPageViewModel.IsEnabled = false;
             Content = trainingPageViewModel;
-            trainingPageViewModel.Init();
             trainingPageViewModel.IsEnabled = true;
         }
 
-        public void HandleStopTraining()
+        public void HandleTrainingExit()
         {
             mainPageViewModel.IsEnabled = false;
             Content = mainPageViewModel;
-            mainPageViewModel.CanSaveTraining = true;
             mainPageViewModel.IsEnabled = true;
         }
 

@@ -4,7 +4,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d" d:DesignWidth="1800" d:DesignHeight="1000"
-        x:Class="SMW_ML.Views.TrainingPageView" 
+        x:Class="SMW_ML.Views.TrainingPageView"
 		IsEnabled="{Binding IsEnabled}">
 	<Window.Styles>
 		<Style Selector="Canvas">
@@ -13,8 +13,11 @@
 		<Style Selector="TabItem">
 			<Setter Property="FontSize" Value="16"/>
 		</Style>
+		<Style Selector="StackPanel Button">
+			<Setter Property="HorizontalAlignment" Value="Center"/>
+		</Style>
 	</Window.Styles>
-	
+
 	<Design.DataContext>
 		<vm:TrainingPageViewModel/>
 	</Design.DataContext>
@@ -22,13 +25,19 @@
 	<TabControl TabStripPlacement="Top">
 		<TabItem Header="Training">
 			<DockPanel LastChildFill="True">
-				<StackPanel Spacing="5" DockPanel.Dock="Bottom" Margin="20">
-					<TextBlock Text="{Binding Status}" HorizontalAlignment="Center"/>
-					<Button Command="{Binding StopTraining}" Content="{Binding Stop}" IsEnabled="{Binding CanStop}" HorizontalAlignment="Center"/>
+				<Button DockPanel.Dock="Bottom" Margin="20" HorizontalAlignment="Center" Command="{Binding Exit}" Content="{Binding ExitString}" IsEnabled="{Binding CanStart}"/>
+
+				<StackPanel DockPanel.Dock="Top" Spacing="5" Margin="20" HorizontalAlignment="Center" VerticalAlignment="Center">
+					<Button Command="{Binding StartTraining}" Content="{Binding StartString}" IsEnabled="{Binding CanStart}"/>
+					<Button Command="{Binding StopTraining}" Content="{Binding StopString}" IsEnabled="{Binding CanStop}"/>
+					<Button Command="{Binding LoadPopulation}" Content="{Binding LoadPopulationString}" IsEnabled="{Binding CanLoadTraining}"/>
+					<Button Command="{Binding SavePopulation}" Content="{Binding SavePopulationString}" IsEnabled="{Binding CanSaveTraining}"/>
 				</StackPanel>
-		
-				<ContentControl DockPanel.Dock="Top" Content="{Binding NeuralNetwork}"/>
 			</DockPanel>
+		</TabItem>
+
+		<TabItem Header="Neural Network">
+			<ContentControl Content="{Binding NeuralNetwork}"/>
 		</TabItem>
 
 		<TabItem Header="Statistics">
@@ -54,7 +63,7 @@
 										FontWeight="Bold" FontSize="14"
 										Binding="{Binding Name}"
 										Width="*"/>
-					
+
 					<DataGridTextColumn Header="Value"
 										FontSize="14"
 										Binding="{Binding Value}"
