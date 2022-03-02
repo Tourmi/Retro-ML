@@ -2,8 +2,8 @@
   "isAcyclic": true,
   "activationFnName": "SReLU",
   "evolutionAlgorithmSettings": {
-    "speciesCount": 20,
-    "elitismProportion": 0.25,
+    "speciesCount": 25,
+    "elitismProportion": 0.15,
     "selectionProportion": 0.25,
     "offspringAsexualProportion": 0.5,
     "offspringSexualProportion": 0.5,

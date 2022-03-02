@@ -11,7 +11,7 @@
     },
     {
       "$type": "SMW_ML.Neural.Scoring.DistanceScoreFactor, SMW_ML",
-      "scoreMultiplier": 3.0,
+      "scoreMultiplier": 5.0,
       "isDisabled": false
     },
     {

@@ -87,7 +87,7 @@ namespace SMW_ML.ViewModels
 
         #region Methods
 
-        public void StartTraining()
+        public async void StartTraining()
         {
             if (!CanStart) return;
             CanStart = false;
@@ -110,7 +110,7 @@ namespace SMW_ML.ViewModels
                 }
                 catch
                 {
-                    MessageBox.Show(null, "Failed to load specified population. Is it compatible with the current Input/Output neuron settings?", "Warning", MessageBox.MessageBoxButtons.Ok);
+                    await MessageBox.Show(null, "Failed to load specified population. Is it compatible with the current Input/Output neuron settings?", "Error", MessageBox.MessageBoxButtons.Ok);
                 }
             }
 
