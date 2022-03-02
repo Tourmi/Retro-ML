@@ -2,6 +2,9 @@
 
 namespace SMW_ML.Utils
 {
+    /// <summary>
+    /// Contains useful reflection methods
+    /// </summary>
     internal static class ReflectionTool
     {
         /// <summary>

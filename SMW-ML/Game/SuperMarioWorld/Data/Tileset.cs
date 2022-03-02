@@ -4,6 +4,9 @@ using System.Linq;
 
 namespace SMW_ML.Game.SuperMarioWorld.Data
 {
+    /// <summary>
+    /// Class that keeps track of the level tilesets, which tiles are solid, good or bad.
+    /// </summary>
     internal class Tileset
     {
         private static readonly IEnumerable<ushort> defaultSolidTiles = Enumerable.Range(0x100, 0x1FA - 0x100 + 1)
@@ -46,8 +49,23 @@ namespace SMW_ML.Game.SuperMarioWorld.Data
             this.goodTiles = new HashSet<ushort>(goodTiles);
         }
 
+        /// <summary>
+        /// Returns all of the tiles that can be walked on for this tileset.
+        /// </summary>
+        /// <param name="tileset"></param>
+        /// <returns></returns>
         public static IEnumerable<ushort> GetWalkableTiles(byte tileset) => tilesets[tileset].walkableTiles;
+        /// <summary>
+        /// Returns all of the tiles that are dangerous for this tileset.
+        /// </summary>
+        /// <param name="tileset"></param>
+        /// <returns></returns>
         public static IEnumerable<ushort> GetDangerousTiles(byte tileset) => tilesets[tileset].dangerousTiles;
+        /// <summary>
+        /// Returns all of the "good" tiles in this tileset.
+        /// </summary>
+        /// <param name="tileset"></param>
+        /// <returns></returns>
         public static IEnumerable<ushort> GetGoodTiles(byte tileset) => tilesets[tileset].goodTiles;
     }
 }

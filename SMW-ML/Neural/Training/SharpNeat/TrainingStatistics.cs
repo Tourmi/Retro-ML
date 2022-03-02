@@ -2,6 +2,9 @@
 
 namespace SMW_ML.Neural.Training.SharpNeat
 {
+    /// <summary>
+    /// Collection of stats for the training session.
+    /// </summary>
     public class TrainingStatistics
     {
         public const string CURRENT_GEN = "Current generation";
@@ -21,14 +24,16 @@ namespace SMW_ML.Neural.Training.SharpNeat
 
         private List<Stat> stats;
 
-        /// <summary>
-        /// SharpNeat statistics using the SharpNEAT library
-        /// </summary>
         public TrainingStatistics()
         {
             stats = new List<Stat>();
         }
 
+        /// <summary>
+        /// Adds the given stat to the stats collection
+        /// </summary>
+        /// <param name="name"></param>
+        /// <param name="value"></param>
         public void AddStat(string name, double value)
         {
             stats.Add(new Stat()
@@ -38,6 +43,10 @@ namespace SMW_ML.Neural.Training.SharpNeat
             });
         }
 
+        /// <summary>
+        /// Returns all of the collected stats.
+        /// </summary>
+        /// <returns></returns>
         public List<Stat> GetStats()
         {
             return stats;

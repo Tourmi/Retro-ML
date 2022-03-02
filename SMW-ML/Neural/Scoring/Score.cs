@@ -5,6 +5,9 @@ using System.Linq;
 
 namespace SMW_ML.Neural.Scoring
 {
+    /// <summary>
+    /// Class that manages the score of a single training session.
+    /// </summary>
     internal class Score
     {
         private List<IScoreFactor> scoreFactors;
@@ -14,6 +17,9 @@ namespace SMW_ML.Neural.Scoring
             scoreFactors = config.GetScoreFactorClones().ToList();
         }
 
+        /// <summary>
+        /// Should be called whenever a level is done, be it by dying, timing out, or clearing it.
+        /// </summary>
         public void LevelDone()
         {
             foreach (var scoreFactor in scoreFactors)
@@ -22,6 +28,10 @@ namespace SMW_ML.Neural.Scoring
             }
         }
 
+        /// <summary>
+        /// Should be called on each frame.
+        /// </summary>
+        /// <param name="dataReader"></param>
         public void Update(DataFetcher dataReader)
         {
             foreach (var scoreFactor in scoreFactors)
@@ -30,6 +40,10 @@ namespace SMW_ML.Neural.Scoring
             }
         }
 
+        /// <summary>
+        /// Returns the final score of the training session.
+        /// </summary>
+        /// <returns></returns>
         public double GetFinalScore()
         {
             var score = scoreFactors.Aggregate(0.0, (total, sf) => total + sf.GetFinalScore());
@@ -43,7 +57,9 @@ namespace SMW_ML.Neural.Scoring
             return score;
         }
 
-
+        /// <summary>
+        /// Whether or not the current level should be stopped.
+        /// </summary>
         public bool ShouldStop => scoreFactors.Any(sf => sf.ShouldStop);
     }
 }

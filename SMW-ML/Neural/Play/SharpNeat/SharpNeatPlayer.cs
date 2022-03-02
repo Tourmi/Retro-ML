@@ -141,6 +141,9 @@ namespace SMW_ML.Neural.Play.SharpNeat
             emulatorManager.Clean();
         }
 
+        /// <summary>
+        /// Sends the network changed event.
+        /// </summary>
         private void UpdateNetwork()
         {
             int[] outputMap = new int[blackBox!.OutputCount];

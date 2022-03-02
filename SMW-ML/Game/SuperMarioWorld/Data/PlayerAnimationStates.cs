@@ -1,5 +1,8 @@
 ﻿namespace SMW_ML.Game.SuperMarioWorld.Data
 {
+    /// <summary>
+    /// The different animation states the player (Mario) can be in.
+    /// </summary>
     internal static class PlayerAnimationStates
     {
         public const byte NONE = 0x00;

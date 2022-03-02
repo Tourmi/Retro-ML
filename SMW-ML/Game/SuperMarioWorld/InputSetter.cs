@@ -4,6 +4,9 @@ using System.Collections.Generic;
 
 namespace SMW_ML.Game.SuperMarioWorld
 {
+    /// <summary>
+    /// Sets the inputs of the neural network
+    /// </summary>
     internal class InputSetter
     {
         private readonly List<InputNode> inputNodes;
@@ -16,6 +19,10 @@ namespace SMW_ML.Game.SuperMarioWorld
             inputNodes = config.InputNodes;
         }
 
+        /// <summary>
+        /// Sets the states of the given input vector based on the input nodes.
+        /// </summary>
+        /// <param name="inputs"></param>
         public void SetInputs(IVector<double> inputs)
         {
             int currOffset = 0;

@@ -1,5 +1,8 @@
 ﻿namespace SMW_ML.Game.SuperMarioWorld.Data
 {
+    /// <summary>
+    /// Most of the sprite numbers that are in the game. Used to determine if a sprite is good, bad, or solid.
+    /// </summary>
     internal static class SpriteNumbers
     {
         public const byte KEYHOLE = 0x0E;
@@ -68,6 +71,11 @@
         public const byte POWERUPS_ETC_MIN = 0x74;
         public const byte POWERUPS_ETC_MAX = 0x84;
 
+        /// <summary>
+        /// Whether or not the given sprite number is dangerous.
+        /// </summary>
+        /// <param name="number"></param>
+        /// <returns></returns>
         public static bool IsDangerous(byte number)
         {
             if (number >= PLATFORMS_MIN && number <= PLATFORMS_MAX) return false;
@@ -125,6 +133,11 @@
             };
         }
 
+        /// <summary>
+        /// Whether or not the given sprite is considered good. Can be powerups, grabbable items, item blocks, coins, the goal or a keyhole.
+        /// </summary>
+        /// <param name="number"></param>
+        /// <returns></returns>
         public static bool IsGood(byte number)
         {
             return number switch
@@ -156,6 +169,11 @@
             };
         }
 
+        /// <summary>
+        /// Whether or not the current sprite number can be walked on.
+        /// </summary>
+        /// <param name="number"></param>
+        /// <returns></returns>
         public static bool IsSolid(byte number)
         {
             if (number >= PLATFORMS_MIN && number <= PLATFORMS_MAX) return true;
@@ -179,16 +197,6 @@
                 FLYING_GREY_PLATFORM or
                 FALLING_GREY_PLATFORM or
                 LIGHT_SWITCH => true,
-                _ => false
-            };
-        }
-
-        public static bool RotatesAroundOrigin(byte number)
-        {
-            return number switch
-            {
-                REVOLVING_PLATFORM or
-                CHAINED_GREY_PLATFORM => true,
                 _ => false
             };
         }

@@ -9,9 +9,12 @@ using System.Linq;
 
 namespace SMW_ML.ViewModels.Neural
 {
+    /// <summary>
+    /// View model for the network view
+    /// </summary>
     internal class NetworkViewModel : ViewModelBase
     {
-        private const int MAX_CONNECTIONS = 2000;
+        private const int MAX_CONNECTIONS = 1000;
 
         public struct Node
         {
@@ -198,6 +201,11 @@ namespace SMW_ML.ViewModels.Neural
             }
         }
 
+        /// <summary>
+        /// Returns whether or not the current topology is the same as the given one.
+        /// </summary>
+        /// <param name="connectionLayers"></param>
+        /// <returns></returns>
         private bool IsSameTopology((int sourceNode, int targetNode, double weight)[][] connectionLayers)
         {
             if (currConnectionLayers == null) return false;

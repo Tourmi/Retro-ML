@@ -8,12 +8,33 @@ namespace SMW_ML.Neural.Training
     /// </summary>
     public interface INeuralTrainer
     {
+        /// <summary>
+        /// Event that's called whenever new stats are available
+        /// </summary>
         event Action<TrainingStatistics>? OnStatisticsUpdated;
+        /// <summary>
+        /// Whether or not the trainer is currently running
+        /// </summary>
         bool IsTraining { get; }
+        /// <summary>
+        /// Starts training the AIs.
+        /// </summary>
+        /// <param name="configPath"></param>
         void StartTraining(string configPath);
+        /// <summary>
+        /// Stops the training of AIs.
+        /// </summary>
         void StopTraining();
 
+        /// <summary>
+        /// Loads the population which will be used as a training starting point.
+        /// </summary>
+        /// <param name="path"></param>
         void LoadPopulation(string path);
+        /// <summary>
+        /// Saves the trained population to the given path.
+        /// </summary>
+        /// <param name="path"></param>
         void SavePopulation(string path);
     }
 }

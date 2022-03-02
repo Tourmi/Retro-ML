@@ -15,6 +15,9 @@ namespace SMW_ML.Emulator
         public event Action<double[], double[]>? LinkedNetworkActivated;
         public event Action<(int sourceNode, int targetNode, double weight)[][], int[]>? ChangedLinkedNetwork;
 
+        /// <summary>
+        /// The available commands that can be sent to the emulator
+        /// </summary>
         private static class Commands
         {
             public const string EXIT = "exit";
@@ -56,7 +59,6 @@ namespace SMW_ML.Emulator
             inputSetter = new InputSetter(dataFetcher, neuralConfig);
             outputGetter = new OutputGetter(neuralConfig);
         }
-
         public void SetArduinoPreviewer(ArduinoPreviewer arduinoPreviewer)
         {
             this.arduinoPreviewer = arduinoPreviewer;
@@ -113,6 +115,11 @@ namespace SMW_ML.Emulator
             arduinoPreviewer?.Dispose();
         }
 
+        /// <summary>
+        /// Sends the given <paramref name="command"/> to the emulator, formatting it with the given <paramref name="args"/>
+        /// </summary>
+        /// <param name="command"></param>
+        /// <param name="args"></param>
         private void SendCommand(string command, params object[] args)
         {
             string newCommand = string.Format(command, args);
@@ -125,6 +132,11 @@ namespace SMW_ML.Emulator
             }
         }
 
+        /// <summary>
+        /// Reads the amount of bytes specified from the serial port
+        /// </summary>
+        /// <param name="amount"></param>
+        /// <returns></returns>
         private byte[] Read(uint amount)
         {
             byte[] buffer = new byte[amount];

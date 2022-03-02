@@ -1,5 +1,8 @@
 ﻿namespace SMW_ML.Game.SuperMarioWorld.Data
 {
+    /// <summary>
+    /// The different statuses a sprite can have. Anything above 0x08 is considered alive.
+    /// </summary>
     internal static class SpriteStatuses
     {
         public const byte FREE = 0x00;
@@ -16,7 +19,17 @@
         public const byte CARRIED = 0x0B;
         public const byte POWERUP_GOAL_TAPE = 0x0C;
 
+        /// <summary>
+        /// Returns whether or not the sprite is alive depending on the status.
+        /// </summary>
+        /// <param name="status"></param>
+        /// <returns></returns>
         public static bool IsAlive(byte status) => status >= NORMAL;
+        /// <summary>
+        /// Returns whether or not the sprite could be dangerous to the player, assuming it is a dangerous sprite, depending on the status.
+        /// </summary>
+        /// <param name="status"></param>
+        /// <returns></returns>
         public static bool CanBeDangerous(byte status) => status == NORMAL || status == KICKED;
     }
 }

@@ -2,6 +2,9 @@
 
 namespace SMW_ML.Neural.Play
 {
+    /// <summary>
+    /// Takes care of the play mode of a neural network.
+    /// </summary>
     public interface INeuralPlayer : IDisposable
     {
         /// <summary>

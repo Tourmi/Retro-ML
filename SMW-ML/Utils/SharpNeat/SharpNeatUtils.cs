@@ -4,6 +4,9 @@ using SharpNeat.Graphs.Acyclic;
 
 namespace SMW_ML.Utils.SharpNeat
 {
+    /// <summary>
+    /// Utility functions useful when dealing with the SharpNeat library
+    /// </summary>
     internal static class SharpNeatUtils
     {
         /// <summary>

@@ -7,7 +7,13 @@ namespace SMW_ML.Emulator
 {
     public interface IEmulatorAdapter : IDisposable
     {
+        /// <summary>
+        /// Event that's triggered whenever the neural network using this emulator is activated (usually once per frame.)
+        /// </summary>
         event Action<double[], double[]>? LinkedNetworkActivated;
+        /// <summary>
+        /// Event that's triggered whenever the neural network that's linked to this emulator changes.
+        /// </summary>
         event Action<(int sourceNode, int targetNode, double weight)[][], int[]>? ChangedLinkedNetwork;
 
         /// <summary>
@@ -66,8 +72,20 @@ namespace SMW_ML.Emulator
         /// <param name="outputIds"></param>
         void NetworkChanged((int sourceNode, int targetNode, double weight)[][] connectionLayers, int[] outputIds);
 
+        /// <summary>
+        /// Returns the data fetcher linked to this emulator.
+        /// </summary>
+        /// <returns></returns>
         internal DataFetcher GetDataFetcher();
+        /// <summary>
+        /// Returns the Input Setter related to this emulator
+        /// </summary>
+        /// <returns></returns>
         internal InputSetter GetInputSetter();
+        /// <summary>
+        /// Returns the Output Getter related to this emulator.
+        /// </summary>
+        /// <returns></returns>
         internal OutputGetter GetOutputGetter();
     }
 }

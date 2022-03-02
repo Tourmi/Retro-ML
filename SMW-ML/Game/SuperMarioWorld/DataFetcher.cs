@@ -3,10 +3,14 @@ using SMW_ML.Game.SuperMarioWorld.Data;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+
 using static SMW_ML.Game.SuperMarioWorld.Addresses;
 
 namespace SMW_ML.Game.SuperMarioWorld
 {
+    /// <summary>
+    /// Takes care of abstracting away the addresses when communicating with the emulator.
+    /// </summary>
     public class DataFetcher
     {
         public const int INTERNAL_CLOCK_LENGTH = 8;

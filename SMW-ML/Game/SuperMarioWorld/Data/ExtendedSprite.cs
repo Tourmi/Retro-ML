@@ -3,6 +3,9 @@ using System.Linq;
 
 namespace SMW_ML.Game.SuperMarioWorld.Data
 {
+    /// <summary>
+    /// Extended sprites consist of small sprites often used as projectiles.
+    /// </summary>
     internal struct ExtendedSprite
     {
         private static readonly byte[] DANGEROUS_SPRITES = new byte[] { 0x02, 0x03, 0x04, 0x06, 0x08, 0x0B, 0x0C, 0x0D };
@@ -38,6 +41,10 @@ namespace SMW_ML.Game.SuperMarioWorld.Data
         /// </summary>
         public ushort YPos { get; set; }
 
+        /// <summary>
+        /// Returns whether or not the current extended sprite is considered dangerous.
+        /// </summary>
+        /// <returns></returns>
         public bool IsDangerous() => DANGEROUS_SPRITES.Contains(Number);
     }
 }

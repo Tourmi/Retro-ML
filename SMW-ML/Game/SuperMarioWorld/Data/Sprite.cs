@@ -3,6 +3,9 @@ using System.Drawing;
 
 namespace SMW_ML.Game.SuperMarioWorld.Data
 {
+    /// <summary>
+    /// A sprite is any interactable item in the game. Includes enemies, powerups, etc.
+    /// </summary>
     internal struct Sprite
     {
         private const int REVOLVING_PLATFORM_LENGTH = 5 * 16;
@@ -236,6 +239,11 @@ namespace SMW_ML.Game.SuperMarioWorld.Data
             }
         }
 
+        /// <summary>
+        /// Some sprites need their rotation corrected.
+        /// Will return (0,0) if the sprite doesn't need its position corrected.
+        /// </summary>
+        /// <returns></returns>
         public Point GetSpriteRotationOffset()
         {
             const double radianRatio = Math.Tau / 512.0;

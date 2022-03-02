@@ -1,5 +1,8 @@
 ﻿namespace SMW_ML.Models.Config
 {
+    /// <summary>
+    /// Configuration for SharpNEAT, stuff related to training the AIs.
+    /// </summary>
     public class SharpNeatModel
     {
         public SharpNeatModel()

@@ -1,5 +1,8 @@
 ﻿namespace SMW_ML.Utils
 {
+    /// <summary>
+    /// This static class is used to store the information to any filesystem related paths.
+    /// </summary>
     internal static class DefaultPaths
     {
         public const string POPULATION_EXTENSION = ".pop";

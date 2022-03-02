@@ -2,6 +2,9 @@
 
 namespace SMW_ML.Game
 {
+    /// <summary>
+    /// Represents a controller input state, which buttons are pressed, and which are not.
+    /// </summary>
     public class Input
     {
         public const int BUTTON_COUNT = 12;
@@ -47,11 +50,22 @@ namespace SMW_ML.Game
             }
         }
 
+        /// <summary>
+        /// Sets the state of a single button on the controller.
+        /// </summary>
+        /// <param name="button"></param>
+        /// <param name="state"></param>
         public void SetButtonState(Buttons button, bool state) => inputMask[Array.IndexOf(buttons, button)] = state;
+        /// <summary>
+        /// Returns whether or not a button on a controller is pressed.
+        /// </summary>
+        /// <param name="button"></param>
+        /// <returns></returns>
         public bool GetButtonState(Buttons button) => inputMask[Array.IndexOf(buttons, button)];
 
         /// <summary>
         /// Returns two bitmaps based on the input, the first one containing, in order, the status of the A B X Y left right up down key. The second one contains the status of LShoulder RShoulder Start Select.
+        /// Used for Serial port communications.
         /// </summary>
         /// <returns></returns>
         public byte[] GetButtonBytes()

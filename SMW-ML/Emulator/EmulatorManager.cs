@@ -9,6 +9,9 @@ using System.Threading;
 
 namespace SMW_ML.Emulator
 {
+    /// <summary>
+    /// Class that takes care of instantiating and dealing with multi-threaded access to its emulators.
+    /// </summary>
     internal class EmulatorManager
     {
         private const int SOCKET_PORT = 11000;
@@ -37,6 +40,9 @@ namespace SMW_ML.Emulator
             sem = new Semaphore(1, 1);
         }
 
+        /// <summary>
+        /// Initializes the Emulator Manager, so it is now ready to be requested emulator instances.
+        /// </summary>
         public void Init()
         {
             IPHostEntry ipHostInfo = Dns.GetHostEntry(Dns.GetHostName());
@@ -46,13 +52,12 @@ namespace SMW_ML.Emulator
             server = new Socket(ipAddress.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
             server.Bind(localEndPoint);
             server.Listen(MAX_CONNECTIONS);
-
-            if (ArduinoPreviewer.ArduinoAvailable(applicationConfig.ArduinoCommunicationPort))
-            {
-                adapters[0]!.SetArduinoPreviewer(new ArduinoPreviewer(applicationConfig.ArduinoCommunicationPort));
-            }
         }
 
+        /// <summary>
+        /// Returns an emulator instance. If none are available, waits until one becomes available.
+        /// </summary>
+        /// <returns></returns>
         public IEmulatorAdapter WaitOne()
         {
             IEmulatorAdapter? chosen = null;
@@ -78,6 +83,10 @@ namespace SMW_ML.Emulator
             return chosen;
         }
 
+        /// <summary>
+        /// Frees up the emulator so that other threads may now use it. Make sure to not use the emulator after calling this.
+        /// </summary>
+        /// <param name="adapter"></param>
         public void FreeOne(IEmulatorAdapter adapter)
         {
             sem.WaitOne();
@@ -88,14 +97,20 @@ namespace SMW_ML.Emulator
             sem.Release();
         }
 
+        /// <summary>
+        /// Returns the first emulator of the manager. Bypasses waiting, so be careful with it, as it could be in use by another thread.
+        /// </summary>
+        /// <returns></returns>
         public IEmulatorAdapter GetFirstEmulator()
         {
+            sem.WaitOne();
             InitEmulator(0);
+            sem.Release();
             return adapters[0]!;
         }
 
         /// <summary>
-        /// Only call this once training has fully stopped
+        /// Only call this once training has fully stopped. Closes the emulators once they've all been freed.
         /// </summary>
         public void Clean()
         {
@@ -118,10 +133,22 @@ namespace SMW_ML.Emulator
             sem.Release();
         }
 
+        /// <summary>
+        /// Returns the neural network input count.
+        /// </summary>
+        /// <returns></returns>
         public int GetInputCount() => applicationConfig.NeuralConfig.GetInputCount();
 
+        /// <summary>
+        /// Returns the neural network output count
+        /// </summary>
+        /// <returns></returns>
         public int GetOutputCount() => applicationConfig.NeuralConfig.GetOutputCount();
 
+        /// <summary>
+        /// Takes care of booting an emulator instance, if it does not exist at the given index.
+        /// </summary>
+        /// <param name="index"></param>
         private void InitEmulator(int index)
         {
             if (adapters[index] == null)

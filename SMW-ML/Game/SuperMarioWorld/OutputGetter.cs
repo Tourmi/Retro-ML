@@ -4,12 +4,15 @@ using System.Collections.Generic;
 
 namespace SMW_ML.Game.SuperMarioWorld
 {
+    /// <summary>
+    /// Gets the state of the output neurons of the neural network, and parses it to a controller input.
+    /// </summary>
     internal class OutputGetter
     {
         private readonly List<OutputNode> outputNodes;
         private readonly NeuralConfig neuralConfig;
 
-        private const bool ALLOW_OPPOSITE_DIRECTIONS = false;
+        private const bool ALLOW_OPPOSITE_DIRECTIONS = true;
 
         private const double ACTIVATION_THRESHOLD = 0;
 
@@ -18,7 +21,11 @@ namespace SMW_ML.Game.SuperMarioWorld
             outputNodes = config.OutputNodes;
             neuralConfig = config;
         }
-
+        /// <summary>
+        /// Gets the state of the output neurons of the neural network, and parses it to a controller input.
+        /// </summary>
+        /// <param name="outputs"></param>
+        /// <returns></returns>
         public Input GetControllerInput(IVector<double> outputs)
         {
             string controllerInputs = "";

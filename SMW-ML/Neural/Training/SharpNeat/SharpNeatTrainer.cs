@@ -17,6 +17,9 @@ using System.Threading;
 
 namespace SMW_ML.Neural.Training.SharpNeatImpl
 {
+    /// <summary>
+    /// Neural trainer that uses the SharpNeat library for its training
+    /// </summary>
     internal class SharpNeatTrainer : INeuralTrainer
     {
         public event Action<TrainingStatistics>? OnStatisticsUpdated;
