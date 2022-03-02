@@ -2,7 +2,7 @@
 A project by Tourmi & Voltage98 
 --------
 Training a Super Mario World AI that's able to beat levels on its own, as well as completing or optimizing various objectives  
-[License](LICENSE)
+[MIT License](LICENSE)
 
 ## When cloning
 It is important to either clone the repository recursively to include the submodules, or initialize the submodules after cloning, as they need to be built for the program compilation to actually work.
@@ -41,25 +41,31 @@ To run the application, you first need to copy a Super Mario World rom file to t
 ### Main page
 ![Image of the main page of the application](docs/mainApp.png)  
 
-* **[Start training](#training-page)**
+* **[Training](#training-page)**
 * **[Play mode](#play-mode)**
+* **[Training Configuration](#configuration)**
+
+### Training Page
+The training page consists of the following tabs
+
+#### Training Tab
+![Image of the training page's training tab](docs/training-training.png)  
+* **Start training**
+  * Starts the training of AIs, using the [app's configuration](#configuration). Note that the UI might be unresponsive if too many emulator instances are running at once. Please do not close any emulators manually, as this will break the application.
+* **Stop Training**
+  * Will stop training at the end of the current generation. Please be patient if the population size is big, and not many emulators are running at once.
 * **Load population**
   * Loads an existing population (xyz.pop) into the program. Allows to continue training a population after closing and reopening the application.
 * **Save population**
   * Saves the population that's been trained for at least one generation.
-* **[Training Configuration](#configuration)**
-
-### Training Page
-When entering this page, the training of AIs will be started automatically, using the [app's configuration](#configuration). Note that the UI might be unresponsive if too many emulator instances are running at once. Please do not close any emulators manually, as this will break the application.
-
-#### Training Tab
-![Image of the training page's training tab](docs/training-training.png)  
-
-* **Neural Network visualization**
-  * Shows the first emulator's neural network structure and values. When the emulators finish booting, the emulator being represented will be the one on the bottom. The refresh rate of the preview will depend on the computer's performances, and having too many emulators running at once will affect it.
-* **Stop Training**
-  * Will stop training at the end of the current generation. Please be patient if the population size is big, and not many emulators are running at once. It will return to the [main page](#main-page) once it is done.
+* **Exit**
+  * Returns to the [main page](#main-page)
   
+#### Neural Network Tab
+![Image of the training page's neural network tab](docs/training-neural.png)
+* **Neural Network visualization**
+  * Shows the first emulator's neural network structure and values. When the emulators finish booting, the emulator being represented will be the one that was booted first. The refresh rate of the preview will depend on the computer's performances, and having too many emulators running at once will affect it.
+
 #### Statistics Tab
 ![Image of the training page's statistics tab](docs/training-stats.png)  
 
@@ -80,6 +86,11 @@ This tab shows statistics of the current training session. They are updated at t
   * The amount of AIs that are evaluated per minute.
 * **Total evaluations so far**
   * The amount of AIs evaluated since the start of training.
+
+#### Graph Tab
+![Image of the training page's chart tab](docs/training-chart.png)
+
+This tab shows a graph of the different stats mapped over the training generations. It is possible to filter which stats to preview. Please refer to the stats in the [statistics tab](#statistics-tab) for information on what the different values represent.
 
 ### Play Mode
 ![Image of the play mode page](docs/playmode.png)  
