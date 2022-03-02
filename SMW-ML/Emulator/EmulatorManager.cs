@@ -19,6 +19,7 @@ namespace SMW_ML.Emulator
 
         private readonly Semaphore sem;
         private Socket? server;
+        private IPAddress? ipAddress;
 
         private ApplicationConfig applicationConfig;
 
@@ -39,27 +40,12 @@ namespace SMW_ML.Emulator
         public void Init()
         {
             IPHostEntry ipHostInfo = Dns.GetHostEntry(Dns.GetHostName());
-            IPAddress ipAddress = ipHostInfo.AddressList.Last();
+            ipAddress = ipHostInfo.AddressList.Last();
             IPEndPoint localEndPoint = new(ipAddress, SOCKET_PORT);
 
             server = new Socket(ipAddress.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
             server.Bind(localEndPoint);
             server.Listen(MAX_CONNECTIONS);
-
-            for (int i = 0; i < adapters.Length; i++)
-            {
-                this.adapters[i] = new BizhawkAdapter(
-                    pathToEmulator: DefaultPaths.EMULATOR,
-                    pathToLuaScript: DefaultPaths.EMULATOR_ADAPTER,
-                    pathToROM: DefaultPaths.ROM,
-                    pathToBizhawkConfig: DefaultPaths.EMULATOR_CONFIG,
-                    savestatesPath: DefaultPaths.SAVESTATES_DIR,
-                    socketIP: ipAddress.ToString(),
-                    socketPort: SOCKET_PORT.ToString(),
-                    server,
-                    applicationConfig.NeuralConfig);
-            }
-
 
             if (ArduinoPreviewer.ArduinoAvailable(applicationConfig.ArduinoCommunicationPort))
             {
@@ -79,6 +65,8 @@ namespace SMW_ML.Emulator
 
                 if (index >= 0)
                 {
+                    InitEmulator(index);
+
                     chosen = adapters[index];
                     adaptersTaken[index] = true;
                 }
@@ -102,6 +90,7 @@ namespace SMW_ML.Emulator
 
         public IEmulatorAdapter GetFirstEmulator()
         {
+            InitEmulator(0);
             return adapters[0]!;
         }
 
@@ -132,5 +121,26 @@ namespace SMW_ML.Emulator
         public int GetInputCount() => applicationConfig.NeuralConfig.GetInputCount();
 
         public int GetOutputCount() => applicationConfig.NeuralConfig.GetOutputCount();
+
+        private void InitEmulator(int index)
+        {
+            if (adapters[index] == null)
+            {
+                adapters[index] = new BizhawkAdapter(pathToEmulator: DefaultPaths.EMULATOR,
+                    pathToLuaScript: DefaultPaths.EMULATOR_ADAPTER,
+                    pathToROM: DefaultPaths.ROM,
+                    pathToBizhawkConfig: DefaultPaths.EMULATOR_CONFIG,
+                    savestatesPath: DefaultPaths.SAVESTATES_DIR,
+                    socketIP: ipAddress!.ToString(),
+                    socketPort: SOCKET_PORT.ToString(),
+                    server!,
+                    applicationConfig.NeuralConfig);
+
+                if (index == 0 && ArduinoPreviewer.ArduinoAvailable(applicationConfig.ArduinoCommunicationPort))
+                {
+                    adapters[0]!.SetArduinoPreviewer(new ArduinoPreviewer(applicationConfig.ArduinoCommunicationPort));
+                }
+            }
+        }
     }
 }
