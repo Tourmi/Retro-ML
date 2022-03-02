@@ -25,6 +25,9 @@ namespace SMW_ML.Neural.Training.SharpNeatImpl
         private readonly Semaphore syncSemaphore;
         private readonly EmulatorManager emulatorManager;
 
+        private string? trainingDirectory;
+        private double previousFitness;
+
         private INeatExperiment<double>? currentExperiment;
         private NeatEvolutionAlgorithm<double>? currentAlgo;
         private bool stopFlag = false;
@@ -67,6 +70,9 @@ namespace SMW_ML.Neural.Training.SharpNeatImpl
                 throw new InvalidOperationException("An experiment is already ongoing.");
             }
 
+            trainingDirectory = DateTime.Now.ToString("yyyyMMdd-HHmmss") + "/";
+            Directory.CreateDirectory(trainingDirectory + "/" + DefaultPaths.GENOME_FOLDER);
+
             currentExperiment = experimentFactory.CreateExperiment(JsonUtils.LoadUtf8(configPath).RootElement);
             currentExperiment.ActivationFnName = nameof(LeakyReLU);
             currentExperiment.IsAcyclic = true;
@@ -98,7 +104,7 @@ namespace SMW_ML.Neural.Training.SharpNeatImpl
             syncSemaphore.WaitOne();
             OnStatisticsUpdated?.Invoke(GetTrainingStatistics());
             currentAlgo!.Initialise();
-            SavePopulation(DefaultPaths.CURRENT_POPULATION);
+            SavePopulation(trainingDirectory + DefaultPaths.CURRENT_POPULATION + DefaultPaths.POPULATION_EXTENSION);
 
             while (!stopFlag)
             {
@@ -106,8 +112,8 @@ namespace SMW_ML.Neural.Training.SharpNeatImpl
 
                 OnStatisticsUpdated?.Invoke(GetTrainingStatistics());
 
-                SaveBestGenome(DefaultPaths.CURRENT_GENOME);
-                SavePopulation(DefaultPaths.CURRENT_POPULATION);
+                SaveBestGenome();
+                SavePopulation(trainingDirectory + DefaultPaths.CURRENT_POPULATION + DefaultPaths.POPULATION_EXTENSION);
             }
 
             syncSemaphore.Release();
@@ -118,22 +124,6 @@ namespace SMW_ML.Neural.Training.SharpNeatImpl
         {
             NeatPopulationLoader<double> npl = new(NeatGenomeLoaderFactory.CreateLoaderDouble(metaGenome));
             genomes = npl.LoadFromZipArchive(path);
-        }
-
-        public void SavePopulation(string path)
-        {
-            path = Path.GetFullPath(path);
-            string filename = Path.GetFileName(path);
-
-            if (File.Exists(path))
-            {
-                File.Copy(path, path + ".backup", true);
-                File.Delete(path);
-            }
-
-            genomes = currentAlgo!.Population.GenomeList;
-
-            NeatPopulationSaver<double>.SaveToZipArchive(genomes, path[..path.IndexOf(filename)], filename, System.IO.Compression.CompressionLevel.Fastest);
         }
 
         public TrainingStatistics GetTrainingStatistics()
@@ -152,9 +142,10 @@ namespace SMW_ML.Neural.Training.SharpNeatImpl
             return ts;
         }
 
-        public void SaveBestGenome(string path)
+        public void SavePopulation(string path)
         {
             path = Path.GetFullPath(path);
+            string filename = Path.GetFileName(path);
 
             if (File.Exists(path))
             {
@@ -162,7 +153,29 @@ namespace SMW_ML.Neural.Training.SharpNeatImpl
                 File.Delete(path);
             }
 
-            NeatGenomeSaver<double>.Save(currentAlgo!.Population.BestGenome, path);
+            genomes = currentAlgo!.Population.GenomeList;
+
+            NeatPopulationSaver<double>.SaveToZipArchive(genomes, path[..path.IndexOf(filename)], filename, System.IO.Compression.CompressionLevel.Fastest);
+        }
+
+        public void SaveBestGenome()
+        {
+            var bestGenome = currentAlgo!.Population.BestGenome;
+            var path = Path.GetFullPath(Path.Combine(trainingDirectory!, DefaultPaths.GENOME_FOLDER, DefaultPaths.CURRENT_GENOME))
+                + currentAlgo!.Stats.Generation.ToString().PadLeft(5, '0')
+                + DefaultPaths.GENOME_EXTENSION;
+            if (bestGenome.FitnessInfo.PrimaryFitness > previousFitness)
+            {
+                if (File.Exists(path))
+                {
+                    File.Copy(path, path + ".backup", true);
+                    File.Delete(path);
+                }
+
+                NeatGenomeSaver<double>.Save(bestGenome, path);
+
+                previousFitness = bestGenome.FitnessInfo.PrimaryFitness;
+            }
         }
     }
 }
