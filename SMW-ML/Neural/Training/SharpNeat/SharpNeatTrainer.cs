@@ -74,7 +74,7 @@ namespace SMW_ML.Neural.Training.SharpNeatImpl
             }
 
             trainingDirectory = DateTime.Now.ToString("yyyyMMdd-HHmmss") + "/";
-            Directory.CreateDirectory(trainingDirectory + "/" + DefaultPaths.GENOME_FOLDER);
+            Directory.CreateDirectory(trainingDirectory + "/" + DefaultPaths.GENOME_DIR);
 
             currentExperiment = experimentFactory.CreateExperiment(JsonUtils.LoadUtf8(configPath).RootElement);
             currentExperiment.ActivationFnName = nameof(LeakyReLU);
@@ -164,7 +164,7 @@ namespace SMW_ML.Neural.Training.SharpNeatImpl
         public void SaveBestGenome()
         {
             var bestGenome = currentAlgo!.Population.BestGenome;
-            var path = Path.GetFullPath(Path.Combine(trainingDirectory!, DefaultPaths.GENOME_FOLDER, DefaultPaths.CURRENT_GENOME))
+            var path = Path.GetFullPath(Path.Combine(trainingDirectory!, DefaultPaths.GENOME_DIR, DefaultPaths.CURRENT_GENOME))
                 + currentAlgo!.Stats.Generation.ToString().PadLeft(5, '0')
                 + DefaultPaths.GENOME_EXTENSION;
             if (bestGenome.FitnessInfo.PrimaryFitness > previousFitness)

@@ -19,7 +19,6 @@
 			<Setter Property="Canvas.Left" Value="{Binding PositionX}"/>
 			<Setter Property="Canvas.Top" Value="{Binding PositionY}"/>
 		</Style>
-		
 		<Style Selector="StackPanel.nodes">
 			<Setter Property="Orientation" Value="Horizontal"/>
 			<Setter Property="MinHeight" Value="{Binding GridSize}"/>
@@ -33,7 +32,6 @@
 			<Setter Property="TextAlignment" Value="Left"/>
 			<Setter Property="TextWrapping" Value="Wrap"/>
 			<Setter Property="FontSize" Value="10"/>
-
 		</Style>
 		<!--Square around nodes-->
 		<Style Selector="Border.node">
@@ -62,9 +60,10 @@
 		<Style Selector="Border.node:disabled Border">
 			<Setter Property="BorderBrush" Value="#444"/>
 		</Style>
+		<!--Connections-->
 		<Style Selector="Line">
 			<Setter Property="Stroke" Value="Lime"/>
-			<Setter Property="StrokeThickness" Value="3" />
+			<Setter Property="StrokeThickness" Value="2" />
 		</Style>
 		<Style Selector="Line.negative">
 			<Setter Property="Stroke" Value="Magenta"/>

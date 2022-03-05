@@ -82,7 +82,7 @@ namespace SMW_ML.ViewModels.Neural
         public static int TotalWidth => 1800;
         public static int TotalHeight => 800;
 
-        public static int GridSize => 16;
+        public static int GridSize => 12;
         public static int NodeSize => GridSize - 2;
         public static int LeftOffset => 100;
         public static int SpacingBetweenInputs => 5;

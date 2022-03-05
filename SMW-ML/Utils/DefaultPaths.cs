@@ -17,7 +17,7 @@
         public const string ROM = "smw.sfc";
 
         public const string CURRENT_POPULATION = "current";
-        public const string GENOME_FOLDER = "genomes";
+        public const string GENOME_DIR = "genomes\\";
         public const string CURRENT_GENOME = "";
     }
 }

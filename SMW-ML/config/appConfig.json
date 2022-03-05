@@ -6,7 +6,7 @@
   "scoreFactors": [
     {
       "$type": "SMW_ML.Neural.Scoring.DiedScoreFactor, SMW_ML",
-      "scoreMultiplier": -10.0,
+      "scoreMultiplier": -15.0,
       "isDisabled": false
     },
     {
@@ -26,7 +26,7 @@
     },
     {
       "$type": "SMW_ML.Neural.Scoring.SpeedScoreFactor, SMW_ML",
-      "scoreMultiplier": 10.0,
+      "scoreMultiplier": 5.0,
       "isDisabled": false
     },
     {
