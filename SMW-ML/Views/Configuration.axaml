@@ -38,7 +38,7 @@
 					</StackPanel>
 				</TabItem>
 
-				<TabItem Header="{Binding TabItemBizhawk}">
+				<TabItem Header="Training Emulator">
 					<StackPanel Classes="tabContent">
 						<TextBlock Classes="h1" Text="Emulator Settings"/>
 						<Grid Margin="5" ColumnDefinitions="*,*" RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto,Auto">
@@ -64,7 +64,7 @@
 					</StackPanel>
 				</TabItem>
 
-				<TabItem Header="Emulator (Playing Mode)">
+				<TabItem Header="Play Emulator">
 					<StackPanel Classes="tabContent">
 						<TextBlock Classes="h1" Text="Emulator Settings"/>
 						<Grid Margin="5" ColumnDefinitions="*,*" RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto,Auto">
