@@ -78,7 +78,7 @@ namespace SMW_ML.ViewModels
 
             new Thread(() =>
             {
-                emulatorManager.Init(false);
+                emulatorManager.Init(true);
                 emulatorManager.GetFirstEmulator().LinkedNetworkActivated += NeuralNetwork.UpdateNodes;
                 emulatorManager.GetFirstEmulator().ChangedLinkedNetwork += NeuralNetwork.UpdateTopology;
                 trainer.StartTraining(DefaultPaths.SHARPNEAT_CONFIG);

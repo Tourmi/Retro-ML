@@ -212,8 +212,8 @@ namespace SMW_ML.ViewModels
             }
         }
 
-        private float _soundVolume;
-        public float SoundVolume
+        private int _soundVolume;
+        public int SoundVolume
         {
             get => _soundVolume;
             set
@@ -278,8 +278,8 @@ namespace SMW_ML.ViewModels
             }
         }
 
-        private float _soundVolumePlayMode;
-        public float SoundVolumePlayMode
+        private int _soundVolumePlayMode;
+        public int SoundVolumePlayMode
         {
             get => _soundVolumePlayMode;
             set

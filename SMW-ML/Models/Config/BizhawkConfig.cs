@@ -30,9 +30,9 @@ namespace SMW_ML.Models.Config
             set => data!.SoundEnabled = value;
         }
 
-        public float Volume
+        public int Volume
         {
-            get => (float)data!.SoundVolume;
+            get => (int)data!.SoundVolume;
             set => data!.SoundVolume = value;
         }
 

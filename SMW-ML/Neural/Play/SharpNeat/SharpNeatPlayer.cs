@@ -39,7 +39,7 @@ namespace SMW_ML.Neural.Play.SharpNeat
                     isAcyclic: true,
                     activationFn: new LeakyReLU());
             this.emulatorManager = emulatorManager;
-            emulatorManager.Init(true);
+            emulatorManager.Init(false);
             emulator = emulatorManager.WaitOne();
             syncSemaphore = new Semaphore(1, 1);
 
