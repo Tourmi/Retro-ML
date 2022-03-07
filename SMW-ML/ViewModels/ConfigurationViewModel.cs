@@ -26,6 +26,19 @@ namespace SMW_ML.ViewModels
             ContractResolver = new DefaultContractResolver() { NamingStrategy = new CamelCaseNamingStrategy() }
         };
 
+        private enum DispMethodEnum : ushort
+        {
+            OpenGL = 0,
+            GDI = 1,
+            Direct3D9 = 2
+        }
+
+        private enum DispSpeedupFeaturesEnum : ushort
+        {
+            Deactivated = 0,
+            Activated = 2
+        }
+
         #region Strings
         public static string NumberOfAIString => "Number of AI";
         public static string GeneralTrainingSettingsString => "Training Settings";
@@ -48,6 +61,7 @@ namespace SMW_ML.ViewModels
         private ApplicationConfig? ApplicationConfig;
 
         public ObservableCollection<Error> ErrorList { get; set; }
+        public ObservableCollection<string> DispMethodList { get; set; }
 
         private bool isStopManually = true;
         [DataMember]
@@ -188,6 +202,138 @@ namespace SMW_ML.ViewModels
             }
         }
 
+        public bool _soundEnabled;
+        public bool SoundEnabled
+        {
+            get => _soundEnabled;
+            set
+            {
+                this.RaiseAndSetIfChanged(ref _soundEnabled, value);
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(SoundEnabled)));
+            }
+        }
+
+        private int _soundVolume;
+        public int SoundVolume
+        {
+            get => _soundVolume;
+            set
+            {
+                this.RaiseAndSetIfChanged(ref _soundVolume, value);
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(SoundVolume)));
+            }
+        }
+
+        private bool _unthrottled;
+        public bool Unthrottled
+        {
+            get => _unthrottled;
+            set
+            {
+                this.RaiseAndSetIfChanged(ref _unthrottled, value);
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Unthrottled)));
+            }
+        }
+
+        private int _zoomFactor;
+        public int ZoomFactor
+        {
+            get => _zoomFactor;
+            set
+            {
+                this.RaiseAndSetIfChanged(ref _zoomFactor, value);
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(ZoomFactor)));
+            }
+        }
+
+        private int _dispMethod;
+        public int DispMethod
+        {
+            get => _dispMethod;
+            set
+            {
+                this.RaiseAndSetIfChanged(ref _dispMethod, value);
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(DispMethod)));
+            }
+        }
+
+        private bool _dispSpeedupFeatures;
+        public bool DispSpeedupFeatures
+        {
+            get => _dispSpeedupFeatures;
+            set
+            {
+                this.RaiseAndSetIfChanged(ref _dispSpeedupFeatures, value);
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(DispSpeedupFeatures)));
+            }
+        }
+
+        public bool _soundEnabledPlayMode;
+        public bool SoundEnabledPlayMode
+        {
+            get => _soundEnabledPlayMode;
+            set
+            {
+                this.RaiseAndSetIfChanged(ref _soundEnabledPlayMode, value);
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(SoundEnabledPlayMode)));
+            }
+        }
+
+        private int _soundVolumePlayMode;
+        public int SoundVolumePlayMode
+        {
+            get => _soundVolumePlayMode;
+            set
+            {
+                this.RaiseAndSetIfChanged(ref _soundVolumePlayMode, value);
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(SoundVolumePlayMode)));
+            }
+        }
+
+        private bool _unthrottledPlayMode;
+        public bool UnthrottledPlayMode
+        {
+            get => _unthrottledPlayMode;
+            set
+            {
+                this.RaiseAndSetIfChanged(ref _unthrottledPlayMode, value);
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(UnthrottledPlayMode)));
+            }
+        }
+
+        private int _zoomFactorPlayMode;
+        public int ZoomFactorPlayMode
+        {
+            get => _zoomFactorPlayMode;
+            set
+            {
+                this.RaiseAndSetIfChanged(ref _zoomFactorPlayMode, value);
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(ZoomFactorPlayMode)));
+            }
+        }
+
+        private int _dispMethodPlayMode;
+        public int DispMethodPlayMode
+        {
+            get => _dispMethodPlayMode;
+            set
+            {
+                this.RaiseAndSetIfChanged(ref _dispMethodPlayMode, value);
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(DispMethodPlayMode)));
+            }
+        }
+
+        private bool _dispSpeedupFeaturesPlayMode;
+        public bool DispSpeedupFeaturesPlayMode
+        {
+            get => _dispSpeedupFeaturesPlayMode;
+            set
+            {
+                this.RaiseAndSetIfChanged(ref _dispSpeedupFeaturesPlayMode, value);
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(DispSpeedupFeaturesPlayMode)));
+            }
+        }
+
         private List<string> saveStates;
         private string saveStatePreview;
         public string SaveStates
@@ -199,6 +345,7 @@ namespace SMW_ML.ViewModels
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(SaveStates)));
             }
         }
+
         private void SetSaveStates(List<string> saveStates)
         {
             this.saveStates = saveStates;
@@ -245,6 +392,13 @@ namespace SMW_ML.ViewModels
                 "Maximize Lives",
                 "Maximize Coins",
                 "All Dragon Pieces"
+            };
+
+            DispMethodList = new ObservableCollection<string>()
+            {
+                "OpenGL",
+                "GDI+",
+                "Direct3D9"
             };
 
             ErrorList = new ObservableCollection<Error>();
@@ -323,7 +477,24 @@ namespace SMW_ML.ViewModels
             File.WriteAllText(DefaultPaths.SHARPNEAT_CONFIG, sharpNeatOutput);
 
             //Tab Emulator
+            var bizHawkConfig = new BizhawkConfig(DefaultPaths.EMULATOR_CONFIG);
+            bizHawkConfig.SoundEnabled = SoundEnabled;
+            bizHawkConfig.Volume = SoundVolume;
+            bizHawkConfig.Unthrottled = Unthrottled;
+            bizHawkConfig.ZoomFactor = ZoomFactor;
+            bizHawkConfig.DispMethod = DispMethod;
+            bizHawkConfig.DispSpeedupFeatures = (int)(DispSpeedupFeatures ? DispSpeedupFeaturesEnum.Activated : DispSpeedupFeaturesEnum.Deactivated);
+            bizHawkConfig.Serialize(DefaultPaths.EMULATOR_CONFIG);
 
+            //Tab Emulator Play Mode
+            var bizHawkConfigPlayMode = new BizhawkConfig(DefaultPaths.EMULATOR_PLAY_CONFIG);
+            bizHawkConfigPlayMode.SoundEnabled = SoundEnabledPlayMode;
+            bizHawkConfigPlayMode.Volume = SoundVolumePlayMode;
+            bizHawkConfigPlayMode.Unthrottled = UnthrottledPlayMode;
+            bizHawkConfigPlayMode.ZoomFactor = ZoomFactorPlayMode;
+            bizHawkConfigPlayMode.DispMethod = DispMethodPlayMode;
+            bizHawkConfigPlayMode.DispSpeedupFeatures = (int)(DispSpeedupFeaturesPlayMode ? DispSpeedupFeaturesEnum.Activated : DispSpeedupFeaturesEnum.Deactivated);
+            bizHawkConfigPlayMode.Serialize(DefaultPaths.EMULATOR_PLAY_CONFIG);
 
             //Tab Application
             if (ApplicationConfig == null) { return; }
@@ -380,8 +551,22 @@ namespace SMW_ML.ViewModels
             NumberAI = SharpNeatModel.PopulationSize;
 
             //Tab Emulator
-            string emulatorConfig = File.ReadAllText(DefaultPaths.EMULATOR_CONFIG);
-            // EmulatorConfig = JsonConvert.DeserializeObject<BizhawkConfig>(emulatorConfig);
+            var bizhawkConfig = new BizhawkConfig(DefaultPaths.EMULATOR_CONFIG);
+            SoundEnabled = bizhawkConfig.SoundEnabled;
+            SoundVolume = bizhawkConfig.Volume;
+            Unthrottled = bizhawkConfig.Unthrottled;
+            ZoomFactor = bizhawkConfig.ZoomFactor;
+            DispMethod = bizhawkConfig.DispMethod;
+            DispSpeedupFeatures = bizhawkConfig.DispSpeedupFeatures == (int)DispSpeedupFeaturesEnum.Activated;
+
+            //Tab Emulator Play Mode
+            var bizhawkConfigPlayMode = new BizhawkConfig(DefaultPaths.EMULATOR_PLAY_CONFIG);
+            SoundEnabledPlayMode = bizhawkConfigPlayMode.SoundEnabled;
+            SoundVolumePlayMode = bizhawkConfigPlayMode.Volume;
+            UnthrottledPlayMode = bizhawkConfigPlayMode.Unthrottled;
+            ZoomFactorPlayMode = bizhawkConfigPlayMode.ZoomFactor;
+            DispMethodPlayMode = bizhawkConfigPlayMode.DispMethod;
+            DispSpeedupFeaturesPlayMode = bizhawkConfigPlayMode.DispSpeedupFeatures == (int)DispSpeedupFeaturesEnum.Activated;
 
             //Tab Application
             string appConfigJson = File.ReadAllText(DefaultPaths.APP_CONFIG);

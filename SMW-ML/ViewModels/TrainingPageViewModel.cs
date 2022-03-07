@@ -1,23 +1,4 @@
-﻿using Avalonia.Controls;
-using Avalonia.Threading;
-using Newtonsoft.Json;
-using ReactiveUI;
-using SMW_ML.Emulator;
-using SMW_ML.Models.Config;
-using SMW_ML.Neural.Training;
-using SMW_ML.Neural.Training.SharpNeat;
-using SMW_ML.Neural.Training.SharpNeatImpl;
-using SMW_ML.Utils;
-using SMW_ML.ViewModels.Neural;
-using SMW_ML.ViewModels.Statistics;
-using SMW_ML.Views.Components;
-using System;
-using System.Collections.ObjectModel;
-using System.IO;
-using System.Threading;
-using System.Threading.Tasks;
-
-namespace SMW_ML.ViewModels
+﻿namespace SMW_ML.ViewModels
 {
     internal class TrainingPageViewModel : ViewModelBase
     {
@@ -116,7 +97,7 @@ namespace SMW_ML.ViewModels
 
             new Thread(() =>
             {
-                emulatorManager.Init();
+                emulatorManager.Init(true);
                 emulatorManager.GetFirstEmulator().LinkedNetworkActivated += NeuralNetwork.UpdateNodes;
                 emulatorManager.GetFirstEmulator().ChangedLinkedNetwork += NeuralNetwork.UpdateTopology;
                 TrainingChart.ClearData();

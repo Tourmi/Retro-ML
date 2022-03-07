@@ -1,13 +1,4 @@
-﻿using SMW_ML.Arduino;
-using SMW_ML.Models.Config;
-using SMW_ML.Utils;
-using System;
-using System.Linq;
-using System.Net;
-using System.Net.Sockets;
-using System.Threading;
-
-namespace SMW_ML.Emulator
+﻿namespace SMW_ML.Emulator
 {
     /// <summary>
     /// Class that takes care of instantiating and dealing with multi-threaded access to its emulators.
@@ -19,6 +10,8 @@ namespace SMW_ML.Emulator
 
         private readonly IEmulatorAdapter?[] adapters;
         private readonly bool[] adaptersTaken;
+
+        private bool trainingMode;
 
         private readonly Semaphore sem;
         private Socket? server;
@@ -43,8 +36,10 @@ namespace SMW_ML.Emulator
         /// <summary>
         /// Initializes the Emulator Manager, so it is now ready to be requested emulator instances.
         /// </summary>
-        public void Init()
+        public void Init(bool trainingMode)
         {
+            this.trainingMode = trainingMode;
+
             IPHostEntry ipHostInfo = Dns.GetHostEntry(Dns.GetHostName());
             ipAddress = ipHostInfo.AddressList.Last();
             IPEndPoint localEndPoint = new(ipAddress, SOCKET_PORT);
@@ -156,7 +151,7 @@ namespace SMW_ML.Emulator
                 adapters[index] = new BizhawkAdapter(pathToEmulator: DefaultPaths.EMULATOR,
                     pathToLuaScript: DefaultPaths.EMULATOR_ADAPTER,
                     pathToROM: DefaultPaths.ROM,
-                    pathToBizhawkConfig: DefaultPaths.EMULATOR_CONFIG,
+                    pathToBizhawkConfig: trainingMode ? DefaultPaths.EMULATOR_CONFIG : DefaultPaths.EMULATOR_PLAY_CONFIG,
                     savestatesPath: DefaultPaths.SAVESTATES_DIR,
                     socketIP: ipAddress!.ToString(),
                     socketPort: SOCKET_PORT.ToString(),
