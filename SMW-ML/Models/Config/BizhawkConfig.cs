@@ -1,4 +1,8 @@
-﻿namespace SMW_ML.Models.Config
+﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
+using System.IO;
+
+namespace SMW_ML.Models.Config
 {
     public class BizhawkConfig
     {
