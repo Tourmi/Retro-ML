@@ -125,8 +125,15 @@ namespace SMW_ML.Neural.Training.SharpNeatImpl
 
         public void LoadPopulation(string path)
         {
-            NeatPopulationLoader<double> npl = new(NeatGenomeLoaderFactory.CreateLoaderDouble(metaGenome));
-            genomes = npl.LoadFromZipArchive(path);
+            try
+            {
+                NeatPopulationLoader<double> npl = new(NeatGenomeLoaderFactory.CreateLoaderDouble(metaGenome));
+                genomes = npl.LoadFromZipArchive(path);
+            }
+            catch
+            {
+                Exceptions.QueueException(new Exception("Unable to load population. Is the population compatible with the current Neural Network Configuration?"));
+            }
         }
 
         public TrainingStatistics GetTrainingStatistics()

@@ -4,6 +4,7 @@ using SMW_ML.Emulator;
 using SMW_ML.Game.SuperMarioWorld;
 using SMW_ML.Models.Config;
 using SMW_ML.Neural.Scoring;
+using SMW_ML.Utils;
 using SMW_ML.Utils.SharpNeat;
 using System;
 using System.IO;
@@ -32,41 +33,51 @@ namespace SMW_ML.Neural.Training.SharpNeatImpl
 
         public FitnessInfo Evaluate(IBlackBox<double> phenome)
         {
-            Score score = new(appConfig);
-
-            emulator = emulatorManager.WaitOne();
-            int[] outputMap = new int[phenome.OutputCount];
-            Array.Copy(phenome.OutputVector.GetField<int[]>("_map"), outputMap, phenome.OutputCount);
-            emulator.NetworkChanged(SharpNeatUtils.GetConnectionLayers(phenome), outputMap);
-            dataFetcher = emulator.GetDataFetcher();
-            inputSetter = emulator.GetInputSetter();
-            outputGetter = emulator.GetOutputGetter();
-
-            var saveStates = appConfig.SaveStates;
-            foreach (var state in saveStates)
+            try
             {
-                emulator.LoadState(Path.GetFullPath(state));
-                emulator.NextFrame();
-                dataFetcher.NextLevel();
 
-                while (!score.ShouldStop)
+                Score score = new(appConfig);
+
+                emulator = emulatorManager.WaitOne();
+                int[] outputMap = new int[phenome.OutputCount];
+                Array.Copy(phenome.OutputVector.GetField<int[]>("_map"), outputMap, phenome.OutputCount);
+                emulator.NetworkChanged(SharpNeatUtils.GetConnectionLayers(phenome), outputMap);
+                dataFetcher = emulator.GetDataFetcher();
+                inputSetter = emulator.GetInputSetter();
+                outputGetter = emulator.GetOutputGetter();
+
+                var saveStates = appConfig.SaveStates;
+                foreach (var state in saveStates)
                 {
-                    DoFrame(phenome);
+                    emulator.LoadState(Path.GetFullPath(state));
+                    emulator.NextFrame();
+                    dataFetcher.NextLevel();
 
-                    score.Update(dataFetcher);
-                    dataFetcher.NextFrame();
-                    emulator.NetworkUpdated(SharpNeatUtils.VectorToArray(phenome.InputVector), SharpNeatUtils.VectorToArray(phenome.OutputVector));
+                    while (!score.ShouldStop)
+                    {
+                        DoFrame(phenome);
+
+                        score.Update(dataFetcher);
+                        dataFetcher.NextFrame();
+                        emulator.NetworkUpdated(SharpNeatUtils.VectorToArray(phenome.InputVector), SharpNeatUtils.VectorToArray(phenome.OutputVector));
+                    }
+                    score.LevelDone();
                 }
-                score.LevelDone();
+
+                dataFetcher = null;
+                inputSetter = null;
+                outputGetter = null;
+                emulatorManager.FreeOne(emulator);
+                emulator = null;
+
+                return new FitnessInfo(score.GetFinalScore());
             }
+            catch (Exception ex)
+            {
+                Exceptions.QueueException(new Exception($"Error occured during training. Was an emulator closed?\n{ex.Message}\n{ex.StackTrace}"));
 
-            dataFetcher = null;
-            inputSetter = null;
-            outputGetter = null;
-            emulatorManager.FreeOne(emulator);
-            emulator = null;
-
-            return new FitnessInfo(score.GetFinalScore());
+                return new FitnessInfo(-1);
+            }
         }
 
         /// <summary>

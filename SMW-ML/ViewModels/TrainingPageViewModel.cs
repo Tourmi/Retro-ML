@@ -10,7 +10,6 @@ using SMW_ML.Neural.Training.SharpNeatImpl;
 using SMW_ML.Utils;
 using SMW_ML.ViewModels.Neural;
 using SMW_ML.ViewModels.Statistics;
-using SMW_ML.Views.Components;
 using System;
 using System.Collections.ObjectModel;
 using System.IO;
@@ -103,15 +102,8 @@ namespace SMW_ML.ViewModels
             trainer.OnStatisticsUpdated += HandleGetStats;
             if (populationToLoad != null)
             {
-                try
-                {
-                    trainer.LoadPopulation(populationToLoad);
-                    populationToLoad = null;
-                }
-                catch
-                {
-                    await MessageBox.Show(null, "Failed to load specified population. Is it compatible with the current Input/Output neuron settings?", "Error", MessageBox.MessageBoxButtons.Ok);
-                }
+                trainer.LoadPopulation(populationToLoad);
+                populationToLoad = null;
             }
 
             new Thread(() =>

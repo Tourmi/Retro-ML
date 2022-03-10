@@ -102,20 +102,28 @@ namespace SMW_ML.Neural.Play.SharpNeat
         /// </summary>
         private void Play()
         {
-            IsPlaying = true;
-            syncSemaphore.WaitOne();
-            UpdateNetwork();
-            emulator.LoadState(state!);
-            emulator.NextFrame();
-            dataFetcher.NextLevel();
-
-            while (!shouldStop)
+            try
             {
-                DoFrame();
-            }
 
-            syncSemaphore.Release();
-            IsPlaying = false;
+                IsPlaying = true;
+                syncSemaphore.WaitOne();
+                UpdateNetwork();
+                emulator.LoadState(state!);
+                emulator.NextFrame();
+                dataFetcher.NextLevel();
+
+                while (!shouldStop)
+                {
+                    DoFrame();
+                }
+
+                syncSemaphore.Release();
+                IsPlaying = false;
+            }
+            catch (Exception ex)
+            {
+                Exceptions.QueueException(new Exception($"An exception occured during play. Was the emulator window closed?\n{ex.Message}\n{ex.StackTrace}"));
+            }
         }
 
         /// <summary>

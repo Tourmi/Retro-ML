@@ -25,16 +25,16 @@ namespace SMW_ML.ViewModels
         public static string LoadSaveStateString => "Load save state";
         #endregion
 
-        private INeuralPlayer neuralPlayer;
-        private EmulatorManager emulatorManager;
-        private NetworkViewModel neuralNetwork;
+        private INeuralPlayer? neuralPlayer;
+        private EmulatorManager? emulatorManager;
+        private NetworkViewModel? neuralNetwork;
 
         private bool loadedState = false;
         private bool loadedGenome = false;
 
         public NetworkViewModel NeuralNetwork
         {
-            get => neuralNetwork;
+            get => neuralNetwork!;
             set => this.RaiseAndSetIfChanged(ref neuralNetwork, value);
         }
 
@@ -85,7 +85,7 @@ namespace SMW_ML.ViewModels
                 return;
             }
 
-            neuralPlayer.LoadGenome(path);
+            neuralPlayer!.LoadGenome(path);
             loadedGenome = true;
             UpdateCanStart();
         }
@@ -105,7 +105,7 @@ namespace SMW_ML.ViewModels
                 return;
             }
 
-            neuralPlayer.LoadState(path);
+            neuralPlayer!.LoadState(path);
             loadedState = true;
             UpdateCanStart();
         }
@@ -117,7 +117,7 @@ namespace SMW_ML.ViewModels
 
             new Thread(() =>
             {
-                neuralPlayer.StartPlaying();
+                neuralPlayer!.StartPlaying();
                 CanStop = true;
             }).Start();
         }
@@ -126,13 +126,13 @@ namespace SMW_ML.ViewModels
         {
             if (!CanStop) return;
             CanStop = false;
-            neuralPlayer.StopPlaying();
+            neuralPlayer!.StopPlaying();
             CanStart = true;
         }
 
         public void Exit()
         {
-            neuralPlayer.Dispose();
+            neuralPlayer!.Dispose();
             OnExit?.Invoke();
         }
 

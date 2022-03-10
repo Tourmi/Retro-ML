@@ -1,4 +1,8 @@
+using Avalonia.Threading;
 using ReactiveUI;
+using SMW_ML.Utils;
+using SMW_ML.Views.Components;
+using System;
 using System.Threading;
 
 namespace SMW_ML.ViewModels
@@ -28,6 +32,8 @@ namespace SMW_ML.ViewModels
 
             playingPageViewModel = new PlayingPageViewModel();
             playingPageViewModel.OnExit += HandlePlayingExit;
+
+            new Thread(ErrorManagementThread).Start();
 
             Content = mainPageViewModel;
         }
@@ -67,5 +73,20 @@ namespace SMW_ML.ViewModels
             mainPageViewModel.IsEnabled = true;
         }
 
+        public void ErrorManagementThread()
+        {
+            while (true)
+            {
+                Exception ex = Exceptions.ConsumeException();
+
+                Dispatcher.UIThread.Post(async () =>
+                {
+                    bool currStatus = Content!.IsEnabled;
+                    Content.IsEnabled = false;
+                    await MessageBox.Show(null, ex.Message, "Error", MessageBox.MessageBoxButtons.Ok);
+                    Content.IsEnabled = currStatus;
+                });
+            }
+        }
     }
 }
