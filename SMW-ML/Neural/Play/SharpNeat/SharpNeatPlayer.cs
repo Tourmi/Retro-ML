@@ -18,8 +18,6 @@ namespace SMW_ML.Neural.Play.SharpNeat
 {
     internal class SharpNeatPlayer : INeuralPlayer
     {
-        public event Action? PlayingStopped;
-
         private readonly Semaphore syncSemaphore;
         private readonly EmulatorManager emulatorManager;
         private readonly IEmulatorAdapter emulator;
@@ -112,23 +110,22 @@ namespace SMW_ML.Neural.Play.SharpNeat
                 IsPlaying = true;
                 syncSemaphore.WaitOne();
                 UpdateNetwork();
-                emulator.LoadState(state!);
-                emulator.NextFrame();
-                dataFetcher.NextLevel();
-
-                Score score = new Score(new List<IScoreFactor>() { new DiedScoreFactor(), new WonLevelScoreFactor() });
-
                 while (!shouldStop)
                 {
-                    DoFrame();
-                    score.Update(dataFetcher);
+                    emulator.LoadState(state!);
+                    emulator.NextFrame();
+                    dataFetcher.NextLevel();
 
-                    shouldStop |= score.ShouldStop;
+                    Score score = new(new List<IScoreFactor>() { new DiedScoreFactor(), new WonLevelScoreFactor() });
+
+                    while (!shouldStop && !score.ShouldStop)
+                    {
+                        DoFrame();
+                        score.Update(dataFetcher);
+                    }
                 }
-
                 syncSemaphore.Release();
                 IsPlaying = false;
-                PlayingStopped?.Invoke();
             }
             catch (Exception ex)
             {
