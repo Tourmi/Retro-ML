@@ -13,7 +13,7 @@ It is important to either clone the repository recursively to include the submod
 * Microsoft Visual C++ 2010 SP1 Runtime (x64) must be installed for Bizhawk to run
 
 ## Building the dependencies
-Run these commands starting from the root of the repository
+Run these commands starting from the root of the repository. Alternatively, you may use the buildDependencies script.
 
 ### SharpNEAT
 ```
@@ -24,7 +24,7 @@ dotnet build --configuration Release
 ### BizHawk
 ```
 cd .\Submodules\BizHawk\Dist\
-.\QuickTestBuildAndPackage.bat
+call QuickTestBuildAndPackage.bat
 ```
 
 ## Building the application
@@ -35,6 +35,8 @@ dotnet build --configuration Release
 
 ## Running the application
 To run the application, you first need to copy a Super Mario World rom file to the root directory of the program. It must be named "swm.sfc" exactly.
+
+You may use the run.bat file to run the program, once the dependencies are built.
 
 ## Using the application
 
