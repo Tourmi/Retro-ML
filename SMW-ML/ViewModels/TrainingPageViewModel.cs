@@ -10,6 +10,7 @@ using SMW_ML.Neural.Training.SharpNeatImpl;
 using SMW_ML.Utils;
 using SMW_ML.ViewModels.Neural;
 using SMW_ML.ViewModels.Statistics;
+using SMW_ML.Views.Components;
 using System;
 using System.Collections.ObjectModel;
 using System.IO;
@@ -159,13 +160,24 @@ namespace SMW_ML.ViewModels
             IsEnabled = true;
         }
 
-        public async void StopTraining()
+        public async void StopTraining(bool forceStop)
         {
             if (!CanStop) return;
 
+            if (forceStop)
+            {
+                if (await MessageBox.Show(null, "Do you really want to stop the training?", "Force Stop", MessageBox.MessageBoxButtons.YesNo) == MessageBox.MessageBoxResult.No)
+                {
+                    return;
+                }
+            }
+
             CanStop = false;
+
             await Task.Run(() =>
             {
+                if (trainer != null)
+                    trainer.ForceStop = forceStop;
                 trainer?.StopTraining();
                 emulatorManager?.Clean();
                 CanStart = true;

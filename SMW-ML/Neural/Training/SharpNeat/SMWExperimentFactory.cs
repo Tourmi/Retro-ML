@@ -12,16 +12,18 @@ namespace SMW_ML.Neural.Training.SharpNeatImpl
 
         private readonly EmulatorManager emulatorManager;
         private readonly ApplicationConfig appConfig;
+        private readonly INeuralTrainer trainer;
 
-        public SMWExperimentFactory(EmulatorManager emulator, ApplicationConfig appConfig)
+        public SMWExperimentFactory(EmulatorManager emulator, ApplicationConfig appConfig, INeuralTrainer trainer)
         {
             this.emulatorManager = emulator;
             this.appConfig = appConfig;
+            this.trainer = trainer;
         }
 
         public INeatExperiment<double> CreateExperiment(JsonElement configElem)
         {
-            var evalScheme = new SMWEvaluationScheme(emulatorManager, appConfig);
+            var evalScheme = new SMWEvaluationScheme(emulatorManager, appConfig, trainer);
 
             var experiment = new NeatExperiment<double>(evalScheme, Id)
             {

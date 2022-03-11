@@ -20,22 +20,23 @@ namespace SMW_ML.Neural.Training.SharpNeatImpl
     {
         private readonly EmulatorManager emulatorManager;
         private IEmulatorAdapter? emulator;
+        private INeuralTrainer trainer;
         private DataFetcher? dataFetcher;
         private InputSetter? inputSetter;
         private OutputGetter? outputGetter;
         private ApplicationConfig appConfig;
 
-        public SMWPhenomeEvaluator(EmulatorManager emulatorManager, ApplicationConfig appConfig)
+        public SMWPhenomeEvaluator(EmulatorManager emulatorManager, ApplicationConfig appConfig, INeuralTrainer trainer)
         {
             this.emulatorManager = emulatorManager;
             this.appConfig = appConfig;
+            this.trainer = trainer;
         }
 
         public FitnessInfo Evaluate(IBlackBox<double> phenome)
         {
             try
             {
-
                 Score score = new(appConfig);
 
                 emulator = emulatorManager.WaitOne();
@@ -49,12 +50,20 @@ namespace SMW_ML.Neural.Training.SharpNeatImpl
                 var saveStates = appConfig.SaveStates;
                 foreach (var state in saveStates)
                 {
+                    if (trainer.ForceStop)
+                    {
+                        break;
+                    }
                     emulator.LoadState(Path.GetFullPath(state));
                     emulator.NextFrame();
                     dataFetcher.NextLevel();
 
                     while (!score.ShouldStop)
                     {
+                        if (trainer.ForceStop)
+                        {
+                            break;
+                        }
                         DoFrame(phenome);
 
                         score.Update(dataFetcher);

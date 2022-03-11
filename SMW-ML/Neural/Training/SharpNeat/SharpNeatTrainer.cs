@@ -43,6 +43,13 @@ namespace SMW_ML.Neural.Training.SharpNeatImpl
 
         public bool IsTraining => isTraining;
 
+        private bool forceStop = false;
+        public bool ForceStop
+        {
+            get => forceStop;
+            set => forceStop = value;
+        }
+
         /// <summary>
         /// Neural training using the SharpNEAT library
         /// </summary>
@@ -50,7 +57,7 @@ namespace SMW_ML.Neural.Training.SharpNeatImpl
         {
             syncSemaphore = new Semaphore(1, 1);
             this.emulatorManager = emulatorManager;
-            experimentFactory = new SMWExperimentFactory(emulatorManager, appConfig);
+            experimentFactory = new SMWExperimentFactory(emulatorManager, appConfig, this);
 
             metaGenome = new MetaNeatGenome<double>(
                    inputNodeCount: emulatorManager.GetInputCount(),
@@ -105,22 +112,30 @@ namespace SMW_ML.Neural.Training.SharpNeatImpl
             isTraining = true;
 
             syncSemaphore.WaitOne();
-            OnStatisticsUpdated?.Invoke(GetTrainingStatistics());
-            currentAlgo!.Initialise();
-            SavePopulation(trainingDirectory + DefaultPaths.CURRENT_POPULATION + DefaultPaths.POPULATION_EXTENSION);
+
+            if (!ForceStop)
+            {
+                OnStatisticsUpdated?.Invoke(GetTrainingStatistics());
+                currentAlgo!.Initialise();
+                SavePopulation(trainingDirectory + DefaultPaths.CURRENT_POPULATION + DefaultPaths.POPULATION_EXTENSION);
+            }
 
             while (!stopFlag)
             {
                 currentAlgo!.PerformOneGeneration();
 
-                OnStatisticsUpdated?.Invoke(GetTrainingStatistics());
+                if (!ForceStop)
+                {
+                    OnStatisticsUpdated?.Invoke(GetTrainingStatistics());
 
-                SaveBestGenome();
-                SavePopulation(trainingDirectory + DefaultPaths.CURRENT_POPULATION + DefaultPaths.POPULATION_EXTENSION);
+                    SaveBestGenome();
+                    SavePopulation(trainingDirectory + DefaultPaths.CURRENT_POPULATION + DefaultPaths.POPULATION_EXTENSION);
+                }
             }
 
             syncSemaphore.Release();
             isTraining = false;
+
         }
 
         public void LoadPopulation(string path)
