@@ -1,4 +1,21 @@
-﻿namespace SMW_ML.Neural.Training.SharpNeatImpl
+﻿using SharpNeat.Experiments;
+using SharpNeat.IO;
+using SharpNeat.Neat;
+using SharpNeat.Neat.EvolutionAlgorithm;
+using SharpNeat.Neat.Genome;
+using SharpNeat.Neat.Genome.IO;
+using SharpNeat.NeuralNets.Double.ActivationFunctions;
+using SMW_ML.Emulator;
+using SMW_ML.Models.Config;
+using SMW_ML.Neural.Training.SharpNeat;
+using SMW_ML.Utils;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Threading;
+
+namespace SMW_ML.Neural.Training.SharpNeatImpl
 {
     /// <summary>
     /// Neural trainer that uses the SharpNeat library for its training
