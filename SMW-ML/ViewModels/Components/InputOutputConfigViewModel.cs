@@ -9,21 +9,21 @@ namespace SMW_ML.ViewModels.Components
         {
             Name = inputNode.Name;
             IsInput = true;
-            IsEnabled = inputNode.ShouldUse;
+            IsChecked = inputNode.ShouldUse;
         }
 
         public InputOutputConfigViewModel(OutputNode outputNode)
         {
             Name = outputNode.Name;
             IsInput = false;
-            IsEnabled = outputNode.ShouldUse;
+            IsChecked = outputNode.ShouldUse;
         }
 
         public string Name { get; }
         public bool IsInput { get; }
         public bool IsOutput => !IsInput;
         private bool isEnabled;
-        public bool IsEnabled
+        public bool IsChecked
         {
             get => isEnabled;
             set => this.RaiseAndSetIfChanged(ref isEnabled, value);

@@ -19,7 +19,7 @@ namespace SMW_ML.ViewModels.Components
         public string Name { get; }
         public bool CanBeDisabled { get; }
         private bool isEnabled;
-        public bool IsEnabled
+        public bool IsChecked
         {
             get => isEnabled;
             set => this.RaiseAndSetIfChanged(ref isEnabled, value);

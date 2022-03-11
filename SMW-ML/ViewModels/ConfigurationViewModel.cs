@@ -517,11 +517,11 @@ namespace SMW_ML.ViewModels
             int outputCount = ApplicationConfig.NeuralConfig.OutputNodes.Count;
             for (int i = 0; i < inputCount; i++)
             {
-                ApplicationConfig.NeuralConfig.EnabledStates[i] = NeuralConfigs![i].IsEnabled;
+                ApplicationConfig.NeuralConfig.EnabledStates[i] = NeuralConfigs![i].IsChecked;
             }
             for (int i = inputCount; i < inputCount + outputCount; i++)
             {
-                ApplicationConfig.NeuralConfig.EnabledStates[i] = NeuralConfigs![i].IsEnabled;
+                ApplicationConfig.NeuralConfig.EnabledStates[i] = NeuralConfigs![i].IsChecked;
             }
 
             string appOutput = ApplicationConfig.Serialize();

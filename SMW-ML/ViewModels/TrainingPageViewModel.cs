@@ -22,8 +22,8 @@ namespace SMW_ML.ViewModels
     {
         public event Action? OnExit;
 
-        private INeuralTrainer trainer;
-        private EmulatorManager emulatorManager;
+        private INeuralTrainer? trainer;
+        private EmulatorManager? emulatorManager;
         private string? populationToLoad;
 
         #region Strings
@@ -63,8 +63,8 @@ namespace SMW_ML.ViewModels
             set => this.RaiseAndSetIfChanged(ref canSaveTraining, value);
         }
 
-        private NetworkViewModel neuralNetwork;
-        public NetworkViewModel NeuralNetwork
+        private NetworkViewModel? neuralNetwork;
+        public NetworkViewModel? NeuralNetwork
         {
             get => neuralNetwork;
             set => this.RaiseAndSetIfChanged(ref neuralNetwork, value);
@@ -86,7 +86,7 @@ namespace SMW_ML.ViewModels
 
         #region Methods
 
-        public async void StartTraining()
+        public void StartTraining()
         {
             if (!CanStart) return;
             CanStart = false;
@@ -154,7 +154,7 @@ namespace SMW_ML.ViewModels
                 return;
             }
 
-            trainer.SavePopulation(path);
+            trainer!.SavePopulation(path);
             IsEnabled = true;
         }
 
