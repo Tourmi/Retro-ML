@@ -10,6 +10,7 @@ namespace SMW_ML.Neural.Training.SharpNeatImpl
     {
         private readonly EmulatorManager emulatorManager;
         private readonly ApplicationConfig appConfig;
+        private readonly INeuralTrainer trainer;
 
         public int InputCount => appConfig.NeuralConfig.GetInputCount();
 
@@ -24,13 +25,14 @@ namespace SMW_ML.Neural.Training.SharpNeatImpl
         //We need an emulator instance for every AI.
         public bool EvaluatorsHaveState => true;
 
-        public SMWEvaluationScheme(EmulatorManager emulatorManager, ApplicationConfig appConfig)
+        public SMWEvaluationScheme(EmulatorManager emulatorManager, ApplicationConfig appConfig, INeuralTrainer trainer)
         {
             this.emulatorManager = emulatorManager;
             this.appConfig = appConfig;
+            this.trainer = trainer;
         }
 
-        public IPhenomeEvaluator<IBlackBox<double>> CreateEvaluator() => new SMWPhenomeEvaluator(emulatorManager, appConfig);
+        public IPhenomeEvaluator<IBlackBox<double>> CreateEvaluator() => new SMWPhenomeEvaluator(emulatorManager, appConfig, trainer);
 
         public bool TestForStopCondition(FitnessInfo fitnessInfo) => false;
     }

@@ -7,5 +7,6 @@
         x:Class="SMW_ML.Views.MainWindow"
         Icon="/Assets/logo.ico"
         Title="Super Mario World - Machine Learning"
-		Content="{Binding Content}">
+		Content="{Binding Content}"
+		Closed="HandleWindowClosed">
 </Window>

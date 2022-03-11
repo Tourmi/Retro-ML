@@ -40,6 +40,7 @@ namespace SMW_ML.ViewModels
 
         public void HandleTrainingEnter()
         {
+            ViewLocator.GetMainWindow().SetCloseButtonEnabled(false);
             trainingPageViewModel.IsEnabled = false;
             Content = trainingPageViewModel;
             trainingPageViewModel.IsEnabled = true;
@@ -47,6 +48,7 @@ namespace SMW_ML.ViewModels
 
         public void HandleTrainingExit()
         {
+            ViewLocator.GetMainWindow().SetCloseButtonEnabled(true);
             mainPageViewModel.IsEnabled = false;
             Content = mainPageViewModel;
             mainPageViewModel.IsEnabled = true;
@@ -54,6 +56,7 @@ namespace SMW_ML.ViewModels
 
         public void HandleOpenPlayMode()
         {
+            ViewLocator.GetMainWindow().SetCloseButtonEnabled(false);
             playingPageViewModel.IsEnabled = false;
             Content = playingPageViewModel;
             new Thread(() =>
@@ -65,6 +68,7 @@ namespace SMW_ML.ViewModels
 
         public void HandlePlayingExit()
         {
+            ViewLocator.GetMainWindow().SetCloseButtonEnabled(true);
             mainPageViewModel.IsEnabled = false;
             Content = mainPageViewModel;
             playingPageViewModel.OnExit -= HandlePlayingExit;
@@ -72,6 +76,8 @@ namespace SMW_ML.ViewModels
             playingPageViewModel.OnExit += HandlePlayingExit;
             mainPageViewModel.IsEnabled = true;
         }
+
+
 
         public void ErrorManagementThread()
         {

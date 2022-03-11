@@ -17,6 +17,10 @@ namespace SMW_ML.Neural.Training
         /// </summary>
         bool IsTraining { get; }
         /// <summary>
+        /// Whether or not the user wants to force stop the training
+        /// </summary>
+        bool ForceStop { get; set; }
+        /// <summary>
         /// Starts training the AIs.
         /// </summary>
         /// <param name="configPath"></param>
