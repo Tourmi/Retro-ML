@@ -133,6 +133,7 @@ namespace SMW_ML.Emulator
             }
 
             server?.Dispose();
+            server = null;
 
             sem.Release();
         }

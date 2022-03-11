@@ -49,6 +49,12 @@ namespace SMW_ML.ViewModels
             get => canStop;
             set => this.RaiseAndSetIfChanged(ref canStop, value);
         }
+        private bool canForceStop = false;
+        public bool CanForceStop
+        {
+            get => canForceStop;
+            set => this.RaiseAndSetIfChanged(ref canForceStop, value);
+        }
         private bool canLoadTraining = true;
         public bool CanLoadTraining
         {
@@ -112,9 +118,10 @@ namespace SMW_ML.ViewModels
                 emulatorManager.GetFirstEmulator().ChangedLinkedNetwork += NeuralNetwork.UpdateTopology;
                 TrainingChart.ClearData();
                 trainer.StartTraining(DefaultPaths.SHARPNEAT_CONFIG);
+                CanStop = true;
+                CanForceStop = true;
             }).Start();
 
-            CanStop = true;
         }
 
         public async void LoadPopulation()
@@ -160,27 +167,30 @@ namespace SMW_ML.ViewModels
 
         public async void StopTraining(bool forceStop)
         {
-            if (!CanStop) return;
+            if (!CanStop && !forceStop) return;
+            if (!CanForceStop && forceStop) return;
 
             if (forceStop)
             {
-                if (await MessageBox.Show(null, "Do you really want to stop the training?", "Force Stop", MessageBox.MessageBoxButtons.YesNo) == MessageBox.MessageBoxResult.No)
+                if (await MessageBox.Show(null, "Do you really want to stop the training?", "Force Stop", MessageBox.MessageBoxButtons.YesNo) != MessageBox.MessageBoxResult.Yes)
                 {
                     return;
                 }
             }
 
             CanStop = false;
+            CanForceStop = !forceStop;
+
+            if (trainer != null) trainer.ForceStop = forceStop;
 
             await Task.Run(() =>
             {
-                if (trainer != null)
-                    trainer.ForceStop = forceStop;
                 trainer?.StopTraining();
                 emulatorManager?.Clean();
                 CanStart = true;
                 CanSaveTraining = true;
                 CanLoadTraining = true;
+                CanForceStop = false;
             });
         }
 
