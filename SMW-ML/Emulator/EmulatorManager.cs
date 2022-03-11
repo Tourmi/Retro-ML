@@ -147,7 +147,7 @@ namespace SMW_ML.Emulator
             {
                 adapters[index] = new BizhawkAdapter(pathToEmulator: DefaultPaths.EMULATOR,
                     pathToLuaScript: DefaultPaths.EMULATOR_ADAPTER,
-                    pathToROM: DefaultPaths.ROM,
+                    pathToROM: applicationConfig.RomPath,
                     pathToBizhawkConfig: trainingMode ? DefaultPaths.EMULATOR_CONFIG : DefaultPaths.EMULATOR_PLAY_CONFIG,
                     savestatesPath: DefaultPaths.SAVESTATES_DIR,
                     socketIP: ipAddress!.ToString(),

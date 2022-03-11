@@ -1,4 +1,5 @@
 ﻿{
+  "romPath": "smw.sfc",
   "multithread": 1,
   "arduinoCommunicationPort": "COM3",
   "stopTrainingCondition": "Manually",

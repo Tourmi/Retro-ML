@@ -17,7 +17,6 @@
         public const string APP_CONFIG = "config/appConfig.json";
         public const string NEURAL_CONFIG_EXTENSION = "ncfg";
         public const string NEURAL_CONFIG_NAME = $"neuralConfig.{NEURAL_CONFIG_EXTENSION}";
-        public const string ROM = "smw.sfc";
 
         public const string CURRENT_POPULATION = "current";
         public const string GENOME_DIR = "genomes\\";

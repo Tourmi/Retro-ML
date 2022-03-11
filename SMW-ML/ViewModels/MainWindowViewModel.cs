@@ -1,8 +1,10 @@
 using Avalonia.Threading;
 using ReactiveUI;
+using SMW_ML.Models.Config;
 using SMW_ML.Utils;
 using SMW_ML.Views.Components;
 using System;
+using System.IO;
 using System.Threading;
 
 namespace SMW_ML.ViewModels
@@ -34,6 +36,12 @@ namespace SMW_ML.ViewModels
             playingPageViewModel.OnExit += HandlePlayingExit;
 
             new Thread(ErrorManagementThread).Start();
+
+            ApplicationConfig applicationConfig = ApplicationConfig.Deserialize(File.ReadAllText(DefaultPaths.APP_CONFIG));
+            if (!File.Exists(applicationConfig.RomPath))
+            {
+                Exceptions.QueueException(new Exception($"Could not find ROM at path {applicationConfig.RomPath}. Please go into the Configuration to select a ROM before anything else."));
+            }
 
             Content = mainPageViewModel;
         }

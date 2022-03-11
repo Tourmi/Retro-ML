@@ -18,7 +18,7 @@
 		<StackPanel>
 
 			<TabControl TabStripPlacement="Left" HorizontalContentAlignment="Left">
-				<TabItem Header="{Binding TabItemSharpNeat}">
+				<TabItem Header="Training">
 					<StackPanel Classes="tabContent">
 						<TextBlock Classes="h1" Text="{Binding GeneralTrainingSettingsString}"/>
 						<Grid Margin="5" ColumnDefinitions="*,*" RowDefinitions="Auto,Auto,Auto">
@@ -39,7 +39,7 @@
 					</StackPanel>
 				</TabItem>
 
-				<TabItem Header="Training Emulator">
+				<TabItem Header="Emulator Train">
 					<StackPanel Classes="tabContent">
 						<TextBlock Classes="h1" Text="Emulator Settings"/>
 						<Grid Margin="5" ColumnDefinitions="*,*" RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto,Auto">
@@ -65,7 +65,7 @@
 					</StackPanel>
 				</TabItem>
 
-				<TabItem Header="Play Emulator">
+				<TabItem Header="Emulator Play">
 					<StackPanel Classes="tabContent">
 						<TextBlock Classes="h1" Text="Emulator Settings"/>
 						<Grid Margin="5" ColumnDefinitions="*,*" RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto,Auto">
@@ -91,8 +91,11 @@
 					</StackPanel>
 				</TabItem>
 
-				<TabItem Header="{Binding TabItemApp}">
+				<TabItem Header="Application">
 					<StackPanel Classes="tabContent">
+						<TextBlock Classes="h1" Text="ROM Path"/>
+						<TextBlock Text="{Binding RomPath}"/>
+						<Button Command="{Binding SelectRom}" Content="Select ROM"/>
 						<TextBlock Classes="h1" Text="Multithread"/>
 						<NumericUpDown Classes="numericTextBox" Value="{Binding Multithread}" Minimum="1"/>
 						<TextBlock Classes="h1" Text="Communication Port with Arduino"/>
@@ -109,7 +112,7 @@
 
 					</StackPanel>
 				</TabItem>
-				<TabItem Header="{Binding TabItemObjectives}">
+				<TabItem Header="Objectives">
 					<ItemsControl Items="{Binding Objectives}" >
 						<ItemsControl.ItemsPanel>
 							<ItemsPanelTemplate>
@@ -118,7 +121,7 @@
 						</ItemsControl.ItemsPanel>
 					</ItemsControl>
 				</TabItem>
-				<TabItem Header="{Binding TabItemNeural}">
+				<TabItem Header="Neural">
 					<StackPanel Classes="tabContent">
 						<TextBlock Classes="h1" Text="WARNING" FontSize="24" Foreground="Red" TextWrapping="Wrap"/>
 						<TextBlock Classes="h1" Foreground="Red" TextWrapping="Wrap">

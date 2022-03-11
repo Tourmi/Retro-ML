@@ -39,11 +39,6 @@ namespace SMW_ML.ViewModels
         public static string ButtonCloseString => "Close";
         public static string ElitismProportionString => "Elitism Proportion";
         public static string SelectionProportionString => "Selection Proportion";
-        public static string TabItemSharpNeat => "Training";
-        public static string TabItemBizhawk => "Emulator";
-        public static string TabItemApp => "Application";
-        public static string TabItemObjectives => "Objectives";
-        public static string TabItemNeural => "Neural";
 
         #endregion
 
@@ -64,6 +59,17 @@ namespace SMW_ML.ViewModels
 
         public ObservableCollection<string> StopTrainingItems { get; set; }
         public ObservableCollection<string> ListOfObjectives { get; set; }
+
+        private string _romPath;
+        public string RomPath
+        {
+            get => _romPath;
+            set
+            {
+                this.RaiseAndSetIfChanged(ref _romPath, value);
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(RomPath)));
+            }
+        }
 
         private int _multithread;
         [DataMember]
@@ -493,6 +499,7 @@ namespace SMW_ML.ViewModels
             //Tab Application
             if (ApplicationConfig == null) { return; }
 
+            ApplicationConfig.RomPath = RomPath;
             ApplicationConfig.Multithread = Multithread;
             ApplicationConfig.ArduinoCommunicationPort = ArduinoPort!;
             ApplicationConfig.StopTrainingCondition = StopTrainingSelectedItem!;
@@ -568,6 +575,7 @@ namespace SMW_ML.ViewModels
 
             if (ApplicationConfig == null) { return; }
 
+            RomPath = ApplicationConfig.RomPath;
             Multithread = ApplicationConfig.Multithread;
             ArduinoPort = ApplicationConfig.ArduinoCommunicationPort;
             StopTrainingSelectedItem = ApplicationConfig.StopTrainingCondition;
@@ -584,6 +592,21 @@ namespace SMW_ML.ViewModels
 
             //Tab Neural
             PopulateNeuralConfig();
+        }
+
+        public async void SelectRom()
+        {
+            OpenFileDialog fileDialog = new();
+            fileDialog.Filters.Add(new FileDialogFilter() { Name = "Rom", Extensions = { "sfc" } });
+            fileDialog.AllowMultiple = false;
+            fileDialog.Directory = Path.GetFullPath(".");
+
+            string[]? paths = await fileDialog.ShowAsync(ViewLocator.GetMainWindow());
+
+            if (paths == null) return;
+
+            string localPath = Path.GetFullPath(".");
+            RomPath = Path.GetFullPath(paths[0]).Replace(localPath, "").Trim('/', '\\');
         }
 
         public async void SelectSaveStates()
@@ -649,6 +672,7 @@ namespace SMW_ML.ViewModels
             ValidateArduinoPort();
             ValidateStopTrainingCondition();
             ValidateStopTrainingValue();
+            ValidateROM();
             ValidateSaveStates();
         }
 
@@ -739,6 +763,18 @@ namespace SMW_ML.ViewModels
             }
         }
 
+        private void ValidateROM()
+        {
+            if (!File.Exists(RomPath))
+            {
+                ErrorList.Add(new Error()
+                {
+                    FieldError = "ROM Path",
+                    Description = "The current ROM path is invalid."
+                });
+            }
+        }
+
         private void ValidateSaveStates()
         {
             if (!saveStates.Any())
@@ -748,6 +784,17 @@ namespace SMW_ML.ViewModels
                     FieldError = "Save States",
                     Description = "You must select at least one save state for training"
                 });
+            }
+            foreach (var ss in saveStates)
+            {
+                if (!File.Exists(ss))
+                {
+                    ErrorList.Add(new Error()
+                    {
+                        FieldError = "Save States",
+                        Description = "One of the save states does not exist."
+                    });
+                }
             }
         }
         #endregion

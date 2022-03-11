@@ -12,6 +12,7 @@ namespace SMW_ML.Models.Config
     {
         public ApplicationConfig()
         {
+            RomPath = "smw.sfc";
             StopTrainingCondition = "";
             ArduinoCommunicationPort = "COM3";
             ScoreFactors = new List<IScoreFactor>();
@@ -19,6 +20,11 @@ namespace SMW_ML.Models.Config
 
             NeuralConfig = new NeuralConfig();
         }
+
+        /// <summary>
+        /// The path for the ROM file to use.
+        /// </summary>
+        public string RomPath { get; set; }
 
         /// <summary>
         /// The amount of threads and emulator instances the application should use.
