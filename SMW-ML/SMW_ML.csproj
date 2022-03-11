@@ -4,7 +4,7 @@
 		<TargetFramework>net6.0</TargetFramework>
 		<Nullable>enable</Nullable>
 		<PublishReadyToRun>true</PublishReadyToRun>
-
+		<ApplicationIcon>Assets/logo.ico</ApplicationIcon>
 	</PropertyGroup>
 
 	<ItemGroup>

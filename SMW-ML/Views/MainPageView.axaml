@@ -3,7 +3,7 @@
         xmlns:vm="clr-namespace:SMW_ML.ViewModels;assembly=SMW_ML"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="800"
         x:Class="SMW_ML.Views.MainPageView"
 		IsEnabled="{Binding IsEnabled}">
 
@@ -11,11 +11,15 @@
 		<vm:MainPageViewModel/>
 	</Design.DataContext>
 
-	<StackPanel Orientation="Vertical" Spacing="5" HorizontalAlignment="Center" VerticalAlignment="Center" >
-		<TextBlock Text="{Binding GreetingString}" HorizontalAlignment="Center"/>
-		<Button Command="{Binding OpenTraining}" Content="{Binding TrainingString}" HorizontalAlignment="Center"/>
-		<Button Command="{Binding OpenPlay}" Content="{Binding PlayString}" HorizontalAlignment="Center"/>
-		<Button Command="{Binding OpenConfigSettings}" Content="{Binding OpenSettingsString}" CommandParameter="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Window}}}" IsEnabled="True"  HorizontalAlignment="Center" />
-	</StackPanel>
+	<DockPanel LastChildFill="True">
+		<Image Source="/Assets/banner.png" MaxHeight="376" MaxWidth="376" DockPanel.Dock="Top"/>
+
+		<StackPanel Orientation="Vertical" Spacing="5" HorizontalAlignment="Center" VerticalAlignment="Center" DockPanel.Dock="Bottom">
+			<TextBlock Text="{Binding GreetingString}" HorizontalAlignment="Center"/>
+			<Button Command="{Binding OpenTraining}" Content="{Binding TrainingString}" HorizontalAlignment="Center"/>
+			<Button Command="{Binding OpenPlay}" Content="{Binding PlayString}" HorizontalAlignment="Center"/>
+			<Button Command="{Binding OpenConfigSettings}" Content="{Binding OpenSettingsString}" CommandParameter="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Window}}}" IsEnabled="True"  HorizontalAlignment="Center" />
+		</StackPanel>
+	</DockPanel>
 
 </Window>
