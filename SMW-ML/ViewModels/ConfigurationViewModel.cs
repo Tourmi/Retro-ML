@@ -61,6 +61,7 @@ namespace SMW_ML.ViewModels
         public ObservableCollection<string> ListOfObjectives { get; set; }
 
         private string _romPath;
+        [DataMember]
         public string RomPath
         {
             get => _romPath;
@@ -104,6 +105,18 @@ namespace SMW_ML.ViewModels
             {
                 this.RaiseAndSetIfChanged(ref _numberAI, value);
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(NumberAI)));
+            }
+        }
+
+        private double _initialInterconnectionsProportion;
+        [DataMember]
+        public double InitialInterconnectionsProportion
+        {
+            get => _initialInterconnectionsProportion;
+            set
+            {
+                this.RaiseAndSetIfChanged(ref _initialInterconnectionsProportion, value);
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(InitialInterconnectionsProportion)));
             }
         }
 
@@ -472,6 +485,7 @@ namespace SMW_ML.ViewModels
             SharpNeatModel.EvolutionAlgorithmSettings.ElitismProportion = ElitismProportion;
             SharpNeatModel.EvolutionAlgorithmSettings.SelectionProportion = SelectionProportion;
             SharpNeatModel.PopulationSize = NumberAI;
+            SharpNeatModel.InitialInterconnectionsProportion = InitialInterconnectionsProportion;
 
             string sharpNeatOutput = SharpNeatModel.Serialize();
             File.WriteAllText(DefaultPaths.SHARPNEAT_CONFIG, sharpNeatOutput);
@@ -550,6 +564,7 @@ namespace SMW_ML.ViewModels
             ElitismProportion = SharpNeatModel.EvolutionAlgorithmSettings.ElitismProportion;
             SelectionProportion = SharpNeatModel.EvolutionAlgorithmSettings.SelectionProportion;
             NumberAI = SharpNeatModel.PopulationSize;
+            InitialInterconnectionsProportion = SharpNeatModel.InitialInterconnectionsProportion;
 
             //Tab Emulator
             var bizhawkConfig = BizhawkConfig.Deserialize(File.ReadAllText(DefaultPaths.EMULATOR_CONFIG));

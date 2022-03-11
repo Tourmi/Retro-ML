@@ -24,6 +24,8 @@
 						<Grid Margin="5" ColumnDefinitions="*,*" RowDefinitions="Auto,Auto,Auto">
 							<TextBlock Classes="p" Text="{Binding NumberOfAIString}" Grid.Row="0" Grid.Column="0"/>
 							<NumericUpDown Classes="numericTextBox" Value="{Binding NumberAI}" Minimum="0" Grid.Row="0" Grid.Column="1"/>
+							<TextBlock Classes="p" Text="Initial Connections" Grid.Row="1" Grid.Column="0"/>
+							<NumericUpDown Classes="numericTextBox" Value="{Binding InitialInterconnectionsProportion}" Grid.Row="1" Grid.Column="1" Maximum="0.995" Increment="0.005" FormatString="0.###"/>
 						</Grid>
 						<TextBlock Classes="h1" Text="{Binding EvolutionSettingsString}"/>
 						<Grid Margin="5" ColumnDefinitions="*,*" RowDefinitions="Auto,Auto,Auto">
