@@ -6,9 +6,11 @@ using SharpNeat.NeuralNets.Double.ActivationFunctions;
 using SMW_ML.Emulator;
 using SMW_ML.Game.SuperMarioWorld;
 using SMW_ML.Models.Config;
+using SMW_ML.Neural.Scoring;
 using SMW_ML.Utils;
 using SMW_ML.Utils.SharpNeat;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Threading;
 
@@ -16,6 +18,8 @@ namespace SMW_ML.Neural.Play.SharpNeat
 {
     internal class SharpNeatPlayer : INeuralPlayer
     {
+        public event Action? PlayingStopped;
+
         private readonly Semaphore syncSemaphore;
         private readonly EmulatorManager emulatorManager;
         private readonly IEmulatorAdapter emulator;
@@ -105,7 +109,6 @@ namespace SMW_ML.Neural.Play.SharpNeat
         {
             try
             {
-
                 IsPlaying = true;
                 syncSemaphore.WaitOne();
                 UpdateNetwork();
@@ -113,13 +116,19 @@ namespace SMW_ML.Neural.Play.SharpNeat
                 emulator.NextFrame();
                 dataFetcher.NextLevel();
 
+                Score score = new Score(new List<IScoreFactor>() { new DiedScoreFactor(), new WonLevelScoreFactor() });
+
                 while (!shouldStop)
                 {
                     DoFrame();
+                    score.Update(dataFetcher);
+
+                    shouldStop |= score.ShouldStop;
                 }
 
                 syncSemaphore.Release();
                 IsPlaying = false;
+                PlayingStopped?.Invoke();
             }
             catch (Exception ex)
             {

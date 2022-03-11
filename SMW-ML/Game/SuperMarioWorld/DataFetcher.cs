@@ -102,6 +102,7 @@ namespace SMW_ML.Game.SuperMarioWorld
         public bool[,] GetWalkableTilesAroundPosition(int x_dist, int y_dist)
         {
             bool[,] result = new bool[y_dist * 2 + 1, x_dist * 2 + 1];
+            if (ReadSingle(Level.ScreenCount) == 0) return result;
 
             var spriteStatuses = Read(Addresses.Sprite.Statuses);
             var aliveIndexes = spriteStatuses.Select((s, i) => (s, i)).Where(si => SpriteStatuses.IsAlive(si.s)).Select(si => si.i).ToArray();
@@ -131,6 +132,7 @@ namespace SMW_ML.Game.SuperMarioWorld
         public bool[,] GetDangerousTilesAroundPosition(int x_dist, int y_dist)
         {
             bool[,] result = new bool[y_dist * 2 + 1, x_dist * 2 + 1];
+            if (ReadSingle(Level.ScreenCount) == 0) return result;
 
             var spriteStatuses = Read(Addresses.Sprite.Statuses);
             var aliveIndexes = spriteStatuses.Select((s, i) => (s, i)).Where(si => SpriteStatuses.CanBeDangerous(si.s)).Select(si => si.i).ToArray();
@@ -174,6 +176,7 @@ namespace SMW_ML.Game.SuperMarioWorld
         public bool[,] GetGoodTilesAroundPosition(int x_dist, int y_dist)
         {
             bool[,] result = new bool[y_dist * 2 + 1, x_dist * 2 + 1];
+            if (ReadSingle(Level.ScreenCount) == 0) return result;
 
             var spriteStatuses = Read(Addresses.Sprite.Statuses);
             var aliveIndexes = spriteStatuses.Select((s, i) => (s, i)).Where(si => SpriteStatuses.IsAlive(si.s)).Select(si => si.i).ToArray();

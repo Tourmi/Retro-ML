@@ -430,7 +430,7 @@
             /// <summary>
             /// Amount of screens in level. Set to FF in Ludwig and Reznor fights
             /// </summary>
-            public static readonly AddressData ScreenCount = new(0x00005D, 1, AddressData.CacheDurations.Level);
+            public static readonly AddressData ScreenCount = new(0x00005D, 1, AddressData.CacheDurations.Frame);
 
             /// <summary>
             /// 0x00 : there is no water tide in the level

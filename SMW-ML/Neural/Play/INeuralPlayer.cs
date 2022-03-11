@@ -8,6 +8,11 @@ namespace SMW_ML.Neural.Play
     public interface INeuralPlayer : IDisposable
     {
         /// <summary>
+        /// Called whenever the AI is done playing.
+        /// </summary>
+        public event Action? PlayingStopped;
+
+        /// <summary>
         /// Whether or not the player is currently running
         /// </summary>
         bool IsPlaying { get; }
