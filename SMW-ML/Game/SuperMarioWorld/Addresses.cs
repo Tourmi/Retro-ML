@@ -374,11 +374,15 @@
             /// In the clean ROM, the actual formula is more complex.If translevel number > #$24, then subtract #$24. Then check RAM $7E:1F11 or $7E:1F12. If the player is in a submap (not the big world map), then add #$100. 
             /// The submaps of SMW use translevel numbers > #$24, and the big map uses numbers <= #$24, so the simplication is that #$100 - #$24 is #$DC; Lunar Magic forces this simplification to remain.
             /// </summary>
-            public static readonly AddressData Number = new(0x0013BF, 1);
+            public static readonly AddressData Number = new(0x0013BF, 1, AddressData.CacheDurations.Level);
             /// <summary>
             /// 0x00 if on main map.
             /// </summary>
             public static readonly AddressData SubMap = new(0x001F11, 1);
+            /// <summary>
+            /// 24-bit pointer to level's sprite data. Can be used as an unique ID
+            /// </summary>
+            public static readonly AddressData SpriteDataPointer = new(0x0000CE, 3, AddressData.CacheDurations.Level);
             /// <summary>
             /// 0x01 when in a water level, 0x00 otherwise
             /// </summary>

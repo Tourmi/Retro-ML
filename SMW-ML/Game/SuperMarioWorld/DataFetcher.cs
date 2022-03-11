@@ -23,10 +23,10 @@ namespace SMW_ML.Game.SuperMarioWorld
         private readonly Dictionary<uint, byte[]> frameCache;
         private readonly Dictionary<uint, byte[]> levelCache;
 
-        private readonly Dictionary<ushort, ushort[]> map16Caches;
+        private readonly Dictionary<uint, ushort[]> map16Caches;
         private ushort[,]? nearbyTilesCache;
         private ushort[,]? nearbyLayer2TilesCache;
-        private ushort currLevelNumber;
+        private byte currTransitionCount;
 
         private int internal_clock_timer = INTERNAL_CLOCK_LENGTH;
         private bool internalClockOn = false;
@@ -36,7 +36,7 @@ namespace SMW_ML.Game.SuperMarioWorld
             this.emulator = emulator;
             frameCache = new();
             levelCache = new();
-            map16Caches = new Dictionary<ushort, ushort[]>();
+            map16Caches = new Dictionary<uint, ushort[]>();
         }
 
         /// <summary>
@@ -65,7 +65,14 @@ namespace SMW_ML.Game.SuperMarioWorld
             levelCache.Clear();
             internal_clock_timer = INTERNAL_CLOCK_LENGTH;
             internalClockOn = false;
+            currTransitionCount = 0;
         }
+
+        /// <summary>
+        /// Returns the current level's UID
+        /// </summary>
+        /// <returns></returns>
+        public uint GetLevelUID() => ToUnsignedInteger(Read(Level.SpriteDataPointer));
 
         public uint GetPositionX() => ToUnsignedInteger(Read(Player.PositionX));
         public uint GetPositionY() => ToUnsignedInteger(Read(Player.PositionY));
@@ -244,16 +251,16 @@ namespace SMW_ML.Game.SuperMarioWorld
         private bool[,] GetTilesAroundPosition(int x_dist, int y_dist, IEnumerable<ushort> tileset)
         {
             bool[,] result = new bool[y_dist * 2 + 1, x_dist * 2 + 1];
-            ushort levelNumber = GetLevelNumber();
+            uint levelUID = GetLevelUID();
 
-            if (!map16Caches.ContainsKey(levelNumber))
+            if (!map16Caches.ContainsKey(levelUID))
             {
-                map16Caches[levelNumber] = ReadLowHighBytes(Level.Map16);
+                map16Caches[levelUID] = ReadLowHighBytes(Level.Map16);
             }
 
             if (nearbyTilesCache == null)
             {
-                nearbyTilesCache = GetNearbyTiles(map16Caches[levelNumber], x_dist, y_dist, (int)GetPositionX() / TILE_SIZE, (int)(GetPositionY() + TILE_SIZE) / TILE_SIZE, 0);
+                nearbyTilesCache = GetNearbyTiles(map16Caches[levelUID], x_dist, y_dist, (int)GetPositionX() / TILE_SIZE, (int)(GetPositionY() + TILE_SIZE) / TILE_SIZE, 0);
             }
 
             //If layer 2 is interactive
@@ -266,7 +273,7 @@ namespace SMW_ML.Game.SuperMarioWorld
                 int offsetY = (int)(GetPositionY() + TILE_SIZE)
                     + ((int)ToUnsignedInteger(Read(Level.Layer2Y)) - (int)ToUnsignedInteger(Read(Level.Layer1Y)));
 
-                nearbyLayer2TilesCache = GetNearbyTiles(map16Caches[levelNumber], x_dist, y_dist, offsetX / TILE_SIZE, offsetY / TILE_SIZE, layer2ScreenStart);
+                nearbyLayer2TilesCache = GetNearbyTiles(map16Caches[levelUID], x_dist, y_dist, offsetX / TILE_SIZE, offsetY / TILE_SIZE, layer2ScreenStart);
             }
 
             for (int i = 0; i < result.GetLength(0); i++)
@@ -443,24 +450,16 @@ namespace SMW_ML.Game.SuperMarioWorld
             if (addressData.CacheDuration == AddressData.CacheDurations.Level)
             {
                 // If the level number changed, we need to reset the level cache
-                if (currLevelNumber != GetLevelNumber()) levelCache.Clear();
+                var ctc = ReadSingle(Counters.LevelTransitionCounter);
+                if (ctc != currTransitionCount && CanAct())
+                {
+                    levelCache.Clear();
+                    currTransitionCount = ctc;
+                }
                 cacheToUse = levelCache;
-                currLevelNumber = GetLevelNumber();
             }
 
             return cacheToUse;
-        }
-
-        /// <summary>
-        /// Returns the current level's number
-        /// </summary>
-        /// <returns></returns>
-        private ushort GetLevelNumber()
-        {
-            ushort result = ReadSingle(Level.Number);
-            if (result > 0x24) result += 0xDC;
-
-            return result;
         }
 
         private static uint ToUnsignedInteger(byte[] bytes)
