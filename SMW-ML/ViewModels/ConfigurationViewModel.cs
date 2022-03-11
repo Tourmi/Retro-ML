@@ -357,7 +357,8 @@ namespace SMW_ML.ViewModels
             get => viewDistanceVertical;
             set => this.RaiseAndSetIfChanged(ref viewDistanceVertical, value);
         }
-        public List<InputOutputConfigViewModel>? NeuralConfigs { get; set; }
+
+        public ObservableCollection<InputOutputConfigViewModel> NeuralConfigs { get; }
 
 
         public new event PropertyChangedEventHandler PropertyChanged;
@@ -396,6 +397,8 @@ namespace SMW_ML.ViewModels
             PropertyChanged += HandlePropertyChanged;
             ScoreFactors = new List<IScoreFactor>();
             saveStates = new List<string>();
+            saveStatePreview = "";
+            NeuralConfigs = new ObservableCollection<InputOutputConfigViewModel>();
 
             //Initialize the properties with the current config
             if (!Design.IsDesignMode)
@@ -580,17 +583,7 @@ namespace SMW_ML.ViewModels
             }
 
             //Tab Neural
-            NeuralConfigs = new List<InputOutputConfigViewModel>();
-            foreach (var input in ApplicationConfig.NeuralConfig.InputNodes)
-            {
-                NeuralConfigs.Add(new(input));
-            }
-            foreach (var output in ApplicationConfig.NeuralConfig.OutputNodes)
-            {
-                NeuralConfigs.Add(new(output));
-            }
-            ViewDistanceHorizontal = ApplicationConfig.NeuralConfig.GridDistanceX;
-            ViewDistanceVertical = ApplicationConfig.NeuralConfig.GridDistanceY;
+            PopulateNeuralConfig();
         }
 
         public async void SelectSaveStates()
@@ -613,6 +606,37 @@ namespace SMW_ML.ViewModels
                 saveStates.Add(Path.GetFullPath(path).Replace(localPath, "").Trim('/', '\\'));
             }
             SetSaveStates(saveStates);
+        }
+
+        public async void LoadNeuralConfig()
+        {
+            OpenFileDialog fileDialog = new();
+            fileDialog.Filters.Add(new FileDialogFilter() { Name = "Neural Config", Extensions = { DefaultPaths.NEURAL_CONFIG_EXTENSION } });
+            fileDialog.AllowMultiple = false;
+            fileDialog.Directory = Path.GetFullPath(".");
+
+            string[]? paths = await fileDialog.ShowAsync(ViewLocator.GetMainWindow());
+            if (paths == null) return;
+
+            string neuralConfigJson = await File.ReadAllTextAsync(paths.First());
+            ApplicationConfig!.NeuralConfig = NeuralConfig.Deserialize(neuralConfigJson);
+            PopulateNeuralConfig();
+        }
+
+        private void PopulateNeuralConfig()
+        {
+            using var delay = DelayChangeNotifications();
+            NeuralConfigs.Clear();
+            foreach (var input in ApplicationConfig!.NeuralConfig.InputNodes)
+            {
+                NeuralConfigs.Add(new(input));
+            }
+            foreach (var output in ApplicationConfig.NeuralConfig.OutputNodes)
+            {
+                NeuralConfigs.Add(new(output));
+            }
+            ViewDistanceHorizontal = ApplicationConfig.NeuralConfig.GridDistanceX;
+            ViewDistanceVertical = ApplicationConfig.NeuralConfig.GridDistanceY;
         }
 
         #region Validation

@@ -15,7 +15,8 @@
         public const string EMULATOR_ADAPTER = "config/bizhawkAdapter.lua";
         public const string SHARPNEAT_CONFIG = "config/sharpNeatConfig.json";
         public const string APP_CONFIG = "config/appConfig.json";
-        public const string NEURAL_CONFIG_NAME = "neuralConfig.json";
+        public const string NEURAL_CONFIG_EXTENSION = "ncfg";
+        public const string NEURAL_CONFIG_NAME = $"neuralConfig.{NEURAL_CONFIG_EXTENSION}";
         public const string ROM = "smw.sfc";
 
         public const string CURRENT_POPULATION = "current";

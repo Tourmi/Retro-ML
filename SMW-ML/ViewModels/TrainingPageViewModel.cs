@@ -30,7 +30,7 @@ namespace SMW_ML.ViewModels
         public static string StopString => "Stop Training";
         public static string SavePopulationString => "Save population";
         public static string LoadPopulationString => "Load population";
-        public static string ExitString => "Exit";
+        public static string ExitString => "Return to main menu";
         #endregion
 
         #region Properties

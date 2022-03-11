@@ -17,7 +17,7 @@ namespace SMW_ML.ViewModels
         public event Action? OnExit;
 
         #region Strings
-        public static string ExitString => "Exit";
+        public static string ExitString => "Return to main menu";
         public static string StartString => "Start";
         public static string StopString => "Stop";
         public static string LoadGenomeString => "Load genome";
