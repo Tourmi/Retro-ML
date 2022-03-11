@@ -1,6 +1,4 @@
 ﻿using Avalonia.Controls;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Serialization;
 using ReactiveUI;
 using SMW_ML.Models;
 using SMW_ML.Models.Config;
@@ -19,13 +17,6 @@ namespace SMW_ML.ViewModels
 {
     internal class ConfigurationViewModel : ViewModelBase
     {
-        private static readonly JsonSerializerSettings JSON_CONFIG = new()
-        {
-            TypeNameHandling = TypeNameHandling.Auto,
-            ObjectCreationHandling = ObjectCreationHandling.Replace,
-            ContractResolver = new DefaultContractResolver() { NamingStrategy = new CamelCaseNamingStrategy() }
-        };
-
         private enum DispMethodEnum : ushort
         {
             OpenGL = 0,
@@ -473,28 +464,28 @@ namespace SMW_ML.ViewModels
             SharpNeatModel.EvolutionAlgorithmSettings.SelectionProportion = SelectionProportion;
             SharpNeatModel.PopulationSize = NumberAI;
 
-            string sharpNeatOutput = JsonConvert.SerializeObject(SharpNeatModel, Formatting.Indented, JSON_CONFIG);
+            string sharpNeatOutput = SharpNeatModel.Serialize();
             File.WriteAllText(DefaultPaths.SHARPNEAT_CONFIG, sharpNeatOutput);
 
             //Tab Emulator
-            var bizHawkConfig = new BizhawkConfig(DefaultPaths.EMULATOR_CONFIG);
+            var bizHawkConfig = BizhawkConfig.Deserialize(File.ReadAllText(DefaultPaths.EMULATOR_CONFIG));
             bizHawkConfig.SoundEnabled = SoundEnabled;
             bizHawkConfig.Volume = SoundVolume;
             bizHawkConfig.Unthrottled = Unthrottled;
             bizHawkConfig.ZoomFactor = ZoomFactor;
             bizHawkConfig.DispMethod = DispMethod;
             bizHawkConfig.DispSpeedupFeatures = (int)(DispSpeedupFeatures ? DispSpeedupFeaturesEnum.Activated : DispSpeedupFeaturesEnum.Deactivated);
-            bizHawkConfig.Serialize(DefaultPaths.EMULATOR_CONFIG);
+            File.WriteAllText(DefaultPaths.EMULATOR_CONFIG, bizHawkConfig.Serialize());
 
             //Tab Emulator Play Mode
-            var bizHawkConfigPlayMode = new BizhawkConfig(DefaultPaths.EMULATOR_PLAY_CONFIG);
+            var bizHawkConfigPlayMode = BizhawkConfig.Deserialize(File.ReadAllText(DefaultPaths.EMULATOR_PLAY_CONFIG));
             bizHawkConfigPlayMode.SoundEnabled = SoundEnabledPlayMode;
             bizHawkConfigPlayMode.Volume = SoundVolumePlayMode;
             bizHawkConfigPlayMode.Unthrottled = UnthrottledPlayMode;
             bizHawkConfigPlayMode.ZoomFactor = ZoomFactorPlayMode;
             bizHawkConfigPlayMode.DispMethod = DispMethodPlayMode;
             bizHawkConfigPlayMode.DispSpeedupFeatures = (int)(DispSpeedupFeaturesPlayMode ? DispSpeedupFeaturesEnum.Activated : DispSpeedupFeaturesEnum.Deactivated);
-            bizHawkConfigPlayMode.Serialize(DefaultPaths.EMULATOR_PLAY_CONFIG);
+            File.WriteAllText(DefaultPaths.EMULATOR_PLAY_CONFIG, bizHawkConfigPlayMode.Serialize());
 
             //Tab Application
             if (ApplicationConfig == null) { return; }
@@ -530,7 +521,7 @@ namespace SMW_ML.ViewModels
                 ApplicationConfig.NeuralConfig.EnabledStates[i] = NeuralConfigs![i].IsEnabled;
             }
 
-            string appOutput = JsonConvert.SerializeObject(ApplicationConfig, Formatting.Indented, JSON_CONFIG);
+            string appOutput = ApplicationConfig.Serialize();
             File.WriteAllText(DefaultPaths.APP_CONFIG, appOutput);
         }
 
@@ -541,7 +532,7 @@ namespace SMW_ML.ViewModels
         {
             //Tab NeuralNetwork
             string configJSon = File.ReadAllText(DefaultPaths.SHARPNEAT_CONFIG);
-            SharpNeatModel = JsonConvert.DeserializeObject<SharpNeatModel>(configJSon);
+            SharpNeatModel = SharpNeatModel.Deserialize(configJSon);
 
             if (SharpNeatModel == null) { return; }
 
@@ -551,7 +542,7 @@ namespace SMW_ML.ViewModels
             NumberAI = SharpNeatModel.PopulationSize;
 
             //Tab Emulator
-            var bizhawkConfig = new BizhawkConfig(DefaultPaths.EMULATOR_CONFIG);
+            var bizhawkConfig = BizhawkConfig.Deserialize(File.ReadAllText(DefaultPaths.EMULATOR_CONFIG));
             SoundEnabled = bizhawkConfig.SoundEnabled;
             SoundVolume = bizhawkConfig.Volume;
             Unthrottled = bizhawkConfig.Unthrottled;
@@ -560,7 +551,7 @@ namespace SMW_ML.ViewModels
             DispSpeedupFeatures = bizhawkConfig.DispSpeedupFeatures == (int)DispSpeedupFeaturesEnum.Activated;
 
             //Tab Emulator Play Mode
-            var bizhawkConfigPlayMode = new BizhawkConfig(DefaultPaths.EMULATOR_PLAY_CONFIG);
+            var bizhawkConfigPlayMode = BizhawkConfig.Deserialize(File.ReadAllText(DefaultPaths.EMULATOR_PLAY_CONFIG));
             SoundEnabledPlayMode = bizhawkConfigPlayMode.SoundEnabled;
             SoundVolumePlayMode = bizhawkConfigPlayMode.Volume;
             UnthrottledPlayMode = bizhawkConfigPlayMode.Unthrottled;
@@ -570,10 +561,9 @@ namespace SMW_ML.ViewModels
 
             //Tab Application
             string appConfigJson = File.ReadAllText(DefaultPaths.APP_CONFIG);
-            ApplicationConfig = JsonConvert.DeserializeObject<ApplicationConfig>(appConfigJson, JSON_CONFIG);
+            ApplicationConfig = ApplicationConfig.Deserialize(appConfigJson);
 
             if (ApplicationConfig == null) { return; }
-            ApplicationConfig.NeuralConfig.InitNodes();
 
             Multithread = ApplicationConfig.Multithread;
             ArduinoPort = ApplicationConfig.ArduinoCommunicationPort;

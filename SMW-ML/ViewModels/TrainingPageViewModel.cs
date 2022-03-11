@@ -1,6 +1,5 @@
 ﻿using Avalonia.Controls;
 using Avalonia.Threading;
-using Newtonsoft.Json;
 using ReactiveUI;
 using SMW_ML.Emulator;
 using SMW_ML.Models.Config;
@@ -93,8 +92,7 @@ namespace SMW_ML.ViewModels
             CanLoadTraining = false;
             CanSaveTraining = false;
             string appConfigJson = File.ReadAllText(DefaultPaths.APP_CONFIG);
-            ApplicationConfig appConfig = JsonConvert.DeserializeObject<ApplicationConfig>(appConfigJson, new JsonSerializerSettings() { TypeNameHandling = TypeNameHandling.Auto, ObjectCreationHandling = ObjectCreationHandling.Replace })!;
-            appConfig.NeuralConfig.InitNodes();
+            ApplicationConfig appConfig = ApplicationConfig.Deserialize(appConfigJson)!;
 
             NeuralNetwork = new NetworkViewModel(appConfig.NeuralConfig);
             emulatorManager = new(appConfig);

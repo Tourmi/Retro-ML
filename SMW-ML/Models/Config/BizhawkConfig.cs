@@ -1,6 +1,5 @@
 ﻿using Newtonsoft.Json;
-using Newtonsoft.Json.Serialization;
-using System.IO;
+using SMW_ML.Utils;
 
 namespace SMW_ML.Models.Config
 {
@@ -8,17 +7,10 @@ namespace SMW_ML.Models.Config
     {
         private dynamic? data;
 
-        private static readonly JsonSerializerSettings JSON_CONFIG = new()
-        {
-            TypeNameHandling = TypeNameHandling.Auto,
-            ObjectCreationHandling = ObjectCreationHandling.Replace,
-            ContractResolver = new DefaultContractResolver() { NamingStrategy = new CamelCaseNamingStrategy() }
-        };
-
         #region Constructor
-        public BizhawkConfig(string path)
+        private BizhawkConfig(string json)
         {
-            data = JsonConvert.DeserializeObject(File.ReadAllText(path));
+            data = JsonConvert.DeserializeObject(json);
         }
         #endregion
 
@@ -63,10 +55,14 @@ namespace SMW_ML.Models.Config
         #endregion
 
         #region Methods
-        public void Serialize(string path)
+
+        public string Serialize() => JsonConvert.SerializeObject(data, Formatting.Indented, SerializationUtils.JSON_PASCAL_CASE_CONFIG);
+
+        public static BizhawkConfig Deserialize(string json)
         {
-            string emulatorCfg = JsonConvert.SerializeObject(data, Formatting.Indented, JSON_CONFIG);
-            File.WriteAllText(path, emulatorCfg);
+            BizhawkConfig cfg = new(json);
+
+            return cfg;
         }
         #endregion
 

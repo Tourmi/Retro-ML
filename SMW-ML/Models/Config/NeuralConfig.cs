@@ -1,5 +1,6 @@
 ﻿using Newtonsoft.Json;
 using SMW_ML.Game.SuperMarioWorld;
+using SMW_ML.Utils;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -121,6 +122,16 @@ namespace SMW_ML.Models.Config
             OutputNodes.Add(new OutputNode("Right Shoulder", EnabledStates[enabledIndex++]));
             OutputNodes.Add(new OutputNode("Start", EnabledStates[enabledIndex++]));
             OutputNodes.Add(new OutputNode("Select", EnabledStates[enabledIndex++]));
+        }
+
+        public string Serialize() => JsonConvert.SerializeObject(this, SerializationUtils.JSON_CONFIG);
+
+        public static NeuralConfig Deserialize(string json)
+        {
+            NeuralConfig cfg = JsonConvert.DeserializeObject<NeuralConfig>(json, SerializationUtils.JSON_CONFIG)!;
+            cfg.InitNodes();
+
+            return cfg;
         }
     }
 }

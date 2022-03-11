@@ -1,5 +1,6 @@
 ﻿using Newtonsoft.Json;
 using SMW_ML.Neural.Scoring;
+using SMW_ML.Utils;
 using System.Collections.Generic;
 
 namespace SMW_ML.Models.Config
@@ -61,6 +62,16 @@ namespace SMW_ML.Models.Config
 
                 yield return (IScoreFactor)factor.Clone();
             }
+        }
+
+        public string Serialize() => JsonConvert.SerializeObject(this, SerializationUtils.JSON_PASCAL_CASE_CONFIG);
+
+        public static ApplicationConfig Deserialize(string json)
+        {
+            ApplicationConfig cfg = JsonConvert.DeserializeObject<ApplicationConfig>(json, SerializationUtils.JSON_PASCAL_CASE_CONFIG)!;
+            cfg.NeuralConfig.InitNodes();
+
+            return cfg;
         }
     }
 }
