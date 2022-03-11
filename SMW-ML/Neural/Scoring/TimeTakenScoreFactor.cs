@@ -37,7 +37,7 @@ namespace SMW_ML.Neural.Scoring
             levelFrames = 0;
         }
 
-        public object Clone()
+        public IScoreFactor Clone()
         {
             return new TimeTakenScoreFactor() { IsDisabled = IsDisabled, ScoreMultiplier = ScoreMultiplier };
         }

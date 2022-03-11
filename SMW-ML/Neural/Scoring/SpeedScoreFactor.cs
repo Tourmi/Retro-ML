@@ -39,6 +39,6 @@ namespace SMW_ML.Neural.Scoring
 
         public double GetFinalScore() => currScore;
 
-        public object Clone() => new SpeedScoreFactor() { IsDisabled = IsDisabled, ScoreMultiplier = ScoreMultiplier };
+        public IScoreFactor Clone() => new SpeedScoreFactor() { IsDisabled = IsDisabled, ScoreMultiplier = ScoreMultiplier };
     }
 }

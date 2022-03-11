@@ -60,7 +60,7 @@ namespace SMW_ML.Models.Config
             {
                 if (factor.IsDisabled) continue;
 
-                yield return (IScoreFactor)factor.Clone();
+                yield return factor.Clone();
             }
         }
 

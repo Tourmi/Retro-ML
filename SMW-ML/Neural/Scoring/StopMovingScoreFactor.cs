@@ -12,6 +12,8 @@ namespace SMW_ML.Neural.Scoring
         private bool shouldStop = false;
         private int moved = -2;
 
+        private uint levelUID;
+
         private double currScore = 0;
 
         public bool ShouldStop => shouldStop;
@@ -29,7 +31,13 @@ namespace SMW_ML.Neural.Scoring
         {
             uint newPosX = dataFetcher.GetPositionX();
 
-            //TODO : Do something about entering sub areas
+            uint luid = dataFetcher.GetLevelUID();
+            if (levelUID != luid)
+            {
+                levelUID = luid;
+                maxXPosition = 0;
+                immobileFrames = 0;
+            }
 
             if (newPosX <= maxXPosition && dataFetcher.CanAct())
             {
@@ -56,7 +64,7 @@ namespace SMW_ML.Neural.Scoring
             immobileFrames = 0;
         }
 
-        public object Clone()
+        public IScoreFactor Clone()
         {
             return new StopMovingScoreFactor() { IsDisabled = IsDisabled, ScoreMultiplier = ScoreMultiplier };
         }

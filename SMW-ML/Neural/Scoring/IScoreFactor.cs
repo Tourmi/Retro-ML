@@ -1,13 +1,12 @@
 ﻿using Newtonsoft.Json;
 using SMW_ML.Game.SuperMarioWorld;
-using System;
 
 namespace SMW_ML.Neural.Scoring
 {
     /// <summary>
     /// Represents a single score factor
     /// </summary>
-    public interface IScoreFactor : ICloneable
+    public interface IScoreFactor
     {
         /// <summary>
         /// The readable name of this score factor
@@ -47,5 +46,11 @@ namespace SMW_ML.Neural.Scoring
         /// To be called when a level is over.
         /// </summary>
         void LevelDone();
+
+        /// <summary>
+        /// Clones this score factor into a new instance.
+        /// </summary>
+        /// <returns></returns>
+        IScoreFactor Clone();
     }
 }

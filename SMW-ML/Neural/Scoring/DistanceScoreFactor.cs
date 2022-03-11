@@ -7,6 +7,7 @@ namespace SMW_ML.Neural.Scoring
         private double currScore;
         private uint maxXPosition = 0;
         private bool inited = false;
+        private uint levelUID;
 
         public bool ShouldStop => false;
         public double ScoreMultiplier { get; set; }
@@ -21,14 +22,15 @@ namespace SMW_ML.Neural.Scoring
 
         public void Update(DataFetcher dataFetcher)
         {
+            if (inited && levelUID != dataFetcher.GetLevelUID()) return;
+
             uint newPosX = dataFetcher.GetPositionX();
             if (!inited)
             {
                 inited = true;
                 maxXPosition = newPosX;
+                levelUID = dataFetcher.GetLevelUID();
             }
-
-            //TODO : Do something about entering sub-areas
 
             if (newPosX > maxXPosition)
             {
@@ -43,7 +45,7 @@ namespace SMW_ML.Neural.Scoring
             inited = false;
         }
 
-        public object Clone()
+        public IScoreFactor Clone()
         {
             return new DistanceScoreFactor() { IsDisabled = IsDisabled, ScoreMultiplier = ScoreMultiplier };
         }

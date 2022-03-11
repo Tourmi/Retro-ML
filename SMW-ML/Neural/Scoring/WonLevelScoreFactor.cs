@@ -33,7 +33,7 @@ namespace SMW_ML.Neural.Scoring
             shouldStop = false;
         }
 
-        public object Clone()
+        public IScoreFactor Clone()
         {
             return new WonLevelScoreFactor() { ScoreMultiplier = ScoreMultiplier };
         }

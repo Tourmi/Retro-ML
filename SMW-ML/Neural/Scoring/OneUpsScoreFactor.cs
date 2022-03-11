@@ -41,7 +41,7 @@ namespace SMW_ML.Neural.Scoring
 
         public double GetFinalScore() => score;
 
-        public object Clone()
+        public IScoreFactor Clone()
         {
             return new OneUpsScoreFactor() { IsDisabled = IsDisabled, ScoreMultiplier = ScoreMultiplier };
         }
