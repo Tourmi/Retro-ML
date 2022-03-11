@@ -138,18 +138,6 @@ namespace SMW_ML.Emulator
         }
 
         /// <summary>
-        /// Returns the neural network input count.
-        /// </summary>
-        /// <returns></returns>
-        public int GetInputCount() => applicationConfig.NeuralConfig.GetInputCount();
-
-        /// <summary>
-        /// Returns the neural network output count
-        /// </summary>
-        /// <returns></returns>
-        public int GetOutputCount() => applicationConfig.NeuralConfig.GetOutputCount();
-
-        /// <summary>
         /// Takes care of booting an emulator instance, if it does not exist at the given index.
         /// </summary>
         /// <param name="index"></param>

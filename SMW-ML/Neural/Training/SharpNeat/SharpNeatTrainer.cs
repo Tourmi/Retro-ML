@@ -27,6 +27,7 @@ namespace SMW_ML.Neural.Training.SharpNeatImpl
         private readonly SMWExperimentFactory experimentFactory;
         private readonly Semaphore syncSemaphore;
         private readonly EmulatorManager emulatorManager;
+        private readonly ApplicationConfig applicationConfig;
 
         private string? trainingDirectory;
         private double previousFitness;
@@ -51,10 +52,10 @@ namespace SMW_ML.Neural.Training.SharpNeatImpl
             syncSemaphore = new Semaphore(1, 1);
             this.emulatorManager = emulatorManager;
             experimentFactory = new SMWExperimentFactory(emulatorManager, appConfig);
-
+            applicationConfig = appConfig;
             metaGenome = new MetaNeatGenome<double>(
-                   inputNodeCount: emulatorManager.GetInputCount(),
-                   outputNodeCount: emulatorManager.GetOutputCount(),
+                   inputNodeCount: appConfig.NeuralConfig.GetInputCount(),
+                   outputNodeCount: appConfig.NeuralConfig.GetOutputCount(),
                    isAcyclic: true,
                    activationFn: new LeakyReLU());
             genomeBuilder = NeatGenomeBuilderFactory<double>.Create(metaGenome);
@@ -75,6 +76,9 @@ namespace SMW_ML.Neural.Training.SharpNeatImpl
 
             trainingDirectory = DateTime.Now.ToString("yyyyMMdd-HHmmss") + "/";
             Directory.CreateDirectory(trainingDirectory + "/" + DefaultPaths.GENOME_DIR);
+
+            string neuralConfig = applicationConfig.NeuralConfig.Serialize();
+            File.WriteAllText(Path.Combine(trainingDirectory, DefaultPaths.NEURAL_CONFIG_NAME), neuralConfig);
 
             currentExperiment = experimentFactory.CreateExperiment(JsonUtils.LoadUtf8(configPath).RootElement);
             currentExperiment.ActivationFnName = nameof(LeakyReLU);

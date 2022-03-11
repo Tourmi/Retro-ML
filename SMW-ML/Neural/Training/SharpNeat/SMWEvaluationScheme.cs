@@ -11,9 +11,9 @@ namespace SMW_ML.Neural.Training.SharpNeatImpl
         private readonly EmulatorManager emulatorManager;
         private readonly ApplicationConfig appConfig;
 
-        public int InputCount => emulatorManager.GetInputCount();
+        public int InputCount => appConfig.NeuralConfig.GetInputCount();
 
-        public int OutputCount => emulatorManager.GetOutputCount();
+        public int OutputCount => appConfig.NeuralConfig.GetOutputCount();
 
         public bool IsDeterministic => true; // Change if using random levels
 

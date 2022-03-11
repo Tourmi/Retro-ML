@@ -5,6 +5,7 @@ using SharpNeat.Neat.Genome.IO;
 using SharpNeat.NeuralNets.Double.ActivationFunctions;
 using SMW_ML.Emulator;
 using SMW_ML.Game.SuperMarioWorld;
+using SMW_ML.Models.Config;
 using SMW_ML.Utils;
 using SMW_ML.Utils.SharpNeat;
 using System;
@@ -31,11 +32,11 @@ namespace SMW_ML.Neural.Play.SharpNeat
 
         public bool IsPlaying { get; private set; }
 
-        public SharpNeatPlayer(EmulatorManager emulatorManager)
+        public SharpNeatPlayer(EmulatorManager emulatorManager, ApplicationConfig appConfig)
         {
             metaGenome = new MetaNeatGenome<double>(
-                    inputNodeCount: emulatorManager.GetInputCount(),
-                    outputNodeCount: emulatorManager.GetOutputCount(),
+                    inputNodeCount: appConfig.NeuralConfig.GetInputCount(),
+                    outputNodeCount: appConfig.NeuralConfig.GetOutputCount(),
                     isAcyclic: true,
                     activationFn: new LeakyReLU());
             this.emulatorManager = emulatorManager;
