@@ -64,6 +64,7 @@ namespace SMW_ML.ViewModels
             NeuralNetwork = new NetworkViewModel(appConfig.NeuralConfig);
             emulatorManager = new(1, appConfig);
             neuralPlayer = new SharpNeatPlayer(emulatorManager, appConfig);
+            neuralPlayer.PlayingStopped += Stop;
             emulatorManager.GetFirstEmulator().LinkedNetworkActivated += NeuralNetwork.UpdateNodes;
             emulatorManager.GetFirstEmulator().ChangedLinkedNetwork += NeuralNetwork.UpdateTopology;
         }

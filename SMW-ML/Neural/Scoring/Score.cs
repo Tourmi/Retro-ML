@@ -12,9 +12,11 @@ namespace SMW_ML.Neural.Scoring
     {
         private List<IScoreFactor> scoreFactors;
 
-        public Score(ApplicationConfig config)
+        public Score(ApplicationConfig config) : this(config.GetScoreFactorClones()) { }
+
+        public Score(IEnumerable<IScoreFactor> scoreFactors)
         {
-            scoreFactors = config.GetScoreFactorClones().ToList();
+            this.scoreFactors = scoreFactors.ToList();
         }
 
         /// <summary>

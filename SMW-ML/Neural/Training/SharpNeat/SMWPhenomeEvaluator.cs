@@ -35,7 +35,6 @@ namespace SMW_ML.Neural.Training.SharpNeatImpl
         {
             try
             {
-
                 Score score = new(appConfig);
 
                 emulator = emulatorManager.WaitOne();
@@ -76,7 +75,7 @@ namespace SMW_ML.Neural.Training.SharpNeatImpl
             {
                 Exceptions.QueueException(new Exception($"Error occured during training. Was an emulator closed?\n{ex.Message}\n{ex.StackTrace}"));
 
-                return new FitnessInfo(-1);
+                return FitnessInfo.DefaultFitnessInfo;
             }
         }
 
