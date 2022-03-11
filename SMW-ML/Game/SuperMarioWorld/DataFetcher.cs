@@ -73,7 +73,7 @@ namespace SMW_ML.Game.SuperMarioWorld
         public bool CanAct() => ReadSingle(Player.PlayerAnimationState) == PlayerAnimationStates.NONE ||
                                 ReadSingle(Player.PlayerAnimationState) == PlayerAnimationStates.FLASHING;
         public bool IsDead() => ReadSingle(Player.PlayerAnimationState) == PlayerAnimationStates.DYING;
-        public bool WonLevel() => ReadSingle(Level.EndLevelTimer) != 0;
+        public bool WonLevel() => ReadSingle(Level.EndLevelTimer) != 0 || ReadSingle(Level.KeyholeTimer) != 0;
         public bool IsInWater() => ReadSingle(Player.IsInWater) != 0;
         public bool CanJumpOutOfWater() => ReadSingle(Player.CanJumpOutOfWater) != 0;
         public bool IsSinking() => ReadSingle(Player.AirFlag) == 0x24;
