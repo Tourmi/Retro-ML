@@ -23,6 +23,8 @@ namespace SMW_ML.Neural.Scoring
             if (!isInit)
             {
                 currScore = dataFetcher.GetScore();
+                isInit = true;
+                return;
             }
 
             int newScore = dataFetcher.GetScore();

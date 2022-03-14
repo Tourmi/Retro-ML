@@ -23,6 +23,8 @@ namespace SMW_ML.Neural.Scoring
             if (!isInit)
             {
                 currYoshiCoins = dataFetcher.GetYoshiCoins();
+                isInit = true;
+                return;
             }
 
             int newYoshiCoins = dataFetcher.GetYoshiCoins();

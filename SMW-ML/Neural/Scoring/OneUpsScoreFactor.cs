@@ -23,6 +23,8 @@ namespace SMW_ML.Neural.Scoring
             if (!isInit)
             {
                 currOneUps = dataFetcher.GetLives();
+                isInit = true;
+                return;
             }
 
             int newOneUps = dataFetcher.GetLives();

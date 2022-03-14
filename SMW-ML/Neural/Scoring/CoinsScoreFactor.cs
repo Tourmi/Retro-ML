@@ -23,6 +23,8 @@ namespace SMW_ML.Neural.Scoring
             if (!isInit)
             {
                 currCoins = dataFetcher.GetCoins();
+                isInit = true;
+                return;
             }
 
             int newCoins = dataFetcher.GetCoins();

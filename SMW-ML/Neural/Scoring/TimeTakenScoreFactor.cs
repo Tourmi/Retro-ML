@@ -4,7 +4,7 @@ namespace SMW_ML.Neural.Scoring
 {
     internal class TimeTakenScoreFactor : IScoreFactor
     {
-        private const int MAX_TRAINING_FRAMES = 120 * 60;
+        public const int MAX_TRAINING_FRAMES = 120 * 60;
 
         private bool shouldStop = false;
         private double currScore;
@@ -32,7 +32,10 @@ namespace SMW_ML.Neural.Scoring
 
         public void LevelDone()
         {
-            currScore += (MAX_TRAINING_FRAMES - levelFrames) / 60.0 * ScoreMultiplier;
+            if (shouldStop)
+            {
+                currScore += ScoreMultiplier;
+            }
             shouldStop = false;
             levelFrames = 0;
         }

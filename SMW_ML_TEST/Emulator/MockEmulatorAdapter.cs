@@ -69,7 +69,7 @@ namespace SMW_ML_TEST.Emulator
             Memory[addr] = b;
         }
 
-        public void SetMemory(uint addr, byte[] bs)
+        public void SetMemory(uint addr, params byte[] bs)
         {
             for (uint i = 0; i < bs.Length; i++)
             {
