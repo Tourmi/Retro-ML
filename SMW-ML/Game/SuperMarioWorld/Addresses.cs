@@ -488,6 +488,8 @@
             public static readonly AddressData Layer1Y = new(0x00001C, 2);
             public static readonly AddressData Layer2X = new(0x00001E, 2);
             public static readonly AddressData Layer2Y = new(0x000020, 2);
+            public static readonly AddressData Layer3Y = new(0x000024, 2);
+            public static readonly AddressData Layer3X = new(0x000022, 2);
 
             /// <summary>
             /// <br>Map16 Table.</br>

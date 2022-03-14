@@ -25,6 +25,7 @@ namespace SMW_ML.Neural.Scoring
             if (inited && levelUID != dataFetcher.GetLevelUID()) return;
 
             uint newPosX = dataFetcher.GetPositionX();
+
             if (!inited)
             {
                 inited = true;
@@ -32,10 +33,15 @@ namespace SMW_ML.Neural.Scoring
                 levelUID = dataFetcher.GetLevelUID();
             }
 
-            if (newPosX > maxXPosition)
+            if (dataFetcher.IsOnGround())
             {
-                currScore += (newPosX - maxXPosition) / 16.0 * ScoreMultiplier;
-                maxXPosition = newPosX;
+                //TODO : Do something about entering sub-areas
+
+                if (newPosX > maxXPosition)
+                {
+                    currScore += (newPosX - maxXPosition) / 16.0 * ScoreMultiplier;
+                    maxXPosition = newPosX;
+                }
             }
         }
 

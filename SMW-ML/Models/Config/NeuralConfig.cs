@@ -51,7 +51,7 @@ namespace SMW_ML.Models.Config
         {
             InputNodes = new List<InputNode>();
             OutputNodes = new List<OutputNode>();
-            EnabledStates = Enumerable.Repeat(true, 14 + 8).Concat(Enumerable.Repeat(false, 4)).ToArray();
+            EnabledStates = Enumerable.Repeat(true, 15 + 8).Concat(Enumerable.Repeat(false, 4)).ToArray();
 
             InitNodes();
         }
@@ -97,6 +97,7 @@ namespace SMW_ML.Models.Config
             InputNodes.Add(new InputNode("Tiles", EnabledStates[enabledIndex++], (dataFetcher) => dataFetcher.GetWalkableTilesAroundPosition(GridDistanceX, GridDistanceY), GridWidth, GridHeight));
             InputNodes.Add(new InputNode("Dangers", EnabledStates[enabledIndex++], (dataFetcher) => dataFetcher.GetDangerousTilesAroundPosition(GridDistanceX, GridDistanceY), GridWidth, GridHeight));
             InputNodes.Add(new InputNode("Goodies", EnabledStates[enabledIndex++], (dataFetcher) => dataFetcher.GetGoodTilesAroundPosition(GridDistanceX, GridDistanceY), GridWidth, GridHeight));
+            InputNodes.Add(new InputNode("Water", EnabledStates[enabledIndex++], (dataFetcher) => dataFetcher.GetWaterTilesAroundPosition(GridDistanceX, GridDistanceY), GridWidth, GridHeight));
             InputNodes.Add(new InputNode("On Ground", EnabledStates[enabledIndex++], (dataFetcher) => dataFetcher.IsOnGround()));
             InputNodes.Add(new InputNode("In Water", EnabledStates[enabledIndex++], (dataFetcher) => dataFetcher.IsInWater()));
             InputNodes.Add(new InputNode("Raising", EnabledStates[enabledIndex++], (dataFetcher) => dataFetcher.IsRaising()));

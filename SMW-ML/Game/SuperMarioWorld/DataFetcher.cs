@@ -3,7 +3,6 @@ using SMW_ML.Game.SuperMarioWorld.Data;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-
 using static SMW_ML.Game.SuperMarioWorld.Addresses;
 
 namespace SMW_ML.Game.SuperMarioWorld
@@ -25,7 +24,7 @@ namespace SMW_ML.Game.SuperMarioWorld
 
         private readonly Dictionary<uint, ushort[]> map16Caches;
         private ushort[,]? nearbyTilesCache;
-        private ushort[,]? nearbyLayer2TilesCache;
+        private ushort[,]? nearbyLayer23TilesCache;
         private byte currTransitionCount;
 
         private int internal_clock_timer = INTERNAL_CLOCK_LENGTH;
@@ -53,7 +52,7 @@ namespace SMW_ML.Game.SuperMarioWorld
             internal_clock_timer--;
 
             nearbyTilesCache = null;
-            nearbyLayer2TilesCache = null;
+            nearbyLayer23TilesCache = null;
         }
 
         /// <summary>
@@ -210,6 +209,29 @@ namespace SMW_ML.Game.SuperMarioWorld
             return result;
         }
 
+        public bool[,] GetWaterTilesAroundPosition(int x_dist, int y_dist)
+        {
+            bool[,] result = new bool[y_dist * 2 + 1, x_dist * 2 + 1];
+            if (ReadSingle(Level.ScreenCount) == 0) return result;
+            bool isWaterLevel = ReadSingle(Level.IsWater) == 1;
+
+            var waterTides = ReadSingle(Level.WaterTide) == 2;
+
+            byte levelTileset = ReadSingle(Level.Header.TilesetSetting);
+            var tileset = Tileset.GetWaterTiles(levelTileset);
+            var waterTiles = GetTilesAroundPosition(x_dist, y_dist, tileset);
+
+            for (int i = 0; i < waterTiles.GetLength(0); i++)
+            {
+                for (int j = 0; j < waterTiles.GetLength(1); j++)
+                {
+                    result[i, j] |= isWaterLevel || waterTiles[i, j];
+                }
+            }
+
+            return result;
+        }
+
         /// <summary>
         /// Sets the tiles in <paramref name="tilesArray"/> to true based on the <paramref name="sprite"/>'s position and size.
         /// </summary>
@@ -263,17 +285,18 @@ namespace SMW_ML.Game.SuperMarioWorld
                 nearbyTilesCache = GetNearbyTiles(map16Caches[levelUID], x_dist, y_dist, (int)GetPositionX() / TILE_SIZE, (int)(GetPositionY() + TILE_SIZE) / TILE_SIZE, 0);
             }
 
-            //If layer 2 is interactive
-            if (nearbyLayer2TilesCache == null && (ReadSingle(Level.ScreenMode) & 0b10000000) != 0)
+            //If layer 2 or 3 is interactive
+            if (nearbyLayer23TilesCache == null && (ReadSingle(Level.ScreenMode) & 0b10000000) != 0)
             {
-                bool isLayer2Vertical = (ReadSingle(Level.ScreenMode) & 0b00000010) != 0;
-                int layer2ScreenStart = isLayer2Vertical ? 0x0E : 0x10;
+                bool useLayer3 = ReadSingle(Level.WaterTide) != 0;
+                bool isLayer23Vertical = (ReadSingle(Level.ScreenMode) & 0b00000010) != 0;
+                int layer23ScreenStart = isLayer23Vertical ? 0x0E : 0x10;
                 int offsetX = (int)GetPositionX()
-                    + ((int)ToUnsignedInteger(Read(Level.Layer2X)) - (int)ToUnsignedInteger(Read(Level.Layer1X)));
+                    + ((int)ToUnsignedInteger(Read(useLayer3 ? Level.Layer3X : Level.Layer2X)) - (int)ToUnsignedInteger(Read(Level.Layer1X)));
                 int offsetY = (int)(GetPositionY() + TILE_SIZE)
-                    + ((int)ToUnsignedInteger(Read(Level.Layer2Y)) - (int)ToUnsignedInteger(Read(Level.Layer1Y)));
+                    + ((int)ToUnsignedInteger(Read(useLayer3 ? Level.Layer3Y : Level.Layer2Y)) - (int)ToUnsignedInteger(Read(Level.Layer1Y)));
 
-                nearbyLayer2TilesCache = GetNearbyTiles(map16Caches[levelUID], x_dist, y_dist, offsetX / TILE_SIZE, offsetY / TILE_SIZE, layer2ScreenStart);
+                nearbyLayer23TilesCache = GetNearbyTiles(map16Caches[levelUID], x_dist, y_dist, offsetX / TILE_SIZE, offsetY / TILE_SIZE, layer23ScreenStart);
             }
 
             for (int i = 0; i < result.GetLength(0); i++)
@@ -281,9 +304,9 @@ namespace SMW_ML.Game.SuperMarioWorld
                 for (int j = 0; j < result.GetLength(1); j++)
                 {
                     result[i, j] = tileset.Contains(nearbyTilesCache[i, j]);
-                    if (nearbyLayer2TilesCache != null)
+                    if (nearbyLayer23TilesCache != null)
                     {
-                        result[i, j] |= tileset.Contains(nearbyLayer2TilesCache[i, j]);
+                        result[i, j] |= tileset.Contains(nearbyLayer23TilesCache[i, j]);
                     }
                 }
             }
