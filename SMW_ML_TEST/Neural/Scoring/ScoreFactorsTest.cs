@@ -125,6 +125,17 @@ namespace SMW_ML_TEST.Neural.Scoring
             sf.Update(df);
             sf.LevelDone();
             Assert.AreEqual((2 + 0.5 + 0x40) * 10, sf.GetFinalScore(), "The distance traveled in the air should not have counted.");
+
+            emu.SetMemory(Addresses.Player.PositionX.Address, 0, 0);
+            emu.SetMemory(Addresses.Player.IsOnGround.Address, 0x00);
+            emu.SetMemory(Addresses.Player.IsInWater.Address, 0x01);
+            df.NextLevel();
+            sf.Update(df);
+            emu.SetMemory(Addresses.Player.PositionX.Address, 0x20, 0);
+            df.NextFrame();
+            sf.Update(df);
+            sf.LevelDone();
+            Assert.AreEqual((4 + 0.5 + 0x40) * 10, sf.GetFinalScore(), "The distance traveled in the water should have counted.");
         }
 
         [Test]

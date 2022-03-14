@@ -33,7 +33,7 @@ namespace SMW_ML.Neural.Scoring
                 levelUID = dataFetcher.GetLevelUID();
             }
 
-            if (dataFetcher.IsOnGround())
+            if (dataFetcher.IsOnGround() || dataFetcher.IsInWater())
             {
                 //TODO : Do something about entering sub-areas
 
