@@ -22,18 +22,22 @@ namespace SMW_ML.Neural.Scoring
         public void Update(DataFetcher dataFetcher)
         {
             uint newPosX = dataFetcher.GetPositionX();
+
             if (!inited)
             {
                 inited = true;
                 maxXPosition = newPosX;
             }
 
-            //TODO : Do something about entering sub-areas
-
-            if (newPosX > maxXPosition)
+            if (dataFetcher.IsOnGround())
             {
-                currScore += (newPosX - maxXPosition) / 16.0 * ScoreMultiplier;
-                maxXPosition = newPosX;
+                //TODO : Do something about entering sub-areas
+
+                if (newPosX > maxXPosition)
+                {
+                    currScore += (newPosX - maxXPosition) / 16.0 * ScoreMultiplier;
+                    maxXPosition = newPosX;
+                }
             }
         }
 

@@ -56,13 +56,11 @@
     }
   ],
   "saveStates": [
-    "config\\SaveStates\\yoshi-island-1.State",
-    "config\\SaveStates\\yoshi-island-2.State",
-    "config\\SaveStates\\yoshi-island-3.State",
-    "config\\SaveStates\\yoshi-island-4.State"
+    "config\\SaveStates\\yoshi-island-1.State"
   ],
   "neuralConfig": {
     "enabledStates": [
+      true,
       true,
       true,
       true,
