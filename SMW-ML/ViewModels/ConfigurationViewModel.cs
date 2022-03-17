@@ -526,7 +526,7 @@ namespace SMW_ML.ViewModels
                 ApplicationConfig.ScoreFactors[i].ScoreMultiplier = Objectives[i].Multiplier;
                 if (ApplicationConfig.ScoreFactors[i].CanBeDisabled)
                 {
-                    ApplicationConfig.ScoreFactors[i].IsDisabled = !Objectives[i].IsEnabled;
+                    ApplicationConfig.ScoreFactors[i].IsDisabled = !Objectives[i].IsChecked;
                 }
             }
 
