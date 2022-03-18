@@ -12,7 +12,7 @@ namespace SMW_ML.Game.SuperMarioWorld
         private readonly List<OutputNode> outputNodes;
         private readonly NeuralConfig neuralConfig;
 
-        private const bool ALLOW_OPPOSITE_DIRECTIONS = true;
+        private const bool ALLOW_OPPOSITE_DIRECTIONS = false;
 
         private const double ACTIVATION_THRESHOLD = 0;
 

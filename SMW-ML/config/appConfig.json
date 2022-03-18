@@ -41,27 +41,27 @@
   "scoreFactors": [
     {
       "$type": "SMW_ML.Neural.Scoring.DiedScoreFactor, SMW_ML",
-      "scoreMultiplier": -15.0,
+      "scoreMultiplier": -5,
       "isDisabled": false
     },
     {
       "$type": "SMW_ML.Neural.Scoring.DistanceScoreFactor, SMW_ML",
-      "scoreMultiplier": 5.0,
+      "scoreMultiplier": 1.0,
       "isDisabled": false
     },
     {
       "$type": "SMW_ML.Neural.Scoring.StopMovingScoreFactor, SMW_ML",
-      "scoreMultiplier": -10.0,
+      "scoreMultiplier": -5,
       "isDisabled": false
     },
     {
       "$type": "SMW_ML.Neural.Scoring.TimeTakenScoreFactor, SMW_ML",
-      "scoreMultiplier": -100.0,
+      "scoreMultiplier": -10.0,
       "isDisabled": false
     },
     {
       "$type": "SMW_ML.Neural.Scoring.SpeedScoreFactor, SMW_ML",
-      "scoreMultiplier": 5.0,
+      "scoreMultiplier": 0.25,
       "isDisabled": false
     },
     {
@@ -72,22 +72,22 @@
     {
       "$type": "SMW_ML.Neural.Scoring.CoinsScoreFactor, SMW_ML",
       "isDisabled": true,
-      "scoreMultiplier": 5.0
+      "scoreMultiplier": 1.0
     },
     {
       "$type": "SMW_ML.Neural.Scoring.YoshiCoinsScoreFactor, SMW_ML",
       "isDisabled": true,
-      "scoreMultiplier": 15.0
+      "scoreMultiplier": 2.0
     },
     {
       "$type": "SMW_ML.Neural.Scoring.OneUpsScoreFactor, SMW_ML",
       "isDisabled": true,
-      "scoreMultiplier": 30.0
+      "scoreMultiplier": 4.0
     },
     {
       "$type": "SMW_ML.Neural.Scoring.HighScoreScoreFactor, SMW_ML",
       "isDisabled": true,
-      "scoreMultiplier": 1.0
+      "scoreMultiplier": 0.1
     }
   ],
   "saveStates": [

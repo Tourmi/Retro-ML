@@ -2,12 +2,12 @@
   "isAcyclic": true,
   "activationFnName": "SReLU",
   "evolutionAlgorithmSettings": {
-    "speciesCount": 25,
-    "elitismProportion": 0.15,
-    "selectionProportion": 0.25,
-    "offspringAsexualProportion": 0.5,
-    "offspringSexualProportion": 0.5,
-    "interspeciesMatingProportion": 0.2
+    "speciesCount": 15,
+    "elitismProportion": 0.5,
+    "selectionProportion": 0.01,
+    "offspringAsexualProportion": 0.25,
+    "offspringSexualProportion": 0.75,
+    "interspeciesMatingProportion": 0.75
   },
   "reproductionAsexualSettings": {
     "connectionWeightMutationProbability": 0.3,
@@ -18,7 +18,7 @@
   "reproductionSexualSettings": {
     "secondaryParentGeneProbability": 0.5
   },
-  "populationSize": 100,
+  "populationSize": 300,
   "initialInterconnectionsProportion": 0,
   "connectionWeightScale": 5.0,
   "complexityRegulationStrategy": {
