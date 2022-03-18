@@ -7,6 +7,7 @@ using SharpNeat.Neat.Genome.IO;
 using SharpNeat.NeuralNets.Double.ActivationFunctions;
 using SMW_ML.Emulator;
 using SMW_ML.Models.Config;
+using SMW_ML.Neural.Training.StopCondition;
 using SMW_ML.Utils;
 using System;
 using System.Collections.Generic;
@@ -22,6 +23,7 @@ namespace SMW_ML.Neural.Training.SharpNeatImpl
     internal class SharpNeatTrainer : INeuralTrainer
     {
         public event Action<TrainingStatistics>? OnStatisticsUpdated;
+        public event Action? OnStopConditionReached;
 
         private readonly SMWExperimentFactory experimentFactory;
         private readonly Semaphore syncSemaphore;
@@ -50,6 +52,8 @@ namespace SMW_ML.Neural.Training.SharpNeatImpl
             set => forceStop = value;
         }
 
+        public ICollection<IStopCondition> StopConditions { private get; set; }
+
         /// <summary>
         /// Neural training using the SharpNEAT library
         /// </summary>
@@ -66,6 +70,7 @@ namespace SMW_ML.Neural.Training.SharpNeatImpl
                    activationFn: new LeakyReLU());
             genomeBuilder = NeatGenomeBuilderFactory<double>.Create(metaGenome);
             genomes = new List<NeatGenome<double>>();
+            StopConditions = appConfig.StopConditions;
         }
 
         /// <summary>
@@ -123,22 +128,37 @@ namespace SMW_ML.Neural.Training.SharpNeatImpl
                 SavePopulation(trainingDirectory + DefaultPaths.CURRENT_POPULATION + DefaultPaths.POPULATION_EXTENSION);
             }
 
+            foreach (var stopCondition in StopConditions)
+            {
+                stopCondition.Start();
+            }
+
             while (!stopFlag)
             {
                 currentAlgo!.PerformOneGeneration();
+                TrainingStatistics ts = GetTrainingStatistics();
 
                 if (!ForceStop)
                 {
-                    OnStatisticsUpdated?.Invoke(GetTrainingStatistics());
+                    OnStatisticsUpdated?.Invoke(ts);
 
                     SaveBestGenome();
                     SavePopulation(trainingDirectory + DefaultPaths.CURRENT_POPULATION + DefaultPaths.POPULATION_EXTENSION);
+                }
+
+                foreach (var stopCondition in StopConditions)
+                {
+                    if (stopCondition.ShouldUse && stopCondition.CheckShouldStop(ts))
+                    {
+                        OnStopConditionReached?.Invoke();
+                        stopFlag = true;
+                        break;
+                    }
                 }
             }
 
             syncSemaphore.Release();
             isTraining = false;
-
         }
 
         public void LoadPopulation(string path)
@@ -158,7 +178,7 @@ namespace SMW_ML.Neural.Training.SharpNeatImpl
         {
             TrainingStatistics ts = new();
 
-            ts.AddStat(TrainingStatistics.CURRENT_GEN, currentAlgo!.Stats.Generation + 1);
+            ts.AddStat(TrainingStatistics.CURRENT_GEN, currentAlgo!.Stats.Generation);
             ts.AddStat(TrainingStatistics.BEST_GENOME_FITNESS, currentAlgo!.Population.Stats.BestFitness.PrimaryFitness);
             ts.AddStat(TrainingStatistics.BEST_GENOME_COMPLEXITY, currentAlgo!.Population.Stats.BestComplexity);
             ts.AddStat(TrainingStatistics.MEAN_FITNESS, currentAlgo!.Population.Stats.MeanFitness);

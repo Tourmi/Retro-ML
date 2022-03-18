@@ -1,5 +1,6 @@
 ﻿using Newtonsoft.Json;
 using SMW_ML.Neural.Scoring;
+using SMW_ML.Neural.Training.StopCondition;
 using SMW_ML.Utils;
 using System.Collections.Generic;
 
@@ -13,10 +14,10 @@ namespace SMW_ML.Models.Config
         public ApplicationConfig()
         {
             RomPath = "smw.sfc";
-            StopTrainingCondition = "";
             ArduinoCommunicationPort = "COM3";
             ScoreFactors = new List<IScoreFactor>();
             SaveStates = new List<string>();
+            StopConditions = new List<IStopCondition>() { new FitnessStopCondition(), new GenerationCountStopCondition(), new PlateauStopCondition(), new TimeStopCondition() };
 
             NeuralConfig = new NeuralConfig();
         }
@@ -35,13 +36,10 @@ namespace SMW_ML.Models.Config
         /// </summary>
         public string ArduinoCommunicationPort { get; set; }
         /// <summary>
-        /// Unimplemented
+        /// The trainer's stop conditions
         /// </summary>
-        public string StopTrainingCondition { get; set; }
-        /// <summary>
-        /// Unimplemented
-        /// </summary>
-        public int? StopTrainingConditionValue { get; set; }
+        [JsonProperty]
+        internal List<IStopCondition> StopConditions { get; set; }
         /// <summary>
         /// The score factors used to determine the score of the training.
         /// </summary>

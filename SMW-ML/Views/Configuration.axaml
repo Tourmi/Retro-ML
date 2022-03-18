@@ -18,6 +18,22 @@
 		<StackPanel>
 
 			<TabControl TabStripPlacement="Left" HorizontalContentAlignment="Left">
+				<TabItem Header="Application">
+					<StackPanel Classes="tabContent">
+						<TextBlock Classes="h1" Text="ROM Path"/>
+						<TextBlock Text="{Binding RomPath}"/>
+						<Button Command="{Binding SelectRom}" Content="Select ROM"/>
+						<TextBlock Classes="h1" Text="Multithread"/>
+						<NumericUpDown Classes="numericTextBox" Value="{Binding Multithread}" Minimum="1"/>
+						<TextBlock Classes="h1" Text="Communication Port with Arduino"/>
+						<TextBox Classes="numericTextBox" Text="{Binding ArduinoPort}"/>
+						<TextBlock Classes="h1" Text="Save states to use"/>
+						<Button Command="{Binding SelectSaveStates}" Content="Select save states"/>
+						<TextBlock Classes="p" Text="Selected: "/>
+						<TextBlock Classes="p" Text="{Binding SaveStates}"/>
+
+					</StackPanel>
+				</TabItem>
 				<TabItem Header="Training">
 					<StackPanel Classes="tabContent">
 						<TextBlock Classes="h1" Text="{Binding GeneralTrainingSettingsString}"/>
@@ -41,20 +57,60 @@
 					</StackPanel>
 				</TabItem>
 
+				<TabItem Header="Objectives">
+					<ItemsControl Items="{Binding Objectives}" >
+						<ItemsControl.ItemsPanel>
+							<ItemsPanelTemplate>
+								<StackPanel Classes="tabContent"/>
+							</ItemsPanelTemplate>
+						</ItemsControl.ItemsPanel>
+					</ItemsControl>
+				</TabItem>
+
+				<TabItem Header="Stop Conditions">
+					<ItemsControl Items="{Binding StopConditions}">
+						<ItemsControl.ItemsPanel>
+							<ItemsPanelTemplate>
+								<StackPanel Classes="tabContent"/>
+							</ItemsPanelTemplate>
+						</ItemsControl.ItemsPanel>
+					</ItemsControl>
+				</TabItem>
+				
+				<TabItem Header="Neural">
+					<StackPanel Classes="tabContent">
+						<TextBlock Classes="h1" Text="WARNING" FontSize="24" Foreground="Red" TextWrapping="Wrap"/>
+						<TextBlock Classes="h1" Foreground="Red" TextWrapping="Wrap">
+							Changing these values will make previous training populations invalid with the new settings
+						</TextBlock>
+						<Button Content="Load neural configuration" Command="{Binding LoadNeuralConfig}"/>
+						<TextBlock Classes="h1" Text="View distance horizontal"/>
+						<NumericUpDown Classes="numericUpDown" Value="{Binding ViewDistanceHorizontal}" Minimum="1" Maximum="10"/>
+						<TextBlock Classes="h1" Text="View distance vertical"/>
+						<NumericUpDown Classes="numericUpDown" Value="{Binding ViewDistanceVertical}" Minimum="1" Maximum="10"/>
+						<ItemsControl Items="{Binding NeuralConfigs}">
+							<ItemsControl.ItemsPanel>
+								<ItemsPanelTemplate>
+									<StackPanel Classes="tabContent"/>
+								</ItemsPanelTemplate>
+							</ItemsControl.ItemsPanel>
+						</ItemsControl>
+					</StackPanel>
+				</TabItem>
 				<TabItem Header="Emulator Train">
 					<StackPanel Classes="tabContent">
 						<TextBlock Classes="h1" Text="Emulator Settings"/>
 						<Grid Margin="5" ColumnDefinitions="*,*" RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto,Auto">
-							
+
 							<TextBlock Classes="p" Text="Sound Enabled" Grid.Row="1"/>
 							<CheckBox IsChecked="{Binding SoundEnabled}" Grid.Row="1" Grid.Column="2" VerticalAlignment="Center" Margin="5" />
-							
+
 							<TextBlock Classes="p" Text="Sound Volume" Grid.Row="2"/>
-							<NumericUpDown Classes="numericTextBox" Value="{Binding SoundVolume}" Minimum="0" Increment="0.01" FormatString="0.##" ShowButtonSpinner="False" Maximum="100" Grid.Row="2" Grid.Column="1"/>
-							
+							<NumericUpDown Classes="numericTextBox" Value="{Binding SoundVolume}" Minimum="0" Increment="10" Maximum="100" Grid.Row="2" Grid.Column="1"/>
+
 							<TextBlock Classes="p" Text="Unlimited Framerate" Grid.Row="3"/>
 							<CheckBox IsChecked="{Binding Unthrottled}" Grid.Row="3" Grid.Column="2" VerticalAlignment="Center" Margin="5" />
-							
+
 							<TextBlock Classes="p" Text="Zoom Factor" Grid.Row="4"/>
 							<NumericUpDown Classes="numericTextBox" Value="{Binding ZoomFactor}" Minimum="1" ShowButtonSpinner="True" Maximum="4" Grid.Row="4" Grid.Column="1"/>
 
@@ -76,7 +132,7 @@
 							<CheckBox IsChecked="{Binding SoundEnabledPlayMode}" Grid.Row="1" Grid.Column="2" VerticalAlignment="Center" Margin="5" />
 
 							<TextBlock Classes="p" Text="Sound Volume" Grid.Row="2"/>
-							<NumericUpDown Classes="numericTextBox" Value="{Binding SoundVolumePlayMode}" Minimum="0" Increment="0.01" FormatString="0.##" ShowButtonSpinner="False" Maximum="100" Grid.Row="2" Grid.Column="1"/>
+							<NumericUpDown Classes="numericTextBox" Value="{Binding SoundVolumePlayMode}" Minimum="0" Increment="10" Maximum="100" Grid.Row="2" Grid.Column="1"/>
 
 							<TextBlock Classes="p" Text="Unlimited Framerate" Grid.Row="3"/>
 							<CheckBox IsChecked="{Binding UnthrottledPlayMode}" Grid.Row="3" Grid.Column="2" VerticalAlignment="Center" Margin="5" />
@@ -90,57 +146,6 @@
 							<TextBlock Classes="p" Text="Activate Video" Grid.Row="6"/>
 							<CheckBox Margin="5" Grid.Row="6" Grid.Column="1" Width="175" IsChecked="{Binding DispSpeedupFeaturesPlayMode}"/>
 						</Grid>
-					</StackPanel>
-				</TabItem>
-
-				<TabItem Header="Application">
-					<StackPanel Classes="tabContent">
-						<TextBlock Classes="h1" Text="ROM Path"/>
-						<TextBlock Text="{Binding RomPath}"/>
-						<Button Command="{Binding SelectRom}" Content="Select ROM"/>
-						<TextBlock Classes="h1" Text="Multithread"/>
-						<NumericUpDown Classes="numericTextBox" Value="{Binding Multithread}" Minimum="1"/>
-						<TextBlock Classes="h1" Text="Communication Port with Arduino"/>
-						<TextBox Classes="numericTextBox" Text="{Binding ArduinoPort}"/>
-						<TextBlock Classes="h1" Text="When to stop the training?"/>
-						<StackPanel Classes="stackPanelItems">
-							<ComboBox Classes="comboBox" Items="{Binding StopTrainingItems}" Width="200" HorizontalAlignment="Left" SelectedItem="{Binding StopTrainingSelectedItem}"/>
-							<NumericUpDown Classes="numericTextBox" Value="{Binding StopTrainingConditionValue}" IsEnabled="{Binding !IsStopManually}" Minimum="0"/>
-						</StackPanel>
-						<TextBlock Classes="h1" Text="Save states to use"/>
-						<Button Command="{Binding SelectSaveStates}" Content="Select save states"/>
-						<TextBlock Text="Selected: "/>
-						<TextBlock Text="{Binding SaveStates}"/>
-
-					</StackPanel>
-				</TabItem>
-				<TabItem Header="Objectives">
-					<ItemsControl Items="{Binding Objectives}" >
-						<ItemsControl.ItemsPanel>
-							<ItemsPanelTemplate>
-								<StackPanel Classes="tabContent"/>
-							</ItemsPanelTemplate>
-						</ItemsControl.ItemsPanel>
-					</ItemsControl>
-				</TabItem>
-				<TabItem Header="Neural">
-					<StackPanel Classes="tabContent">
-						<TextBlock Classes="h1" Text="WARNING" FontSize="24" Foreground="Red" TextWrapping="Wrap"/>
-						<TextBlock Classes="h1" Foreground="Red" TextWrapping="Wrap">
-							Changing these values will make previous training populations invalid with the new settings
-						</TextBlock>
-						<Button Content="Load neural configuration" Command="{Binding LoadNeuralConfig}"/>
-						<TextBlock Classes="h1" Text="View distance horizontal"/>
-						<NumericUpDown Classes="numericUpDown" Value="{Binding ViewDistanceHorizontal}" Minimum="1" Maximum="10"/>
-						<TextBlock Classes="h1" Text="View distance vertical"/>
-						<NumericUpDown Classes="numericUpDown" Value="{Binding ViewDistanceVertical}" Minimum="1" Maximum="10"/>
-						<ItemsControl Items="{Binding NeuralConfigs}">
-							<ItemsControl.ItemsPanel>
-								<ItemsPanelTemplate>
-									<StackPanel Classes="tabContent"/>
-								</ItemsPanelTemplate>
-							</ItemsControl.ItemsPanel>
-						</ItemsControl>
 					</StackPanel>
 				</TabItem>
 			</TabControl>

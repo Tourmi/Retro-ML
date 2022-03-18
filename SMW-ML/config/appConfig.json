@@ -4,6 +4,40 @@
   "arduinoCommunicationPort": "COM3",
   "stopTrainingCondition": "Manually",
   "stopTrainingConditionValue": null,
+  "stopConditions": [
+    {
+      "$type": "SMW_ML.Neural.Training.StopCondition.FitnessStopCondition, SMW_ML",
+      "name": "Stop when fitness reached",
+      "shouldUse": false,
+      "hasParam": true,
+      "paramName": "Target fitness",
+      "paramValue": 2000
+    },
+    {
+      "$type": "SMW_ML.Neural.Training.StopCondition.GenerationCountStopCondition, SMW_ML",
+      "name": "Stop after X generations",
+      "shouldUse": false,
+      "hasParam": true,
+      "paramName": "Generations",
+      "paramValue": 250
+    },
+    {
+      "$type": "SMW_ML.Neural.Training.StopCondition.PlateauStopCondition, SMW_ML",
+      "name": "Stop when plateau reached",
+      "shouldUse": false,
+      "hasParam": true,
+      "paramName": "Maximum plateau length",
+      "paramValue": 100
+    },
+    {
+      "$type": "SMW_ML.Neural.Training.StopCondition.TimeStopCondition, SMW_ML",
+      "name": "Stop after X minutes",
+      "shouldUse": false,
+      "hasParam": true,
+      "paramName": "Minutes",
+      "paramValue": 60
+    }
+  ],
   "scoreFactors": [
     {
       "$type": "SMW_ML.Neural.Scoring.DiedScoreFactor, SMW_ML",

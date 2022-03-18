@@ -2,7 +2,6 @@
 using ReactiveUI;
 using SMW_ML.Models;
 using SMW_ML.Models.Config;
-using SMW_ML.Neural.Scoring;
 using SMW_ML.Utils;
 using SMW_ML.ViewModels.Components;
 using SMW_ML.Views;
@@ -143,29 +142,7 @@ namespace SMW_ML.ViewModels
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(SelectionProportion)));
             }
         }
-        public List<IScoreFactor> ScoreFactors;
-
-        private string? _stopTrainingSelectedItem;
-        public string? StopTrainingSelectedItem
-        {
-            get { return _stopTrainingSelectedItem; }
-            set
-            {
-                this.RaiseAndSetIfChanged(ref _stopTrainingSelectedItem, value);
-                if (_stopTrainingSelectedItem != null)
-                {
-                    if (_stopTrainingSelectedItem.Equals("Manually"))
-                    {
-                        IsStopManually = true;
-                    }
-                    else
-                    {
-                        IsStopManually = false;
-                    }
-                }
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(StopTrainingSelectedItem)));
-            }
-        }
+        public ObservableCollection<StopConditionViewModel> StopConditions { get; set; }
 
         private bool _isButtonSaveEnabled;
         public bool IsButtonSaveEnabled
@@ -362,7 +339,7 @@ namespace SMW_ML.ViewModels
             SaveStates = string.Join("\n", saveStates);
         }
 
-        public List<ScoreFactorViewModel>? Objectives { get; set; }
+        public ObservableCollection<ScoreFactorViewModel> Objectives { get; set; }
 
         private int viewDistanceHorizontal;
         public int ViewDistanceHorizontal
@@ -414,7 +391,12 @@ namespace SMW_ML.ViewModels
 
             ErrorList = new ObservableCollection<Error>();
             PropertyChanged += HandlePropertyChanged;
-            ScoreFactors = new List<IScoreFactor>();
+            StopConditions = new();
+
+            Objectives = new();
+
+            _romPath = "smw.sfc";
+
             saveStates = new List<string>();
             saveStatePreview = "";
             NeuralConfigs = new ObservableCollection<InputOutputConfigViewModel>();
@@ -516,12 +498,15 @@ namespace SMW_ML.ViewModels
             ApplicationConfig.RomPath = RomPath;
             ApplicationConfig.Multithread = Multithread;
             ApplicationConfig.ArduinoCommunicationPort = ArduinoPort!;
-            ApplicationConfig.StopTrainingCondition = StopTrainingSelectedItem!;
-            ApplicationConfig.StopTrainingConditionValue = StopTrainingConditionValue;
+            for (int i = 0; i < StopConditions.Count; i++)
+            {
+                ApplicationConfig.StopConditions[i].ShouldUse = StopConditions[i].IsChecked;
+                ApplicationConfig.StopConditions[i].ParamValue = StopConditions[i].ParamValue;
+            }
             ApplicationConfig.SaveStates = saveStates;
 
             //Tab Objectives
-            for (int i = 0; i < Objectives!.Count; i++)
+            for (int i = 0; i < Objectives.Count; i++)
             {
                 ApplicationConfig.ScoreFactors[i].ScoreMultiplier = Objectives[i].Multiplier;
                 if (ApplicationConfig.ScoreFactors[i].CanBeDisabled)
@@ -593,13 +578,17 @@ namespace SMW_ML.ViewModels
             RomPath = ApplicationConfig.RomPath;
             Multithread = ApplicationConfig.Multithread;
             ArduinoPort = ApplicationConfig.ArduinoCommunicationPort;
-            StopTrainingSelectedItem = ApplicationConfig.StopTrainingCondition;
-            StopTrainingConditionValue = ApplicationConfig.StopTrainingConditionValue;
+
+            StopConditions.Clear();
+            for (int i = 0; i < ApplicationConfig.StopConditions.Count; i++)
+            {
+                StopConditions.Add(new(ApplicationConfig.StopConditions[i]));
+            }
 
             SetSaveStates(ApplicationConfig.SaveStates);
 
             //Tab Objectives
-            Objectives = new List<ScoreFactorViewModel>();
+            Objectives.Clear();
             foreach (var obj in ApplicationConfig.ScoreFactors)
             {
                 Objectives.Add(new(obj));
@@ -685,8 +674,6 @@ namespace SMW_ML.ViewModels
             ValidateSelectionProportion();
             ValidateMultithread();
             ValidateArduinoPort();
-            ValidateStopTrainingCondition();
-            ValidateStopTrainingValue();
             ValidateROM();
             ValidateSaveStates();
         }
@@ -747,33 +734,6 @@ namespace SMW_ML.ViewModels
                 {
                     FieldError = "Arduino Port",
                     Description = "Arduino port cannot be empty."
-                });
-            }
-        }
-
-        private void ValidateStopTrainingValue()
-        {
-            if (StopTrainingSelectedItem != null && !StopTrainingSelectedItem.Equals("Manually"))
-            {
-                if (StopTrainingConditionValue <= 0 || StopTrainingConditionValue == null)
-                {
-                    ErrorList.Add(new Error()
-                    {
-                        FieldError = "Stop Training Value",
-                        Description = "Stop training value must be greater than 0."
-                    });
-                }
-            }
-        }
-
-        private void ValidateStopTrainingCondition()
-        {
-            if (string.IsNullOrEmpty(StopTrainingSelectedItem))
-            {
-                ErrorList.Add(new Error()
-                {
-                    FieldError = "Stop Training Condition",
-                    Description = "You must select a stop training condition."
                 });
             }
         }

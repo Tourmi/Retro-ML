@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 
 namespace SMW_ML.Neural.Training
 {
@@ -22,11 +23,11 @@ namespace SMW_ML.Neural.Training
             public double Value { get; set; }
         }
 
-        private List<Stat> stats;
+        private readonly List<Stat> stats;
 
         public TrainingStatistics()
         {
-            stats = new List<Stat>();
+            stats = new();
         }
 
         /// <summary>
@@ -44,12 +45,19 @@ namespace SMW_ML.Neural.Training
         }
 
         /// <summary>
+        /// Returns the specified stat.
+        /// </summary>
+        /// <param name="name"></param>
+        /// <returns></returns>
+        public double GetStat(string name) => stats.Where(s => s.Name == name).Single().Value;
+
+        /// <summary>
         /// Returns all of the collected stats.
         /// </summary>
         /// <returns></returns>
-        public List<Stat> GetStats()
+        public IEnumerable<Stat> GetStats()
         {
-            return stats;
+            return stats.AsEnumerable();
         }
     }
 }

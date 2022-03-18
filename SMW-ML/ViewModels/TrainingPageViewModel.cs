@@ -116,11 +116,11 @@ namespace SMW_ML.ViewModels
                 emulatorManager.GetFirstEmulator().LinkedNetworkActivated += NeuralNetwork.UpdateNodes;
                 emulatorManager.GetFirstEmulator().ChangedLinkedNetwork += NeuralNetwork.UpdateTopology;
                 TrainingChart.ClearData();
+                trainer.OnStopConditionReached += HandleStopConditionReached;
                 trainer.StartTraining(DefaultPaths.SHARPNEAT_CONFIG);
                 CanStop = true;
                 CanForceStop = true;
             }).Start();
-
         }
 
         public async void LoadPopulation()
@@ -218,6 +218,14 @@ namespace SMW_ML.ViewModels
                     TrainingStatistics.Add(stat);
                 }
                 TrainingChart.AddGeneration(stats);
+            });
+        }
+
+        private void HandleStopConditionReached()
+        {
+            Dispatcher.UIThread.Post(() =>
+            {
+                StopTraining(false);
             });
         }
         #endregion

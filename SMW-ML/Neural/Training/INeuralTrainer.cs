@@ -1,4 +1,6 @@
-﻿using System;
+﻿using SMW_ML.Neural.Training.StopCondition;
+using System;
+using System.Collections.Generic;
 
 namespace SMW_ML.Neural.Training
 {
@@ -11,6 +13,16 @@ namespace SMW_ML.Neural.Training
         /// Event that's called whenever new stats are available
         /// </summary>
         event Action<TrainingStatistics>? OnStatisticsUpdated;
+        /// <summary>
+        /// Event that's called when a stop condition has been reached
+        /// </summary>
+        event Action? OnStopConditionReached;
+
+        /// <summary>
+        /// The stop conditions of the trainer
+        /// </summary>
+        internal ICollection<IStopCondition> StopConditions { set; }
+
         /// <summary>
         /// Whether or not the trainer is currently running
         /// </summary>
@@ -39,5 +51,9 @@ namespace SMW_ML.Neural.Training
         /// </summary>
         /// <param name="path"></param>
         void SavePopulation(string path);
+        /// <summary>
+        /// Saves the best genome of the current generation, only if it is better than the last
+        /// </summary>
+        void SaveBestGenome();
     }
 }
