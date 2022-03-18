@@ -2,7 +2,7 @@
   "isAcyclic": true,
   "activationFnName": "SReLU",
   "evolutionAlgorithmSettings": {
-    "speciesCount": 15,
+    "speciesCount": 30,
     "elitismProportion": 0.5,
     "selectionProportion": 0.01,
     "offspringAsexualProportion": 0.25,
@@ -16,7 +16,7 @@
     "deleteConnectionMutationProbability": 0.3
   },
   "reproductionSexualSettings": {
-    "secondaryParentGeneProbability": 0.5
+    "secondaryParentGeneProbability": 0.25
   },
   "populationSize": 300,
   "initialInterconnectionsProportion": 0,
