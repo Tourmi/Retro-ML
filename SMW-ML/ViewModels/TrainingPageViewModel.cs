@@ -4,7 +4,6 @@ using ReactiveUI;
 using SMW_ML.Emulator;
 using SMW_ML.Models.Config;
 using SMW_ML.Neural.Training;
-using SMW_ML.Neural.Training.SharpNeat;
 using SMW_ML.Neural.Training.SharpNeatImpl;
 using SMW_ML.Utils;
 using SMW_ML.ViewModels.Neural;

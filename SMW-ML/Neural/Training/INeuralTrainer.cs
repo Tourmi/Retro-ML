@@ -1,5 +1,4 @@
-﻿using SMW_ML.Neural.Training.SharpNeat;
-using System;
+﻿using System;
 
 namespace SMW_ML.Neural.Training
 {

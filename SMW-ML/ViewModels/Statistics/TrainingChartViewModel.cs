@@ -1,12 +1,12 @@
 ﻿using LiveChartsCore;
 using LiveChartsCore.SkiaSharpView;
 using ReactiveUI;
-using SMW_ML.Neural.Training.SharpNeat;
+using SMW_ML.Neural.Training;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using static SMW_ML.Neural.Training.SharpNeat.TrainingStatistics;
+using static SMW_ML.Neural.Training.TrainingStatistics;
 
 namespace SMW_ML.ViewModels.Statistics
 {

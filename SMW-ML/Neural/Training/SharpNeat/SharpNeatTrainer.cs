@@ -7,7 +7,6 @@ using SharpNeat.Neat.Genome.IO;
 using SharpNeat.NeuralNets.Double.ActivationFunctions;
 using SMW_ML.Emulator;
 using SMW_ML.Models.Config;
-using SMW_ML.Neural.Training.SharpNeat;
 using SMW_ML.Utils;
 using System;
 using System.Collections.Generic;

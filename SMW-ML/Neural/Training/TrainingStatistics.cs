@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace SMW_ML.Neural.Training.SharpNeat
+namespace SMW_ML.Neural.Training
 {
     /// <summary>
     /// Collection of stats for the training session.
