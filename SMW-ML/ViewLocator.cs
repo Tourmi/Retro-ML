@@ -9,7 +9,7 @@ namespace SMW_ML
     internal class ViewLocator : IDataTemplate
     {
 
-        private static MainWindow window;
+        private static MainWindow? window;
 
         public IControl Build(object data)
         {
@@ -33,7 +33,7 @@ namespace SMW_ML
 
         public static MainWindow GetMainWindow()
         {
-            return window;
+            return window!;
         }
 
         public static void SetInstance(MainWindow window)
