@@ -14,7 +14,7 @@
 	<Window.Styles>
 		<StyleInclude Source="/Styles/MainStyles.axaml" />
 	</Window.Styles>
-	<ScrollViewer>
+	<ScrollViewer AllowAutoHide="False">
 		<StackPanel>
 
 			<TabControl TabStripPlacement="Left" HorizontalContentAlignment="Left">
