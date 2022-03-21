@@ -137,6 +137,12 @@ namespace SMW_ML_TEST.Game.SuperMarioWorld
         }
 
         [Test]
+        public void IsFlashing()
+        {
+            TestFlagFunction(dataFetcher!.IsFlashing, Addresses.Player.PlayerAnimationState.Address, 0x01);
+        }
+
+        [Test]
         public void CanClimb()
         {
             TestFlagFunction(dataFetcher!.CanClimb, Addresses.Player.CanClimb.Address, 0b00001011);
@@ -191,6 +197,16 @@ namespace SMW_ML_TEST.Game.SuperMarioWorld
             mockEmulatorAdapter!.SetMemory(Addresses.Counters.Lives.Address, 10);
             dataFetcher.NextFrame();
             Assert.AreEqual(10, dataFetcher!.GetLives());
+        }
+
+        [Test]
+        public void GetPowerUp()
+        {
+            mockEmulatorAdapter!.SetMemory(Addresses.Player.PowerUp.Address, 1);
+            Assert.AreEqual(1, dataFetcher!.GetPowerUp());
+            mockEmulatorAdapter!.SetMemory(Addresses.Player.PowerUp.Address, 2);
+            dataFetcher.NextFrame();
+            Assert.AreEqual(2, dataFetcher!.GetPowerUp());
         }
 
         [Test]

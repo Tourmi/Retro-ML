@@ -94,6 +94,8 @@ namespace SMW_ML.Game.SuperMarioWorld
         public int GetLives() => ReadSingle(Counters.Lives);
         public int GetYoshiCoins() => ReadSingle(Counters.YoshiCoinCollected);
         public int GetScore() => (int)ToUnsignedInteger(Read(Counters.Score));
+        public byte GetPowerUp() => ReadSingle(Player.PowerUp);
+        public bool IsFlashing() => ReadSingle(Player.PlayerAnimationState) == 1;
 
         public bool[,] GetWalkableTilesAroundPosition(int x_dist, int y_dist)
         {

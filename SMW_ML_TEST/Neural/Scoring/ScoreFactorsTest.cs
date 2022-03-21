@@ -182,6 +182,39 @@ namespace SMW_ML_TEST.Neural.Scoring
         }
 
         [Test]
+        public void PowerUpScoreFactor()
+        {
+            PowerUpScoreFactor sf = new() { ScoreMultiplier = 4 };
+            emu!.SetMemory(Addresses.Player.PowerUp.Address, 0);
+            sf.Update(df!);
+            Assert.AreEqual(0, sf.GetFinalScore());
+            emu.SetMemory(Addresses.Player.PowerUp.Address, 1);
+            df!.NextFrame();
+            sf.Update(df);
+            Assert.AreEqual(4, sf.GetFinalScore());
+            emu.SetMemory(Addresses.Player.PowerUp.Address, 2);
+            df!.NextFrame();
+            sf.Update(df);
+            Assert.AreEqual(12, sf.GetFinalScore());
+            emu.SetMemory(Addresses.Player.PowerUp.Address, 2);
+            df!.NextFrame();
+            sf.Update(df);
+            Assert.AreEqual(12, sf.GetFinalScore());
+            emu.SetMemory(Addresses.Player.PowerUp.Address, 3);
+            df!.NextFrame();
+            sf.Update(df);
+            Assert.AreEqual(12, sf.GetFinalScore());
+            emu.SetMemory(Addresses.Player.PowerUp.Address, 1);
+            df!.NextFrame();
+            sf.Update(df);
+            Assert.AreEqual(12, sf.GetFinalScore());
+
+            df.NextLevel();
+            sf.LevelDone();
+            Assert.AreEqual(12, sf.GetFinalScore());
+        }
+
+        [Test]
         public void SpeedScoreFactor()
         {
             SpeedScoreFactor sf = new() { ScoreMultiplier = 5 };
@@ -239,6 +272,22 @@ namespace SMW_ML_TEST.Neural.Scoring
             Assert.IsTrue(sf.ShouldStop);
             sf.LevelDone();
             Assert.AreEqual(-60, sf.GetFinalScore());
+        }
+
+        [Test]
+        public void TakenDamageScoreFactor()
+        {
+            TakenDamageScoreFactor sf = new() { ScoreMultiplier = -1 };
+            emu!.SetMemory(Addresses.Player.PlayerAnimationState.Address, 0);
+            sf.Update(df!);
+            Assert.AreEqual(0, sf.GetFinalScore());
+            emu.SetMemory(Addresses.Player.PlayerAnimationState.Address, 1);
+            df!.NextFrame();
+            sf.Update(df);
+            Assert.AreEqual(-1, sf.GetFinalScore());
+            df!.NextFrame();
+            sf.Update(df);
+            Assert.AreEqual(-1, sf.GetFinalScore());
         }
 
         [Test]
