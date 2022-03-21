@@ -88,6 +88,16 @@
       "$type": "SMW_ML.Neural.Scoring.HighScoreScoreFactor, SMW_ML",
       "isDisabled": true,
       "scoreMultiplier": 0.1
+    },
+    {
+      "$type": "SMW_ML.Neural.Scoring.PowerUpScoreFactor, SMW_ML",
+      "isDisabled": true,
+      "scoreMultiplier": 4.0
+    },
+    {
+      "$type": "SMW_ML.Neural.Scoring.TakenDamageScoreFactor, SMW_ML",
+      "isDisabled": true,
+      "scoreMultiplier": -1.0
     }
   ],
   "saveStates": [

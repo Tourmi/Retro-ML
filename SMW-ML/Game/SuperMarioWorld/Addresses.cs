@@ -131,6 +131,14 @@
             /// 0x01 if the player can jump out of the water immediately, 0x00 otherwise
             /// </summary>
             public static readonly AddressData CanJumpOutOfWater = new(0x0013FA, 1);
+            /// <summary>
+            /// <br>0x00 : Player is small</br>
+            /// <br>0x01 : Player is big</br>
+            /// <br>0x02 : Player has cape</br>
+            /// <br>0x03 : Player has fire</br>
+            /// <br>0x04 : invalid</br>
+            /// </summary>
+            public static readonly AddressData PowerUp = new(0x000019, 1);
         }
 
         public static class Sprite
