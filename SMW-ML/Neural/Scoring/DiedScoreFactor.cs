@@ -1,4 +1,5 @@
 ﻿using SMW_ML.Game.SuperMarioWorld;
+using System;
 
 namespace SMW_ML.Neural.Scoring
 {
@@ -6,6 +7,11 @@ namespace SMW_ML.Neural.Scoring
     {
         private bool shouldStop = false;
         private double currScore;
+
+        public DiedScoreFactor()
+        {
+            ExtraFields = Array.Empty<ExtraField>();
+        }
 
         public bool ShouldStop => shouldStop;
         public double ScoreMultiplier { get; set; }
@@ -15,6 +21,8 @@ namespace SMW_ML.Neural.Scoring
         public bool CanBeDisabled => false;
 
         public bool IsDisabled { get => false; set { } }
+
+        public ExtraField[] ExtraFields { get; set; }
 
         public double GetFinalScore() => currScore;
 

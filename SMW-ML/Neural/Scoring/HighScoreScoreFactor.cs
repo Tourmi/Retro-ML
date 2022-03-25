@@ -1,4 +1,5 @@
 ﻿using SMW_ML.Game.SuperMarioWorld;
+using System;
 
 namespace SMW_ML.Neural.Scoring
 {
@@ -7,6 +8,11 @@ namespace SMW_ML.Neural.Scoring
         private bool isInit = false;
         private int currScore;
         private double score;
+
+        public HighScoreScoreFactor()
+        {
+            ExtraFields = Array.Empty<ExtraField>();
+        }
 
         public string Name => "High Score";
 
@@ -17,6 +23,8 @@ namespace SMW_ML.Neural.Scoring
         public bool ShouldStop => false;
 
         public double ScoreMultiplier { get; set; }
+
+        public ExtraField[] ExtraFields { get; set; }
 
         public void Update(DataFetcher dataFetcher)
         {

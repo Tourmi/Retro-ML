@@ -1,4 +1,5 @@
 ﻿using SMW_ML.Game.SuperMarioWorld;
+using System;
 
 namespace SMW_ML.Neural.Scoring
 {
@@ -6,6 +7,11 @@ namespace SMW_ML.Neural.Scoring
     {
         private bool wasFlashing;
         private double currScore;
+
+        public TakenDamageScoreFactor()
+        {
+            ExtraFields = Array.Empty<ExtraField>();
+        }
 
         public string Name => "Taken Damage";
 
@@ -16,6 +22,8 @@ namespace SMW_ML.Neural.Scoring
         public bool ShouldStop => false;
 
         public double ScoreMultiplier { get; set; }
+
+        public ExtraField[] ExtraFields { get; set; }
 
         public void Update(DataFetcher dataFetcher)
         {

@@ -60,6 +60,21 @@
 	  </Compile>
 	</ItemGroup>
 	<ItemGroup>
+	  <None Update="config\appConfig.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="config\bizhawkAdapter.lua">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="config\bizhawkConfig.ini">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="config\bizhawkConfigPlayMode.ini">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="config\sharpNeatConfig.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
 	  <None Update="Views\Components\MessageBox.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </None>

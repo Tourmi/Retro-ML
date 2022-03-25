@@ -1,5 +1,6 @@
 ﻿using ReactiveUI;
 using SMW_ML.Neural.Scoring;
+using System.Collections.ObjectModel;
 
 namespace SMW_ML.ViewModels.Components
 {
@@ -14,6 +15,7 @@ namespace SMW_ML.ViewModels.Components
             this.CanBeDisabled = scoreFactor.CanBeDisabled;
             this.isEnabled = !scoreFactor.IsDisabled;
             this.multiplier = scoreFactor.ScoreMultiplier;
+            this.ExtraFields = new ObservableCollection<ExtraField>(scoreFactor.ExtraFields);
         }
 
         public string Name { get; }
@@ -30,5 +32,7 @@ namespace SMW_ML.ViewModels.Components
             get => multiplier;
             set => this.RaiseAndSetIfChanged(ref multiplier, value);
         }
+
+        public ObservableCollection<ExtraField> ExtraFields { get; set; }
     }
 }

@@ -42,62 +42,122 @@
     {
       "$type": "SMW_ML.Neural.Scoring.DiedScoreFactor, SMW_ML",
       "scoreMultiplier": -5,
-      "isDisabled": false
+      "isDisabled": false,
+      "extraFields": []
     },
     {
       "$type": "SMW_ML.Neural.Scoring.DistanceScoreFactor, SMW_ML",
       "scoreMultiplier": 1.0,
-      "isDisabled": false
+      "isDisabled": false,
+      "extraFields": [
+        {
+          "name": "East Mult",
+          "value": 1.0
+        },
+        {
+          "name": "West Mult",
+          "value": 0.0
+        },
+        {
+          "name": "Up Mult",
+          "value": 0.5
+        },
+        {
+          "name": "Down Mult",
+          "value": 0.25
+        }
+      ]
     },
     {
       "$type": "SMW_ML.Neural.Scoring.StopMovingScoreFactor, SMW_ML",
       "scoreMultiplier": -5,
-      "isDisabled": false
+      "isDisabled": false,
+      "extraFields": []
     },
     {
       "$type": "SMW_ML.Neural.Scoring.TimeTakenScoreFactor, SMW_ML",
       "scoreMultiplier": -10.0,
-      "isDisabled": false
+      "isDisabled": false,
+      "extraFields": []
     },
     {
       "$type": "SMW_ML.Neural.Scoring.SpeedScoreFactor, SMW_ML",
       "scoreMultiplier": 0.25,
-      "isDisabled": false
+      "isDisabled": false,
+      "extraFields": [
+        {
+          "name": "Horizontal Mult",
+          "value": 1.0
+        },
+        {
+          "name": "Vertical Mult",
+          "value": 0.25
+        }
+      ]
     },
     {
       "$type": "SMW_ML.Neural.Scoring.WonLevelScoreFactor, SMW_ML",
       "scoreMultiplier": 100.0,
-      "isDisabled": false
+      "isDisabled": false,
+      "extraFields": [
+        {
+          "name": "Goal Mult",
+          "value": 1.0
+        },
+        {
+          "name": "Key Mult",
+          "value": 1.0
+        }
+      ]
     },
     {
       "$type": "SMW_ML.Neural.Scoring.CoinsScoreFactor, SMW_ML",
+      "scoreMultiplier": 1.0,
       "isDisabled": true,
-      "scoreMultiplier": 1.0
+      "extraFields": []
     },
     {
       "$type": "SMW_ML.Neural.Scoring.YoshiCoinsScoreFactor, SMW_ML",
+      "scoreMultiplier": 2.0,
       "isDisabled": true,
-      "scoreMultiplier": 2.0
+      "extraFields": []
     },
     {
       "$type": "SMW_ML.Neural.Scoring.OneUpsScoreFactor, SMW_ML",
+      "scoreMultiplier": 4.0,
       "isDisabled": true,
-      "scoreMultiplier": 4.0
+      "extraFields": []
     },
     {
       "$type": "SMW_ML.Neural.Scoring.HighScoreScoreFactor, SMW_ML",
+      "scoreMultiplier": 0.1,
       "isDisabled": true,
-      "scoreMultiplier": 0.1
+      "extraFields": []
     },
     {
       "$type": "SMW_ML.Neural.Scoring.PowerUpScoreFactor, SMW_ML",
+      "scoreMultiplier": 4.0,
       "isDisabled": true,
-      "scoreMultiplier": 4.0
+      "extraFields": [
+        {
+          "name": "Mushroom Mult",
+          "value": 1.0
+        },
+        {
+          "name": "Cape Mult",
+          "value": 2.0
+        },
+        {
+          "name": "Flower Mult",
+          "value": 2.0
+        }
+      ]
     },
     {
       "$type": "SMW_ML.Neural.Scoring.TakenDamageScoreFactor, SMW_ML",
+      "scoreMultiplier": -1.0,
       "isDisabled": true,
-      "scoreMultiplier": -1.0
+      "extraFields": []
     }
   ],
   "saveStates": [

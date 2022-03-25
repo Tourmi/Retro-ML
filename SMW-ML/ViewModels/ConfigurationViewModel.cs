@@ -513,6 +513,10 @@ namespace SMW_ML.ViewModels
                 {
                     ApplicationConfig.ScoreFactors[i].IsDisabled = !Objectives[i].IsChecked;
                 }
+                for (int j = 0; j < ApplicationConfig.ScoreFactors[i].ExtraFields.Count(); j++)
+                {
+                    ApplicationConfig.ScoreFactors[i].ExtraFields[j].Value = Objectives[i].ExtraFields[j].Value;
+                }
             }
 
             //Tab Neural

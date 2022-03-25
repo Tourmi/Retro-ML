@@ -48,6 +48,11 @@ namespace SMW_ML.Neural.Scoring
         void LevelDone();
 
         /// <summary>
+        /// Name of any extra field this score factor has.
+        /// </summary>
+        ExtraField[] ExtraFields { get; set; }
+
+        /// <summary>
         /// Clones this score factor into a new instance.
         /// </summary>
         /// <returns></returns>

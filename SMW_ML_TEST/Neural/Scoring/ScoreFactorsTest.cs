@@ -218,6 +218,7 @@ namespace SMW_ML_TEST.Neural.Scoring
         public void SpeedScoreFactor()
         {
             SpeedScoreFactor sf = new() { ScoreMultiplier = 5 };
+            emu!.SetMemory(Addresses.Player.IsOnGround.Address, 0x01);
             emu!.SetMemory(Addresses.Player.PositionX.Address, 0x10, 0x00);
             sf.Update(df!);
             emu.SetMemory(Addresses.Player.PositionX.Address, 0x30, 0x00);

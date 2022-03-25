@@ -101,9 +101,24 @@ namespace SMW_ML_TEST.Game.SuperMarioWorld
         }
 
         [Test]
+        public void WonViaGoal()
+        {
+            TestFlagFunction(dataFetcher!.WonViaGoal, Addresses.Level.EndLevelTimer.Address, 0xFF);
+        }
+
+        [Test]
+        public void WonViaKey()
+        {
+            TestFlagFunction(dataFetcher!.WonLevel, Addresses.Level.KeyholeTimer.Address, 0xFF);
+        }
+
+        [Test]
         public void WonLevel()
         {
             TestFlagFunction(dataFetcher!.WonLevel, Addresses.Level.EndLevelTimer.Address, 0xFF);
+            mockEmulatorAdapter!.SetMemory(Addresses.Level.EndLevelTimer.Address, 0x00);
+            dataFetcher!.NextFrame();
+            TestFlagFunction(dataFetcher!.WonLevel, Addresses.Level.KeyholeTimer.Address, 0xFF);
         }
 
         [Test]
@@ -260,11 +275,6 @@ namespace SMW_ML_TEST.Game.SuperMarioWorld
             result = tf();
             if (invertResult) result = !result;
             Assert.True(result);
-        }
-
-        [TearDown]
-        public void TearDown()
-        {
         }
     }
 }

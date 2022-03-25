@@ -4,8 +4,20 @@ namespace SMW_ML.Neural.Scoring
 {
     internal class WonLevelScoreFactor : IScoreFactor
     {
+        private const string GOAL_MULT = "Goal Mult";
+        private const string KEY_MULT = "Key Mult";
+
         private bool shouldStop = false;
         private double currScore;
+
+        public WonLevelScoreFactor()
+        {
+            ExtraFields = new ExtraField[]
+            {
+                new ExtraField(GOAL_MULT, 1.0),
+                new ExtraField(KEY_MULT, 1.0),
+            };
+        }
 
         public bool ShouldStop => shouldStop;
         public double ScoreMultiplier { get; set; }
@@ -16,6 +28,8 @@ namespace SMW_ML.Neural.Scoring
 
         public bool IsDisabled { get => false; set { } }
 
+        public ExtraField[] ExtraFields { get; set; }
+
         public double GetFinalScore() => currScore;
 
         public void Update(DataFetcher dataFetcher)
@@ -23,7 +37,7 @@ namespace SMW_ML.Neural.Scoring
             if (dataFetcher.WonLevel())
             {
                 shouldStop = true;
-                currScore += ScoreMultiplier;
+                currScore += ScoreMultiplier * (dataFetcher.WonViaGoal() ? ExtraField.GetValue(ExtraFields, GOAL_MULT) : ExtraField.GetValue(ExtraFields, KEY_MULT));
                 return;
             }
         }
@@ -35,7 +49,7 @@ namespace SMW_ML.Neural.Scoring
 
         public IScoreFactor Clone()
         {
-            return new WonLevelScoreFactor() { ScoreMultiplier = ScoreMultiplier };
+            return new WonLevelScoreFactor() { ScoreMultiplier = ScoreMultiplier, ExtraFields = ExtraFields };
         }
     }
 }
