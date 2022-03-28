@@ -59,8 +59,19 @@ namespace SMW_ML.Neural.Scoring
         public void LevelDone()
         {
             double subTotal = 0.0;
-            subTotal += Math.Max(maxX - initialX, initialX - minX) * ExtraField.GetValue(ExtraFields, HORIZONTAL_MULT);
-            subTotal += Math.Max(maxY - initialY, initialY - minY) * ExtraField.GetValue(ExtraFields, VERTICAL_MULT);
+
+            float rightDistance = maxX - initialX;
+            float leftDistance = initialX - minX;
+            float upDistance = initialY - minY;
+            float downDistance = maxY - initialY;
+
+            if (rightDistance < 1.5 * 16) rightDistance = 0;
+            if (leftDistance < 1.5 * 16) leftDistance = 0;
+            if (upDistance < 1.5 * 16) upDistance = 0;
+            if (downDistance < 1.5 * 16) downDistance = 0;
+
+            subTotal += Math.Max(rightDistance, leftDistance) * ExtraField.GetValue(ExtraFields, HORIZONTAL_MULT);
+            subTotal += Math.Max(upDistance, downDistance) * ExtraField.GetValue(ExtraFields, VERTICAL_MULT);
 
             currScore += subTotal * ScoreMultiplier / (Math.Max(framesTaken, 1) / 60.0) / 16.0;
 
