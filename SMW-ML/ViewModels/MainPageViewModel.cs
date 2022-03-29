@@ -1,5 +1,4 @@
-﻿using Avalonia.Controls;
-using System;
+﻿using System;
 
 namespace SMW_ML.ViewModels
 {
@@ -25,10 +24,10 @@ namespace SMW_ML.ViewModels
             OnOpenPlayMode?.Invoke();
         }
 
-        public void OpenConfigSettings(Window mainPage)
+        public void OpenConfigSettings()
         {
             var configViewModel = new ConfigurationViewModel();
-            configViewModel.ShowWindow(mainPage);
+            configViewModel.ShowWindow(ViewLocator.GetMainWindow());
         }
     }
 }

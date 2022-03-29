@@ -69,7 +69,11 @@ namespace SMW_ML.Views.Components
             var tcs = new TaskCompletionSource<MessageBoxResult>();
             msgbox.Closed += delegate { tcs.TrySetResult(res); };
             if (parent != null)
+            {
+                msgbox.WindowStartupLocation = WindowStartupLocation.CenterOwner;
+                msgbox.Icon = parent.Icon;
                 msgbox.ShowDialog(parent);
+            }
             else msgbox.Show();
             return tcs.Task;
         }

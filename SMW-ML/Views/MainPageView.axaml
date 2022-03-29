@@ -18,7 +18,7 @@
 			<TextBlock Text="{Binding GreetingString}" HorizontalAlignment="Center"/>
 			<Button Command="{Binding OpenTraining}" Content="{Binding TrainingString}" HorizontalAlignment="Center"/>
 			<Button Command="{Binding OpenPlay}" Content="{Binding PlayString}" HorizontalAlignment="Center"/>
-			<Button Command="{Binding OpenConfigSettings}" Content="{Binding OpenSettingsString}" CommandParameter="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Window}}}" IsEnabled="True"  HorizontalAlignment="Center" />
+			<Button Command="{Binding OpenConfigSettings}" Content="{Binding OpenSettingsString}" IsEnabled="True"  HorizontalAlignment="Center" />
 		</StackPanel>
 	</DockPanel>
 

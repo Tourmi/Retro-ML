@@ -452,6 +452,7 @@ namespace SMW_ML.ViewModels
                 Height = 520,
                 WindowStartupLocation = WindowStartupLocation.CenterOwner
             };
+            window.Icon = mainWindow.Icon;
             window.ShowDialog(mainWindow);
         }
 

@@ -171,7 +171,7 @@ namespace SMW_ML.ViewModels
 
             if (forceStop)
             {
-                if (await MessageBox.Show(null, "Do you really want to stop the training?", "Force Stop", MessageBox.MessageBoxButtons.YesNo) != MessageBox.MessageBoxResult.Yes)
+                if (await MessageBox.Show(ViewLocator.GetMainWindow(), "Do you really want to stop the training?", "Force Stop", MessageBox.MessageBoxButtons.YesNo) != MessageBox.MessageBoxResult.Yes)
                 {
                     return;
                 }

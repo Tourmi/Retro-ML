@@ -97,7 +97,7 @@ namespace SMW_ML.ViewModels
                 {
                     bool currStatus = Content!.IsEnabled;
                     Content.IsEnabled = false;
-                    await MessageBox.Show(null, ex.Message, "Error", MessageBox.MessageBoxButtons.Ok);
+                    await MessageBox.Show(ViewLocator.GetMainWindow(), ex.Message, "Error", MessageBox.MessageBoxButtons.Ok);
                     Content.IsEnabled = currStatus;
                 });
             }

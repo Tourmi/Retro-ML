@@ -1,4 +1,5 @@
 ﻿using LiveChartsCore;
+using LiveChartsCore.Kernel;
 using LiveChartsCore.SkiaSharpView;
 using ReactiveUI;
 using SMW_ML.Neural.Training;
@@ -55,6 +56,9 @@ namespace SMW_ML.ViewModels.Statistics
 
         private Dictionary<string, ObservableCollection<double>> values;
 
+        private int maxLabelLength = 1;
+        private int maxValueLength = 1;
+
         public ObservableCollection<ISeries<double>> ShownSeries { get; set; }
         public List<Filter> Filters { get; set; }
 
@@ -64,11 +68,14 @@ namespace SMW_ML.ViewModels.Statistics
             {
                 [BEST_GENOME_FITNESS] = new ObservableCollection<double>(),
                 [MEAN_FITNESS] = new ObservableCollection<double>(),
+                [MAX_COMPLEXITY] = new ObservableCollection<double>(),
                 [BEST_GENOME_COMPLEXITY] = new ObservableCollection<double>(),
                 [MEAN_COMPLEXITY] = new ObservableCollection<double>(),
-                [MAX_COMPLEXITY] = new ObservableCollection<double>(),
                 [EVALS_PER_MINUTE] = new ObservableCollection<double>()
             };
+
+            maxLabelLength = values.Max(v => v.Key.Length);
+            maxValueLength = 4;
 
             ShownSeries = new ObservableCollection<ISeries<double>>();
 
@@ -78,9 +85,18 @@ namespace SMW_ML.ViewModels.Statistics
                 var filter = new Filter(value.Key, value.Key == BEST_GENOME_FITNESS || value.Key == MEAN_FITNESS);
                 Filters.Add(filter);
                 filter.OnFilterUpdated += FiltersUpdated;
-            }
 
-            FiltersUpdated();
+                ISeries<double> series = new LineSeries<double>()
+                {
+                    Values = values[filter.Name],
+                    Name = filter.Name,
+                    LineSmoothness = 0,
+                    TooltipLabelFormatter = FormatTooltip,
+                    IsVisible = filter.Enabled
+                };
+
+                ShownSeries.Add(series);
+            }
         }
 
         public void AddGeneration(TrainingStatistics stats)
@@ -92,6 +108,8 @@ namespace SMW_ML.ViewModels.Statistics
                     values[stat.Name].Add(stat.Value);
                 }
             }
+
+            maxValueLength = Math.Max(stats.GetStats().Max(s => s.Value.ToString("N2").Length), maxValueLength);
         }
 
         public void ClearData()
@@ -106,22 +124,13 @@ namespace SMW_ML.ViewModels.Statistics
         {
             foreach (var filter in Filters)
             {
-                ISeries<double>? series = ShownSeries.SingleOrDefault(ss => ss.Name == filter.Name);
-
-                if (filter.Enabled && series == null)
-                {
-                    ShownSeries.Add(new LineSeries<double>()
-                    {
-                        Values = values[filter.Name],
-                        Name = filter.Name,
-                        LineSmoothness = 0
-                    });
-                }
-                else if (!filter.Enabled && series != null)
-                {
-                    ShownSeries.Remove(series);
-                }
+                ShownSeries.Single(ss => ss.Name == filter.Name).IsVisible = filter.Enabled;
             }
+        }
+
+        private string FormatTooltip(ChartPoint p)
+        {
+            return $"{p.Context.Series.Name!.PadRight(maxLabelLength, ' ')} : {p.PrimaryValue.ToString("N2").PadLeft(maxValueLength, ' ')}";
         }
     }
 }
