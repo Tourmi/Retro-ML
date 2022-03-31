@@ -1,4 +1,5 @@
 ﻿using Avalonia;
+using Avalonia.Media;
 using Avalonia.Threading;
 using ReactiveUI;
 using SMW_ML.Models.Config;
@@ -21,16 +22,32 @@ namespace SMW_ML.ViewModels.Neural
             public static int NodeSize => NetworkViewModel.NodeSize;
             public static int GridSize => NetworkViewModel.GridSize;
 
-            public Node(bool active) : this(active, 0, 0) { }
+            public Node() : this(0, DefaultActiveColor) { }
+            public Node(double value, Color targetColor) : this(value, targetColor, 0, 0) { }
 
-            public Node(bool active, double positionX, double positionY)
+            public Node(double value, Color targetColor, double positionX, double positionY)
             {
-                Active = active;
+                Value = value;
+
+                Color currColor;
+                if (value <= 0) currColor = BaseColor;
+                else if (value >= 1) currColor = targetColor;
+                else
+                {
+                    byte r = (byte)(BaseColor.R + (targetColor.R - BaseColor.R) * value);
+                    byte g = (byte)(BaseColor.G + (targetColor.G - BaseColor.G) * value);
+                    byte b = (byte)(BaseColor.B + (targetColor.B - BaseColor.B) * value);
+
+                    currColor = Color.FromRgb(r, g, b);
+                }
+
+                NodeBrush = Brush.Parse(currColor.ToString());
                 PositionX = positionX;
                 PositionY = positionY;
             }
 
-            public bool Active { get; }
+            public double Value { get; }
+            public IBrush NodeBrush { get; }
             public double PositionX { get; }
             public double PositionY { get; }
         }
@@ -57,12 +74,11 @@ namespace SMW_ML.ViewModels.Neural
             public static int GridSize => NetworkViewModel.GridSize;
             public static int LeftOffset => NetworkViewModel.LeftOffset;
 
-            public NodeGroupViewModel(string name, bool useRed = false, bool useGreen = false, bool useBlue = false, int gridWidth = 1, int gridHeight = 1)
+            public NodeGroupViewModel(string name, Color targetColor, int gridWidth = 1, int gridHeight = 1, bool isOutput = false)
             {
                 Name = name;
-                UseRed = useRed;
-                UseGreen = useGreen;
-                UseBlue = useBlue;
+
+                TargetColor = targetColor;
                 GridWidth = gridWidth;
                 GridHeight = gridHeight;
                 Nodes = new ObservableCollection<Node>();
@@ -70,17 +86,25 @@ namespace SMW_ML.ViewModels.Neural
                 {
                     Nodes.Add(new Node());
                 }
+
+                IsOutput = isOutput;
             }
 
             public string Name { get; }
-            public bool UseRed { get; }
-            public bool UseGreen { get; }
-            public bool UseBlue { get; }
+            public Color TargetColor { get; }
             public int GridWidth { get; }
             public int GridHeight { get; }
+            public bool IsOutput { get; }
 
             public ObservableCollection<Node> Nodes { get; set; }
         }
+        public static Color BaseColor = Color.Parse("#444");
+        public static Color MiddleNodeColor = Color.Parse("#ACA");
+        public static Color DefaultActiveColor = Color.Parse("#EEE");
+        public static Color DangerActiveColor = Color.Parse("#E00");
+        public static Color GoodiesActiveColor = Color.Parse("#0E0");
+        public static Color WaterActiveColor = Color.Parse("#00E");
+
         public static int TotalWidth => 1800;
         public static int TotalHeight => 800;
 
@@ -106,22 +130,30 @@ namespace SMW_ML.ViewModels.Neural
         public NetworkViewModel(NeuralConfig config)
         {
             Inputs = new ObservableCollection<NodeGroupViewModel>();
-
-            foreach (var node in config.InputNodes)
-            {
-                if (!node.ShouldUse) continue;
-                Inputs.Add(new NodeGroupViewModel(node.Name, node.Name == "Dangers", node.Name == "Goodies", node.Name == "Water", node.TotalWidth, node.TotalHeight));
-            }
-
             Outputs = new ObservableCollection<NodeGroupViewModel>();
-            foreach (var node in config.OutputNodes)
-            {
-                if (!node.ShouldUse) continue;
-                Outputs.Add(new(node.Name));
-            }
-
             MiddleNodes = new ObservableCollection<Node>();
             Connections = new ObservableCollection<Connection>();
+
+            Dispatcher.UIThread.Post(() =>
+            {
+                using var delay = DelayChangeNotifications();
+                foreach (var node in config.InputNodes)
+                {
+                    if (!node.ShouldUse) continue;
+                    Color targetColor = DefaultActiveColor;
+                    if (node.Name.Contains("Danger")) targetColor = DangerActiveColor;
+                    if (node.Name.Contains("Goodies")) targetColor = GoodiesActiveColor;
+                    if (node.Name.Contains("Water")) targetColor = WaterActiveColor;
+
+                    Inputs.Add(new NodeGroupViewModel(node.Name, targetColor, node.TotalWidth, node.TotalHeight));
+                }
+
+                foreach (var node in config.OutputNodes)
+                {
+                    if (!node.ShouldUse) continue;
+                    Outputs.Add(new(node.Name, DefaultActiveColor, isOutput: true));
+                }
+            });
         }
 
         /// <summary>
@@ -182,7 +214,7 @@ namespace SMW_ML.ViewModels.Neural
                     if (!nodePositions.ContainsKey(sourceNode))
                     {
                         nodePositions[sourceNode] = new Point(middleStartX + i * middleXOffset, Random.Shared.NextDouble() * (TotalHeight - GridSize));
-                        MiddleNodes.Add(new Node(false, nodePositions[sourceNode].X, nodePositions[sourceNode].Y));
+                        MiddleNodes.Add(new Node(1, MiddleNodeColor, nodePositions[sourceNode].X, nodePositions[sourceNode].Y));
                     }
 
                     connectionsToAdd.Add((sourceNode, targetNode, weight));
@@ -196,7 +228,7 @@ namespace SMW_ML.ViewModels.Neural
                 if (!nodePositions.ContainsKey(target))
                 {
                     nodePositions[target] = new Point(middleStartX + (currConnectionLayers.Length - 1) * middleXOffset, Random.Shared.NextDouble() * (TotalHeight - GridSize));
-                    MiddleNodes.Add(new Node(false, nodePositions[target].X, nodePositions[target].Y));
+                    MiddleNodes.Add(new Node(1, MiddleNodeColor, nodePositions[target].X, nodePositions[target].Y));
                 }
 
                 Connections.Add(new Connection(nodePositions[source] + middleOfNode, nodePositions[target] + middleOfNode, weight >= 0, Math.Abs(weight) / 5.0 + 0.3));
@@ -296,10 +328,12 @@ namespace SMW_ML.ViewModels.Neural
             {
                 for (int i = 0; i < nodeGroup.Nodes.Count; i++)
                 {
-                    bool shouldBeActive = states[i + startIndex] > 0;
-                    if (nodeGroup.Nodes[i].Active != shouldBeActive)
+                    double prevValue = nodeGroup.Nodes[i].Value;
+                    double value = states[i + startIndex];
+                    if (nodeGroup.IsOutput) value = value > 0 ? 1 : 0;
+                    if (prevValue != value && !(prevValue <= 0 && value <= 0) && !(prevValue >= 1 && value >= 1))
                     {
-                        nodeGroup.Nodes[i] = new Node(shouldBeActive);
+                        nodeGroup.Nodes[i] = new Node(value, nodeGroup.TargetColor);
                     }
                 }
 

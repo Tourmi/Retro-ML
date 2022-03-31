@@ -47,27 +47,16 @@
 			<Setter Property="Height" Value="{Binding NodeSize}"/>
 			<Setter Property="CornerRadius" Value="5"/>
 			<Setter Property="BorderThickness" Value="5"/>
-			<Setter Property="BorderBrush" Value="#EEE"/>
-		</Style>
-		<!--Blue node-->
-		<Style Selector=".blue Border.node Border">
-			<Setter Property="BorderBrush" Value="#00E"/>
-		</Style>
-		<!--Red node-->
-		<Style Selector=".red Border.node Border">
-			<Setter Property="BorderBrush" Value="#E00"/>
-		</Style>
-		<!--Green node-->
-		<Style Selector=".green Border.node Border">
-			<Setter Property="BorderBrush" Value="#0E0"/>
-		</Style>
-		<Style Selector="Border.node:disabled Border">
 			<Setter Property="BorderBrush" Value="#444"/>
+			<Setter Property="BorderBrush" Value="{Binding NodeBrush}"/>
+		</Style>
+		<Style Selector="Border.node Border Rectangle">
+			<Setter Property="Fill" Value="{Binding $parent.BorderBrush}"/>
 		</Style>
 		<!--Connections-->
 		<Style Selector="Line">
 			<Setter Property="Stroke" Value="Lime"/>
-			<Setter Property="StrokeThickness" Value="2" />
+			<Setter Property="StrokeThickness" Value="1" />
 		</Style>
 		<Style Selector="Line.negative">
 			<Setter Property="Stroke" Value="Magenta"/>
@@ -85,7 +74,7 @@
 				</ItemsControl.ItemsPanel>
 				<ItemsControl.ItemTemplate>
 					<DataTemplate>
-						<StackPanel Classes="nodes" Classes.red="{Binding UseRed}" Classes.green="{Binding UseGreen}" Classes.blue="{Binding UseBlue}" >
+						<StackPanel Classes="nodes" >
 							<TextBlock Text="{Binding Name}"/>
 							<ItemsControl Items="{Binding Nodes}">
 								<ItemsControl.ItemsPanel>
@@ -96,9 +85,9 @@
 
 								<ItemsControl.ItemTemplate>
 									<DataTemplate>
-										<Border Classes="node" IsEnabled="{Binding Active}">
+										<Border Classes="node">
 											<Border>
-												<Rectangle Fill="{Binding $parent.BorderBrush}"/>
+												<Rectangle/>
 											</Border>
 										</Border>
 									</DataTemplate>
@@ -118,7 +107,7 @@
 				</ItemsControl.ItemsPanel>
 				<ItemsControl.ItemTemplate>
 					<DataTemplate>
-						<StackPanel Classes="nodes" Classes.red="{Binding UseRed}" HorizontalAlignment="Right">
+						<StackPanel Classes="nodes" HorizontalAlignment="Right">
 							<ItemsControl Items="{Binding Nodes}">
 								<ItemsControl.ItemsPanel>
 									<ItemsPanelTemplate>
@@ -128,9 +117,9 @@
 
 								<ItemsControl.ItemTemplate>
 									<DataTemplate>
-										<Border Classes="node" IsEnabled="{Binding Active}">
+										<Border Classes="node">
 											<Border>
-												<Rectangle Fill="{Binding $parent.BorderBrush}"/>
+												<Rectangle/>
 											</Border>
 										</Border>
 									</DataTemplate>
@@ -154,8 +143,8 @@
 			<ItemsControl.ItemTemplate>
 				<DataTemplate>
 					<Border Classes="node">
-						<Border BorderBrush="#aca">
-							<Rectangle Fill="{Binding $parent.BorderBrush}"/>
+						<Border>
+							<Rectangle/>
 						</Border>
 					</Border>
 				</DataTemplate>
