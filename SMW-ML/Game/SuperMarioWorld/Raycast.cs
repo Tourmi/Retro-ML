@@ -4,14 +4,14 @@ using System.Collections.Generic;
 
 namespace SMW_ML.Game.SuperMarioWorld
 {
-    internal static class Raytrace
+    internal static class Raycast
     {
         public const int OUTPUT_HEIGHT = 4;
         public static readonly int[] POSSIBLE_RAY_COUNT = new int[] { 4, 8, 16, 32, 64 };
 
         private static readonly Dictionary<int, (double dirX, double dirY)[]> precomputedRays;
 
-        static Raytrace()
+        static Raycast()
         {
             precomputedRays = new();
 
@@ -34,18 +34,19 @@ namespace SMW_ML.Game.SuperMarioWorld
         public static double[,] GetRayDistances(bool[,] tiles, int rayRadius, int rayCount)
         {
             double[,] distances = new double[OUTPUT_HEIGHT, rayCount / OUTPUT_HEIGHT];
+            int raysPerRow = rayCount / OUTPUT_HEIGHT;
             for (int i = 0; i < OUTPUT_HEIGHT; i++)
             {
-                for (int j = 0; j < rayCount / OUTPUT_HEIGHT; j++)
+                for (int j = 0; j < raysPerRow; j++)
                 {
-                    distances[i, j] = ThrowRay(tiles, rayRadius, precomputedRays[rayCount][i * OUTPUT_HEIGHT + j]);
+                    distances[i, j] = CastRay(tiles, rayRadius, precomputedRays[rayCount][i * raysPerRow + j]);
                 }
             }
 
             return distances;
         }
 
-        private static double ThrowRay(bool[,] tiles, int rayRadius, (double dirX, double dirY) dirr)
+        private static double CastRay(bool[,] tiles, int rayRadius, (double dirX, double dirY) dirr)
         {
             int incX = dirr.dirX > 0 ? 1 : -1;
             int incY = dirr.dirY > 0 ? 1 : -1;

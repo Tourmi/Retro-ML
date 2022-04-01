@@ -71,12 +71,12 @@ namespace SMW_ML.Models.Config
         /// The width of the ray inputs. 
         /// </summary>
         [JsonIgnore]
-        public int RaysWidth => RayCount / Raytrace.OUTPUT_HEIGHT;
+        public int RaysWidth => RayCount / Raycast.OUTPUT_HEIGHT;
         /// <summary>
         /// The height of the ray inputs
         /// </summary>
         [JsonIgnore]
-        public int RaysHeight => Raytrace.OUTPUT_HEIGHT;
+        public int RaysHeight => Raycast.OUTPUT_HEIGHT;
 
         public NeuralConfig()
         {
@@ -140,10 +140,10 @@ namespace SMW_ML.Models.Config
             }
             else
             {
-                InputNodes.Add(new InputNode("Ray Tiles", EnabledStates[enabledIndex++], (dataFetcher) => Raytrace.GetRayDistances(tilesFunc(dataFetcher, RayLength, RayLength), RayLength, RayCount), RaysWidth, RaysHeight));
-                InputNodes.Add(new InputNode("Ray Dangers", EnabledStates[enabledIndex++], (dataFetcher) => Raytrace.GetRayDistances(dangersFunc(dataFetcher, RayLength, RayLength), RayLength, RayCount), RaysWidth, RaysHeight));
-                InputNodes.Add(new InputNode("Ray Goodies", EnabledStates[enabledIndex++], (dataFetcher) => Raytrace.GetRayDistances(goodiesFunc(dataFetcher, RayLength, RayLength), RayLength, RayCount), RaysWidth, RaysHeight));
-                InputNodes.Add(new InputNode("Ray Water", EnabledStates[enabledIndex++], (dataFetcher) => Raytrace.GetRayDistances(waterFunc(dataFetcher, RayLength, RayLength), RayLength, RayCount), RaysWidth, RaysHeight));
+                InputNodes.Add(new InputNode("Ray Tiles", EnabledStates[enabledIndex++], (dataFetcher) => Raycast.GetRayDistances(tilesFunc(dataFetcher, RayLength, RayLength), RayLength, RayCount), RaysWidth, RaysHeight));
+                InputNodes.Add(new InputNode("Ray Dangers", EnabledStates[enabledIndex++], (dataFetcher) => Raycast.GetRayDistances(dangersFunc(dataFetcher, RayLength, RayLength), RayLength, RayCount), RaysWidth, RaysHeight));
+                InputNodes.Add(new InputNode("Ray Goodies", EnabledStates[enabledIndex++], (dataFetcher) => Raycast.GetRayDistances(goodiesFunc(dataFetcher, RayLength, RayLength), RayLength, RayCount), RaysWidth, RaysHeight));
+                InputNodes.Add(new InputNode("Ray Water", EnabledStates[enabledIndex++], (dataFetcher) => Raycast.GetRayDistances(waterFunc(dataFetcher, RayLength, RayLength), RayLength, RayCount), RaysWidth, RaysHeight));
             }
 
             InputNodes.Add(new InputNode("On Ground", EnabledStates[enabledIndex++], (dataFetcher) => dataFetcher.IsOnGround()));

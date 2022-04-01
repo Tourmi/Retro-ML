@@ -46,7 +46,7 @@ namespace SMW_ML.ViewModels
         private SharpNeatModel? SharpNeatModel;
         private ApplicationConfig? ApplicationConfig;
 
-        public int[] RayCounts => Raytrace.POSSIBLE_RAY_COUNT;
+        public int[] RayCounts => Raycast.POSSIBLE_RAY_COUNT;
 
         public ObservableCollection<Error> ErrorList { get; set; }
         public ObservableCollection<string> DispMethodList { get; set; }
