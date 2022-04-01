@@ -1,5 +1,6 @@
 ﻿using Avalonia.Controls;
 using ReactiveUI;
+using SMW_ML.Game.SuperMarioWorld;
 using SMW_ML.Models;
 using SMW_ML.Models.Config;
 using SMW_ML.Utils;
@@ -45,19 +46,10 @@ namespace SMW_ML.ViewModels
         private SharpNeatModel? SharpNeatModel;
         private ApplicationConfig? ApplicationConfig;
 
+        public int[] RayCounts => Raytrace.POSSIBLE_RAY_COUNT;
+
         public ObservableCollection<Error> ErrorList { get; set; }
         public ObservableCollection<string> DispMethodList { get; set; }
-
-        private bool isStopManually = true;
-        [DataMember]
-        public bool IsStopManually
-        {
-            get => isStopManually;
-            set => this.RaiseAndSetIfChanged(ref isStopManually, value);
-        }
-
-        public ObservableCollection<string> StopTrainingItems { get; set; }
-        public ObservableCollection<string> ListOfObjectives { get; set; }
 
         private string _romPath;
         [DataMember]
@@ -162,18 +154,6 @@ namespace SMW_ML.ViewModels
             set
             {
                 this.RaiseAndSetIfChanged(ref _isDataGridErrorVisible, value);
-            }
-        }
-
-        private int? _stopTrainingConditionValue;
-        [DataMember(IsRequired = true)]
-        public int? StopTrainingConditionValue
-        {
-            get => _stopTrainingConditionValue;
-            set
-            {
-                this.RaiseAndSetIfChanged(ref _stopTrainingConditionValue, value);
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(StopTrainingConditionValue)));
             }
         }
 
@@ -321,37 +301,56 @@ namespace SMW_ML.ViewModels
             }
         }
 
-        private List<string> saveStates;
-        private string saveStatePreview;
+        private List<string> _saveStates;
+        private string _saveStatePreview;
         public string SaveStates
         {
-            get => saveStatePreview;
+            get => _saveStatePreview;
             set
             {
-                this.RaiseAndSetIfChanged(ref saveStatePreview, value);
+                this.RaiseAndSetIfChanged(ref _saveStatePreview, value);
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(SaveStates)));
             }
         }
 
         private void SetSaveStates(List<string> saveStates)
         {
-            this.saveStates = saveStates;
+            this._saveStates = saveStates;
             SaveStates = string.Join("\n", saveStates);
         }
 
         public ObservableCollection<ScoreFactorViewModel> Objectives { get; set; }
 
-        private int viewDistanceHorizontal;
+        private bool _useVisionGrid = false;
+        public bool UseVisionGrid
+        {
+            get => _useVisionGrid;
+            set => this.RaiseAndSetIfChanged(ref _useVisionGrid, value);
+        }
+        private int _viewDistanceHorizontal = 4;
         public int ViewDistanceHorizontal
         {
-            get => viewDistanceHorizontal;
-            set => this.RaiseAndSetIfChanged(ref viewDistanceHorizontal, value);
+            get => _viewDistanceHorizontal;
+            set => this.RaiseAndSetIfChanged(ref _viewDistanceHorizontal, value);
         }
-        private int viewDistanceVertical;
+        private int _viewDistanceVertical = 4;
         public int ViewDistanceVertical
         {
-            get => viewDistanceVertical;
-            set => this.RaiseAndSetIfChanged(ref viewDistanceVertical, value);
+            get => _viewDistanceVertical;
+            set => this.RaiseAndSetIfChanged(ref _viewDistanceVertical, value);
+        }
+
+        private int _rayLength = 6;
+        public int RayLength
+        {
+            get => _rayLength;
+            set => this.RaiseAndSetIfChanged(ref _rayLength, value);
+        }
+        private int _rayCountIndex = 2;
+        public int RayCount
+        {
+            get => _rayCountIndex;
+            set => this.RaiseAndSetIfChanged(ref _rayCountIndex, value);
         }
 
         public ObservableCollection<InputOutputConfigViewModel> NeuralConfigs { get; }
@@ -369,19 +368,6 @@ namespace SMW_ML.ViewModels
         #region Constructor
         public ConfigurationViewModel()
         {
-            StopTrainingItems = new ObservableCollection<string>() {
-                "Number of Generations",
-                "Amount of Time",
-                "Manually"
-            };
-
-            ListOfObjectives = new ObservableCollection<string>(){
-                "Best Score",
-                "Maximize Lives",
-                "Maximize Coins",
-                "All Dragon Pieces"
-            };
-
             DispMethodList = new ObservableCollection<string>()
             {
                 "OpenGL",
@@ -397,8 +383,8 @@ namespace SMW_ML.ViewModels
 
             _romPath = "smw.sfc";
 
-            saveStates = new List<string>();
-            saveStatePreview = "";
+            _saveStates = new List<string>();
+            _saveStatePreview = "";
             NeuralConfigs = new ObservableCollection<InputOutputConfigViewModel>();
 
             //Initialize the properties with the current config
@@ -462,7 +448,7 @@ namespace SMW_ML.ViewModels
         /// </summary>
         private void SerializeConfig()
         {
-            //Tab NeuralNetwork
+            //Tab SharpNeat
             if (SharpNeatModel == null) { return; }
             SharpNeatModel.EvolutionAlgorithmSettings.SpeciesCount = SpeciesCount;
             SharpNeatModel.EvolutionAlgorithmSettings.ElitismProportion = ElitismProportion;
@@ -504,7 +490,7 @@ namespace SMW_ML.ViewModels
                 ApplicationConfig.StopConditions[i].ShouldUse = StopConditions[i].IsChecked;
                 ApplicationConfig.StopConditions[i].ParamValue = StopConditions[i].ParamValue;
             }
-            ApplicationConfig.SaveStates = saveStates;
+            ApplicationConfig.SaveStates = _saveStates;
 
             //Tab Objectives
             for (int i = 0; i < Objectives.Count; i++)
@@ -521,9 +507,13 @@ namespace SMW_ML.ViewModels
             }
 
             //Tab Neural
-
+            ApplicationConfig.NeuralConfig.UseGrid = UseVisionGrid;
             ApplicationConfig.NeuralConfig.GridDistanceX = ViewDistanceHorizontal;
             ApplicationConfig.NeuralConfig.GridDistanceY = ViewDistanceVertical;
+
+            ApplicationConfig.NeuralConfig.RayLength = RayLength;
+            ApplicationConfig.NeuralConfig.RayCount = RayCount;
+
             int inputCount = ApplicationConfig.NeuralConfig.InputNodes.Count;
             int outputCount = ApplicationConfig.NeuralConfig.OutputNodes.Count;
             for (int i = 0; i < inputCount; i++)
@@ -667,8 +657,13 @@ namespace SMW_ML.ViewModels
             {
                 NeuralConfigs.Add(new(output));
             }
+
+            UseVisionGrid = ApplicationConfig.NeuralConfig.UseGrid;
             ViewDistanceHorizontal = ApplicationConfig.NeuralConfig.GridDistanceX;
             ViewDistanceVertical = ApplicationConfig.NeuralConfig.GridDistanceY;
+
+            RayLength = ApplicationConfig.NeuralConfig.RayLength;
+            RayCount = ApplicationConfig.NeuralConfig.RayCount;
         }
 
         #region Validation
@@ -757,7 +752,7 @@ namespace SMW_ML.ViewModels
 
         private void ValidateSaveStates()
         {
-            if (!saveStates.Any())
+            if (!_saveStates.Any())
             {
                 ErrorList.Add(new Error()
                 {
@@ -765,7 +760,7 @@ namespace SMW_ML.ViewModels
                     Description = "You must select at least one save state for training"
                 });
             }
-            foreach (var ss in saveStates)
+            foreach (var ss in _saveStates)
             {
                 if (!File.Exists(ss))
                 {

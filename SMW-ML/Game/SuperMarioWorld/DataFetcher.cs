@@ -23,6 +23,7 @@ namespace SMW_ML.Game.SuperMarioWorld
         private readonly Dictionary<uint, byte[]> levelCache;
 
         private readonly Dictionary<uint, ushort[]> map16Caches;
+
         private ushort[,]? nearbyTilesCache;
         private ushort[,]? nearbyLayer23TilesCache;
         private byte currTransitionCount;
@@ -276,7 +277,7 @@ namespace SMW_ML.Game.SuperMarioWorld
 
             if (nearbyTilesCache == null)
             {
-                nearbyTilesCache = GetNearbyTiles(map16Caches[levelUID], x_dist, y_dist, (int)GetPositionX() / TILE_SIZE, (int)(GetPositionY() + TILE_SIZE) / TILE_SIZE, 0);
+                nearbyTilesCache = GetNearbyTiles(map16Caches[levelUID], x_dist, y_dist, ((int)GetPositionX() + 0x08) / TILE_SIZE, (int)(GetPositionY() + 0x18) / TILE_SIZE, 0);
             }
 
             //If layer 2 or 3 is interactive
@@ -285,9 +286,9 @@ namespace SMW_ML.Game.SuperMarioWorld
                 bool useLayer3 = ReadSingle(Level.WaterTide) != 0;
                 bool isLayer23Vertical = (ReadSingle(Level.ScreenMode) & 0b00000010) != 0;
                 int layer23ScreenStart = isLayer23Vertical ? 0x0E : 0x10;
-                int offsetX = (int)GetPositionX()
+                int offsetX = (int)GetPositionX() + 0x08
                     + ((int)ToUnsignedInteger(Read(useLayer3 ? Level.Layer3X : Level.Layer2X)) - (int)ToUnsignedInteger(Read(Level.Layer1X)));
-                int offsetY = (int)(GetPositionY() + TILE_SIZE)
+                int offsetY = (int)(GetPositionY() + 0x18)
                     + ((int)ToUnsignedInteger(Read(useLayer3 ? Level.Layer3Y : Level.Layer2Y)) - (int)ToUnsignedInteger(Read(Level.Layer1Y)));
 
                 nearbyLayer23TilesCache = GetNearbyTiles(map16Caches[levelUID], x_dist, y_dist, offsetX / TILE_SIZE, offsetY / TILE_SIZE, layer23ScreenStart);

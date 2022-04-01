@@ -1,6 +1,7 @@
 ﻿using Newtonsoft.Json;
 using SMW_ML.Game.SuperMarioWorld;
 using SMW_ML.Utils;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -28,6 +29,10 @@ namespace SMW_ML.Models.Config
         public bool[] EnabledStates { get; set; }
 
         /// <summary>
+        /// Whether or not to use a grid for multiple inputs.
+        /// </summary>
+        public bool UseGrid { get; set; } = true;
+        /// <summary>
         /// For any inputs that use a grid, the x distance it should be.
         /// </summary>
         public int GridDistanceX { get; set; } = 4;
@@ -35,6 +40,21 @@ namespace SMW_ML.Models.Config
         /// For any inputs that use a grid, the y distance it should be.
         /// </summary>
         public int GridDistanceY { get; set; } = 4;
+
+        /// <summary>
+        /// Whether or not to use vision rays.
+        /// </summary>
+        [JsonIgnore]
+        public bool UseRays => !UseGrid;
+        /// <summary>
+        /// For inputs that use vision rays, the maximum distance the ray can detect, in tiles.
+        /// </summary>
+        public int RayLength { get; set; } = 4;
+        /// <summary>
+        /// The amount of directions to throw rays towards. Should always be a power of 2 bigger or equal to 4.
+        /// </summary>
+        public int RayCount { get; set; } = 16;
+
 
         /// <summary>
         /// For any inputs that use a grid, the total width of the grid based on the X distance.
@@ -46,6 +66,17 @@ namespace SMW_ML.Models.Config
         /// </summary>
         [JsonIgnore]
         public int GridHeight => GridDistanceY * 2 + 1;
+
+        /// <summary>
+        /// The width of the ray inputs. 
+        /// </summary>
+        [JsonIgnore]
+        public int RaysWidth => RayCount / Raytrace.OUTPUT_HEIGHT;
+        /// <summary>
+        /// The height of the ray inputs
+        /// </summary>
+        [JsonIgnore]
+        public int RaysHeight => Raytrace.OUTPUT_HEIGHT;
 
         public NeuralConfig()
         {
@@ -94,10 +125,27 @@ namespace SMW_ML.Models.Config
         {
             int enabledIndex = 0;
             InputNodes.Clear();
-            InputNodes.Add(new InputNode("Tiles", EnabledStates[enabledIndex++], (dataFetcher) => dataFetcher.GetWalkableTilesAroundPosition(GridDistanceX, GridDistanceY), GridWidth, GridHeight));
-            InputNodes.Add(new InputNode("Dangers", EnabledStates[enabledIndex++], (dataFetcher) => dataFetcher.GetDangerousTilesAroundPosition(GridDistanceX, GridDistanceY), GridWidth, GridHeight));
-            InputNodes.Add(new InputNode("Goodies", EnabledStates[enabledIndex++], (dataFetcher) => dataFetcher.GetGoodTilesAroundPosition(GridDistanceX, GridDistanceY), GridWidth, GridHeight));
-            InputNodes.Add(new InputNode("Water", EnabledStates[enabledIndex++], (dataFetcher) => dataFetcher.GetWaterTilesAroundPosition(GridDistanceX, GridDistanceY), GridWidth, GridHeight));
+
+            Func<DataFetcher, int, int, bool[,]> tilesFunc = (dataFetcher, gridDistX, gridDistY) => dataFetcher.GetWalkableTilesAroundPosition(gridDistX, gridDistY);
+            Func<DataFetcher, int, int, bool[,]> dangersFunc = (dataFetcher, gridDistX, gridDistY) => dataFetcher.GetDangerousTilesAroundPosition(gridDistX, gridDistY);
+            Func<DataFetcher, int, int, bool[,]> goodiesFunc = (dataFetcher, gridDistX, gridDistY) => dataFetcher.GetGoodTilesAroundPosition(gridDistX, gridDistY);
+            Func<DataFetcher, int, int, bool[,]> waterFunc = (dataFetcher, gridDistX, gridDistY) => dataFetcher.GetWaterTilesAroundPosition(gridDistX, gridDistY);
+
+            if (UseGrid)
+            {
+                InputNodes.Add(new InputNode("Grid Tiles", EnabledStates[enabledIndex++], (dataFetcher) => tilesFunc(dataFetcher, GridDistanceX, GridDistanceY), GridWidth, GridHeight));
+                InputNodes.Add(new InputNode("Grid Dangers", EnabledStates[enabledIndex++], (dataFetcher) => dangersFunc(dataFetcher, GridDistanceX, GridDistanceY), GridWidth, GridHeight));
+                InputNodes.Add(new InputNode("Grid Goodies", EnabledStates[enabledIndex++], (dataFetcher) => goodiesFunc(dataFetcher, GridDistanceX, GridDistanceY), GridWidth, GridHeight));
+                InputNodes.Add(new InputNode("Grid Water", EnabledStates[enabledIndex++], (dataFetcher) => waterFunc(dataFetcher, GridDistanceX, GridDistanceY), GridWidth, GridHeight));
+            }
+            else
+            {
+                InputNodes.Add(new InputNode("Ray Tiles", EnabledStates[enabledIndex++], (dataFetcher) => Raytrace.GetRayDistances(tilesFunc(dataFetcher, RayLength, RayLength), RayLength, RayCount), RaysWidth, RaysHeight));
+                InputNodes.Add(new InputNode("Ray Dangers", EnabledStates[enabledIndex++], (dataFetcher) => Raytrace.GetRayDistances(dangersFunc(dataFetcher, RayLength, RayLength), RayLength, RayCount), RaysWidth, RaysHeight));
+                InputNodes.Add(new InputNode("Ray Goodies", EnabledStates[enabledIndex++], (dataFetcher) => Raytrace.GetRayDistances(goodiesFunc(dataFetcher, RayLength, RayLength), RayLength, RayCount), RaysWidth, RaysHeight));
+                InputNodes.Add(new InputNode("Ray Water", EnabledStates[enabledIndex++], (dataFetcher) => Raytrace.GetRayDistances(waterFunc(dataFetcher, RayLength, RayLength), RayLength, RayCount), RaysWidth, RaysHeight));
+            }
+
             InputNodes.Add(new InputNode("On Ground", EnabledStates[enabledIndex++], (dataFetcher) => dataFetcher.IsOnGround()));
             InputNodes.Add(new InputNode("In Water", EnabledStates[enabledIndex++], (dataFetcher) => dataFetcher.IsInWater()));
             InputNodes.Add(new InputNode("Raising", EnabledStates[enabledIndex++], (dataFetcher) => dataFetcher.IsRaising()));

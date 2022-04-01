@@ -1,9 +1,7 @@
 ﻿{
   "romPath": "smw.sfc",
-  "multithread": 1,
+  "multithread": 10,
   "arduinoCommunicationPort": "COM3",
-  "stopTrainingCondition": "Manually",
-  "stopTrainingConditionValue": null,
   "stopConditions": [
     {
       "$type": "SMW_ML.Neural.Training.StopCondition.FitnessStopCondition, SMW_ML",
@@ -161,10 +159,10 @@
     }
   ],
   "saveStates": [
-    "config\\SaveStates\\yoshi-island-1.State",
-    "config\\SaveStates\\yoshi-island-2.State"
+    "config\\SaveStates\\yoshi-island-1.State"
   ],
   "neuralConfig": {
+    "useGrid": false,
     "enabledStates": [
       true,
       true,
@@ -195,6 +193,8 @@
       false
     ],
     "gridDistanceX": 4,
-    "gridDistanceY": 4
+    "gridDistanceY": 4,
+    "rayLength": 4,
+    "rayCount": 16
   }
 }

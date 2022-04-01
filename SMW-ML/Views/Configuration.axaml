@@ -84,10 +84,21 @@
 							Changing these values will make previous training populations invalid with the new settings
 						</TextBlock>
 						<Button Content="Load neural configuration" Command="{Binding LoadNeuralConfig}"/>
-						<TextBlock Classes="h1" Text="View distance horizontal"/>
-						<NumericUpDown Classes="numericUpDown" Value="{Binding ViewDistanceHorizontal}" Minimum="1" Maximum="10"/>
-						<TextBlock Classes="h1" Text="View distance vertical"/>
-						<NumericUpDown Classes="numericUpDown" Value="{Binding ViewDistanceVertical}" Minimum="1" Maximum="10"/>
+						
+						<StackPanel Spacing="15" Orientation="Horizontal">
+							<TextBlock Classes="h1" Text="Use Vision Grid" VerticalAlignment="Center"/>
+							<CheckBox IsChecked="{Binding UseVisionGrid}" VerticalAlignment="Center"/>
+						</StackPanel>
+						<TextBlock Classes="h1" Text="Vision Grid Horizontal Distance" IsVisible="{Binding UseVisionGrid}"/>
+						<NumericUpDown Classes="numericUpDown" Value="{Binding ViewDistanceHorizontal}" Minimum="1" Maximum="10" IsVisible="{Binding UseVisionGrid}"/>
+						<TextBlock Classes="h1" Text="Vision Grid Vertical Distance" IsVisible="{Binding UseVisionGrid}"/>
+						<NumericUpDown Classes="numericUpDown" Value="{Binding ViewDistanceVertical}" Minimum="1" Maximum="10" IsVisible="{Binding UseVisionGrid}"/>
+
+						<TextBlock Classes="h1" Text="Vision Ray Distance" IsVisible="{Binding !UseVisionGrid}"/>
+						<NumericUpDown Classes="numericUpDown" Value="{Binding RayLength}" Minimum="1" Maximum="10" IsVisible="{Binding !UseVisionGrid}"/>
+						<TextBlock Classes="h1" Text="Vision Ray Count" IsVisible="{Binding !UseVisionGrid}"/>
+						<ComboBox SelectedItem="{Binding RayCount}" Items="{Binding RayCounts}" IsVisible="{Binding !UseVisionGrid}"/>
+						
 						<ItemsControl Items="{Binding NeuralConfigs}">
 							<ItemsControl.ItemsPanel>
 								<ItemsPanelTemplate>

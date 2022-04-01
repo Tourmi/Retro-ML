@@ -7,8 +7,8 @@ namespace SMW_ML.Game.SuperMarioWorld
     /// </summary>
     internal class InputNode
     {
-        private readonly Func<DataFetcher, bool>? getStateFunction;
-        private readonly Func<DataFetcher, bool[,]>? getStatesFunction;
+        private readonly Func<DataFetcher, double>? getStateFunction;
+        private readonly Func<DataFetcher, double[,]>? getStatesFunction;
 
         /// <summary>
         /// Name of this input node.
@@ -33,10 +33,30 @@ namespace SMW_ML.Game.SuperMarioWorld
 
         public InputNode(string name, bool shouldUse, Func<DataFetcher, bool> getStateFunc) : this(name, shouldUse, false)
         {
-            getStateFunction = getStateFunc;
+            getStateFunction = (dataFetcher) => getStateFunc(dataFetcher) ? 1 : 0;
         }
 
         public InputNode(string name, bool shouldUse, Func<DataFetcher, bool[,]> getStatesFunc, int totalWidth, int totalHeight) : this(name, shouldUse, true)
+        {
+            getStatesFunction = (datafetcher) =>
+            {
+                bool[,] states = getStatesFunc(datafetcher);
+                double[,] values = new double[states.GetLength(0), states.GetLength(1)];
+                for (int i = 0; i < states.GetLength(0); i++)
+                {
+                    for (int j = 0; j < states.GetLength(1); j++)
+                    {
+                        values[i, j] = states[i, j] ? 1 : 0;
+                    }
+                }
+
+                return values;
+            };
+            TotalWidth = totalWidth;
+            TotalHeight = totalHeight;
+        }
+
+        public InputNode(string name, bool shouldUse, Func<DataFetcher, double[,]> getStatesFunc, int totalWidth, int totalHeight) : this(name, shouldUse, true)
         {
             getStatesFunction = getStatesFunc;
             TotalWidth = totalWidth;
@@ -57,13 +77,13 @@ namespace SMW_ML.Game.SuperMarioWorld
         /// </summary>
         /// <param name="dataFetcher"></param>
         /// <returns></returns>
-        public bool GetState(DataFetcher dataFetcher) => getStateFunction!.Invoke(dataFetcher);
+        public double GetState(DataFetcher dataFetcher) => getStateFunction!.Invoke(dataFetcher);
 
         /// <summary>
         /// Returns the states of the input node array.
         /// </summary>
         /// <param name="dataFetcher"></param>
         /// <returns></returns>
-        public bool[,] GetStates(DataFetcher dataFetcher) => getStatesFunction!.Invoke(dataFetcher);
+        public double[,] GetStates(DataFetcher dataFetcher) => getStatesFunction!.Invoke(dataFetcher);
     }
 }

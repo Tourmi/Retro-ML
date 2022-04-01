@@ -38,13 +38,13 @@ namespace SMW_ML.Game.SuperMarioWorld
                     {
                         for (int j = 0; j < inputStates.GetLength(1); j++)
                         {
-                            inputs[currOffset++] = inputStates[i, j] ? 1 : 0;
+                            inputs[currOffset++] = inputStates[i, j];
                         }
                     }
                 }
                 else
                 {
-                    inputs[currOffset++] = input.GetState(dataReader) ? 1 : 0;
+                    inputs[currOffset++] = input.GetState(dataReader);
                 }
             }
         }
