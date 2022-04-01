@@ -1,5 +1,6 @@
 ﻿using NUnit.Framework;
 using SMW_ML.Game.SuperMarioWorld;
+using SMW_ML.Models.Config;
 using SMW_ML.Neural.Scoring;
 using SMW_ML_TEST.Emulator;
 
@@ -15,7 +16,7 @@ namespace SMW_ML_TEST.Neural.Scoring
         public void SetUp()
         {
             emu = new MockEmulatorAdapter();
-            df = new DataFetcher(emu);
+            df = new DataFetcher(emu, new NeuralConfig());
         }
 
         [Test]

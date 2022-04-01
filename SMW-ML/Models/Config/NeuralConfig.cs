@@ -10,18 +10,18 @@ namespace SMW_ML.Models.Config
     /// <summary>
     /// Configuration of the neural network. Modifying these values makes previous neural network incompatible with the new settings.
     /// </summary>
-    internal class NeuralConfig
+    public class NeuralConfig
     {
         /// <summary>
         /// The input nodes to use by the neural network
         /// </summary>
         [JsonIgnore]
-        public List<InputNode> InputNodes { get; }
+        internal List<InputNode> InputNodes { get; }
         /// <summary>
         /// The output nodes used by the neural network. 
         /// </summary>
         [JsonIgnore]
-        public List<OutputNode> OutputNodes { get; }
+        internal List<OutputNode> OutputNodes { get; }
 
         /// <summary>
         /// Stores whether or not an input or output node is enabled, based on the index of them.
@@ -55,6 +55,14 @@ namespace SMW_ML.Models.Config
         /// </summary>
         public int RayCount { get; set; } = 16;
 
+        /// <summary>
+        /// The amount of inputs for the internal clock.
+        /// </summary>
+        public int InternalClockLength { get; set; } = 4;
+        /// <summary>
+        /// The amount of frames before the clock moves to the next state.
+        /// </summary>
+        public int InternalClockTickLength { get; set; } = 2;
 
         /// <summary>
         /// For any inputs that use a grid, the total width of the grid based on the X distance.
@@ -155,7 +163,7 @@ namespace SMW_ML.Models.Config
             InputNodes.Add(new InputNode("Can Climb", EnabledStates[enabledIndex++], (dataFetcher) => dataFetcher.CanClimb()));
             InputNodes.Add(new InputNode("Max Speed", EnabledStates[enabledIndex++], (dataFetcher) => dataFetcher.IsAtMaxSpeed()));
             InputNodes.Add(new InputNode("Message Box", EnabledStates[enabledIndex++], (dataFetcher) => dataFetcher.WasDialogBoxOpened()));
-            InputNodes.Add(new InputNode("Internal Clock", EnabledStates[enabledIndex++], (dataFetcher) => dataFetcher.WasInternalClockTriggered()));
+            InputNodes.Add(new InputNode("Internal Clock", EnabledStates[enabledIndex++], (dataFetcher) => dataFetcher.GetInternalClockState(), Math.Min(8, InternalClockLength), Math.Max(1, InternalClockLength / 8)));
             InputNodes.Add(new InputNode("Bias", EnabledStates[enabledIndex++], (dataFetcher) => true));
 
             OutputNodes.Clear();

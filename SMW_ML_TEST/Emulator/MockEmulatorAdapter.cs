@@ -22,7 +22,7 @@ namespace SMW_ML_TEST.Emulator
 
         public MockEmulatorAdapter()
         {
-            DataFetcher = new DataFetcher(this);
+            DataFetcher = new DataFetcher(this, new NeuralConfig());
             InputSetter = new InputSetter(DataFetcher, new NeuralConfig());
             OutputGetter = new OutputGetter(new NeuralConfig());
 

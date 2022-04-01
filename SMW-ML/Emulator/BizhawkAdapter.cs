@@ -55,7 +55,7 @@ namespace SMW_ML.Emulator
             client = server.Accept();
             savestates = Directory.GetFiles(savestatesPath);
 
-            dataFetcher = new DataFetcher(this);
+            dataFetcher = new DataFetcher(this, neuralConfig);
             inputSetter = new InputSetter(dataFetcher, neuralConfig);
             outputGetter = new OutputGetter(neuralConfig);
         }

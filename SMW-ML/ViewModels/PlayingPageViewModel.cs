@@ -137,6 +137,6 @@ namespace SMW_ML.ViewModels
             OnExit?.Invoke();
         }
 
-        private void UpdateCanStart() => CanStart = loadedGenome && loadedState && !neuralPlayer.IsPlaying;
+        private void UpdateCanStart() => CanStart = loadedGenome && loadedState && !neuralPlayer!.IsPlaying;
     }
 }

@@ -1,5 +1,6 @@
 ﻿using NUnit.Framework;
 using SMW_ML.Game.SuperMarioWorld;
+using SMW_ML.Models.Config;
 using SMW_ML_TEST.Emulator;
 
 namespace SMW_ML_TEST.Game.SuperMarioWorld
@@ -16,7 +17,7 @@ namespace SMW_ML_TEST.Game.SuperMarioWorld
         public void SetUp()
         {
             mockEmulatorAdapter = new MockEmulatorAdapter();
-            dataFetcher = new DataFetcher(mockEmulatorAdapter);
+            dataFetcher = new DataFetcher(mockEmulatorAdapter, new NeuralConfig());
         }
 
         [Test]
@@ -232,24 +233,6 @@ namespace SMW_ML_TEST.Game.SuperMarioWorld
             mockEmulatorAdapter!.SetMemory(Addresses.Counters.Score.Address, 0x6A, 0x5B, 0x4C);
             dataFetcher!.NextFrame();
             Assert.AreEqual(0x4C5B6A, dataFetcher!.GetScore());
-        }
-
-        [Test]
-        public void WasInternalClockTriggered()
-        {
-            for (int i = 0; i < DataFetcher.INTERNAL_CLOCK_LENGTH; i++)
-            {
-                dataFetcher!.NextFrame();
-                Assert.False(dataFetcher!.WasInternalClockTriggered());
-            }
-            for (int i = 0; i < DataFetcher.INTERNAL_CLOCK_LENGTH; i++)
-            {
-                dataFetcher!.NextFrame();
-                Assert.True(dataFetcher!.WasInternalClockTriggered());
-            }
-
-            dataFetcher!.NextFrame();
-            Assert.False(dataFetcher!.WasInternalClockTriggered());
         }
 
         [Test]

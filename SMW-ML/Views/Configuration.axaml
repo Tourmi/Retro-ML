@@ -98,7 +98,12 @@
 						<NumericUpDown Classes="numericUpDown" Value="{Binding RayLength}" Minimum="1" Maximum="10" IsVisible="{Binding !UseVisionGrid}"/>
 						<TextBlock Classes="h1" Text="Vision Ray Count" IsVisible="{Binding !UseVisionGrid}"/>
 						<ComboBox SelectedItem="{Binding RayCount}" Items="{Binding RayCounts}" IsVisible="{Binding !UseVisionGrid}"/>
-						
+
+						<TextBlock Classes="h1" Text="Internal Clock Tick Length (Frames)"/>
+						<NumericUpDown Classes="numericUpDown" Value="{Binding ClockTickLength}" Minimum="1"/>
+						<TextBlock Classes="h1" Text="Internal Clock Length"/>
+						<ComboBox SelectedItem="{Binding ClockLength}" Items="{Binding PossibleClockLengths}"/>
+
 						<ItemsControl Items="{Binding NeuralConfigs}">
 							<ItemsControl.ItemsPanel>
 								<ItemsPanelTemplate>

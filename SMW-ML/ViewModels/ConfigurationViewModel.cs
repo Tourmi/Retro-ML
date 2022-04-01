@@ -47,6 +47,7 @@ namespace SMW_ML.ViewModels
         private ApplicationConfig? ApplicationConfig;
 
         public int[] RayCounts => Raycast.POSSIBLE_RAY_COUNT;
+        public int[] PossibleClockLengths => new int[] { 1, 2, 3, 4, 5, 6, 7, 8, 16 };
 
         public ObservableCollection<Error> ErrorList { get; set; }
         public ObservableCollection<string> DispMethodList { get; set; }
@@ -353,6 +354,20 @@ namespace SMW_ML.ViewModels
             set => this.RaiseAndSetIfChanged(ref _rayCountIndex, value);
         }
 
+        private int _clockLength = 8;
+        public int ClockLength
+        {
+            get => _clockLength;
+            set => this.RaiseAndSetIfChanged(ref _clockLength, value);
+        }
+        private int _clockTickLength = 1;
+        public int ClockTickLength
+        {
+            get => _clockTickLength;
+            set => this.RaiseAndSetIfChanged(ref _clockTickLength, value);
+        }
+
+
         public ObservableCollection<InputOutputConfigViewModel> NeuralConfigs { get; }
 
 
@@ -514,6 +529,9 @@ namespace SMW_ML.ViewModels
             ApplicationConfig.NeuralConfig.RayLength = RayLength;
             ApplicationConfig.NeuralConfig.RayCount = RayCount;
 
+            ApplicationConfig.NeuralConfig.InternalClockLength = ClockLength;
+            ApplicationConfig.NeuralConfig.InternalClockTickLength = ClockTickLength;
+
             int inputCount = ApplicationConfig.NeuralConfig.InputNodes.Count;
             int outputCount = ApplicationConfig.NeuralConfig.OutputNodes.Count;
             for (int i = 0; i < inputCount; i++)
@@ -664,6 +682,9 @@ namespace SMW_ML.ViewModels
 
             RayLength = ApplicationConfig.NeuralConfig.RayLength;
             RayCount = ApplicationConfig.NeuralConfig.RayCount;
+
+            ClockLength = ApplicationConfig.NeuralConfig.InternalClockLength;
+            ClockTickLength = ApplicationConfig.NeuralConfig.InternalClockTickLength;
         }
 
         #region Validation

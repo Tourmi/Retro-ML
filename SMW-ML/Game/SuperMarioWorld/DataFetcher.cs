@@ -1,5 +1,6 @@
 ﻿using SMW_ML.Emulator;
 using SMW_ML.Game.SuperMarioWorld.Data;
+using SMW_ML.Models.Config;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -28,15 +29,15 @@ namespace SMW_ML.Game.SuperMarioWorld
         private ushort[,]? nearbyLayer23TilesCache;
         private byte currTransitionCount;
 
-        private int internal_clock_timer = INTERNAL_CLOCK_LENGTH;
-        private bool internalClockOn = false;
+        private InternalClock internalClock;
 
-        public DataFetcher(IEmulatorAdapter emulator)
+        public DataFetcher(IEmulatorAdapter emulator, NeuralConfig neuralConfig)
         {
             this.emulator = emulator;
             frameCache = new();
             levelCache = new();
             map16Caches = new Dictionary<uint, ushort[]>();
+            internalClock = new InternalClock(neuralConfig.InternalClockTickLength, neuralConfig.InternalClockLength);
         }
 
         /// <summary>
@@ -45,15 +46,10 @@ namespace SMW_ML.Game.SuperMarioWorld
         public void NextFrame()
         {
             frameCache.Clear();
-            if (internal_clock_timer <= 0)
-            {
-                internal_clock_timer = INTERNAL_CLOCK_LENGTH;
-                internalClockOn = !internalClockOn;
-            }
-            internal_clock_timer--;
 
             nearbyTilesCache = null;
             nearbyLayer23TilesCache = null;
+            internalClock.NextFrame();
         }
 
         /// <summary>
@@ -63,9 +59,9 @@ namespace SMW_ML.Game.SuperMarioWorld
         {
             NextFrame();
             levelCache.Clear();
-            internal_clock_timer = INTERNAL_CLOCK_LENGTH;
-            internalClockOn = false;
             currTransitionCount = 0;
+
+            internalClock.Reset();
         }
 
         /// <summary>
@@ -90,7 +86,7 @@ namespace SMW_ML.Game.SuperMarioWorld
         public bool IsCarryingSomething() => ReadSingle(Player.IsCarryingSomething) != 0;
         public bool CanClimb() => (ReadSingle(Player.CanClimb) & 0b00001011 | ReadSingle(Player.CanClimbOnAir)) != 0;
         public bool IsAtMaxSpeed() => ReadSingle(Player.DashTimer) == 0x70;
-        public bool WasInternalClockTriggered() => internalClockOn;
+        public bool[,] GetInternalClockState() => internalClock.GetStates();
         public bool WasDialogBoxOpened() => ReadSingle(Level.TextBoxTriggered) != 0;
         public bool IsWaterLevel() => ReadSingle(Level.IsWater) != 0;
         public int GetCoins() => ReadSingle(Counters.Coins);

@@ -16,7 +16,7 @@ namespace SMW_ML_TEST.Game.SuperMarioWorld
         public void SetUp()
         {
             mea = new MockEmulatorAdapter();
-            dataFetcher = new DataFetcher(mea);
+            dataFetcher = new DataFetcher(mea, new NeuralConfig());
             inputSetter = new InputSetter(dataFetcher, new NeuralConfig());
         }
 
