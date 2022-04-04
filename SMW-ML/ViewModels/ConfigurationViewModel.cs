@@ -469,6 +469,7 @@ namespace SMW_ML.ViewModels
             SharpNeatModel.EvolutionAlgorithmSettings.ElitismProportion = ElitismProportion;
             SharpNeatModel.EvolutionAlgorithmSettings.SelectionProportion = SelectionProportion;
             SharpNeatModel.PopulationSize = NumberAI;
+            SharpNeatModel.DegreeOfParallelism = Multithread;
             SharpNeatModel.InitialInterconnectionsProportion = InitialInterconnectionsProportion;
 
             string sharpNeatOutput = SharpNeatModel.Serialize();

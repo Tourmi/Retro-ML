@@ -60,10 +60,10 @@ namespace SMW_ML.Neural.Scoring
         {
             double subTotal = 0.0;
 
-            float rightDistance = maxX - initialX;
-            float leftDistance = initialX - minX;
-            float upDistance = initialY - minY;
-            float downDistance = maxY - initialY;
+            double rightDistance = ((double)maxX) - initialX;
+            double leftDistance = ((double)initialX) - minX;
+            double upDistance = ((double)initialY) - minY;
+            double downDistance = ((double)maxY) - initialY;
 
             if (rightDistance < 1.5 * 16) rightDistance = 0;
             if (leftDistance < 1.5 * 16) leftDistance = 0;
