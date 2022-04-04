@@ -9,7 +9,7 @@ Training a Super Mario World AI that's able to beat levels on its own, as well a
 It is important to either clone the repository recursively to include the submodules, or initialize the submodules after cloning, as they need to be built for the program compilation to actually work.
 
 ```
-git submodule init
+git submodule update --init
 ```
 
 ## Prerequisites
