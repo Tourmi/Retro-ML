@@ -12,6 +12,7 @@ using SMW_ML.Views.Components;
 using System;
 using System.Collections.ObjectModel;
 using System.IO;
+using System.IO.Compression;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -139,9 +140,43 @@ namespace SMW_ML.ViewModels
                 IsEnabled = true;
                 return;
             }
-
-            populationToLoad = path;
+            if (VerifyPopulation(path))
+            {
+                populationToLoad = path;
+            }
+            else
+            {
+                populationToLoad = null;
+                Exceptions.QueueException(new Exception("The population is incompatible with the current Neural configuration."));
+            }
             IsEnabled = true;
+        }
+
+        private bool VerifyPopulation(string path)
+        {
+            string appConfigJson = File.ReadAllText(DefaultPaths.APP_CONFIG);
+            ApplicationConfig appConfig = ApplicationConfig.Deserialize(appConfigJson)!;
+
+            var zip = ZipFile.Open(path, ZipArchiveMode.Read);
+            foreach (var entry in zip.Entries)
+            {
+                if (entry.FullName.Contains(".genome"))
+                {
+                    using StreamReader sw = new StreamReader(entry.Open());
+                    for (string? line = sw.ReadLine(); line != null; line = sw.ReadLine())
+                    {
+                        line = line.Trim();
+                        if (string.IsNullOrWhiteSpace(line)) continue;
+                        if (line.StartsWith("#")) continue;
+                        string[] inputOutput = line.Split(null);
+                        int input = int.Parse(inputOutput[0]);
+                        int output = int.Parse(inputOutput[1]);
+                        return appConfig.NeuralConfig.GetInputCount() == input && appConfig.NeuralConfig.GetOutputCount() == output;
+                    }
+                }
+            }
+
+            return false;
         }
 
         public async void SavePopulation()

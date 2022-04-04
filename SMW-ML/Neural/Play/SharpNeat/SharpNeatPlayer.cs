@@ -12,6 +12,7 @@ using SMW_ML.Utils.SharpNeat;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Threading;
 
 namespace SMW_ML.Neural.Play.SharpNeat
@@ -78,8 +79,14 @@ namespace SMW_ML.Neural.Play.SharpNeat
             syncSemaphore.Release();
         }
 
-        public void LoadGenome(string path)
+        public bool LoadGenome(string path)
         {
+            if (!VerifyGenome(path))
+            {
+                Exceptions.QueueException(new Exception("Could not load genome. It uses a different Neural Configuration."));
+                return false;
+            }
+
             bool shouldRestart = IsPlaying;
             StopPlaying();
 
@@ -89,6 +96,16 @@ namespace SMW_ML.Neural.Play.SharpNeat
             blackBox = decoder.Decode(loader.Load(path));
 
             if (shouldRestart) StartPlaying();
+            return true;
+        }
+
+        private bool VerifyGenome(string path)
+        {
+            string[] inputOutput = File.ReadLines(path).Where(l => !l.Trim().StartsWith("#") && !string.IsNullOrEmpty(l.Trim())).First().Trim().Split(null);
+            int input = int.Parse(inputOutput[0]);
+            int output = int.Parse(inputOutput[1]);
+
+            return input == metaGenome.InputNodeCount && output == metaGenome.OutputNodeCount;
         }
 
         public void LoadState(string path)

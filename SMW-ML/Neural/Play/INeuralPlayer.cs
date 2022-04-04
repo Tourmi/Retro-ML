@@ -24,7 +24,7 @@ namespace SMW_ML.Neural.Play
         /// Loads the genome at the given path.
         /// </summary>
         /// <param name="path"></param>
-        void LoadGenome(string path);
+        bool LoadGenome(string path);
         /// <summary>
         /// The save state to load
         /// </summary>

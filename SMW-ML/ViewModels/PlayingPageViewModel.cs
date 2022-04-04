@@ -83,9 +83,11 @@ namespace SMW_ML.ViewModels
                 return;
             }
 
-            neuralPlayer!.LoadGenome(path);
-            loadedGenome = true;
-            UpdateCanStart();
+            if (neuralPlayer!.LoadGenome(path))
+            {
+                loadedGenome = true;
+                UpdateCanStart();
+            }
         }
 
         public async void LoadState()
