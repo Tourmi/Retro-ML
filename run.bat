@@ -1,4 +1,4 @@
 @echo off
 
-cd .\SMW-ML\
-dotnet run --configuration Release
+cd bin
+call SMW_ML
