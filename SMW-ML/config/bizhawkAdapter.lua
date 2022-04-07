@@ -137,6 +137,6 @@ function loop()
 end
 
 
---client.gettool("luaconsole").Hide()
+client.gettool("luaconsole").Hide()
 loop()
 
