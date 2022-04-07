@@ -50,6 +50,7 @@ namespace SMW_ML.Game.SuperMarioWorld
             nearbyTilesCache = null;
             nearbyLayer23TilesCache = null;
             internalClock.NextFrame();
+            InitFrameCache();
         }
 
         /// <summary>
@@ -101,11 +102,7 @@ namespace SMW_ML.Game.SuperMarioWorld
             bool[,] result = new bool[y_dist * 2 + 1, x_dist * 2 + 1];
             if (ReadSingle(Level.ScreenCount) == 0) return result;
 
-            var spriteStatuses = Read(Addresses.Sprite.Statuses);
-            var aliveIndexes = spriteStatuses.Select((s, i) => (s, i)).Where(si => SpriteStatuses.IsAlive(si.s)).Select(si => si.i).ToArray();
-            var sprites = GetSprites(aliveIndexes);
-
-            foreach (var sprite in sprites)
+            foreach (var sprite in GetSprites().Where(s => SpriteStatuses.IsAlive(s.Status)))
             {
                 if (!SpriteNumbers.IsSolid(sprite.Number)) continue;
                 SetSpriteTiles(x_dist, y_dist, result, sprite);
@@ -131,11 +128,7 @@ namespace SMW_ML.Game.SuperMarioWorld
             bool[,] result = new bool[y_dist * 2 + 1, x_dist * 2 + 1];
             if (ReadSingle(Level.ScreenCount) == 0) return result;
 
-            var spriteStatuses = Read(Addresses.Sprite.Statuses);
-            var aliveIndexes = spriteStatuses.Select((s, i) => (s, i)).Where(si => SpriteStatuses.CanBeDangerous(si.s)).Select(si => si.i).ToArray();
-            var sprites = GetSprites(aliveIndexes);
-
-            foreach (var sprite in sprites)
+            foreach (var sprite in GetSprites().Where(s => SpriteStatuses.CanBeDangerous(s.Status)))
             {
                 if (!SpriteNumbers.IsDangerous(sprite.Number)) continue;
                 SetSpriteTiles(x_dist, y_dist, result, sprite);
@@ -175,11 +168,7 @@ namespace SMW_ML.Game.SuperMarioWorld
             bool[,] result = new bool[y_dist * 2 + 1, x_dist * 2 + 1];
             if (ReadSingle(Level.ScreenCount) == 0) return result;
 
-            var spriteStatuses = Read(Addresses.Sprite.Statuses);
-            var aliveIndexes = spriteStatuses.Select((s, i) => (s, i)).Where(si => SpriteStatuses.IsAlive(si.s)).Select(si => si.i).ToArray();
-            var sprites = GetSprites(aliveIndexes);
-
-            foreach (var sprite in sprites)
+            foreach (var sprite in GetSprites().Where(s => SpriteStatuses.IsAlive(s.Status)))
             {
                 if (!SpriteNumbers.IsGood(sprite.Number)) continue;
                 SetSpriteTiles(x_dist, y_dist, result, sprite);
@@ -205,8 +194,6 @@ namespace SMW_ML.Game.SuperMarioWorld
             bool[,] result = new bool[y_dist * 2 + 1, x_dist * 2 + 1];
             if (ReadSingle(Level.ScreenCount) == 0) return result;
             bool isWaterLevel = ReadSingle(Level.IsWater) == 1;
-
-            var waterTides = ReadSingle(Level.WaterTide) == 2;
 
             byte levelTileset = ReadSingle(Level.Header.TilesetSetting);
             var tileset = Tileset.GetWaterTiles(levelTileset);
@@ -351,12 +338,13 @@ namespace SMW_ML.Game.SuperMarioWorld
             return result;
         }
 
-        private Data.Sprite[] GetSprites(int[] indexes)
+        private Data.Sprite[] GetSprites()
         {
-            int bytesPerField = (int)Addresses.Sprite.SpriteNumbers.Length;
-            var sprites = new Data.Sprite[indexes.Length];
+            int spriteCount = (int)Addresses.Sprite.SpriteNumbers.Length;
+            var sprites = new Data.Sprite[spriteCount];
 
             var data = Read((Addresses.Sprite.SpriteNumbers, false),
+                            (Addresses.Sprite.Statuses, false),
                             (Addresses.Sprite.XPositions, true),
                             (Addresses.Sprite.YPositions, true),
                             (Addresses.Sprite.SpritesProperties2, false),
@@ -366,22 +354,21 @@ namespace SMW_ML.Game.SuperMarioWorld
                             (Addresses.Sprite.Misc1602, false),
                             (Addresses.Sprite.Misc187B, false));
 
-            for (int i = 0; i < indexes.Length; i++)
+            for (int i = 0; i < spriteCount; i++)
             {
-                int spriteIndex = indexes[i];
-
                 int dIndex = 0;
                 sprites[i] = new Data.Sprite
                 {
-                    Number = data[spriteIndex + bytesPerField * dIndex++],
-                    XPos = (ushort)(data[spriteIndex + bytesPerField * dIndex++] + ((data[spriteIndex + bytesPerField * dIndex++]) << 8)),
-                    YPos = (ushort)(data[spriteIndex + bytesPerField * dIndex++] + ((data[spriteIndex + bytesPerField * dIndex++]) << 8)),
-                    Properties2 = data[spriteIndex + bytesPerField * dIndex++],
-                    MiscC2 = data[spriteIndex + bytesPerField * dIndex++],
-                    Misc151C = data[spriteIndex + bytesPerField * dIndex++],
-                    Misc1528 = data[spriteIndex + bytesPerField * dIndex++],
-                    Misc1602 = data[spriteIndex + bytesPerField * dIndex++],
-                    Misc187B = data[spriteIndex + bytesPerField * dIndex++]
+                    Number = data[i + spriteCount * dIndex++],
+                    Status = data[i + spriteCount * dIndex++],
+                    XPos = (ushort)(data[i + spriteCount * dIndex++] + ((data[i + spriteCount * dIndex++]) << 8)),
+                    YPos = (ushort)(data[i + spriteCount * dIndex++] + ((data[i + spriteCount * dIndex++]) << 8)),
+                    Properties2 = data[i + spriteCount * dIndex++],
+                    MiscC2 = data[i + spriteCount * dIndex++],
+                    Misc151C = data[i + spriteCount * dIndex++],
+                    Misc1528 = data[i + spriteCount * dIndex++],
+                    Misc1602 = data[i + spriteCount * dIndex++],
+                    Misc187B = data[i + spriteCount * dIndex++]
                 };
             }
 
@@ -538,6 +525,55 @@ namespace SMW_ML.Game.SuperMarioWorld
             }
 
             return cacheToUse;
+        }
+
+        private void InitFrameCache()
+        {
+            (AddressData, bool)[] toRead = new (AddressData, bool)[]
+            {
+                (Player.PositionX, true),
+                (Player.PositionY, true),
+                (Player.IsOnGround, false),
+                (Player.IsOnSolidSprite, false),
+                (Player.PlayerAnimationState, false),
+                (Level.EndLevelTimer, false),
+                (Level.KeyholeTimer, false),
+                (Player.IsInWater, false),
+                (Player.CanJumpOutOfWater, false),
+                (Player.AirFlag, false),
+                (Player.IsCarryingSomething, false),
+                (Player.CanClimb, false),
+                (Player.CanClimbOnAir, false),
+                (Player.DashTimer, false),
+                (Level.TextBoxTriggered, false),
+                (Counters.Coins, false),
+                (Counters.Lives, false),
+                (Counters.YoshiCoinCollected, false),
+                (Counters.Score, false),
+                (Counters.LevelTransitionCounter, false),
+                (Player.PowerUp, false),
+                (Addresses.ExtendedSprite.Numbers, false),
+                (Addresses.ExtendedSprite.XPositions, true),
+                (Addresses.ExtendedSprite.YPositions, true),
+                (Addresses.Sprite.SpriteNumbers, false),
+                (Addresses.Sprite.Statuses, false),
+                (Addresses.Sprite.XPositions, true),
+                (Addresses.Sprite.YPositions, true),
+                (Addresses.Sprite.SpritesProperties2, false),
+                (Addresses.Sprite.MiscC2, false),
+                (Addresses.Sprite.Misc151C, false),
+                (Addresses.Sprite.Misc1528, false),
+                (Addresses.Sprite.Misc1602, false),
+                (Addresses.Sprite.Misc187B, false),
+                (Level.Layer1X, false),
+                (Level.Layer1Y, false),
+                (Level.Layer2X, false),
+                (Level.Layer2Y, false),
+                (Level.Layer3X, false),
+                (Level.Layer3Y, false),
+            };
+
+            _ = Read(toRead);
         }
 
         private static uint ToUnsignedInteger(byte[] bytes)
