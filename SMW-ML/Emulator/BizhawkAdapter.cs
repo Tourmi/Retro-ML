@@ -27,6 +27,7 @@ namespace SMW_ML.Emulator
             public const string NEXT_FRAME = "next_frame";
             public const string READ_MEMORY = "read_memory {0}";
             public const string READ_MEMORY_RANGE = "read_memory_range {0} {1}";
+            public const string READ_MEMORY_RANGES = "read_memory_ranges {0}";
             public const string SEND_INPUT = "send_input {0}";
         }
 
@@ -96,6 +97,20 @@ namespace SMW_ML.Emulator
             SendCommand(Commands.READ_MEMORY_RANGE, addr, count);
 
             return Read(count);
+        }
+
+        public byte[] ReadMemory(params (uint addr, uint count)[] ranges)
+        {
+            string commandParam = "";
+            uint totalCount = 0;
+            foreach ((uint addr, uint count) in ranges)
+            {
+                commandParam += $"{addr} {count};";
+                totalCount += count;
+            }
+
+            SendCommand(Commands.READ_MEMORY_RANGES, commandParam);
+            return Read(totalCount);
         }
 
         public void SendInput(Input input)

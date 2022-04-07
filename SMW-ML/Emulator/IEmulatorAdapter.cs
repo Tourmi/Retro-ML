@@ -30,6 +30,12 @@ namespace SMW_ML.Emulator
         /// <returns></returns>
         byte[] ReadMemory(uint addr, uint count);
         /// <summary>
+        /// Reads the game memory from the given addresses
+        /// </summary>
+        /// <param name="ranges"></param>
+        /// <returns></returns>
+        byte[] ReadMemory(params (uint addr, uint count)[] ranges);
+        /// <summary>
         /// Sends the given input to the emulator
         /// </summary>
         /// <param name="input"></param>

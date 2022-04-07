@@ -353,31 +353,35 @@ namespace SMW_ML.Game.SuperMarioWorld
 
         private Data.Sprite[] GetSprites(int[] indexes)
         {
+            int bytesPerField = (int)Addresses.Sprite.SpriteNumbers.Length;
             var sprites = new Data.Sprite[indexes.Length];
 
-            byte[] numbers = Read(Addresses.Sprite.SpriteNumbers);
-            ushort[] xPositions = ReadLowHighBytes(Addresses.Sprite.XPositions);
-            ushort[] yPositions = ReadLowHighBytes(Addresses.Sprite.YPositions);
-            byte[] props2 = Read(Addresses.Sprite.SpritesProperties2);
-            byte[] miscC2 = Read(Addresses.Sprite.MiscC2);
-            byte[] misc151C = Read(Addresses.Sprite.Misc151C);
-            byte[] misc1528 = Read(Addresses.Sprite.Misc1528);
-            byte[] misc1602 = Read(Addresses.Sprite.Misc1602);
-            byte[] misc187B = Read(Addresses.Sprite.Misc187B);
+            var data = Read((Addresses.Sprite.SpriteNumbers, false),
+                            (Addresses.Sprite.XPositions, true),
+                            (Addresses.Sprite.YPositions, true),
+                            (Addresses.Sprite.SpritesProperties2, false),
+                            (Addresses.Sprite.MiscC2, false),
+                            (Addresses.Sprite.Misc151C, false),
+                            (Addresses.Sprite.Misc1528, false),
+                            (Addresses.Sprite.Misc1602, false),
+                            (Addresses.Sprite.Misc187B, false));
 
             for (int i = 0; i < indexes.Length; i++)
             {
+                int spriteIndex = indexes[i];
+
+                int dIndex = 0;
                 sprites[i] = new Data.Sprite
                 {
-                    Number = numbers[indexes[i]],
-                    XPos = xPositions[indexes[i]],
-                    YPos = yPositions[indexes[i]],
-                    Properties2 = props2[indexes[i]],
-                    MiscC2 = miscC2[indexes[i]],
-                    Misc151C = misc151C[indexes[i]],
-                    Misc1528 = misc1528[indexes[i]],
-                    Misc1602 = misc1602[indexes[i]],
-                    Misc187B = misc187B[indexes[i]]
+                    Number = data[spriteIndex + bytesPerField * dIndex++],
+                    XPos = (ushort)(data[spriteIndex + bytesPerField * dIndex++] + ((data[spriteIndex + bytesPerField * dIndex++]) << 8)),
+                    YPos = (ushort)(data[spriteIndex + bytesPerField * dIndex++] + ((data[spriteIndex + bytesPerField * dIndex++]) << 8)),
+                    Properties2 = data[spriteIndex + bytesPerField * dIndex++],
+                    MiscC2 = data[spriteIndex + bytesPerField * dIndex++],
+                    Misc151C = data[spriteIndex + bytesPerField * dIndex++],
+                    Misc1528 = data[spriteIndex + bytesPerField * dIndex++],
+                    Misc1602 = data[spriteIndex + bytesPerField * dIndex++],
+                    Misc187B = data[spriteIndex + bytesPerField * dIndex++]
                 };
             }
 
@@ -386,18 +390,21 @@ namespace SMW_ML.Game.SuperMarioWorld
 
         private Data.ExtendedSprite[] GetExtendedSprites()
         {
-            var extendedSprites = new Data.ExtendedSprite[Addresses.ExtendedSprite.Numbers.Length];
-            byte[] numbers = Read(Addresses.ExtendedSprite.Numbers);
-            ushort[] xPositions = ReadLowHighBytes(Addresses.ExtendedSprite.XPositions);
-            ushort[] yPositions = ReadLowHighBytes(Addresses.ExtendedSprite.YPositions);
+            int bytesPerField = (int)Addresses.ExtendedSprite.Numbers.Length;
+            var extendedSprites = new Data.ExtendedSprite[bytesPerField];
+
+            byte[] data = Read((Addresses.ExtendedSprite.Numbers, false),
+                               (Addresses.ExtendedSprite.XPositions, true),
+                               (Addresses.ExtendedSprite.YPositions, true));
 
             for (int i = 0; i < extendedSprites.Length; i++)
             {
+                int dIndex = 0;
                 extendedSprites[i] = new Data.ExtendedSprite()
                 {
-                    Number = numbers[i],
-                    XPos = xPositions[i],
-                    YPos = yPositions[i]
+                    Number = data[i + bytesPerField * dIndex++],
+                    XPos = (ushort)(data[i + bytesPerField * dIndex++] + ((data[i + bytesPerField * dIndex++]) << 8)),
+                    YPos = (ushort)(data[i + bytesPerField * dIndex++] + ((data[i + bytesPerField * dIndex++]) << 8))
                 };
             }
 
@@ -451,6 +458,63 @@ namespace SMW_ML.Game.SuperMarioWorld
             }
 
             return cacheToUse[addressData.Address];
+        }
+
+        /// <summary>
+        /// Reads multiple ranges of addresses
+        /// </summary>
+        /// <param name="addresses"></param>
+        /// <returns></returns>
+        private byte[] Read(params (AddressData address, bool isLowHighByte)[] addresses)
+        {
+            List<(uint addr, uint length)> toFetch = new();
+
+            uint totalBytes = 0;
+
+            foreach ((AddressData address, bool isLowHighByte) in addresses)
+            {
+                var cacheToUse = GetCacheToUse(address);
+                if (!cacheToUse.ContainsKey(address.Address))
+                {
+                    toFetch.Add((address.Address, address.Length));
+                }
+                if (isLowHighByte && !cacheToUse.ContainsKey(address.HighByteAddress))
+                {
+                    toFetch.Add((address.HighByteAddress, address.Length));
+                }
+
+                totalBytes += address.Length * (uint)(isLowHighByte ? 2 : 1);
+            }
+
+            byte[] data = Array.Empty<byte>();
+            if (toFetch.Count > 0)
+            {
+                data = emulator.ReadMemory(toFetch.ToArray());
+            }
+
+            List<byte> bytes = new();
+            int dataIndex = 0;
+            foreach ((AddressData address, bool isLowHighByte) in addresses)
+            {
+                int count = (int)address.Length;
+
+                var cacheToUse = GetCacheToUse(address);
+                if (!cacheToUse.ContainsKey(address.Address))
+                {
+                    cacheToUse[address.Address] = data[dataIndex..(dataIndex + count)];
+                    dataIndex += count;
+                }
+                if (isLowHighByte && !cacheToUse.ContainsKey(address.HighByteAddress))
+                {
+                    cacheToUse[address.HighByteAddress] = data[dataIndex..(dataIndex + count)];
+                    dataIndex += count;
+                }
+
+                bytes.AddRange(cacheToUse[address.Address]);
+                if (isLowHighByte) bytes.AddRange(cacheToUse[address.HighByteAddress]);
+            }
+
+            return bytes.ToArray();
         }
 
         /// <summary>
