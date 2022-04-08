@@ -1,16 +1,41 @@
 ﻿<Styles xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
-    <Design.PreviewWith>
-        <Border Padding="20">
-            <!-- Add Controls for Previewer Here -->
-        </Border>
-    </Design.PreviewWith>
+	<Design.PreviewWith>
+		<Border Padding="20">
+			<!-- Add Controls for Previewer Here -->
+		</Border>
+	</Design.PreviewWith>
 
-    <!-- Add Styles Here -->
+	<!-- Add Styles Here -->
 	<Style Selector="StackPanel.RadionButtonList">
 		<Setter Property="Margin" Value="10"/>
 	</Style>
-
+	<!-- Global styles-->
+	<Style Selector="TextBox">
+		<Setter Property="Background" Value="#cce2f3"/>
+	</Style>
+	<Style Selector="TextBox:pointerover /template/ Border">
+		<Setter Property="Background" Value="White"/>
+		<Setter Property="CornerRadius" Value="3"/>
+	</Style>
+	<Style Selector="NumericUpDown">
+		<Setter Property="Background" Value="#cce2f3"/>
+	</Style>
+	<Style Selector="ComboBox">
+		<Setter Property="Background" Value="#cce2f3"/>
+	</Style>
+	<Style Selector="ComboBox:pointerover /template/ Border">
+		<Setter Property="Background" Value="White"/>
+	</Style>
+	<Style Selector="CheckBox /template/ Border">
+		<Setter Property="Background" Value="#cce2f3"/>
+		<Setter Property="Height" Value="0"/>
+	</Style>
+	<Style Selector="CheckBox:pointerover /template/ Border">
+		<Setter Property="Background" Value="White"/>
+		
+	</Style>
+	<!-- ************************************************** -->
 	<Style Selector="StackPanel.stackPanelItems">
 		<Setter Property="Margin" Value="15,0,0,0"/>
 		<Setter Property="HorizontalAlignment" Value="Stretch"/>
@@ -57,4 +82,90 @@
 		<Setter Property="VerticalAlignment" Value="Bottom"/>
 		<Setter Property="Background" Value="Red"/>
 	</Style>
+	<Style Selector="Button.generalButtonYellow">
+		<Setter Property="Foreground" Value="#fccf00"/>
+		<Setter Property="Background" Value="#cce2f3"/>
+	</Style>
+	<Style Selector="Button.generalButtonRed">
+		<Setter Property="Foreground" Value="#e62310"/>
+		<Setter Property="Background" Value="#cce2f3"/>
+	</Style>
+	<Style Selector="Button.generalButtonBlue">
+		<Setter Property="Foreground" Value="#009cda"/>
+		<Setter Property="Background" Value="#cce2f3"/>
+	</Style>
+	<Style Selector="Button.generalButtonBlue:disabled /template/ ContentPresenter">
+		<Setter Property="TextBlock.Foreground" Value="Gray"/>
+	</Style>
+	<Style Selector="Button.generalButtonBlue:pointerover /template/ ContentPresenter">
+		<Setter Property="TextBlock.Foreground" Value="#183048"/>
+		<Setter Property="Background" Value="White"/>
+	</Style>
+	<Style Selector="Button.generalButtonRed:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+		<Setter Property="Background" Value="White"/>
+	</Style>
+	<Style Selector="Button.generalButtonGreen">
+		<Setter Property="Foreground" Value="#44af35"/>
+		<Setter Property="Background" Value="#cce2f3"/>
+	</Style>
+	<Style Selector="TextBlock.titleText">
+		<Setter Property="Foreground" Value="#fccf00"/>
+		<Setter Property="FontFamily" Value="Impact"/>
+		<Setter Property="FontSize" Value="48"/>
+		<Setter Property="FontWeight" Value="100"/>
+	</Style>
+	<Style Selector="TabControl TabItem.tabItems">
+		<Setter Property="Background" Value="#183048"/>
+		<Setter Property="Foreground" Value="#cce2f3"/>
+		<Setter Property="Margin" Value="0 0 0 0"/>
+		<Setter Property="Padding" Value="10 0"/>
+	</Style>
+	<Style Selector="TabControl TabItem.tabItems:focus">
+		<Setter Property="Foreground" Value="#009cda"/>
+	</Style>
+	<Style Selector="TabControl TabItem.tabItems:selected">
+		<Setter Property="Foreground" Value="#183048"/>
+		<Setter Property="Background" Value="White"/>
+	</Style>
+	<Style Selector="TabControl WrapPanel.tabControlTraining">
+		<Setter Property="Background" Value="#183048"/>
+	</Style>
+	<Style Selector="TabControl TabItem.tabItems:pointerover /template/ Border">
+		<Setter Property="Background" Value="#cce2f3"/>
+	</Style>
+
+	<!--CONFIGURATION STYLES-->
+	<Style Selector="TabControl.configTabControl">
+		<Setter Property="Foreground" Value="#cce2f3"/>
+	</Style>
+	
+	<Style Selector="TabItem.configTabControl">
+		<Setter Property="Foreground" Value="#cce2f3"/>
+		<Setter Property="Background" Value="#183048"/>
+		<Setter Property="Margin" Value="0 0 0 0"/>
+		<Setter Property="Padding" Value="10 0"/>
+	</Style>
+	
+	<Style Selector="TabItem.configTabControl:selected">
+		<Setter Property="Foreground" Value="#183048"/>
+		<Setter Property="Background" Value="White"/>
+	</Style>
+
+	<Style Selector="TabItem.configTabControl:pointerover /template/ Border">
+		<Setter Property="TextBlock.Foreground" Value="#183048"/>
+		<Setter Property="Background" Value="White"/>
+	</Style>
+
+	<Style Selector="TabItem.configTabControl:focus /template/ ContentPresenter#PART_ContentPresenter">
+	</Style>
+
+	<Style Selector="Button.configButton">
+		<Setter Property="Background" Value="#cce2f3"/>
+	</Style>
+
+	<Style Selector="Button.configButton:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+		<Setter Property="Background" Value="White"/>
+	</Style>
 </Styles>
+
+

@@ -7,7 +7,8 @@
         x:Class="SMW_ML.Views.Configuration"
         Title="Configuration"
 		Name="ConfigurationWindow"
-		IsEnabled="{Binding IsEnabled}">
+		IsEnabled="{Binding IsEnabled}"
+		Background="#183048">
 	<Design.DataContext>
 		<vm:ConfigurationViewModel/>
 	</Design.DataContext>
@@ -16,25 +17,23 @@
 	</Window.Styles>
 	<ScrollViewer AllowAutoHide="False">
 		<StackPanel>
-
-			<TabControl TabStripPlacement="Left" HorizontalContentAlignment="Left">
-				<TabItem Header="Application">
+			<TabControl TabStripPlacement="Left" HorizontalContentAlignment="Left" Classes="configTabControl">
+				<TabItem Header="Application" Classes="configTabControl">
 					<StackPanel Classes="tabContent">
 						<TextBlock Classes="h1" Text="ROM Path"/>
 						<TextBlock Text="{Binding RomPath}"/>
-						<Button Command="{Binding SelectRom}" Content="Select ROM"/>
+						<Button Command="{Binding SelectRom}" Classes="configButton" Content="Select ROM"/>
 						<TextBlock Classes="h1" Text="Multithread"/>
 						<NumericUpDown Classes="numericTextBox" Value="{Binding Multithread}" Minimum="1"/>
 						<TextBlock Classes="h1" Text="Communication Port with Arduino"/>
 						<TextBox Classes="numericTextBox" Text="{Binding ArduinoPort}"/>
 						<TextBlock Classes="h1" Text="Save states to use"/>
-						<Button Command="{Binding SelectSaveStates}" Content="Select save states"/>
+						<Button Command="{Binding SelectSaveStates}" Classes="configButton" Content="Select save states"/>
 						<TextBlock Classes="p" Text="Selected: "/>
 						<TextBlock Classes="p" Text="{Binding SaveStates}"/>
-
 					</StackPanel>
 				</TabItem>
-				<TabItem Header="Training">
+				<TabItem Header="Training" Classes="configTabControl">
 					<StackPanel Classes="tabContent">
 						<TextBlock Classes="h1" Text="{Binding GeneralTrainingSettingsString}"/>
 						<Grid Margin="5" ColumnDefinitions="*,*" RowDefinitions="Auto,Auto,Auto">
@@ -57,7 +56,7 @@
 					</StackPanel>
 				</TabItem>
 
-				<TabItem Header="Objectives">
+				<TabItem Header="Objectives" Classes="configTabControl">
 					<ItemsControl Items="{Binding Objectives}" >
 						<ItemsControl.ItemsPanel>
 							<ItemsPanelTemplate>
@@ -67,7 +66,7 @@
 					</ItemsControl>
 				</TabItem>
 
-				<TabItem Header="Stop Conditions">
+				<TabItem Header="Stop Conditions" Classes="configTabControl">
 					<ItemsControl Items="{Binding StopConditions}">
 						<ItemsControl.ItemsPanel>
 							<ItemsPanelTemplate>
@@ -77,13 +76,13 @@
 					</ItemsControl>
 				</TabItem>
 				
-				<TabItem Header="Neural">
+				<TabItem Header="Neural" Classes="configTabControl">
 					<StackPanel Classes="tabContent">
 						<TextBlock Classes="h1" Text="WARNING" FontSize="24" Foreground="Red" TextWrapping="Wrap"/>
 						<TextBlock Classes="h1" Foreground="Red" TextWrapping="Wrap">
 							Changing these values will make previous training populations invalid with the new settings
 						</TextBlock>
-						<Button Content="Load neural configuration" Command="{Binding LoadNeuralConfig}"/>
+						<Button Content="Load neural configuration" Classes="configButton" Command="{Binding LoadNeuralConfig}"/>
 						
 						<StackPanel Spacing="15" Orientation="Horizontal">
 							<TextBlock Classes="h1" Text="Use Vision Grid" VerticalAlignment="Center"/>
@@ -113,7 +112,7 @@
 						</ItemsControl>
 					</StackPanel>
 				</TabItem>
-				<TabItem Header="Emulator Train">
+				<TabItem Header="Emulator Train" Classes="configTabControl">
 					<StackPanel Classes="tabContent">
 						<TextBlock Classes="h1" Text="Emulator Settings"/>
 						<Grid Margin="5" ColumnDefinitions="*,*" RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto,Auto">
@@ -134,12 +133,12 @@
 							<ComboBox Margin="5" Grid.Row="5" Grid.Column="1" Width="175" Items="{Binding DispMethodList}" SelectedIndex="{Binding DispMethod}"/>
 
 							<TextBlock Classes="p" Text="Activate Video" Grid.Row="6"/>
-							<CheckBox Margin="5" Grid.Row="6" Grid.Column="1" Width="175" IsChecked="{Binding DispSpeedupFeatures}"/>
+							<CheckBox Margin="5" Grid.Row="6" Grid.Column="1" IsChecked="{Binding DispSpeedupFeatures}"/>
 						</Grid>
 					</StackPanel>
 				</TabItem>
 
-				<TabItem Header="Emulator Play">
+				<TabItem Header="Emulator Play" Classes="configTabControl">
 					<StackPanel Classes="tabContent">
 						<TextBlock Classes="h1" Text="Emulator Settings"/>
 						<Grid Margin="5" ColumnDefinitions="*,*" RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto,Auto">
@@ -160,7 +159,7 @@
 							<ComboBox Margin="5" Grid.Row="5" Grid.Column="1" Width="175" Items="{Binding DispMethodList}" SelectedIndex="{Binding DispMethodPlayMode}"/>
 
 							<TextBlock Classes="p" Text="Activate Video" Grid.Row="6"/>
-							<CheckBox Margin="5" Grid.Row="6" Grid.Column="1" Width="175" IsChecked="{Binding DispSpeedupFeaturesPlayMode}"/>
+							<CheckBox Margin="5" Grid.Row="6" Grid.Column="1" IsChecked="{Binding DispSpeedupFeaturesPlayMode}"/>
 						</Grid>
 					</StackPanel>
 				</TabItem>
@@ -172,16 +171,16 @@
 			</StackPanel>
 			<DataGrid
 				ScrollViewer.VerticalScrollBarVisibility="Visible"
-				Margin="5"
-				Foreground="Black"
+				Foreground="#cce2f3"
 				FontSize="16" Height="150"
 				IsReadOnly="True"
 				Items="{Binding ErrorList}"
 				HorizontalAlignment="Left"
 				AutoGenerateColumns="False"
 				FontWeight="Bold"
-				Background="#cfcfcf"
-				AlternatingRowBackground="#e8e8e8"
+				Background="#183048"
+				RowBackground="#cce2f3"
+				AlternatingRowBackground="White"
 				HorizontalGridLinesBrush="White"
 				GridLinesVisibility="Horizontal"
 				IsVisible="{Binding IsDataGridErrorVisible}">
@@ -191,7 +190,7 @@
 										Binding="{Binding FieldError}"
 										Width="*"/>
 					<DataGridTextColumn Header="Error"
-										FontSize="14"
+										FontSize="14" Foreground="Black"
 										Binding="{Binding Description}"
 										Width="3.5*"
 										FontWeight="Normal"/>

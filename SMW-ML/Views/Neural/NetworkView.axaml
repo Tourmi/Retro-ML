@@ -63,7 +63,7 @@
 		</Style>
 	</UserControl.Styles>
 
-	<Panel Width="{Binding TotalWidth}" Height="{Binding TotalHeight}" Background="#333">
+	<Panel Width="{Binding TotalWidth}" Height="{Binding TotalHeight}" Background="#082038">
 		<DockPanel Background="Transparent">
 			<!--Input nodes-->
 			<ItemsControl Items="{Binding Inputs}" DockPanel.Dock="Left">
