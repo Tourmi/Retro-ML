@@ -46,10 +46,10 @@ namespace SMW_ML.Game.SuperMarioWorld
         public void NextFrame()
         {
             frameCache.Clear();
-
             nearbyTilesCache = null;
             nearbyLayer23TilesCache = null;
             internalClock.NextFrame();
+
             InitFrameCache();
         }
 
@@ -58,7 +58,10 @@ namespace SMW_ML.Game.SuperMarioWorld
         /// </summary>
         public void NextLevel()
         {
-            NextFrame();
+            frameCache.Clear();
+            nearbyTilesCache = null;
+            nearbyLayer23TilesCache = null;
+
             levelCache.Clear();
             currTransitionCount = 0;
 
@@ -78,7 +81,7 @@ namespace SMW_ML.Game.SuperMarioWorld
                                 ReadSingle(Player.PlayerAnimationState) == PlayerAnimationStates.FLASHING;
         public bool IsDead() => ReadSingle(Player.PlayerAnimationState) == PlayerAnimationStates.DYING;
         public bool WonViaGoal() => ReadSingle(Level.EndLevelTimer) != 0;
-        public bool WonViaKey() => ReadSingle(Level.KeyholeTimer) != 0;
+        public bool WonViaKey() => ReadSingle(Level.KeyholeTimer) == 0x30;
         public bool WonLevel() => WonViaGoal() || WonViaKey();
         public bool IsInWater() => ReadSingle(Player.IsInWater) != 0;
         public bool CanJumpOutOfWater() => ReadSingle(Player.CanJumpOutOfWater) != 0;
@@ -531,8 +534,8 @@ namespace SMW_ML.Game.SuperMarioWorld
         {
             (AddressData, bool)[] toRead = new (AddressData, bool)[]
             {
-                (Player.PositionX, true),
-                (Player.PositionY, true),
+                (Player.PositionX, false),
+                (Player.PositionY, false),
                 (Player.IsOnGround, false),
                 (Player.IsOnSolidSprite, false),
                 (Player.PlayerAnimationState, false),

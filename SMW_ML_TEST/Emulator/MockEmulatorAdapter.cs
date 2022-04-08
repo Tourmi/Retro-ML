@@ -119,5 +119,15 @@ namespace SMW_ML_TEST.Emulator
         {
             throw new NotImplementedException();
         }
+
+        public byte[] ReadMemory(params (uint addr, uint count)[] ranges)
+        {
+            List<byte> res = new();
+            foreach (var range in ranges)
+            {
+                res.AddRange(ReadMemory(range.addr, range.count));
+            }
+            return res.ToArray();
+        }
     }
 }

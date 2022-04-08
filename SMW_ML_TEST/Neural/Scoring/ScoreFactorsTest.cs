@@ -27,7 +27,7 @@ namespace SMW_ML_TEST.Neural.Scoring
             Assert.IsFalse(score.ShouldStop);
             Assert.AreEqual(1, score.GetFinalScore());
             emu!.SetMemory(Addresses.Player.PlayerAnimationState.Address, 0x09);
-            emu!.SetMemory(Addresses.Level.KeyholeTimer.Address, 10);
+            emu!.SetMemory(Addresses.Level.KeyholeTimer.Address, 0x30);
             df!.NextFrame();
             score.Update(df);
             Assert.IsTrue(score.ShouldStop);
@@ -39,7 +39,7 @@ namespace SMW_ML_TEST.Neural.Scoring
             df.NextLevel();
             score.Update(df);
             Assert.IsFalse(score.ShouldStop);
-            emu!.SetMemory(Addresses.Level.EndLevelTimer.Address, 10);
+            emu!.SetMemory(Addresses.Level.EndLevelTimer.Address, 0xFF);
             df.NextFrame();
             score.Update(df);
             Assert.IsTrue(score.ShouldStop);
@@ -332,7 +332,7 @@ namespace SMW_ML_TEST.Neural.Scoring
             emu.SetMemory(Addresses.Level.EndLevelTimer.Address, 0);
             df.NextLevel();
             Assert.IsFalse(sf.ShouldStop);
-            emu.SetMemory(Addresses.Level.KeyholeTimer.Address, 10);
+            emu.SetMemory(Addresses.Level.KeyholeTimer.Address, 0x30);
             df.NextFrame();
             sf.Update(df);
             Assert.IsTrue(sf.ShouldStop);

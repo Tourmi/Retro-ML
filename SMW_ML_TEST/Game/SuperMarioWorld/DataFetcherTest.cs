@@ -18,6 +18,7 @@ namespace SMW_ML_TEST.Game.SuperMarioWorld
         {
             mockEmulatorAdapter = new MockEmulatorAdapter();
             dataFetcher = new DataFetcher(mockEmulatorAdapter, new NeuralConfig());
+            dataFetcher.NextFrame();
         }
 
         [Test]
@@ -38,6 +39,7 @@ namespace SMW_ML_TEST.Game.SuperMarioWorld
         {
             Assert.False(dataFetcher!.IsWaterLevel());
             mockEmulatorAdapter!.SetMemory(Addresses.Level.IsWater.Address, 0x01);
+            dataFetcher.NextFrame();
             Assert.False(dataFetcher!.IsWaterLevel(), "The cache should not have been updated");
             dataFetcher!.NextFrame();
             Assert.False(dataFetcher!.IsWaterLevel(), "The cache should not have been updated");
@@ -110,7 +112,7 @@ namespace SMW_ML_TEST.Game.SuperMarioWorld
         [Test]
         public void WonViaKey()
         {
-            TestFlagFunction(dataFetcher!.WonLevel, Addresses.Level.KeyholeTimer.Address, 0xFF);
+            TestFlagFunction(dataFetcher!.WonLevel, Addresses.Level.KeyholeTimer.Address, 0x30);
         }
 
         [Test]
@@ -119,7 +121,7 @@ namespace SMW_ML_TEST.Game.SuperMarioWorld
             TestFlagFunction(dataFetcher!.WonLevel, Addresses.Level.EndLevelTimer.Address, 0xFF);
             mockEmulatorAdapter!.SetMemory(Addresses.Level.EndLevelTimer.Address, 0x00);
             dataFetcher!.NextFrame();
-            TestFlagFunction(dataFetcher!.WonLevel, Addresses.Level.KeyholeTimer.Address, 0xFF);
+            TestFlagFunction(dataFetcher!.WonLevel, Addresses.Level.KeyholeTimer.Address, 0x30);
         }
 
         [Test]
@@ -189,6 +191,7 @@ namespace SMW_ML_TEST.Game.SuperMarioWorld
         public void GetCoins()
         {
             mockEmulatorAdapter!.SetMemory(Addresses.Counters.Coins.Address, 55);
+            dataFetcher!.NextFrame();
             Assert.AreEqual(55, dataFetcher!.GetCoins());
             mockEmulatorAdapter!.SetMemory(Addresses.Counters.Coins.Address, 13);
             dataFetcher.NextFrame();
@@ -199,6 +202,7 @@ namespace SMW_ML_TEST.Game.SuperMarioWorld
         public void GetYoshiCoins()
         {
             mockEmulatorAdapter!.SetMemory(Addresses.Counters.YoshiCoinCollected.Address, 3);
+            dataFetcher!.NextFrame();
             Assert.AreEqual(3, dataFetcher!.GetYoshiCoins());
             mockEmulatorAdapter!.SetMemory(Addresses.Counters.YoshiCoinCollected.Address, 4);
             dataFetcher.NextFrame();
@@ -209,6 +213,7 @@ namespace SMW_ML_TEST.Game.SuperMarioWorld
         public void GetLives()
         {
             mockEmulatorAdapter!.SetMemory(Addresses.Counters.Lives.Address, 5);
+            dataFetcher!.NextFrame();
             Assert.AreEqual(5, dataFetcher!.GetLives());
             mockEmulatorAdapter!.SetMemory(Addresses.Counters.Lives.Address, 10);
             dataFetcher.NextFrame();
@@ -219,6 +224,7 @@ namespace SMW_ML_TEST.Game.SuperMarioWorld
         public void GetPowerUp()
         {
             mockEmulatorAdapter!.SetMemory(Addresses.Player.PowerUp.Address, 1);
+            dataFetcher!.NextFrame();
             Assert.AreEqual(1, dataFetcher!.GetPowerUp());
             mockEmulatorAdapter!.SetMemory(Addresses.Player.PowerUp.Address, 2);
             dataFetcher.NextFrame();
@@ -229,6 +235,7 @@ namespace SMW_ML_TEST.Game.SuperMarioWorld
         public void Score()
         {
             mockEmulatorAdapter!.SetMemory(Addresses.Counters.Score.Address, 0x1F, 0x2E, 0x3D);
+            dataFetcher!.NextFrame();
             Assert.AreEqual(0x3D2E1F, dataFetcher!.GetScore());
             mockEmulatorAdapter!.SetMemory(Addresses.Counters.Score.Address, 0x6A, 0x5B, 0x4C);
             dataFetcher!.NextFrame();
