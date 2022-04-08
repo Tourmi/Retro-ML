@@ -20,11 +20,11 @@
 			</ItemsControl.ItemsPanel>
 			<ItemsControl.ItemTemplate>
 				<DataTemplate>
-					<Button Content="{Binding DisplayName}" Command="{Binding Clicked}"/>
+					<Button Classes="generalButtonBlue" Content="{Binding DisplayName}" Command="{Binding Clicked}"/>
 				</DataTemplate>
 			</ItemsControl.ItemTemplate>
 		</ItemsControl>
-		<lvc:CartesianChart Series="{Binding ShownSeries}" DockPanel.Dock="Top" TooltipFontFamily="Courier New"/>
+		<lvc:CartesianChart Series="{Binding ShownSeries}" DockPanel.Dock="Top" TooltipFontFamily="Courier New" />
 	</DockPanel>
 
 </UserControl>

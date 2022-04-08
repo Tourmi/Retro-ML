@@ -5,21 +5,26 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="800"
         x:Class="SMW_ML.Views.MainPageView"
-		IsEnabled="{Binding IsEnabled}">
+		IsEnabled="{Binding IsEnabled}"
+		Background="#183048">
 
 	<Design.DataContext>
 		<vm:MainPageViewModel/>
 	</Design.DataContext>
+	<Window.Styles>
+		<StyleInclude Source="/Styles/MainStyles.axaml" />
+	</Window.Styles>
 
 	<DockPanel LastChildFill="True">
 		<Image Source="/Assets/banner.png" MaxHeight="376" MaxWidth="376" DockPanel.Dock="Top"/>
-
-		<StackPanel Orientation="Vertical" Spacing="5" HorizontalAlignment="Center" VerticalAlignment="Center" DockPanel.Dock="Bottom">
-			<TextBlock Text="{Binding GreetingString}" HorizontalAlignment="Center"/>
-			<Button Command="{Binding OpenTraining}" Content="{Binding TrainingString}" HorizontalAlignment="Center"/>
-			<Button Command="{Binding OpenPlay}" Content="{Binding PlayString}" HorizontalAlignment="Center"/>
-			<Button Command="{Binding OpenConfigSettings}" Content="{Binding OpenSettingsString}" IsEnabled="True"  HorizontalAlignment="Center" />
-		</StackPanel>
+		<DockPanel LastChildFill="True">
+			<TextBlock DockPanel.Dock="Top" Classes="titleText" Text="{Binding GreetingString}" HorizontalAlignment="Center" Padding="0 100 0 0"/>
+			<StackPanel Orientation="Vertical" Spacing="5" HorizontalAlignment="Center" VerticalAlignment="Center" DockPanel.Dock="Bottom">
+				<Button Classes="generalButtonBlue" Command="{Binding OpenTraining}" Content="{Binding TrainingString}" HorizontalAlignment="Center"/>
+				<Button Classes="generalButtonBlue" Command="{Binding OpenPlay}" Content="{Binding PlayString}" HorizontalAlignment="Center"/>
+				<Button Classes="generalButtonBlue" Command="{Binding OpenConfigSettings}" Content="{Binding OpenSettingsString}" IsEnabled="True"  HorizontalAlignment="Center" />
+			</StackPanel>
+		</DockPanel>
 	</DockPanel>
 
 </Window>
