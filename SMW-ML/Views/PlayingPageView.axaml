@@ -1,0 +1,31 @@
+<Window xmlns="https://github.com/avaloniaui"
+            xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+            xmlns:vm="clr-namespace:SMW_ML.ViewModels;assembly=SMW_ML"
+            xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+            xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+            mc:Ignorable="d" d:DesignWidth="1800" d:DesignHeight="1000"
+			x:Class="SMW_ML.Views.PlayingPageView" 
+			IsEnabled="{Binding IsEnabled}">
+	<Window.Styles>
+		<Style Selector="Canvas">
+			<Setter Property="Background" Value="LightGray"/>
+		</Style>
+	</Window.Styles>
+
+	<Design.DataContext>
+		<vm:PlayingPageViewModel/>
+	</Design.DataContext>
+
+	<DockPanel LastChildFill="True">
+
+		<StackPanel Spacing="5" DockPanel.Dock="Bottom" Margin="20" Orientation="Horizontal" HorizontalAlignment="Center">
+			<Button Command="{Binding LoadGenome}" Content="{Binding LoadGenomeString}"/>
+			<Button Command="{Binding LoadState}" Content="{Binding LoadSaveStateString}"/>
+			<Button Command="{Binding Start}" Content="{Binding StartString}" IsEnabled="{Binding CanStart}"/>
+			<Button Command="{Binding Stop}" Content="{Binding StopString}" IsEnabled="{Binding CanStop}"/>
+			<Button Command="{Binding Exit}" Content="{Binding ExitString}" IsEnabled="{Binding !CanStop}"/>
+		</StackPanel>
+		<ContentControl DockPanel.Dock="Top" Content="{Binding NeuralNetwork}"/>
+	</DockPanel>
+
+</Window>

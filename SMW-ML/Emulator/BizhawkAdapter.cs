@@ -1,18 +1,12 @@
-﻿using SharpNeat.BlackBox;
-using SMW_ML.Arduino;
+﻿using SMW_ML.Arduino;
 using SMW_ML.Game;
 using SMW_ML.Game.SuperMarioWorld;
 using SMW_ML.Models.Config;
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Net;
 using System.Net.Sockets;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace SMW_ML.Emulator
 {
@@ -21,6 +15,9 @@ namespace SMW_ML.Emulator
         public event Action<double[], double[]>? LinkedNetworkActivated;
         public event Action<(int sourceNode, int targetNode, double weight)[][], int[]>? ChangedLinkedNetwork;
 
+        /// <summary>
+        /// The available commands that can be sent to the emulator
+        /// </summary>
         private static class Commands
         {
             public const string EXIT = "exit";
@@ -30,6 +27,7 @@ namespace SMW_ML.Emulator
             public const string NEXT_FRAME = "next_frame";
             public const string READ_MEMORY = "read_memory {0}";
             public const string READ_MEMORY_RANGE = "read_memory_range {0} {1}";
+            public const string READ_MEMORY_RANGES = "read_memory_ranges {0}";
             public const string SEND_INPUT = "send_input {0}";
         }
 
@@ -58,11 +56,10 @@ namespace SMW_ML.Emulator
             client = server.Accept();
             savestates = Directory.GetFiles(savestatesPath);
 
-            dataFetcher = new DataFetcher(this);
+            dataFetcher = new DataFetcher(this, neuralConfig);
             inputSetter = new InputSetter(dataFetcher, neuralConfig);
             outputGetter = new OutputGetter(neuralConfig);
         }
-
         public void SetArduinoPreviewer(ArduinoPreviewer arduinoPreviewer)
         {
             this.arduinoPreviewer = arduinoPreviewer;
@@ -102,6 +99,20 @@ namespace SMW_ML.Emulator
             return Read(count);
         }
 
+        public byte[] ReadMemory(params (uint addr, uint count)[] ranges)
+        {
+            string commandParam = "";
+            uint totalCount = 0;
+            foreach ((uint addr, uint count) in ranges)
+            {
+                commandParam += $"{addr} {count};";
+                totalCount += count;
+            }
+
+            SendCommand(Commands.READ_MEMORY_RANGES, commandParam);
+            return Read(totalCount);
+        }
+
         public void SendInput(Input input)
         {
             arduinoPreviewer?.SendInput(input);
@@ -119,6 +130,11 @@ namespace SMW_ML.Emulator
             arduinoPreviewer?.Dispose();
         }
 
+        /// <summary>
+        /// Sends the given <paramref name="command"/> to the emulator, formatting it with the given <paramref name="args"/>
+        /// </summary>
+        /// <param name="command"></param>
+        /// <param name="args"></param>
         private void SendCommand(string command, params object[] args)
         {
             string newCommand = string.Format(command, args);
@@ -131,6 +147,11 @@ namespace SMW_ML.Emulator
             }
         }
 
+        /// <summary>
+        /// Reads the amount of bytes specified from the serial port
+        /// </summary>
+        /// <param name="amount"></param>
+        /// <returns></returns>
         private byte[] Read(uint amount)
         {
             byte[] buffer = new byte[amount];

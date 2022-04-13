@@ -22,12 +22,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Game\SuperMarioWorld\Data\" />
-    <Folder Include="Neural\Scoring\" />
-    <Folder Include="Neural\Training\SharpNeat\" />
-  </ItemGroup>
-
-  <ItemGroup>
     <Reference Include="SharpNeat">
       <HintPath>..\Submodules\SharpNEAT\src\SharpNeat\bin\Release\net6.0\SharpNeat.dll</HintPath>
     </Reference>

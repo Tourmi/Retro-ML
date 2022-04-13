@@ -4,7 +4,7 @@
 		<TargetFramework>net6.0</TargetFramework>
 		<Nullable>enable</Nullable>
 		<PublishReadyToRun>true</PublishReadyToRun>
-
+		<ApplicationIcon>Assets/logo.ico</ApplicationIcon>
 	</PropertyGroup>
 
 	<ItemGroup>
@@ -28,6 +28,8 @@
 		<PackageReference Condition="'$(Configuration)' == 'Debug'" Include="Avalonia.Diagnostics" Version="0.10.11" />
 		<PackageReference Include="Avalonia.ReactiveUI" Version="0.10.11" />
 		<PackageReference Include="Avalonia.Remote.Protocol" Version="0.10.11" />
+		<PackageReference Include="LiveChartsCore.SkiaSharpView.Avalonia" Version="2.0.0-beta.101" />
+		<PackageReference Include="PresentationFramework" Version="4.6.0" />
 		<PackageReference Include="Redzen" Version="13.0.0" />
 		<PackageReference Include="System.IO.Ports" Version="6.0.0" />
 		<PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
@@ -44,6 +46,9 @@
 		</None>
 	</ItemGroup>
 	<ItemGroup>
+	  <Compile Update="Views\Components\ScoreFactorView.axaml.cs">
+	    <DependentUpon>ScoreFactorView.axaml</DependentUpon>
+	  </Compile>
 	  <Compile Update="Views\Components\MessageBox.axaml.cs">
 	    <DependentUpon>MessageBox.axaml</DependentUpon>
 	  </Compile>
@@ -55,6 +60,21 @@
 	  </Compile>
 	</ItemGroup>
 	<ItemGroup>
+	  <None Update="config\appConfig.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="config\bizhawkAdapter.lua">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="config\bizhawkConfig.ini">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="config\bizhawkConfigPlayMode.ini">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="config\sharpNeatConfig.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
 	  <None Update="Views\Components\MessageBox.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </None>

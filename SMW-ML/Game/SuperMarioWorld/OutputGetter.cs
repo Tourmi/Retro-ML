@@ -1,16 +1,16 @@
 ﻿using SharpNeat.BlackBox;
 using SMW_ML.Models.Config;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SMW_ML.Game.SuperMarioWorld
 {
+    /// <summary>
+    /// Gets the state of the output neurons of the neural network, and parses it to a controller input.
+    /// </summary>
     internal class OutputGetter
     {
         private readonly List<OutputNode> outputNodes;
+        private readonly NeuralConfig neuralConfig;
 
         private const bool ALLOW_OPPOSITE_DIRECTIONS = false;
 
@@ -19,17 +19,22 @@ namespace SMW_ML.Game.SuperMarioWorld
         public OutputGetter(NeuralConfig config)
         {
             outputNodes = config.OutputNodes;
+            neuralConfig = config;
         }
-
+        /// <summary>
+        /// Gets the state of the output neurons of the neural network, and parses it to a controller input.
+        /// </summary>
+        /// <param name="outputs"></param>
+        /// <returns></returns>
         public Input GetControllerInput(IVector<double> outputs)
         {
             string controllerInputs = "";
             int currIndex = 0;
             int controllerIndex = 0;
 
-            int outputCount = GetOutputCount();
+            int outputCount = neuralConfig.GetOutputCount();
 
-            for(; currIndex < outputCount && controllerIndex < Input.BUTTON_COUNT; currIndex++, controllerIndex++)
+            for (; currIndex < outputCount && controllerIndex < Input.BUTTON_COUNT; currIndex++, controllerIndex++)
             {
                 if (!outputNodes[controllerIndex].ShouldUse)
                 {
@@ -60,17 +65,6 @@ namespace SMW_ML.Game.SuperMarioWorld
             }
 
             return controllerInput;
-        }
-
-        public int GetOutputCount()
-        {
-            int count = 0;
-            foreach (var output in  outputNodes)
-            {
-                if (output.ShouldUse) count++;
-            }
-
-            return count;
         }
     }
 }

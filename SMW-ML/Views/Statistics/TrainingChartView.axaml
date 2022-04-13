@@ -1,0 +1,30 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             xmlns:lvc="clr-namespace:LiveChartsCore.SkiaSharpView.Avalonia;assembly=LiveChartsCore.SkiaSharpView.Avalonia"
+			 xmlns:vm="clr-namespace:SMW_ML.ViewModels.Statistics"
+             x:Class="SMW_ML.Views.Statistics.TrainingChartView">
+
+	<Design.DataContext>
+		<vm:TrainingChartViewModel/>
+	</Design.DataContext>
+
+	<DockPanel LastChildFill="True">
+		<ItemsControl DockPanel.Dock="Bottom" Items="{Binding Filters}" Padding="5" HorizontalAlignment="Center" Height="40">
+			<ItemsControl.ItemsPanel>
+				<ItemsPanelTemplate>
+					<StackPanel Orientation="Horizontal" Spacing="10"/>
+				</ItemsPanelTemplate>
+			</ItemsControl.ItemsPanel>
+			<ItemsControl.ItemTemplate>
+				<DataTemplate>
+					<Button Content="{Binding DisplayName}" Command="{Binding Clicked}"/>
+				</DataTemplate>
+			</ItemsControl.ItemTemplate>
+		</ItemsControl>
+		<lvc:CartesianChart Series="{Binding ShownSeries}" DockPanel.Dock="Top" TooltipFontFamily="Courier New"/>
+	</DockPanel>
+
+</UserControl>

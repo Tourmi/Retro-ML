@@ -1,15 +1,17 @@
 ﻿using SMW_ML.Emulator;
 using SMW_ML.Game.SuperMarioWorld.Data;
+using SMW_ML.Models.Config;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using static SMW_ML.Game.SuperMarioWorld.Addresses;
 
 namespace SMW_ML.Game.SuperMarioWorld
 {
-    internal class DataFetcher
+    /// <summary>
+    /// Takes care of abstracting away the addresses when communicating with the emulator.
+    /// </summary>
+    public class DataFetcher
     {
         public const int INTERNAL_CLOCK_LENGTH = 8;
         private const int TILE_SIZE = 0x10;
@@ -21,20 +23,21 @@ namespace SMW_ML.Game.SuperMarioWorld
         private readonly Dictionary<uint, byte[]> frameCache;
         private readonly Dictionary<uint, byte[]> levelCache;
 
-        private readonly Dictionary<ushort, ushort[]> map16Caches;
+        private readonly Dictionary<uint, ushort[]> map16Caches;
+
         private ushort[,]? nearbyTilesCache;
-        private ushort[,]? nearbyLayer2TilesCache;
-        private ushort currLevelNumber;
+        private ushort[,]? nearbyLayer23TilesCache;
+        private byte currTransitionCount;
 
-        private int internal_clock_timer = INTERNAL_CLOCK_LENGTH;
-        private bool internalClockOn = false;
+        private InternalClock internalClock;
 
-        public DataFetcher(IEmulatorAdapter emulator)
+        public DataFetcher(IEmulatorAdapter emulator, NeuralConfig neuralConfig)
         {
             this.emulator = emulator;
             frameCache = new();
             levelCache = new();
-            map16Caches = new Dictionary<ushort, ushort[]>();
+            map16Caches = new Dictionary<uint, ushort[]>();
+            internalClock = new InternalClock(neuralConfig.InternalClockTickLength, neuralConfig.InternalClockLength);
         }
 
         /// <summary>
@@ -43,15 +46,11 @@ namespace SMW_ML.Game.SuperMarioWorld
         public void NextFrame()
         {
             frameCache.Clear();
-            if (internal_clock_timer <= 0)
-            {
-                internal_clock_timer = INTERNAL_CLOCK_LENGTH;
-                internalClockOn = !internalClockOn;
-            }
-            internal_clock_timer--;
-
             nearbyTilesCache = null;
-            nearbyLayer2TilesCache = null;
+            nearbyLayer23TilesCache = null;
+            internalClock.NextFrame();
+
+            InitFrameCache();
         }
 
         /// <summary>
@@ -59,11 +58,21 @@ namespace SMW_ML.Game.SuperMarioWorld
         /// </summary>
         public void NextLevel()
         {
-            NextFrame();
+            frameCache.Clear();
+            nearbyTilesCache = null;
+            nearbyLayer23TilesCache = null;
+
             levelCache.Clear();
-            internal_clock_timer = INTERNAL_CLOCK_LENGTH;
-            internalClockOn = false;
+            currTransitionCount = 0;
+
+            internalClock.Reset();
         }
+
+        /// <summary>
+        /// Returns the current level's UID
+        /// </summary>
+        /// <returns></returns>
+        public uint GetLevelUID() => ToUnsignedInteger(Read(Level.SpriteDataPointer));
 
         public uint GetPositionX() => ToUnsignedInteger(Read(Player.PositionX));
         public uint GetPositionY() => ToUnsignedInteger(Read(Player.PositionY));
@@ -71,7 +80,9 @@ namespace SMW_ML.Game.SuperMarioWorld
         public bool CanAct() => ReadSingle(Player.PlayerAnimationState) == PlayerAnimationStates.NONE ||
                                 ReadSingle(Player.PlayerAnimationState) == PlayerAnimationStates.FLASHING;
         public bool IsDead() => ReadSingle(Player.PlayerAnimationState) == PlayerAnimationStates.DYING;
-        public bool WonLevel() => ReadSingle(Level.EndLevelTimer) != 0;
+        public bool WonViaGoal() => ReadSingle(Level.EndLevelTimer) != 0;
+        public bool WonViaKey() => ReadSingle(Level.KeyholeTimer) == 0x30;
+        public bool WonLevel() => WonViaGoal() || WonViaKey();
         public bool IsInWater() => ReadSingle(Player.IsInWater) != 0;
         public bool CanJumpOutOfWater() => ReadSingle(Player.CanJumpOutOfWater) != 0;
         public bool IsSinking() => ReadSingle(Player.AirFlag) == 0x24;
@@ -79,34 +90,51 @@ namespace SMW_ML.Game.SuperMarioWorld
         public bool IsCarryingSomething() => ReadSingle(Player.IsCarryingSomething) != 0;
         public bool CanClimb() => (ReadSingle(Player.CanClimb) & 0b00001011 | ReadSingle(Player.CanClimbOnAir)) != 0;
         public bool IsAtMaxSpeed() => ReadSingle(Player.DashTimer) == 0x70;
-        public bool WasInternalClockTriggered() => internalClockOn;
+        public bool[,] GetInternalClockState() => internalClock.GetStates();
         public bool WasDialogBoxOpened() => ReadSingle(Level.TextBoxTriggered) != 0;
         public bool IsWaterLevel() => ReadSingle(Level.IsWater) != 0;
+        public int GetCoins() => ReadSingle(Counters.Coins);
+        public int GetLives() => ReadSingle(Counters.Lives);
+        public int GetYoshiCoins() => ReadSingle(Counters.YoshiCoinCollected);
+        public int GetScore() => (int)ToUnsignedInteger(Read(Counters.Score));
+        public byte GetPowerUp() => ReadSingle(Player.PowerUp);
+        public bool IsFlashing() => ReadSingle(Player.PlayerAnimationState) == 1;
+
         public bool[,] GetWalkableTilesAroundPosition(int x_dist, int y_dist)
         {
+            bool[,] result = new bool[y_dist * 2 + 1, x_dist * 2 + 1];
+            if (ReadSingle(Level.ScreenCount) == 0) return result;
+
+            foreach (var sprite in GetSprites().Where(s => SpriteStatuses.IsAlive(s.Status)))
+            {
+                if (!SpriteNumbers.IsSolid(sprite.Number)) continue;
+                SetSpriteTiles(x_dist, y_dist, result, sprite);
+            }
+
             byte levelTileset = ReadSingle(Level.Header.TilesetSetting);
             var tileset = Tileset.GetWalkableTiles(levelTileset);
-            return GetTilesAroundPosition(x_dist, y_dist, tileset);
+            var walkableTiles = GetTilesAroundPosition(x_dist, y_dist, tileset);
+
+            for (int i = 0; i < walkableTiles.GetLength(0); i++)
+            {
+                for (int j = 0; j < walkableTiles.GetLength(1); j++)
+                {
+                    result[i, j] |= walkableTiles[i, j];
+                }
+            }
+
+            return result;
         }
+
         public bool[,] GetDangerousTilesAroundPosition(int x_dist, int y_dist)
         {
-            bool[,] result = new bool[x_dist * 2 + 1, y_dist * 2 + 1];
+            bool[,] result = new bool[y_dist * 2 + 1, x_dist * 2 + 1];
+            if (ReadSingle(Level.ScreenCount) == 0) return result;
 
-            var spriteStatuses = Read(Addresses.Sprite.Statuses);
-            var aliveIndexes = spriteStatuses.Select((s, i) => (s, i)).Where(si => SpriteStatuses.CanBeDangerous(si.s)).Select(si => si.i).ToArray();
-            var sprites = GetSprites(aliveIndexes);
-
-            foreach (var sprite in sprites)
+            foreach (var sprite in GetSprites().Where(s => SpriteStatuses.CanBeDangerous(s.Status)))
             {
                 if (!SpriteNumbers.IsDangerous(sprite.Number)) continue;
-                var xSpriteDist = (sprite.XPos / TILE_SIZE - (int)GetPositionX() / TILE_SIZE);
-                var ySpriteDist = (sprite.YPos / TILE_SIZE - (int)GetPositionY() / TILE_SIZE);
-
-                //Is the sprite distance between the bounds that Mario can see?
-                if (xSpriteDist <= x_dist && ySpriteDist <= y_dist && xSpriteDist >= -x_dist && ySpriteDist >= -y_dist)
-                {
-                    result[ySpriteDist + y_dist, xSpriteDist + x_dist] = true;
-                }
+                SetSpriteTiles(x_dist, y_dist, result, sprite);
             }
 
             var extendedSprites = GetExtendedSprites();
@@ -138,32 +166,118 @@ namespace SMW_ML.Game.SuperMarioWorld
             return result;
         }
 
+        public bool[,] GetGoodTilesAroundPosition(int x_dist, int y_dist)
+        {
+            bool[,] result = new bool[y_dist * 2 + 1, x_dist * 2 + 1];
+            if (ReadSingle(Level.ScreenCount) == 0) return result;
+
+            foreach (var sprite in GetSprites().Where(s => SpriteStatuses.IsAlive(s.Status)))
+            {
+                if (!SpriteNumbers.IsGood(sprite.Number)) continue;
+                SetSpriteTiles(x_dist, y_dist, result, sprite);
+            }
+
+            byte levelTileset = ReadSingle(Level.Header.TilesetSetting);
+            var tileset = Tileset.GetGoodTiles(levelTileset);
+
+            var dangerousTiles = GetTilesAroundPosition(x_dist, y_dist, tileset);
+            for (int i = 0; i < dangerousTiles.GetLength(0); i++)
+            {
+                for (int j = 0; j < dangerousTiles.GetLength(1); j++)
+                {
+                    result[i, j] |= dangerousTiles[i, j];
+                }
+            }
+
+            return result;
+        }
+
+        public bool[,] GetWaterTilesAroundPosition(int x_dist, int y_dist)
+        {
+            bool[,] result = new bool[y_dist * 2 + 1, x_dist * 2 + 1];
+            if (ReadSingle(Level.ScreenCount) == 0) return result;
+            bool isWaterLevel = ReadSingle(Level.IsWater) == 1;
+
+            byte levelTileset = ReadSingle(Level.Header.TilesetSetting);
+            var tileset = Tileset.GetWaterTiles(levelTileset);
+            var waterTiles = GetTilesAroundPosition(x_dist, y_dist, tileset);
+
+            for (int i = 0; i < waterTiles.GetLength(0); i++)
+            {
+                for (int j = 0; j < waterTiles.GetLength(1); j++)
+                {
+                    result[i, j] |= isWaterLevel || waterTiles[i, j];
+                }
+            }
+
+            return result;
+        }
+
+        /// <summary>
+        /// Sets the tiles in <paramref name="tilesArray"/> to true based on the <paramref name="sprite"/>'s position and size.
+        /// </summary>
+        /// <param name="x_dist"></param>
+        /// <param name="y_dist"></param>
+        /// <param name="tilesArray"></param>
+        /// <param name="sprite"></param>
+        private void SetSpriteTiles(int x_dist, int y_dist, bool[,] tilesArray, Data.Sprite sprite)
+        {
+            var clipping = sprite.GetSpriteClipping();
+            sprite.CorrectSpritePosition();
+            var rotationOffset = sprite.GetSpriteRotationOffset();
+            int minX = sprite.XPos + clipping.X + rotationOffset.X;
+            int minY = sprite.YPos + clipping.Y + rotationOffset.Y;
+            int maxX = minX + clipping.Width - 1;
+            int maxY = minY + clipping.Height - 1;
+
+            int marioXPosition = (int)GetPositionX() / TILE_SIZE;
+            int marioYPosition = (int)(GetPositionY() + TILE_SIZE) / TILE_SIZE;
+
+            var xMinDist = (minX / TILE_SIZE) - marioXPosition;
+            var yMinDist = (minY / TILE_SIZE) - marioYPosition;
+            var xMaxDist = (maxX / TILE_SIZE) - marioXPosition;
+            var yMaxDist = (maxY / TILE_SIZE) - marioYPosition;
+
+            for (int ySpriteDist = yMinDist; ySpriteDist <= yMaxDist; ySpriteDist++)
+            {
+                for (int xSpriteDist = xMinDist; xSpriteDist <= xMaxDist; xSpriteDist++)
+                {
+                    //Is the sprite distance between the bounds that Mario can see?
+                    if (xSpriteDist <= x_dist && ySpriteDist <= y_dist && xSpriteDist >= -x_dist && ySpriteDist >= -y_dist)
+                    {
+                        tilesArray[ySpriteDist + y_dist, xSpriteDist + x_dist] = true;
+                    }
+                }
+            }
+        }
+
         private bool[,] GetTilesAroundPosition(int x_dist, int y_dist, IEnumerable<ushort> tileset)
         {
-            bool[,] result = new bool[x_dist * 2 + 1, y_dist * 2 + 1];
-            ushort levelNumber = GetLevelNumber();
+            bool[,] result = new bool[y_dist * 2 + 1, x_dist * 2 + 1];
+            uint levelUID = GetLevelUID();
 
-            if (!map16Caches.ContainsKey(levelNumber))
+            if (!map16Caches.ContainsKey(levelUID))
             {
-                map16Caches[levelNumber] = ReadLowHighBytes(Level.Map16);
+                map16Caches[levelUID] = ReadLowHighBytes(Level.Map16);
             }
 
             if (nearbyTilesCache == null)
             {
-                nearbyTilesCache = GetNearbyTiles(map16Caches[levelNumber], x_dist, y_dist, (int)GetPositionX() / TILE_SIZE, (int)(GetPositionY() + TILE_SIZE) / TILE_SIZE, 0);
+                nearbyTilesCache = GetNearbyTiles(map16Caches[levelUID], x_dist, y_dist, ((int)GetPositionX() + 0x08) / TILE_SIZE, (int)(GetPositionY() + 0x18) / TILE_SIZE, 0);
             }
 
-            //If layer 2 is interactive
-            if (nearbyLayer2TilesCache == null && (ReadSingle(Level.ScreenMode) & 0b10000000) != 0)
+            //If layer 2 or 3 is interactive
+            if (nearbyLayer23TilesCache == null && (ReadSingle(Level.ScreenMode) & 0b10000000) != 0)
             {
-                bool isLayer2Vertical = (ReadSingle(Level.ScreenMode) & 0b00000010) != 0;
-                int layer2ScreenStart = isLayer2Vertical ? 0x0E : 0x10;
-                int offsetX = (int)GetPositionX()
-                    + ((int)ToUnsignedInteger(Read(Level.Layer2X)) - (int)ToUnsignedInteger(Read(Level.Layer1X)));
-                int offsetY = (int)(GetPositionY() + TILE_SIZE)
-                    + ((int)ToUnsignedInteger(Read(Level.Layer2Y)) - (int)ToUnsignedInteger(Read(Level.Layer1Y)));
+                bool useLayer3 = ReadSingle(Level.WaterTide) != 0;
+                bool isLayer23Vertical = (ReadSingle(Level.ScreenMode) & 0b00000010) != 0;
+                int layer23ScreenStart = isLayer23Vertical ? 0x0E : 0x10;
+                int offsetX = (int)GetPositionX() + 0x08
+                    + ((int)ToUnsignedInteger(Read(useLayer3 ? Level.Layer3X : Level.Layer2X)) - (int)ToUnsignedInteger(Read(Level.Layer1X)));
+                int offsetY = (int)(GetPositionY() + 0x18)
+                    + ((int)ToUnsignedInteger(Read(useLayer3 ? Level.Layer3Y : Level.Layer2Y)) - (int)ToUnsignedInteger(Read(Level.Layer1Y)));
 
-                nearbyLayer2TilesCache = GetNearbyTiles(map16Caches[levelNumber], x_dist, y_dist, offsetX / TILE_SIZE, offsetY / TILE_SIZE, layer2ScreenStart);
+                nearbyLayer23TilesCache = GetNearbyTiles(map16Caches[levelUID], x_dist, y_dist, offsetX / TILE_SIZE, offsetY / TILE_SIZE, layer23ScreenStart);
             }
 
             for (int i = 0; i < result.GetLength(0); i++)
@@ -171,9 +285,9 @@ namespace SMW_ML.Game.SuperMarioWorld
                 for (int j = 0; j < result.GetLength(1); j++)
                 {
                     result[i, j] = tileset.Contains(nearbyTilesCache[i, j]);
-                    if (nearbyLayer2TilesCache != null)
+                    if (nearbyLayer23TilesCache != null)
                     {
-                        result[i, j] |= tileset.Contains(nearbyLayer2TilesCache[i, j]);
+                        result[i, j] |= tileset.Contains(nearbyLayer23TilesCache[i, j]);
                     }
                 }
             }
@@ -183,7 +297,7 @@ namespace SMW_ML.Game.SuperMarioWorld
 
         private ushort[,] GetNearbyTiles(ushort[] map16Cache, int x_dist, int y_dist, int offsetX, int offsetY, int screenStart)
         {
-            ushort[,] result = new ushort[x_dist * 2 + 1, y_dist * 2 + 1];
+            ushort[,] result = new ushort[y_dist * 2 + 1, x_dist * 2 + 1];
 
             byte screensCount = ReadSingle(Level.ScreenCount);
 
@@ -227,21 +341,37 @@ namespace SMW_ML.Game.SuperMarioWorld
             return result;
         }
 
-        private Data.Sprite[] GetSprites(int[] indexes)
+        private Data.Sprite[] GetSprites()
         {
-            var sprites = new Data.Sprite[indexes.Length];
+            int spriteCount = (int)Addresses.Sprite.SpriteNumbers.Length;
+            var sprites = new Data.Sprite[spriteCount];
 
-            byte[] numbers = Read(Addresses.Sprite.SpriteNumbers);
-            ushort[] xPositions = ReadLowHighBytes(Addresses.Sprite.XPositions);
-            ushort[] yPositions = ReadLowHighBytes(Addresses.Sprite.YPositions);
+            var data = Read((Addresses.Sprite.SpriteNumbers, false),
+                            (Addresses.Sprite.Statuses, false),
+                            (Addresses.Sprite.XPositions, true),
+                            (Addresses.Sprite.YPositions, true),
+                            (Addresses.Sprite.SpritesProperties2, false),
+                            (Addresses.Sprite.MiscC2, false),
+                            (Addresses.Sprite.Misc151C, false),
+                            (Addresses.Sprite.Misc1528, false),
+                            (Addresses.Sprite.Misc1602, false),
+                            (Addresses.Sprite.Misc187B, false));
 
-            for (int i = 0; i < indexes.Length; i++)
+            for (int i = 0; i < spriteCount; i++)
             {
+                int dIndex = 0;
                 sprites[i] = new Data.Sprite
                 {
-                    Number = numbers[indexes[i]],
-                    XPos = xPositions[indexes[i]],
-                    YPos = yPositions[indexes[i]]
+                    Number = data[i + spriteCount * dIndex++],
+                    Status = data[i + spriteCount * dIndex++],
+                    XPos = (ushort)(data[i + spriteCount * dIndex++] + ((data[i + spriteCount * dIndex++]) << 8)),
+                    YPos = (ushort)(data[i + spriteCount * dIndex++] + ((data[i + spriteCount * dIndex++]) << 8)),
+                    Properties2 = data[i + spriteCount * dIndex++],
+                    MiscC2 = data[i + spriteCount * dIndex++],
+                    Misc151C = data[i + spriteCount * dIndex++],
+                    Misc1528 = data[i + spriteCount * dIndex++],
+                    Misc1602 = data[i + spriteCount * dIndex++],
+                    Misc187B = data[i + spriteCount * dIndex++]
                 };
             }
 
@@ -250,18 +380,21 @@ namespace SMW_ML.Game.SuperMarioWorld
 
         private Data.ExtendedSprite[] GetExtendedSprites()
         {
-            var extendedSprites = new Data.ExtendedSprite[Addresses.ExtendedSprite.Numbers.Length];
-            byte[] numbers = Read(Addresses.ExtendedSprite.Numbers);
-            ushort[] xPositions = ReadLowHighBytes(Addresses.ExtendedSprite.XPositions);
-            ushort[] yPositions = ReadLowHighBytes(Addresses.ExtendedSprite.YPositions);
+            int bytesPerField = (int)Addresses.ExtendedSprite.Numbers.Length;
+            var extendedSprites = new Data.ExtendedSprite[bytesPerField];
+
+            byte[] data = Read((Addresses.ExtendedSprite.Numbers, false),
+                               (Addresses.ExtendedSprite.XPositions, true),
+                               (Addresses.ExtendedSprite.YPositions, true));
 
             for (int i = 0; i < extendedSprites.Length; i++)
             {
+                int dIndex = 0;
                 extendedSprites[i] = new Data.ExtendedSprite()
                 {
-                    Number = numbers[i],
-                    XPos = xPositions[i],
-                    YPos = yPositions[i]
+                    Number = data[i + bytesPerField * dIndex++],
+                    XPos = (ushort)(data[i + bytesPerField * dIndex++] + ((data[i + bytesPerField * dIndex++]) << 8)),
+                    YPos = (ushort)(data[i + bytesPerField * dIndex++] + ((data[i + bytesPerField * dIndex++]) << 8))
                 };
             }
 
@@ -318,6 +451,63 @@ namespace SMW_ML.Game.SuperMarioWorld
         }
 
         /// <summary>
+        /// Reads multiple ranges of addresses
+        /// </summary>
+        /// <param name="addresses"></param>
+        /// <returns></returns>
+        private byte[] Read(params (AddressData address, bool isLowHighByte)[] addresses)
+        {
+            List<(uint addr, uint length)> toFetch = new();
+
+            uint totalBytes = 0;
+
+            foreach ((AddressData address, bool isLowHighByte) in addresses)
+            {
+                var cacheToUse = GetCacheToUse(address);
+                if (!cacheToUse.ContainsKey(address.Address))
+                {
+                    toFetch.Add((address.Address, address.Length));
+                }
+                if (isLowHighByte && !cacheToUse.ContainsKey(address.HighByteAddress))
+                {
+                    toFetch.Add((address.HighByteAddress, address.Length));
+                }
+
+                totalBytes += address.Length * (uint)(isLowHighByte ? 2 : 1);
+            }
+
+            byte[] data = Array.Empty<byte>();
+            if (toFetch.Count > 0)
+            {
+                data = emulator.ReadMemory(toFetch.ToArray());
+            }
+
+            List<byte> bytes = new();
+            int dataIndex = 0;
+            foreach ((AddressData address, bool isLowHighByte) in addresses)
+            {
+                int count = (int)address.Length;
+
+                var cacheToUse = GetCacheToUse(address);
+                if (!cacheToUse.ContainsKey(address.Address))
+                {
+                    cacheToUse[address.Address] = data[dataIndex..(dataIndex + count)];
+                    dataIndex += count;
+                }
+                if (isLowHighByte && !cacheToUse.ContainsKey(address.HighByteAddress))
+                {
+                    cacheToUse[address.HighByteAddress] = data[dataIndex..(dataIndex + count)];
+                    dataIndex += count;
+                }
+
+                bytes.AddRange(cacheToUse[address.Address]);
+                if (isLowHighByte) bytes.AddRange(cacheToUse[address.HighByteAddress]);
+            }
+
+            return bytes.ToArray();
+        }
+
+        /// <summary>
         /// Which cache to use depending on the AddressData
         /// </summary>
         /// <param name="addressData"></param>
@@ -328,24 +518,65 @@ namespace SMW_ML.Game.SuperMarioWorld
             if (addressData.CacheDuration == AddressData.CacheDurations.Level)
             {
                 // If the level number changed, we need to reset the level cache
-                if (currLevelNumber != GetLevelNumber()) levelCache.Clear();
+                var ctc = ReadSingle(Counters.LevelTransitionCounter);
+                if (ctc != currTransitionCount && CanAct())
+                {
+                    levelCache.Clear();
+                    currTransitionCount = ctc;
+                }
                 cacheToUse = levelCache;
-                currLevelNumber = GetLevelNumber();
             }
 
             return cacheToUse;
         }
 
-        /// <summary>
-        /// Returns the current level's number
-        /// </summary>
-        /// <returns></returns>
-        private ushort GetLevelNumber()
+        private void InitFrameCache()
         {
-            ushort result = ReadSingle(Level.Number);
-            if (result > 0x24) result += 0xDC;
+            (AddressData, bool)[] toRead = new (AddressData, bool)[]
+            {
+                (Player.PositionX, false),
+                (Player.PositionY, false),
+                (Player.IsOnGround, false),
+                (Player.IsOnSolidSprite, false),
+                (Player.PlayerAnimationState, false),
+                (Level.EndLevelTimer, false),
+                (Level.KeyholeTimer, false),
+                (Player.IsInWater, false),
+                (Player.CanJumpOutOfWater, false),
+                (Player.AirFlag, false),
+                (Player.IsCarryingSomething, false),
+                (Player.CanClimb, false),
+                (Player.CanClimbOnAir, false),
+                (Player.DashTimer, false),
+                (Level.TextBoxTriggered, false),
+                (Counters.Coins, false),
+                (Counters.Lives, false),
+                (Counters.YoshiCoinCollected, false),
+                (Counters.Score, false),
+                (Counters.LevelTransitionCounter, false),
+                (Player.PowerUp, false),
+                (Addresses.ExtendedSprite.Numbers, false),
+                (Addresses.ExtendedSprite.XPositions, true),
+                (Addresses.ExtendedSprite.YPositions, true),
+                (Addresses.Sprite.SpriteNumbers, false),
+                (Addresses.Sprite.Statuses, false),
+                (Addresses.Sprite.XPositions, true),
+                (Addresses.Sprite.YPositions, true),
+                (Addresses.Sprite.SpritesProperties2, false),
+                (Addresses.Sprite.MiscC2, false),
+                (Addresses.Sprite.Misc151C, false),
+                (Addresses.Sprite.Misc1528, false),
+                (Addresses.Sprite.Misc1602, false),
+                (Addresses.Sprite.Misc187B, false),
+                (Level.Layer1X, false),
+                (Level.Layer1Y, false),
+                (Level.Layer2X, false),
+                (Level.Layer2Y, false),
+                (Level.Layer3X, false),
+                (Level.Layer3Y, false),
+            };
 
-            return result;
+            _ = Read(toRead);
         }
 
         private static uint ToUnsignedInteger(byte[] bytes)

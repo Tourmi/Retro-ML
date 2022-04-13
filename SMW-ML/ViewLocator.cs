@@ -8,6 +8,9 @@ namespace SMW_ML
 {
     internal class ViewLocator : IDataTemplate
     {
+
+        private static MainWindow? window;
+
         public IControl Build(object data)
         {
             var name = data.GetType().FullName!.Replace("ViewModel", "View");
@@ -28,9 +31,14 @@ namespace SMW_ML
             return data is ViewModelBase;
         }
 
-        public static Window GetMainWindow()
+        public static MainWindow GetMainWindow()
         {
-            return (Window)Activator.CreateInstance(typeof(MainWindow))!;
+            return window!;
+        }
+
+        public static void SetInstance(MainWindow window)
+        {
+            ViewLocator.window = window;
         }
     }
 }

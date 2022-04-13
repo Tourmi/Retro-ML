@@ -1,0 +1,37 @@
+﻿<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="600" d:DesignHeight="200"
+			 xmlns:vm="clr-namespace:SMW_ML.ViewModels.Components;assembly=SMW_ML"
+             x:Class="SMW_ML.Views.Components.ScoreFactorView">
+	
+	<UserControl.Styles>
+		<StyleInclude Source="/Styles/MainStyles.axaml" />
+	</UserControl.Styles>
+	
+	<StackPanel Spacing="10">
+		<TextBlock Classes="h1" Text="{Binding Name}"/>
+		<StackPanel Margin="5" Orientation="Horizontal" VerticalAlignment="Center" Spacing="10">
+			<TextBlock Text="{Binding EnabledString}" VerticalAlignment="Center"/>
+			<CheckBox IsEnabled="{Binding CanBeDisabled}" IsChecked="{Binding IsChecked}" VerticalAlignment="Center"/>
+			<TextBlock Text="{Binding MultiplierString}" VerticalAlignment="Center"/>
+			<NumericUpDown Value="{Binding Multiplier}" ShowButtonSpinner="False"/>
+		</StackPanel>
+		<ItemsControl Items="{Binding ExtraFields}">
+			<ItemsControl.ItemsPanel>
+				<ItemsPanelTemplate>
+					<StackPanel Spacing="0"/>
+				</ItemsPanelTemplate>
+			</ItemsControl.ItemsPanel>
+			<ItemsControl.ItemTemplate>
+				<DataTemplate>
+					<StackPanel Margin="20,0" Orientation="Horizontal" VerticalAlignment="Center" Spacing="10">
+						<TextBlock Text="{Binding Name}" VerticalAlignment="Center" Width="120"/>
+						<NumericUpDown Value="{Binding Value}" ShowButtonSpinner="False"/>
+					</StackPanel>
+				</DataTemplate>
+			</ItemsControl.ItemTemplate>
+		</ItemsControl>
+	</StackPanel>
+</UserControl>

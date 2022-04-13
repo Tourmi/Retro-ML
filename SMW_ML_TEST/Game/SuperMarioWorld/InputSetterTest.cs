@@ -2,11 +2,6 @@
 using SMW_ML.Game.SuperMarioWorld;
 using SMW_ML.Models.Config;
 using SMW_ML_TEST.Emulator;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SMW_ML_TEST.Game.SuperMarioWorld
 {
@@ -21,7 +16,7 @@ namespace SMW_ML_TEST.Game.SuperMarioWorld
         public void SetUp()
         {
             mea = new MockEmulatorAdapter();
-            dataFetcher = new DataFetcher(mea);
+            dataFetcher = new DataFetcher(mea, new NeuralConfig());
             inputSetter = new InputSetter(dataFetcher, new NeuralConfig());
         }
 

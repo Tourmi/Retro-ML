@@ -1,11 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Newtonsoft.Json;
+using SMW_ML.Utils;
 
 namespace SMW_ML.Models.Config
 {
+    /// <summary>
+    /// Configuration for SharpNEAT, stuff related to training the AIs.
+    /// </summary>
     public class SharpNeatModel
     {
         public SharpNeatModel()
@@ -16,7 +16,6 @@ namespace SMW_ML.Models.Config
             ReproductionAsexualSettings = new ReproductionAsexualSettings();
             ReproductionSexualSettings = new ReproductionSexualSettings();
             ComplexityRegulationStrategy = new ComplexityRegulationStrategy();
-
         }
 
         public bool IsAcyclic { get; set; }
@@ -33,6 +32,15 @@ namespace SMW_ML.Models.Config
         public int DegreeOfParallelism { get; set; }
         public bool EnableHardwareAcceleratedNeuralNets { get; set; }
         public bool EnableHardwareAcceleratedActivationFunctions { get; set; }
+
+        public string Serialize() => JsonConvert.SerializeObject(this, SerializationUtils.JSON_CONFIG);
+
+        public static SharpNeatModel Deserialize(string json)
+        {
+            SharpNeatModel cfg = JsonConvert.DeserializeObject<SharpNeatModel>(json, SerializationUtils.JSON_CONFIG)!;
+
+            return cfg;
+        }
     }
 
     public class EvolutionAlgorithmSettings
@@ -66,5 +74,8 @@ namespace SMW_ML.Models.Config
         }
 
         public string StrategyName { get; set; }
+        public int RelativeComplexityCeiling { get; set; }
+        public int MinSimplifcationGenerations { get; set; }
+
     }
 }

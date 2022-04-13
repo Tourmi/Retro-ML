@@ -1,13 +1,12 @@
 ﻿using SharpNeat.BlackBox;
 using SMW_ML.Models.Config;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SMW_ML.Game.SuperMarioWorld
 {
+    /// <summary>
+    /// Sets the inputs of the neural network
+    /// </summary>
     internal class InputSetter
     {
         private readonly List<InputNode> inputNodes;
@@ -20,6 +19,10 @@ namespace SMW_ML.Game.SuperMarioWorld
             inputNodes = config.InputNodes;
         }
 
+        /// <summary>
+        /// Sets the states of the given input vector based on the input nodes.
+        /// </summary>
+        /// <param name="inputs"></param>
         public void SetInputs(IVector<double> inputs)
         {
             int currOffset = 0;
@@ -35,27 +38,15 @@ namespace SMW_ML.Game.SuperMarioWorld
                     {
                         for (int j = 0; j < inputStates.GetLength(1); j++)
                         {
-                            inputs[currOffset++] = inputStates[i, j] ? 1 : 0;
+                            inputs[currOffset++] = inputStates[i, j];
                         }
                     }
                 }
                 else
                 {
-                    inputs[currOffset++] = input.GetState(dataReader) ? 1 : 0;
+                    inputs[currOffset++] = input.GetState(dataReader);
                 }
             }
-        }
-
-        public int GetInputCount()
-        {
-            int count = 0;
-
-            foreach(var input in inputNodes)
-            {
-                if (input.ShouldUse) count += input.TotalWidth * input.TotalHeight;
-            }
-
-            return count;
         }
     }
 }

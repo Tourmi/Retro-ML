@@ -1,5 +1,4 @@
-﻿using SharpNeat.BlackBox;
-using SMW_ML.Arduino;
+﻿using SMW_ML.Arduino;
 using SMW_ML.Emulator;
 using SMW_ML.Game;
 using SMW_ML.Game.SuperMarioWorld;
@@ -23,7 +22,7 @@ namespace SMW_ML_TEST.Emulator
 
         public MockEmulatorAdapter()
         {
-            DataFetcher = new DataFetcher(this);
+            DataFetcher = new DataFetcher(this, new NeuralConfig());
             InputSetter = new InputSetter(DataFetcher, new NeuralConfig());
             OutputGetter = new OutputGetter(new NeuralConfig());
 
@@ -43,7 +42,7 @@ namespace SMW_ML_TEST.Emulator
         public OutputGetter GetOutputGetter() => OutputGetter;
 
         public string[] GetStates() => new string[] { "state1", "state2", "state3" };
-        
+
 
         public int LoadRomCallCount = 0;
         public void LoadRom(string path) => LoadRomCallCount++;
@@ -70,7 +69,7 @@ namespace SMW_ML_TEST.Emulator
             Memory[addr] = b;
         }
 
-        public void SetMemory(uint addr, byte[] bs)
+        public void SetMemory(uint addr, params byte[] bs)
         {
             for (uint i = 0; i < bs.Length; i++)
             {
@@ -94,7 +93,7 @@ namespace SMW_ML_TEST.Emulator
 
             var result = new byte[count];
 
-            for(uint i = 0; i < count; i++)
+            for (uint i = 0; i < count; i++)
             {
                 Memory.TryGetValue(addr + i, out result[i]);
             }
@@ -119,6 +118,16 @@ namespace SMW_ML_TEST.Emulator
         public void NetworkChanged((int sourceNode, int targetNode, double weight)[][] connectionLayers, int[] outputIds)
         {
             throw new NotImplementedException();
+        }
+
+        public byte[] ReadMemory(params (uint addr, uint count)[] ranges)
+        {
+            List<byte> res = new();
+            foreach (var range in ranges)
+            {
+                res.AddRange(ReadMemory(range.addr, range.count));
+            }
+            return res.ToArray();
         }
     }
 }

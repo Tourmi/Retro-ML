@@ -1,30 +1,37 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Text.Json;
-using SharpNeat.Experiments;
+﻿using SharpNeat.Experiments;
 using SharpNeat.IO;
 using SharpNeat.Neat;
-using System.Threading;
 using SharpNeat.Neat.EvolutionAlgorithm;
-using SMW_ML.Emulator;
-using System.Diagnostics;
-using System.IO;
-using Newtonsoft.Json;
-using SharpNeat.Neat.Genome.IO;
 using SharpNeat.Neat.Genome;
+using SharpNeat.Neat.Genome.IO;
 using SharpNeat.NeuralNets.Double.ActivationFunctions;
+using SMW_ML.Emulator;
+using SMW_ML.Models.Config;
+using SMW_ML.Neural.Training.StopCondition;
 using SMW_ML.Utils;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Threading;
 
 namespace SMW_ML.Neural.Training.SharpNeatImpl
 {
+    /// <summary>
+    /// Neural trainer that uses the SharpNeat library for its training
+    /// </summary>
     internal class SharpNeatTrainer : INeuralTrainer
     {
+        public event Action<TrainingStatistics>? OnStatisticsUpdated;
+        public event Action? OnStopConditionReached;
+
         private readonly SMWExperimentFactory experimentFactory;
         private readonly Semaphore syncSemaphore;
         private readonly EmulatorManager emulatorManager;
+        private readonly ApplicationConfig applicationConfig;
+
+        private string? trainingDirectory;
+        private double previousFitness;
 
         private INeatExperiment<double>? currentExperiment;
         private NeatEvolutionAlgorithm<double>? currentAlgo;
@@ -38,22 +45,32 @@ namespace SMW_ML.Neural.Training.SharpNeatImpl
 
         public bool IsTraining => isTraining;
 
+        private bool forceStop = false;
+        public bool ForceStop
+        {
+            get => forceStop;
+            set => forceStop = value;
+        }
+
+        public ICollection<IStopCondition> StopConditions { private get; set; }
+
         /// <summary>
         /// Neural training using the SharpNEAT library
         /// </summary>
-        public SharpNeatTrainer(EmulatorManager emulatorManager)
+        public SharpNeatTrainer(EmulatorManager emulatorManager, ApplicationConfig appConfig)
         {
             syncSemaphore = new Semaphore(1, 1);
             this.emulatorManager = emulatorManager;
-            experimentFactory = new SMWExperimentFactory(emulatorManager);
-
+            experimentFactory = new SMWExperimentFactory(emulatorManager, appConfig, this);
+            applicationConfig = appConfig;
             metaGenome = new MetaNeatGenome<double>(
-                    inputNodeCount: emulatorManager.GetInputCount(),
-                    outputNodeCount: emulatorManager.GetOutputCount(),
-                    isAcyclic: true,
-                    activationFn: new LeakyReLU());
+                   inputNodeCount: appConfig.NeuralConfig.GetInputCount(),
+                   outputNodeCount: appConfig.NeuralConfig.GetOutputCount(),
+                   isAcyclic: true,
+                   activationFn: new LeakyReLU());
             genomeBuilder = NeatGenomeBuilderFactory<double>.Create(metaGenome);
             genomes = new List<NeatGenome<double>>();
+            StopConditions = appConfig.StopConditions;
         }
 
         /// <summary>
@@ -67,6 +84,12 @@ namespace SMW_ML.Neural.Training.SharpNeatImpl
             {
                 throw new InvalidOperationException("An experiment is already ongoing.");
             }
+
+            trainingDirectory = DateTime.Now.ToString("yyyyMMdd-HHmmss") + "/";
+            Directory.CreateDirectory(trainingDirectory + "/" + DefaultPaths.GENOME_DIR);
+
+            string neuralConfig = applicationConfig.NeuralConfig.Serialize();
+            File.WriteAllText(Path.Combine(trainingDirectory, DefaultPaths.NEURAL_CONFIG_NAME), neuralConfig);
 
             currentExperiment = experimentFactory.CreateExperiment(JsonUtils.LoadUtf8(configPath).RootElement);
             currentExperiment.ActivationFnName = nameof(LeakyReLU);
@@ -97,14 +120,41 @@ namespace SMW_ML.Neural.Training.SharpNeatImpl
             isTraining = true;
 
             syncSemaphore.WaitOne();
-            currentAlgo!.Initialise();
-            SavePopulation(DefaultPaths.CURRENT_POPULATION);
+
+            if (!ForceStop)
+            {
+                OnStatisticsUpdated?.Invoke(GetTrainingStatistics());
+                currentAlgo!.Initialise();
+                SavePopulation(trainingDirectory + DefaultPaths.CURRENT_POPULATION + DefaultPaths.POPULATION_EXTENSION);
+            }
+
+            foreach (var stopCondition in StopConditions)
+            {
+                stopCondition.Start();
+            }
 
             while (!stopFlag)
             {
                 currentAlgo!.PerformOneGeneration();
+                TrainingStatistics ts = GetTrainingStatistics();
 
-                SavePopulation(DefaultPaths.CURRENT_POPULATION);
+                if (!ForceStop)
+                {
+                    OnStatisticsUpdated?.Invoke(ts);
+
+                    SaveBestGenome();
+                    SavePopulation(trainingDirectory + DefaultPaths.CURRENT_POPULATION + DefaultPaths.POPULATION_EXTENSION);
+                }
+
+                foreach (var stopCondition in StopConditions)
+                {
+                    if (stopCondition.ShouldUse && stopCondition.CheckShouldStop(ts))
+                    {
+                        OnStopConditionReached?.Invoke();
+                        stopFlag = true;
+                        break;
+                    }
+                }
             }
 
             syncSemaphore.Release();
@@ -113,8 +163,31 @@ namespace SMW_ML.Neural.Training.SharpNeatImpl
 
         public void LoadPopulation(string path)
         {
-            NeatPopulationLoader<double> npl = new(NeatGenomeLoaderFactory.CreateLoaderDouble(metaGenome));
-            genomes = npl.LoadFromZipArchive(path);
+            try
+            {
+                NeatPopulationLoader<double> npl = new(NeatGenomeLoaderFactory.CreateLoaderDouble(metaGenome));
+                genomes = npl.LoadFromZipArchive(path);
+            }
+            catch
+            {
+                Exceptions.QueueException(new Exception("Unable to load population. Is the population compatible with the current Neural Network Configuration?"));
+            }
+        }
+
+        public TrainingStatistics GetTrainingStatistics()
+        {
+            TrainingStatistics ts = new();
+
+            ts.AddStat(TrainingStatistics.CURRENT_GEN, currentAlgo!.Stats.Generation);
+            ts.AddStat(TrainingStatistics.BEST_GENOME_FITNESS, currentAlgo!.Population.Stats.BestFitness.PrimaryFitness);
+            ts.AddStat(TrainingStatistics.BEST_GENOME_COMPLEXITY, currentAlgo!.Population.Stats.BestComplexity);
+            ts.AddStat(TrainingStatistics.MEAN_FITNESS, currentAlgo!.Population.Stats.MeanFitness);
+            ts.AddStat(TrainingStatistics.MEAN_COMPLEXITY, currentAlgo!.Population.Stats.MeanComplexity);
+            ts.AddStat(TrainingStatistics.MAX_COMPLEXITY, currentAlgo!.Population!.Stats.MaxComplexity);
+            ts.AddStat(TrainingStatistics.EVALS_PER_MINUTE, currentAlgo!.Stats.EvaluationsPerSec * 60);
+            ts.AddStat(TrainingStatistics.TOTAL_EVALUATIONS, currentAlgo!.Stats.TotalEvaluationCount);
+
+            return ts;
         }
 
         public void SavePopulation(string path)
@@ -131,6 +204,26 @@ namespace SMW_ML.Neural.Training.SharpNeatImpl
             genomes = currentAlgo!.Population.GenomeList;
 
             NeatPopulationSaver<double>.SaveToZipArchive(genomes, path[..path.IndexOf(filename)], filename, System.IO.Compression.CompressionLevel.Fastest);
+        }
+
+        public void SaveBestGenome()
+        {
+            var bestGenome = currentAlgo!.Population.BestGenome;
+            var path = Path.GetFullPath(Path.Combine(trainingDirectory!, DefaultPaths.GENOME_DIR, DefaultPaths.CURRENT_GENOME))
+                + currentAlgo!.Stats.Generation.ToString().PadLeft(5, '0')
+                + DefaultPaths.GENOME_EXTENSION;
+            if (bestGenome.FitnessInfo.PrimaryFitness > previousFitness)
+            {
+                if (File.Exists(path))
+                {
+                    File.Copy(path, path + ".backup", true);
+                    File.Delete(path);
+                }
+
+                NeatGenomeSaver<double>.Save(bestGenome, path);
+
+                previousFitness = bestGenome.FitnessInfo.PrimaryFitness;
+            }
         }
     }
 }

@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace SMW_ML.Models
+﻿namespace SMW_ML.Models
 {
     internal class Error
     {
@@ -15,7 +9,7 @@ namespace SMW_ML.Models
         }
 
         public string FieldError { get; set; }
-        
+
         public string Description { get; set; }
     }
 }

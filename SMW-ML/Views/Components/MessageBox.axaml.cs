@@ -1,7 +1,6 @@
-﻿using System.Threading.Tasks;
-using Avalonia.Controls;
-using Avalonia.Interactivity;
+﻿using Avalonia.Controls;
 using Avalonia.Markup.Xaml;
+using System.Threading.Tasks;
 
 namespace SMW_ML.Views.Components
 {
@@ -45,7 +44,8 @@ namespace SMW_ML.Views.Components
             void AddButton(string caption, MessageBoxResult r, bool def = false)
             {
                 var btn = new Button { Content = caption };
-                btn.Click += (_, __) => {
+                btn.Click += (_, __) =>
+                {
                     res = r;
                     msgbox.Close();
                 };
@@ -69,7 +69,11 @@ namespace SMW_ML.Views.Components
             var tcs = new TaskCompletionSource<MessageBoxResult>();
             msgbox.Closed += delegate { tcs.TrySetResult(res); };
             if (parent != null)
+            {
+                msgbox.WindowStartupLocation = WindowStartupLocation.CenterOwner;
+                msgbox.Icon = parent.Icon;
                 msgbox.ShowDialog(parent);
+            }
             else msgbox.Show();
             return tcs.Task;
         }

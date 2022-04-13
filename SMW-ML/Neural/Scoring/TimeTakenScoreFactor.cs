@@ -1,17 +1,31 @@
 ﻿using SMW_ML.Game.SuperMarioWorld;
+using System;
 
 namespace SMW_ML.Neural.Scoring
 {
     internal class TimeTakenScoreFactor : IScoreFactor
     {
-        private const int MAX_TRAINING_FRAMES = 120 * 60;
+        public const int MAX_TRAINING_FRAMES = 120 * 60;
 
         private bool shouldStop = false;
         private double currScore;
         private int levelFrames = 0;
 
+        public TimeTakenScoreFactor()
+        {
+            ExtraFields = Array.Empty<ExtraField>();
+        }
+
         public bool ShouldStop => shouldStop;
-        public double ScoreFactor { get; set; }
+        public double ScoreMultiplier { get; set; }
+
+        public string Name => "Time taken";
+
+        public bool CanBeDisabled => true;
+
+        public bool IsDisabled { get; set; }
+
+        public ExtraField[] ExtraFields { get; set; }
 
         public double GetFinalScore() => currScore;
 
@@ -26,9 +40,17 @@ namespace SMW_ML.Neural.Scoring
 
         public void LevelDone()
         {
-            currScore += (MAX_TRAINING_FRAMES - levelFrames) / 60.0 * ScoreFactor;
+            if (shouldStop)
+            {
+                currScore += ScoreMultiplier;
+            }
             shouldStop = false;
             levelFrames = 0;
+        }
+
+        public IScoreFactor Clone()
+        {
+            return new TimeTakenScoreFactor() { IsDisabled = IsDisabled, ScoreMultiplier = ScoreMultiplier };
         }
     }
 }

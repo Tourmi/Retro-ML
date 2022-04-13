@@ -1,5 +1,12 @@
 ﻿continueLoop = true
 
+function table_concat(t1,t2)
+    for i=1,#t2 do
+        t1[#t1+1] = t2[i]
+    end
+    return t1
+end
+
 function okay() 
     comm.socketServerSendBytes({1})
 end
@@ -53,6 +60,25 @@ function parseCommand(cmd)
         local count = string.sub(updated_cmd, spaceIndex + 1)
         local bytes = read_memory(tonumber(addr), tonumber(count))
         
+        okay()
+        comm.socketServerSendBytes(bytes)
+        return
+    end
+    if string.find(cmd, "read_memory_ranges ") then
+        emu.frameadvance()
+        local updated_cmd = string.sub(cmd, 20)
+        local bytes = {}
+        local space_index = string.find(updated_cmd, " ")
+        while space_index ~= nil do
+            local next_range = string.find(updated_cmd, ";")
+            local addr = string.sub(updated_cmd, 1, space_index)
+            local count = string.sub(updated_cmd, space_index + 1, next_range - 1)
+            table_concat(bytes, read_memory(tonumber(addr), tonumber(count)))
+
+            updated_cmd = string.sub(updated_cmd, next_range + 1)
+            space_index = string.find(updated_cmd, " ")
+        end
+
         okay()
         comm.socketServerSendBytes(bytes)
         return

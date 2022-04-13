@@ -4,9 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              mc:Ignorable="d" d:DesignWidth="1800" d:DesignHeight="800"
 			 xmlns:vm="clr-namespace:SMW_ML.ViewModels.Neural;assembly=SMW_ML"
-			 xmlns:utils="clr-namespace:SMW_ML.Utils;assembly=SMW_ML"
-             x:Class="SMW_ML.Views.Neural.NetworkView"
-			  >
+             x:Class="SMW_ML.Views.Neural.NetworkView">
 
 	<Design.DataContext>
 		<vm:NetworkViewModel/>
@@ -21,7 +19,6 @@
 			<Setter Property="Canvas.Left" Value="{Binding PositionX}"/>
 			<Setter Property="Canvas.Top" Value="{Binding PositionY}"/>
 		</Style>
-		
 		<Style Selector="StackPanel.nodes">
 			<Setter Property="Orientation" Value="Horizontal"/>
 			<Setter Property="MinHeight" Value="{Binding GridSize}"/>
@@ -35,7 +32,6 @@
 			<Setter Property="TextAlignment" Value="Left"/>
 			<Setter Property="TextWrapping" Value="Wrap"/>
 			<Setter Property="FontSize" Value="10"/>
-
 		</Style>
 		<!--Square around nodes-->
 		<Style Selector="Border.node">
@@ -51,18 +47,16 @@
 			<Setter Property="Height" Value="{Binding NodeSize}"/>
 			<Setter Property="CornerRadius" Value="5"/>
 			<Setter Property="BorderThickness" Value="5"/>
-			<Setter Property="BorderBrush" Value="#EEE"/>
-		</Style>
-		<!--Red node-->
-		<Style Selector=".red Border.node Border">
-			<Setter Property="BorderBrush" Value="#E00"/>
-		</Style>
-		<Style Selector="Border.node:disabled Border">
 			<Setter Property="BorderBrush" Value="#444"/>
+			<Setter Property="BorderBrush" Value="{Binding NodeBrush}"/>
 		</Style>
+		<Style Selector="Border.node Border Rectangle">
+			<Setter Property="Fill" Value="{Binding $parent.BorderBrush}"/>
+		</Style>
+		<!--Connections-->
 		<Style Selector="Line">
 			<Setter Property="Stroke" Value="Lime"/>
-			<Setter Property="StrokeThickness" Value="3" />
+			<Setter Property="StrokeThickness" Value="1" />
 		</Style>
 		<Style Selector="Line.negative">
 			<Setter Property="Stroke" Value="Magenta"/>
@@ -80,7 +74,7 @@
 				</ItemsControl.ItemsPanel>
 				<ItemsControl.ItemTemplate>
 					<DataTemplate>
-						<StackPanel Classes="nodes" Classes.red="{Binding UseRed}">
+						<StackPanel Classes="nodes" >
 							<TextBlock Text="{Binding Name}"/>
 							<ItemsControl Items="{Binding Nodes}">
 								<ItemsControl.ItemsPanel>
@@ -91,9 +85,9 @@
 
 								<ItemsControl.ItemTemplate>
 									<DataTemplate>
-										<Border Classes="node" IsEnabled="{Binding Active}">
+										<Border Classes="node">
 											<Border>
-												<Rectangle Fill="{Binding $parent.BorderBrush}"/>
+												<Rectangle/>
 											</Border>
 										</Border>
 									</DataTemplate>
@@ -113,7 +107,7 @@
 				</ItemsControl.ItemsPanel>
 				<ItemsControl.ItemTemplate>
 					<DataTemplate>
-						<StackPanel Classes="nodes" Classes.red="{Binding UseRed}" HorizontalAlignment="Right">
+						<StackPanel Classes="nodes" HorizontalAlignment="Right">
 							<ItemsControl Items="{Binding Nodes}">
 								<ItemsControl.ItemsPanel>
 									<ItemsPanelTemplate>
@@ -123,9 +117,9 @@
 
 								<ItemsControl.ItemTemplate>
 									<DataTemplate>
-										<Border Classes="node" IsEnabled="{Binding Active}">
+										<Border Classes="node">
 											<Border>
-												<Rectangle Fill="{Binding $parent.BorderBrush}"/>
+												<Rectangle/>
 											</Border>
 										</Border>
 									</DataTemplate>
@@ -149,8 +143,8 @@
 			<ItemsControl.ItemTemplate>
 				<DataTemplate>
 					<Border Classes="node">
-						<Border BorderBrush="#aca">
-							<Rectangle Fill="{Binding $parent.BorderBrush}"/>
+						<Border>
+							<Rectangle/>
 						</Border>
 					</Border>
 				</DataTemplate>
@@ -173,5 +167,6 @@
 				</DataTemplate>
 			</ItemsControl.ItemTemplate>
 		</ItemsControl>
+		<TextBlock Foreground="Red" Text="TOO COMPLEX" FontSize="48" VerticalAlignment="Center" HorizontalAlignment="Center" IsVisible="{Binding TooComplex}"/>
 	</Panel>
 </UserControl>

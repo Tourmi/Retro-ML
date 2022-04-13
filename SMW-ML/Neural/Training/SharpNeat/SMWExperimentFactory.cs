@@ -1,37 +1,31 @@
-﻿using SharpNeat.Evaluation;
-using SharpNeat.Experiments;
-using SharpNeat.Neat.ComplexityRegulation;
-using SharpNeat.Neat.EvolutionAlgorithm;
-using SharpNeat.Neat.Reproduction.Asexual;
-using SharpNeat.Neat.Reproduction.Sexual;
+﻿using SharpNeat.Experiments;
 using SharpNeat.NeuralNets;
 using SMW_ML.Emulator;
-using SMW_ML.Game.SuperMarioWorld;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using SMW_ML.Models.Config;
 using System.Text.Json;
-using System.Threading.Tasks;
 
 namespace SMW_ML.Neural.Training.SharpNeatImpl
 {
-    internal class SMWExperimentFactory : INeatExperimentFactory
+    internal class SMWExperimentFactory
     {
-        public string Id => "smw-experiment-factory";
+        public static string Id => "smw-experiment-factory";
 
-        private EmulatorManager emulatorManager;
+        private readonly EmulatorManager emulatorManager;
+        private readonly ApplicationConfig appConfig;
+        private readonly INeuralTrainer trainer;
 
-        public SMWExperimentFactory(EmulatorManager emulator)
+        public SMWExperimentFactory(EmulatorManager emulator, ApplicationConfig appConfig, INeuralTrainer trainer)
         {
             this.emulatorManager = emulator;
+            this.appConfig = appConfig;
+            this.trainer = trainer;
         }
 
         public INeatExperiment<double> CreateExperiment(JsonElement configElem)
         {
-            var evalScheme = new SMWEvaluationScheme(emulatorManager);
+            var evalScheme = new SMWEvaluationScheme(emulatorManager, appConfig, trainer);
 
-            var experiment = new NeatExperiment<double>(evalScheme, this.Id)
+            var experiment = new NeatExperiment<double>(evalScheme, Id)
             {
                 IsAcyclic = true,
                 ActivationFnName = ActivationFunctionId.LeakyReLU.ToString()
@@ -40,12 +34,6 @@ namespace SMW_ML.Neural.Training.SharpNeatImpl
             // Read standard neat experiment json config and use it configure the experiment.
             NeatExperimentJsonReader<double>.Read(experiment, configElem);
             return experiment;
-        }
-
-        /// <exception cref="NotImplementedException">Not implemented</exception>
-        public INeatExperiment<float> CreateExperimentSinglePrecision(JsonElement configElem)
-        {
-            throw new NotImplementedException();
         }
     }
 }

@@ -1,11 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace SMW_ML.Game.SuperMarioWorld.Data
+﻿namespace SMW_ML.Game.SuperMarioWorld.Data
 {
+    /// <summary>
+    /// Most of the sprite numbers that are in the game. Used to determine if a sprite is good, bad, or solid.
+    /// </summary>
     internal static class SpriteNumbers
     {
         public const byte KEYHOLE = 0x0E;
@@ -29,6 +26,18 @@ namespace SMW_ML.Game.SuperMarioWorld.Data
         public const byte WALL_SPRING_LEFT = 0x6B;
         public const byte WALL_SPRING_RIGHT = 0x6C;
         public const byte INVISIBLE_SOLID_BLOCK = 0x6D;
+        public const byte MUSHROOM = 0x74;
+        public const byte FLOWER = 0x75;
+        public const byte STAR = 0x76;
+        public const byte FEATHER = 0x77;
+        public const byte ONE_UP = 0x78;
+        public const byte GOAL_TAPE = 0x7B;
+        public const byte P_BALLOON = 0x7D;
+        public const byte FLYING_RED_COIN_OR_WINGS = 0x7E;
+        public const byte FLYING_1_UP = 0x7F;
+        public const byte FLYING_KEY = 0x80;
+        public const byte FLYING_BLOCK_1 = 0x83;
+        public const byte FLYING_BLOCK_2 = 0x84;
         public const byte LAKITU_CLOUD = 0x87;
         public const byte LAYER_3_CAGE = 0x88;
         public const byte LAYER_3_SMASH = 0x89;
@@ -38,6 +47,7 @@ namespace SMW_ML.Game.SuperMarioWorld.Data
         public const byte GHOST_HOUSE_EXIT = 0x8D;
         public const byte INVISIBLE_WARP_HOLE = 0x8E;
         public const byte SCALE_PLATFORMS = 0x8F;
+        public const byte HAMMER_BRO_PLATFORM = 0x9C;
         public const byte CHAINED_GREY_PLATFORM = 0xA3;
         public const byte IGGY_BALL = 0xA7;
         public const byte CREATING_EATING_BLOCK = 0xB1;
@@ -54,10 +64,18 @@ namespace SMW_ML.Game.SuperMarioWorld.Data
         public const byte LIGHT_SWITCH = 0xC8;
 
         public const byte PLATFORMS_MIN = 0x55;
+        public const byte TURNBLOCK_BRIDGE_HV = 0x59;
+        public const byte TURNBLOCK_BRIDGE_H = 0x5A;
+        public const byte REVOLVING_PLATFORM = 0x5F;
         public const byte PLATFORMS_MAX = 0x63;
         public const byte POWERUPS_ETC_MIN = 0x74;
         public const byte POWERUPS_ETC_MAX = 0x84;
 
+        /// <summary>
+        /// Whether or not the given sprite number is dangerous.
+        /// </summary>
+        /// <param name="number"></param>
+        /// <returns></returns>
         public static bool IsDangerous(byte number)
         {
             if (number >= PLATFORMS_MIN && number <= PLATFORMS_MAX) return false;
@@ -95,6 +113,7 @@ namespace SMW_ML.Game.SuperMarioWorld.Data
                 GHOST_HOUSE_EXIT or
                 INVISIBLE_WARP_HOLE or
                 SCALE_PLATFORMS or
+                HAMMER_BRO_PLATFORM or
                 CHAINED_GREY_PLATFORM or
                 IGGY_BALL or
                 CREATING_EATING_BLOCK or
@@ -108,8 +127,77 @@ namespace SMW_ML.Game.SuperMarioWorld.Data
                 FALLING_GREY_PLATFORM or
                 SPOTLIGHT or
                 INVISIBLE_MUSHROOM or
-                LIGHT_SWITCH => false,
+                LIGHT_SWITCH
+                => false,
                 _ => true,
+            };
+        }
+
+        /// <summary>
+        /// Whether or not the given sprite is considered good. Can be powerups, grabbable items, item blocks, coins, the goal or a keyhole.
+        /// </summary>
+        /// <param name="number"></param>
+        /// <returns></returns>
+        public static bool IsGood(byte number)
+        {
+            return number switch
+            {
+                MOVING_COIN or
+                YOSHI_EGG or
+                BABY_YOSHI or
+                SPRINGBOARD or
+                YOSHI or
+                PSWITCH or
+                DIRECTIONAL_COINS or
+                GOAL_SPHERE or
+                LAKITU_CLOUD or
+                INVISIBLE_SOLID_BLOCK or
+                MUSHROOM or
+                FLOWER or
+                STAR or
+                FEATHER or
+                ONE_UP or
+                GOAL_TAPE or
+                P_BALLOON or
+                FLYING_RED_COIN_OR_WINGS or
+                FLYING_1_UP or
+                FLYING_KEY or
+                FLYING_BLOCK_1 or
+                FLYING_BLOCK_2
+                => true,
+                _ => false
+            };
+        }
+
+        /// <summary>
+        /// Whether or not the current sprite number can be walked on.
+        /// </summary>
+        /// <param name="number"></param>
+        /// <returns></returns>
+        public static bool IsSolid(byte number)
+        {
+            if (number >= PLATFORMS_MIN && number <= PLATFORMS_MAX) return true;
+
+            return number switch
+            {
+                DOLPHIN_LONG or
+                DOLPHIN_SHORT or
+                DOLPHIN_VERTICAL or
+                GROWING_PIPE or
+                SCALE_PLATFORMS or
+                HAMMER_BRO_PLATFORM or
+                CHAINED_GREY_PLATFORM or
+                CREATING_EATING_BLOCK or
+                CARROT_TOP_UP_LEFT or
+                CARROT_TOP_UP_RIGHT or
+                MESSAGE_BOX or
+                TIMED_LIFT or
+                CASTLE_BLOCK or
+                LAVA_PLATFORM or
+                FLYING_GREY_PLATFORM or
+                FALLING_GREY_PLATFORM or
+                LIGHT_SWITCH => true,
+                _ => false
             };
         }
     }

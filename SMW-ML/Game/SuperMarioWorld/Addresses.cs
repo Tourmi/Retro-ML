@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace SMW_ML.Game.SuperMarioWorld
+﻿namespace SMW_ML.Game.SuperMarioWorld
 {
     /// <summary>
     /// RAM addresses used in Super Mario World.
@@ -137,6 +131,14 @@ namespace SMW_ML.Game.SuperMarioWorld
             /// 0x01 if the player can jump out of the water immediately, 0x00 otherwise
             /// </summary>
             public static readonly AddressData CanJumpOutOfWater = new(0x0013FA, 1);
+            /// <summary>
+            /// <br>0x00 : Player is small</br>
+            /// <br>0x01 : Player is big</br>
+            /// <br>0x02 : Player has cape</br>
+            /// <br>0x03 : Player has fire</br>
+            /// <br>0x04 : invalid</br>
+            /// </summary>
+            public static readonly AddressData PowerUp = new(0x000019, 1);
         }
 
         public static class Sprite
@@ -246,6 +248,27 @@ namespace SMW_ML.Game.SuperMarioWorld
             /// <br>p=Make platform passable from below</br>
             /// </summary>
             public static readonly AddressData SpritesProperties6 = new(0x00190F, 12);
+
+            /// <summary>
+            /// View <see href="https://docs.google.com/spreadsheets/d/1YuEyTkBXl-BvXyAf6C7EPXo20CdVlbwUttp2RXHoY2U/edit#gid=0"/> for information.
+            /// </summary>
+            public static readonly AddressData MiscC2 = new(0x0000C2, 12);
+            /// <summary>
+            /// View <see href="https://docs.google.com/spreadsheets/d/1YuEyTkBXl-BvXyAf6C7EPXo20CdVlbwUttp2RXHoY2U/edit#gid=0"/> for information.
+            /// </summary>
+            public static readonly AddressData Misc151C = new(0x00151C, 12);
+            /// <summary>
+            /// View <see href="https://docs.google.com/spreadsheets/d/1YuEyTkBXl-BvXyAf6C7EPXo20CdVlbwUttp2RXHoY2U/edit#gid=0"/> for information.
+            /// </summary>
+            public static readonly AddressData Misc1528 = new(0x001528, 12);
+            /// <summary>
+            /// View <see href="https://docs.google.com/spreadsheets/d/1YuEyTkBXl-BvXyAf6C7EPXo20CdVlbwUttp2RXHoY2U/edit#gid=0"/> for information.
+            /// </summary>
+            public static readonly AddressData Misc1602 = new(0x001602, 12);
+            /// <summary>
+            /// View <see href="https://docs.google.com/spreadsheets/d/1YuEyTkBXl-BvXyAf6C7EPXo20CdVlbwUttp2RXHoY2U/edit#gid=0"/> for information.
+            /// </summary>
+            public static readonly AddressData Misc187B = new(0x00187B, 12);
 
             /// <summary>
             /// 0x00 : No shooter
@@ -359,11 +382,15 @@ namespace SMW_ML.Game.SuperMarioWorld
             /// In the clean ROM, the actual formula is more complex.If translevel number > #$24, then subtract #$24. Then check RAM $7E:1F11 or $7E:1F12. If the player is in a submap (not the big world map), then add #$100. 
             /// The submaps of SMW use translevel numbers > #$24, and the big map uses numbers <= #$24, so the simplication is that #$100 - #$24 is #$DC; Lunar Magic forces this simplification to remain.
             /// </summary>
-            public static readonly AddressData Number = new(0x0013BF, 1);
+            public static readonly AddressData Number = new(0x0013BF, 1, AddressData.CacheDurations.Level);
             /// <summary>
             /// 0x00 if on main map.
             /// </summary>
             public static readonly AddressData SubMap = new(0x001F11, 1);
+            /// <summary>
+            /// 24-bit pointer to level's sprite data. Can be used as an unique ID
+            /// </summary>
+            public static readonly AddressData SpriteDataPointer = new(0x0000CE, 3, AddressData.CacheDurations.Level);
             /// <summary>
             /// 0x01 when in a water level, 0x00 otherwise
             /// </summary>
@@ -415,7 +442,7 @@ namespace SMW_ML.Game.SuperMarioWorld
             /// <summary>
             /// Amount of screens in level. Set to FF in Ludwig and Reznor fights
             /// </summary>
-            public static readonly AddressData ScreenCount = new(0x00005D, 1, AddressData.CacheDurations.Level);
+            public static readonly AddressData ScreenCount = new(0x00005D, 1, AddressData.CacheDurations.Frame);
 
             /// <summary>
             /// 0x00 : there is no water tide in the level
@@ -469,6 +496,8 @@ namespace SMW_ML.Game.SuperMarioWorld
             public static readonly AddressData Layer1Y = new(0x00001C, 2);
             public static readonly AddressData Layer2X = new(0x00001E, 2);
             public static readonly AddressData Layer2Y = new(0x000020, 2);
+            public static readonly AddressData Layer3Y = new(0x000024, 2);
+            public static readonly AddressData Layer3X = new(0x000022, 2);
 
             /// <summary>
             /// <br>Map16 Table.</br>

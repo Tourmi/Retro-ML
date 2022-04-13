@@ -1,11 +1,13 @@
 ﻿using SharpNeat.BlackBox;
 using SharpNeat.Evaluation;
-using SharpNeat.Graphs;
-using SharpNeat.Graphs.Acyclic;
 using SMW_ML.Emulator;
 using SMW_ML.Game.SuperMarioWorld;
+using SMW_ML.Models.Config;
 using SMW_ML.Neural.Scoring;
+using SMW_ML.Utils;
+using SMW_ML.Utils.SharpNeat;
 using System;
+using System.IO;
 using static SMW_ML.Utils.ReflectionTool;
 
 namespace SMW_ML.Neural.Training.SharpNeatImpl
@@ -18,53 +20,73 @@ namespace SMW_ML.Neural.Training.SharpNeatImpl
     {
         private readonly EmulatorManager emulatorManager;
         private IEmulatorAdapter? emulator;
+        private INeuralTrainer trainer;
         private DataFetcher? dataFetcher;
         private InputSetter? inputSetter;
         private OutputGetter? outputGetter;
+        private ApplicationConfig appConfig;
 
-        public SMWPhenomeEvaluator(EmulatorManager emulatorManager)
+        public SMWPhenomeEvaluator(EmulatorManager emulatorManager, ApplicationConfig appConfig, INeuralTrainer trainer)
         {
             this.emulatorManager = emulatorManager;
+            this.appConfig = appConfig;
+            this.trainer = trainer;
         }
 
         public FitnessInfo Evaluate(IBlackBox<double> phenome)
         {
-            Score score = new();
-
-            emulator = emulatorManager.WaitOne();
-            int[] outputMap = new int[phenome.OutputCount];
-            Array.Copy(phenome.OutputVector.GetField<int[]>("_map"), outputMap, phenome.OutputCount);
-            emulator.NetworkChanged(GetConnectionLayers(phenome), outputMap);
-            dataFetcher = emulator.GetDataFetcher();
-            inputSetter = emulator.GetInputSetter();
-            outputGetter = emulator.GetOutputGetter();
-
-            var saveStates = emulator.GetStates();
-            foreach (var state in saveStates)
+            try
             {
-                if (!state.Contains("yoshi-island")) continue;
-                emulator.LoadState(state);
-                emulator.NextFrame();
-                dataFetcher.NextLevel();
+                Score score = new(appConfig);
 
-                while (!score.ShouldStop)
+                emulator = emulatorManager.WaitOne();
+                int[] outputMap = new int[phenome.OutputCount];
+                Array.Copy(phenome.OutputVector.GetField<int[]>("_map"), outputMap, phenome.OutputCount);
+                emulator.NetworkChanged(SharpNeatUtils.GetConnectionLayers(phenome), outputMap);
+                dataFetcher = emulator.GetDataFetcher();
+                inputSetter = emulator.GetInputSetter();
+                outputGetter = emulator.GetOutputGetter();
+
+                var saveStates = appConfig.SaveStates;
+                foreach (var state in saveStates)
                 {
-                    DoFrame(phenome);
+                    if (trainer.ForceStop)
+                    {
+                        break;
+                    }
+                    emulator.LoadState(Path.GetFullPath(state));
+                    emulator.NextFrame();
+                    dataFetcher.NextLevel();
 
-                    score.Update(dataFetcher);
-                    dataFetcher.NextFrame();
-                    emulator.NetworkUpdated(VectorToArray(phenome.InputVector), VectorToArray(phenome.OutputVector));
+                    while (!score.ShouldStop)
+                    {
+                        if (trainer.ForceStop)
+                        {
+                            break;
+                        }
+                        DoFrame(phenome);
+
+                        score.Update(dataFetcher);
+                        dataFetcher.NextFrame();
+                        emulator.NetworkUpdated(SharpNeatUtils.VectorToArray(phenome.InputVector), SharpNeatUtils.VectorToArray(phenome.OutputVector));
+                    }
+                    score.LevelDone();
                 }
-                score.LevelDone();
+
+                dataFetcher = null;
+                inputSetter = null;
+                outputGetter = null;
+                emulatorManager.FreeOne(emulator);
+                emulator = null;
+
+                return new FitnessInfo(score.GetFinalScore());
             }
+            catch (Exception ex)
+            {
+                Exceptions.QueueException(new Exception($"Error occured during training. Was an emulator closed?\n{ex.Message}\n{ex.StackTrace}"));
 
-            dataFetcher = null;
-            inputSetter = null;
-            outputGetter = null;
-            emulatorManager.FreeOne(emulator);
-            emulator = null;
-
-            return new FitnessInfo(score.GetFinalScore());
+                return FitnessInfo.DefaultFitnessInfo;
+            }
         }
 
         /// <summary>
@@ -80,50 +102,6 @@ namespace SMW_ML.Neural.Training.SharpNeatImpl
 
             emulator!.SendInput(outputGetter!.GetControllerInput(phenome.OutputVector));
             emulator!.NextFrame();
-        }
-
-        /// <summary>
-        /// Returns an array equivalent to the given SharpNeat Vector
-        /// </summary>
-        /// <param name="vector"></param>
-        /// <returns></returns>
-        private static double[] VectorToArray(IVector<double> vector)
-        {
-            double[] result = new double[vector.Length];
-
-            for (int i = 0; i < result.Length; i++)
-            {
-                result[i] = vector[i];
-            }
-
-            return result;
-        }
-
-        /// <summary>
-        /// Returns the connections separated by layers of the phenome
-        /// </summary>
-        /// <param name="phenome"></param>
-        /// <returns></returns>
-        private static (int sourceNode, int targetNode, double weight)[][] GetConnectionLayers(IBlackBox<double> phenome)
-        {
-            ConnectionIds connectionIds = phenome.GetField<ConnectionIds>("_connIds");
-            double[] weights = phenome.GetField<double[]>("_weightArr");
-            LayerInfo[] layerInfos = phenome.GetField<LayerInfo[]>("_layerInfoArr");
-
-            var result = new (int sourceNode, int targetNode, double weight)[layerInfos.Length][];
-            int currIndex = 0;
-            for (int i = 0; i < result.Length; i++)
-            {
-                var layerInfo = layerInfos[i];
-                result[i] = new (int sourceNode, int targetNode, double weight)[layerInfo.EndConnectionIdx - currIndex];
-                int layerIndex = currIndex;
-                for (; currIndex < layerInfo.EndConnectionIdx; currIndex++)
-                {
-                    result[i][currIndex - layerIndex] = (connectionIds.GetSourceId(currIndex), connectionIds.GetTargetId(currIndex), weights[currIndex]);
-                }
-            }
-
-            return result;
         }
     }
 }
