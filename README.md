@@ -230,15 +230,27 @@ This page lists the available stop conditions for training sessions. Satisfying 
 
 This page lists all of the inputs and outputs that can be toggled for the neural networks, as well as the distance (in tiles) that the AI can see.  
 ⚠ Changing any of these values will make previously trained AIs incompatible with the application ⚠
+* **Load neural configuration**
+  * This button allows the loading of the neural configuration of previous training sessions
+* **Use vision grid**
+  * Toggling this toggles between the usage of vision rays, or a vision grid for AIs.
+* **Vision Ray Distance**
+  * The maximum distance for vision rays, in tiles. It is recommended to leave this setting at 10, but if you wish to restrict the distance at which AIs can see, feel free to tweak it.
+* **Vision ray count**
+  * The total amount of vision rays to throw around Mario. All vision rays are spread evenly. It is recommended to leave this at 16, as 8 doesn't give too much information, and 32 mostly gives back redundant information.
 * **View distance horizontal** `VDH`
   * The horizontal distance that the AI can see for, in tiles, not including the tile the AI is on. This means that if we set both the horizontal and vertical distances to 4, a 9x9 grid of inputs will be used.
 * **View distance vertical** `VDV`
   * The vertical distance that the AI can see for, in tiles, not including the tile the AI is on. This means that if we set both the horizontal and vertical distances to 4, a 9x9 grid of inputs will be used.
+* **Internal Clock Tick Length**
+  * The length of a single tick in the internal clock.
+* **Internal Clock Length**
+  * The amount of nodes the internal clock has.
 * **Input nodes**
-  * Tiles : The tiles the AI can stand on. `(VDH * 2 + 1) * (VDV * 2 + 1)` total nodes.
-  * Dangers : The dangerous tiles around the AI. Includes dangerous tiles as well as dangerous sprites. `(VDH * 2 + 1) * (VDV * 2 + 1)` total nodes.
-  * Goodies : The "good" tiles around the AI. Includes coins, powerups, blocks that contain items. `(VDH * 2 + 1) * (VDV * 2 + 1)` total nodes.
-  * Water : The water tiles around the AI. `(VDH * 2 + 1) * (VDV * 2 + 1)` total nodes.
+  * Tiles : The tiles the AI can stand on. `(VDH * 2 + 1) * (VDV * 2 + 1)` total nodes, if using a vision grid.
+  * Dangers : The dangerous tiles around the AI. Includes dangerous tiles as well as dangerous sprites. `(VDH * 2 + 1) * (VDV * 2 + 1)` total nodes, if using a vision grid
+  * Goodies : The "good" tiles around the AI. Includes coins, powerups, blocks that contain items. `(VDH * 2 + 1) * (VDV * 2 + 1)` total nodes, if using a vision grid.
+  * Water : The water tiles around the AI. `(VDH * 2 + 1) * (VDV * 2 + 1)` total nodes, if using a vision grid.
   * On ground : Whether or not the AI is touching the ground.
   * In water : Whether or not the AI is in water
   * Raising : Whether or not the AI is raising, both out of a jump as well as while swimming.
