@@ -5,17 +5,17 @@ using SharpNeat.Neat.EvolutionAlgorithm;
 using SharpNeat.Neat.Genome;
 using SharpNeat.Neat.Genome.IO;
 using SharpNeat.NeuralNets.Double.ActivationFunctions;
-using SMW_ML.Emulator;
-using SMW_ML.Models.Config;
-using SMW_ML.Neural.Training.StopCondition;
-using SMW_ML.Utils;
+using Retro_ML.Emulator;
+using Retro_ML.Models.Config;
+using Retro_ML.Neural.Training.StopCondition;
+using Retro_ML.Utils;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading;
 
-namespace SMW_ML.Neural.Training.SharpNeatImpl
+namespace Retro_ML.Neural.Training.SharpNeatImpl
 {
     /// <summary>
     /// Neural trainer that uses the SharpNeat library for its training

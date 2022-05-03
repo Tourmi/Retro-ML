@@ -1,6 +1,6 @@
 ﻿using System.Linq;
 
-namespace SMW_ML.Neural.Scoring
+namespace Retro_ML.Neural.Scoring
 {
     /// <summary>
     /// An extra field is used to add additional configurable parameters to Score Factors.

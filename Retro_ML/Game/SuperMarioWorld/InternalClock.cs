@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace SMW_ML.Game.SuperMarioWorld
+namespace Retro_ML.Game.SuperMarioWorld
 {
     internal class InternalClock
     {

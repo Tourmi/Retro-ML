@@ -4,7 +4,7 @@ using Avalonia.Markup.Xaml;
 using System;
 using System.Runtime.InteropServices;
 
-namespace SMW_ML.Views
+namespace Retro_ML.Views
 {
     public partial class MainWindow : Window
     {

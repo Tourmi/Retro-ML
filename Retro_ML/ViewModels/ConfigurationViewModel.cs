@@ -1,11 +1,11 @@
 ﻿using Avalonia.Controls;
 using ReactiveUI;
-using SMW_ML.Game.SuperMarioWorld;
-using SMW_ML.Models;
-using SMW_ML.Models.Config;
-using SMW_ML.Utils;
-using SMW_ML.ViewModels.Components;
-using SMW_ML.Views;
+using Retro_ML.Game.SuperMarioWorld;
+using Retro_ML.Models;
+using Retro_ML.Models.Config;
+using Retro_ML.Utils;
+using Retro_ML.ViewModels.Components;
+using Retro_ML.Views;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -13,7 +13,7 @@ using System.IO;
 using System.Linq;
 using System.Runtime.Serialization;
 
-namespace SMW_ML.ViewModels
+namespace Retro_ML.ViewModels
 {
     internal class ConfigurationViewModel : ViewModelBase
     {

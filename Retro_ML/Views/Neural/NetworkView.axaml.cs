@@ -1,7 +1,7 @@
 using Avalonia.Controls;
 using Avalonia.Markup.Xaml;
 
-namespace SMW_ML.Views.Neural
+namespace Retro_ML.Views.Neural
 {
     public partial class NetworkView : UserControl
     {

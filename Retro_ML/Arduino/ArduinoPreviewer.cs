@@ -1,9 +1,9 @@
-﻿using SMW_ML.Game;
+﻿using Retro_ML.Game;
 using System;
 using System.IO.Ports;
 using System.Linq;
 
-namespace SMW_ML.Arduino
+namespace Retro_ML.Arduino
 {
     internal class ArduinoPreviewer : IDisposable
     {

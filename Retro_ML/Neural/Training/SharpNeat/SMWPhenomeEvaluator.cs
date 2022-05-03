@@ -1,16 +1,16 @@
 ﻿using SharpNeat.BlackBox;
 using SharpNeat.Evaluation;
-using SMW_ML.Emulator;
-using SMW_ML.Game.SuperMarioWorld;
-using SMW_ML.Models.Config;
-using SMW_ML.Neural.Scoring;
-using SMW_ML.Utils;
-using SMW_ML.Utils.SharpNeat;
+using Retro_ML.Emulator;
+using Retro_ML.Game.SuperMarioWorld;
+using Retro_ML.Models.Config;
+using Retro_ML.Neural.Scoring;
+using Retro_ML.Utils;
+using Retro_ML.Utils.SharpNeat;
 using System;
 using System.IO;
-using static SMW_ML.Utils.ReflectionTool;
+using static Retro_ML.Utils.ReflectionTool;
 
-namespace SMW_ML.Neural.Training.SharpNeatImpl
+namespace Retro_ML.Neural.Training.SharpNeatImpl
 {
     /// <summary>
     /// This class takes care of the evaluation of a single AI.

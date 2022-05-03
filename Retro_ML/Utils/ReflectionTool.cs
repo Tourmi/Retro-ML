@@ -1,6 +1,6 @@
 ﻿using System.Reflection;
 
-namespace SMW_ML.Utils
+namespace Retro_ML.Utils
 {
     /// <summary>
     /// Contains useful reflection methods

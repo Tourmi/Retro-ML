@@ -1,4 +1,4 @@
-﻿namespace SMW_ML.Models
+﻿namespace Retro_ML.Models
 {
     internal class Error
     {

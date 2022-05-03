@@ -1,7 +1,7 @@
 ﻿using NUnit.Framework;
-using SMW_ML.Game;
+using Retro_ML.Game;
 
-namespace SMW_ML_TEST.Game
+namespace Retro_ML_TEST.Game
 {
     [TestFixture]
     internal class InputTest

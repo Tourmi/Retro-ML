@@ -1,4 +1,4 @@
-﻿namespace SMW_ML.Utils
+﻿namespace Retro_ML.Utils
 {
     /// <summary>
     /// This static class is used to store the information to any filesystem related paths.

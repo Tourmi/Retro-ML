@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace SMW_ML.ViewModels
+namespace Retro_ML.ViewModels
 {
     internal class MainPageViewModel : ViewModelBase
     {

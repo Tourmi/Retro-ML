@@ -2,7 +2,7 @@
 using SharpNeat.Graphs;
 using SharpNeat.Graphs.Acyclic;
 
-namespace SMW_ML.Utils.SharpNeat
+namespace Retro_ML.Utils.SharpNeat
 {
     /// <summary>
     /// Utility functions useful when dealing with the SharpNeat library

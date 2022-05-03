@@ -1,13 +1,13 @@
-﻿using SMW_ML.Arduino;
-using SMW_ML.Models.Config;
-using SMW_ML.Utils;
+﻿using Retro_ML.Arduino;
+using Retro_ML.Models.Config;
+using Retro_ML.Utils;
 using System;
 using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 using System.Threading;
 
-namespace SMW_ML.Emulator
+namespace Retro_ML.Emulator
 {
     /// <summary>
     /// Class that takes care of instantiating and dealing with multi-threaded access to its emulators.

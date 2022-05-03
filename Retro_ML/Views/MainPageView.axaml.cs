@@ -1,7 +1,7 @@
 using Avalonia.Controls;
 using Avalonia.Markup.Xaml;
 
-namespace SMW_ML.Views
+namespace Retro_ML.Views
 {
     public partial class MainPageView : UserControl
     {

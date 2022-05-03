@@ -1,7 +1,7 @@
 ﻿using Newtonsoft.Json;
-using SMW_ML.Game.SuperMarioWorld;
+using Retro_ML.Game.SuperMarioWorld;
 
-namespace SMW_ML.Neural.Scoring
+namespace Retro_ML.Neural.Scoring
 {
     /// <summary>
     /// Represents a single score factor

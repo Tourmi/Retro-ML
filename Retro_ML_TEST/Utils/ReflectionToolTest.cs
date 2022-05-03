@@ -1,7 +1,7 @@
 ﻿using NUnit.Framework;
-using SMW_ML.Utils;
+using Retro_ML.Utils;
 
-namespace SMW_ML_TEST.Utils
+namespace Retro_ML_TEST.Utils
 {
     [TestFixture]
     internal class ReflectionToolTest

@@ -1,7 +1,7 @@
 ﻿using ReactiveUI;
-using SMW_ML.Neural.Training.StopCondition;
+using Retro_ML.Neural.Training.StopCondition;
 
-namespace SMW_ML.ViewModels.Components
+namespace Retro_ML.ViewModels.Components
 {
     internal class StopConditionViewModel : ViewModelBase
     {

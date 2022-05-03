@@ -1,7 +1,7 @@
 ﻿using NUnit.Framework;
-using SMW_ML.Arduino;
+using Retro_ML.Arduino;
 
-namespace SMW_ML_TEST.Arduino
+namespace Retro_ML_TEST.Arduino
 {
     [TestFixture]
     internal class ArduinoPreviewerTest

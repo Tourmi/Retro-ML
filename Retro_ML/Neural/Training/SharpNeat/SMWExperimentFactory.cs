@@ -1,10 +1,10 @@
 ﻿using SharpNeat.Experiments;
 using SharpNeat.NeuralNets;
-using SMW_ML.Emulator;
-using SMW_ML.Models.Config;
+using Retro_ML.Emulator;
+using Retro_ML.Models.Config;
 using System.Text.Json;
 
-namespace SMW_ML.Neural.Training.SharpNeatImpl
+namespace Retro_ML.Neural.Training.SharpNeatImpl
 {
     internal class SMWExperimentFactory
     {

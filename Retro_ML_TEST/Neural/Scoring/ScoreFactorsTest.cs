@@ -1,10 +1,10 @@
 ﻿using NUnit.Framework;
-using SMW_ML.Game.SuperMarioWorld;
-using SMW_ML.Models.Config;
-using SMW_ML.Neural.Scoring;
-using SMW_ML_TEST.Emulator;
+using Retro_ML.Game.SuperMarioWorld;
+using Retro_ML.Models.Config;
+using Retro_ML.Neural.Scoring;
+using Retro_ML_TEST.Emulator;
 
-namespace SMW_ML_TEST.Neural.Scoring
+namespace Retro_ML_TEST.Neural.Scoring
 {
     [TestFixture]
     internal class ScoreFactorsTest
@@ -296,7 +296,7 @@ namespace SMW_ML_TEST.Neural.Scoring
         public void TimeTakenScoreFactor()
         {
             TimeTakenScoreFactor sf = new() { ScoreMultiplier = -100 };
-            for (int i = 0; i < SMW_ML.Neural.Scoring.TimeTakenScoreFactor.MAX_TRAINING_FRAMES; i++)
+            for (int i = 0; i < Retro_ML.Neural.Scoring.TimeTakenScoreFactor.MAX_TRAINING_FRAMES; i++)
             {
                 sf.Update(df!);
                 Assert.IsFalse(sf.ShouldStop, "The score factor shouldn't have stopped yet");
@@ -306,7 +306,7 @@ namespace SMW_ML_TEST.Neural.Scoring
             sf.LevelDone();
             Assert.AreEqual(-100, sf.GetFinalScore());
 
-            for (int i = 0; i < SMW_ML.Neural.Scoring.TimeTakenScoreFactor.MAX_TRAINING_FRAMES; i++)
+            for (int i = 0; i < Retro_ML.Neural.Scoring.TimeTakenScoreFactor.MAX_TRAINING_FRAMES; i++)
             {
                 sf.Update(df!);
                 Assert.IsFalse(sf.ShouldStop, "The score factor shouldn't have stopped yet");

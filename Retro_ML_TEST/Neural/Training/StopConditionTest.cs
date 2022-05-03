@@ -1,10 +1,10 @@
 ﻿using NUnit.Framework;
-using SMW_ML.Neural.Training;
-using SMW_ML.Neural.Training.StopCondition;
+using Retro_ML.Neural.Training;
+using Retro_ML.Neural.Training.StopCondition;
 using System;
 using System.Threading;
 
-namespace SMW_ML_TEST.Neural.Training
+namespace Retro_ML_TEST.Neural.Training
 {
     [TestFixture]
     internal class StopConditionTest

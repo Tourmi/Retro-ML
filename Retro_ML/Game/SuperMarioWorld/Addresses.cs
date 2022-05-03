@@ -1,4 +1,4 @@
-﻿namespace SMW_ML.Game.SuperMarioWorld
+﻿namespace Retro_ML.Game.SuperMarioWorld
 {
     /// <summary>
     /// RAM addresses used in Super Mario World.

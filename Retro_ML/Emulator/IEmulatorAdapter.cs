@@ -1,9 +1,9 @@
-﻿using SMW_ML.Arduino;
-using SMW_ML.Game;
-using SMW_ML.Game.SuperMarioWorld;
+﻿using Retro_ML.Arduino;
+using Retro_ML.Game;
+using Retro_ML.Game.SuperMarioWorld;
 using System;
 
-namespace SMW_ML.Emulator
+namespace Retro_ML.Emulator
 {
     public interface IEmulatorAdapter : IDisposable
     {

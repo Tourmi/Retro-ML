@@ -1,8 +1,8 @@
 ﻿using NUnit.Framework;
-using SMW_ML.Game.SuperMarioWorld;
-using SMW_ML.Models.Config;
+using Retro_ML.Game.SuperMarioWorld;
+using Retro_ML.Models.Config;
 
-namespace SMW_ML_TEST.Game.SuperMarioWorld
+namespace Retro_ML_TEST.Game.SuperMarioWorld
 {
     [TestFixture]
     internal class OutputGetterTest

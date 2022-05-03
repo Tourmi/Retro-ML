@@ -4,7 +4,7 @@
   "arduinoCommunicationPort": "COM3",
   "stopConditions": [
     {
-      "$type": "SMW_ML.Neural.Training.StopCondition.FitnessStopCondition, SMW_ML",
+      "$type": "Retro_ML.Neural.Training.StopCondition.FitnessStopCondition, Retro_ML",
       "name": "Stop when fitness reached",
       "shouldUse": false,
       "hasParam": true,
@@ -12,7 +12,7 @@
       "paramValue": 2000
     },
     {
-      "$type": "SMW_ML.Neural.Training.StopCondition.GenerationCountStopCondition, SMW_ML",
+      "$type": "Retro_ML.Neural.Training.StopCondition.GenerationCountStopCondition, Retro_ML",
       "name": "Stop after X generations",
       "shouldUse": false,
       "hasParam": true,
@@ -20,7 +20,7 @@
       "paramValue": 250
     },
     {
-      "$type": "SMW_ML.Neural.Training.StopCondition.PlateauStopCondition, SMW_ML",
+      "$type": "Retro_ML.Neural.Training.StopCondition.PlateauStopCondition, Retro_ML",
       "name": "Stop when plateau reached",
       "shouldUse": false,
       "hasParam": true,
@@ -28,7 +28,7 @@
       "paramValue": 100
     },
     {
-      "$type": "SMW_ML.Neural.Training.StopCondition.TimeStopCondition, SMW_ML",
+      "$type": "Retro_ML.Neural.Training.StopCondition.TimeStopCondition, Retro_ML",
       "name": "Stop after X minutes",
       "shouldUse": false,
       "hasParam": true,
@@ -38,13 +38,13 @@
   ],
   "scoreFactors": [
     {
-      "$type": "SMW_ML.Neural.Scoring.DiedScoreFactor, SMW_ML",
+      "$type": "Retro_ML.Neural.Scoring.DiedScoreFactor, Retro_ML",
       "scoreMultiplier": -5,
       "isDisabled": false,
       "extraFields": []
     },
     {
-      "$type": "SMW_ML.Neural.Scoring.DistanceScoreFactor, SMW_ML",
+      "$type": "Retro_ML.Neural.Scoring.DistanceScoreFactor, Retro_ML",
       "scoreMultiplier": 1.0,
       "isDisabled": false,
       "extraFields": [
@@ -67,19 +67,19 @@
       ]
     },
     {
-      "$type": "SMW_ML.Neural.Scoring.StopMovingScoreFactor, SMW_ML",
+      "$type": "Retro_ML.Neural.Scoring.StopMovingScoreFactor, Retro_ML",
       "scoreMultiplier": -5,
       "isDisabled": false,
       "extraFields": []
     },
     {
-      "$type": "SMW_ML.Neural.Scoring.TimeTakenScoreFactor, SMW_ML",
+      "$type": "Retro_ML.Neural.Scoring.TimeTakenScoreFactor, Retro_ML",
       "scoreMultiplier": -10.0,
       "isDisabled": false,
       "extraFields": []
     },
     {
-      "$type": "SMW_ML.Neural.Scoring.SpeedScoreFactor, SMW_ML",
+      "$type": "Retro_ML.Neural.Scoring.SpeedScoreFactor, Retro_ML",
       "scoreMultiplier": 0.25,
       "isDisabled": false,
       "extraFields": [
@@ -94,7 +94,7 @@
       ]
     },
     {
-      "$type": "SMW_ML.Neural.Scoring.WonLevelScoreFactor, SMW_ML",
+      "$type": "Retro_ML.Neural.Scoring.WonLevelScoreFactor, Retro_ML",
       "scoreMultiplier": 100.0,
       "isDisabled": false,
       "extraFields": [
@@ -109,31 +109,31 @@
       ]
     },
     {
-      "$type": "SMW_ML.Neural.Scoring.CoinsScoreFactor, SMW_ML",
+      "$type": "Retro_ML.Neural.Scoring.CoinsScoreFactor, Retro_ML",
       "scoreMultiplier": 1.0,
       "isDisabled": true,
       "extraFields": []
     },
     {
-      "$type": "SMW_ML.Neural.Scoring.YoshiCoinsScoreFactor, SMW_ML",
+      "$type": "Retro_ML.Neural.Scoring.YoshiCoinsScoreFactor, Retro_ML",
       "scoreMultiplier": 2.0,
       "isDisabled": true,
       "extraFields": []
     },
     {
-      "$type": "SMW_ML.Neural.Scoring.OneUpsScoreFactor, SMW_ML",
+      "$type": "Retro_ML.Neural.Scoring.OneUpsScoreFactor, Retro_ML",
       "scoreMultiplier": 4.0,
       "isDisabled": true,
       "extraFields": []
     },
     {
-      "$type": "SMW_ML.Neural.Scoring.HighScoreScoreFactor, SMW_ML",
+      "$type": "Retro_ML.Neural.Scoring.HighScoreScoreFactor, Retro_ML",
       "scoreMultiplier": 0.1,
       "isDisabled": true,
       "extraFields": []
     },
     {
-      "$type": "SMW_ML.Neural.Scoring.PowerUpScoreFactor, SMW_ML",
+      "$type": "Retro_ML.Neural.Scoring.PowerUpScoreFactor, Retro_ML",
       "scoreMultiplier": 4.0,
       "isDisabled": true,
       "extraFields": [
@@ -152,7 +152,7 @@
       ]
     },
     {
-      "$type": "SMW_ML.Neural.Scoring.TakenDamageScoreFactor, SMW_ML",
+      "$type": "Retro_ML.Neural.Scoring.TakenDamageScoreFactor, Retro_ML",
       "scoreMultiplier": -1.0,
       "isDisabled": true,
       "extraFields": []

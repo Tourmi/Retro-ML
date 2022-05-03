@@ -1,13 +1,13 @@
-﻿using SMW_ML.Arduino;
-using SMW_ML.Emulator;
-using SMW_ML.Game;
-using SMW_ML.Game.SuperMarioWorld;
-using SMW_ML.Models.Config;
+﻿using Retro_ML.Arduino;
+using Retro_ML.Emulator;
+using Retro_ML.Game;
+using Retro_ML.Game.SuperMarioWorld;
+using Retro_ML.Models.Config;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace SMW_ML_TEST.Emulator
+namespace Retro_ML_TEST.Emulator
 {
     internal class MockEmulatorAdapter : IEmulatorAdapter
     {

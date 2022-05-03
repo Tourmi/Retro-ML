@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace SMW_ML.Neural.Training.StopCondition
+namespace Retro_ML.Neural.Training.StopCondition
 {
     internal class TimeStopCondition : IStopCondition
     {

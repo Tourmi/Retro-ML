@@ -2,14 +2,14 @@
 using LiveChartsCore.Kernel;
 using LiveChartsCore.SkiaSharpView;
 using ReactiveUI;
-using SMW_ML.Neural.Training;
+using Retro_ML.Neural.Training;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using static SMW_ML.Neural.Training.TrainingStatistics;
+using static Retro_ML.Neural.Training.TrainingStatistics;
 
-namespace SMW_ML.ViewModels.Statistics
+namespace Retro_ML.ViewModels.Statistics
 {
     internal class TrainingChartViewModel : ViewModelBase
     {

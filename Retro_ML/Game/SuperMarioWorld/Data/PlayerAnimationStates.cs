@@ -1,4 +1,4 @@
-﻿namespace SMW_ML.Game.SuperMarioWorld.Data
+﻿namespace Retro_ML.Game.SuperMarioWorld.Data
 {
     /// <summary>
     /// The different animation states the player (Mario) can be in.

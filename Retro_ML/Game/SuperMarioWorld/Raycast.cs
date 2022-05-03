@@ -1,8 +1,8 @@
-﻿using SMW_ML.Utils;
+﻿using Retro_ML.Utils;
 using System;
 using System.Collections.Generic;
 
-namespace SMW_ML.Game.SuperMarioWorld
+namespace Retro_ML.Game.SuperMarioWorld
 {
     internal static class Raycast
     {

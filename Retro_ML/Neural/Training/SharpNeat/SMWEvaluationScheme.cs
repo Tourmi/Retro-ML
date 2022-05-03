@@ -1,10 +1,10 @@
 ﻿using SharpNeat.BlackBox;
 using SharpNeat.Evaluation;
-using SMW_ML.Emulator;
-using SMW_ML.Models.Config;
+using Retro_ML.Emulator;
+using Retro_ML.Models.Config;
 using System.Collections.Generic;
 
-namespace SMW_ML.Neural.Training.SharpNeatImpl
+namespace Retro_ML.Neural.Training.SharpNeatImpl
 {
     internal class SMWEvaluationScheme : IBlackBoxEvaluationScheme<double>
     {

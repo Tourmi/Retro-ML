@@ -1,7 +1,7 @@
 <Application xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:local="clr-namespace:SMW_ML"
-             x:Class="SMW_ML.App">
+             xmlns:local="clr-namespace:Retro_ML"
+             x:Class="Retro_ML.App">
 	<Application.DataTemplates>
 		<local:ViewLocator/>
 	</Application.DataTemplates>

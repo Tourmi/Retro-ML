@@ -1,9 +1,9 @@
-﻿using SMW_ML.Game.SuperMarioWorld;
-using SMW_ML.Models.Config;
+﻿using Retro_ML.Game.SuperMarioWorld;
+using Retro_ML.Models.Config;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace SMW_ML.Neural.Scoring
+namespace Retro_ML.Neural.Scoring
 {
     /// <summary>
     /// Class that manages the score of a single training session.

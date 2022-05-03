@@ -1,6 +1,6 @@
 using ReactiveUI;
 
-namespace SMW_ML.ViewModels
+namespace Retro_ML.ViewModels
 {
     internal class ViewModelBase : ReactiveObject
     {

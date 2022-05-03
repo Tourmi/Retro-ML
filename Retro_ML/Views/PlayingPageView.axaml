@@ -1,10 +1,10 @@
 <Window xmlns="https://github.com/avaloniaui"
             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-            xmlns:vm="clr-namespace:SMW_ML.ViewModels;assembly=SMW_ML"
+            xmlns:vm="clr-namespace:Retro_ML.ViewModels;assembly=Retro_ML"
             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
             mc:Ignorable="d" d:DesignWidth="1800" d:DesignHeight="1000"
-			x:Class="SMW_ML.Views.PlayingPageView"
+			x:Class="Retro_ML.Views.PlayingPageView"
 			IsEnabled="{Binding IsEnabled}"
 			Background="#183048">
 	<Window.Styles>

@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace SMW_ML.Neural.Play
+namespace Retro_ML.Neural.Play
 {
     /// <summary>
     /// Takes care of the play mode of a neural network.

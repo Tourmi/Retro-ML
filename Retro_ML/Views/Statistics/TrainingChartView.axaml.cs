@@ -2,7 +2,7 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Markup.Xaml;
 
-namespace SMW_ML.Views.Statistics
+namespace Retro_ML.Views.Statistics
 {
     public partial class TrainingChartView : UserControl
     {

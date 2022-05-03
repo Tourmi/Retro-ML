@@ -2,13 +2,13 @@
 using Avalonia.Media;
 using Avalonia.Threading;
 using ReactiveUI;
-using SMW_ML.Models.Config;
+using Retro_ML.Models.Config;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 
-namespace SMW_ML.ViewModels.Neural
+namespace Retro_ML.ViewModels.Neural
 {
     /// <summary>
     /// View model for the network view

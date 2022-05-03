@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Linq;
 
-namespace SMW_ML.Game.SuperMarioWorld.Data
+namespace Retro_ML.Game.SuperMarioWorld.Data
 {
     /// <summary>
     /// Extended sprites consist of small sprites often used as projectiles.

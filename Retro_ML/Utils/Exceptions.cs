@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Threading;
 
-namespace SMW_ML.Utils
+namespace Retro_ML.Utils
 {
     internal static class Exceptions
     {

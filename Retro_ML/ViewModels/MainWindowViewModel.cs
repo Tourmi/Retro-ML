@@ -1,13 +1,13 @@
 using Avalonia.Threading;
 using ReactiveUI;
-using SMW_ML.Models.Config;
-using SMW_ML.Utils;
-using SMW_ML.Views.Components;
+using Retro_ML.Models.Config;
+using Retro_ML.Utils;
+using Retro_ML.Views.Components;
 using System;
 using System.IO;
 using System.Threading;
 
-namespace SMW_ML.ViewModels
+namespace Retro_ML.ViewModels
 {
     internal class MainWindowViewModel : ViewModelBase
     {

@@ -1,11 +1,11 @@
 ﻿using Newtonsoft.Json;
-using SMW_ML.Game.SuperMarioWorld;
-using SMW_ML.Utils;
+using Retro_ML.Game.SuperMarioWorld;
+using Retro_ML.Utils;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace SMW_ML.Models.Config
+namespace Retro_ML.Models.Config
 {
     /// <summary>
     /// Configuration of the neural network. Modifying these values makes previous neural network incompatible with the new settings.

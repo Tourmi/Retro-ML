@@ -1,4 +1,4 @@
-﻿namespace SMW_ML.Game.SuperMarioWorld.Data
+﻿namespace Retro_ML.Game.SuperMarioWorld.Data
 {
     /// <summary>
     /// The different statuses a sprite can have. Anything above 0x08 is considered alive.

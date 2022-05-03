@@ -3,8 +3,8 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              mc:Ignorable="d" d:DesignWidth="1800" d:DesignHeight="800"
-			 xmlns:vm="clr-namespace:SMW_ML.ViewModels.Neural;assembly=SMW_ML"
-             x:Class="SMW_ML.Views.Neural.NetworkView">
+			 xmlns:vm="clr-namespace:Retro_ML.ViewModels.Neural;assembly=Retro_ML"
+             x:Class="Retro_ML.Views.Neural.NetworkView">
 
 	<Design.DataContext>
 		<vm:NetworkViewModel/>

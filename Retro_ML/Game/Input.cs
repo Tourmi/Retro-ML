@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace SMW_ML.Game
+namespace Retro_ML.Game
 {
     /// <summary>
     /// Represents a controller input state, which buttons are pressed, and which are not.

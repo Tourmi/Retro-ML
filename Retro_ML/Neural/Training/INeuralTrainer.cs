@@ -1,8 +1,8 @@
-﻿using SMW_ML.Neural.Training.StopCondition;
+﻿using Retro_ML.Neural.Training.StopCondition;
 using System;
 using System.Collections.Generic;
 
-namespace SMW_ML.Neural.Training
+namespace Retro_ML.Neural.Training
 {
     /// <summary>
     /// Adapter class that allows training a neural network

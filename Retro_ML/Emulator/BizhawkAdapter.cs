@@ -1,14 +1,14 @@
-﻿using SMW_ML.Arduino;
-using SMW_ML.Game;
-using SMW_ML.Game.SuperMarioWorld;
-using SMW_ML.Models.Config;
+﻿using Retro_ML.Arduino;
+using Retro_ML.Game;
+using Retro_ML.Game.SuperMarioWorld;
+using Retro_ML.Models.Config;
 using System;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net.Sockets;
 
-namespace SMW_ML.Emulator
+namespace Retro_ML.Emulator
 {
     internal class BizhawkAdapter : IEmulatorAdapter
     {

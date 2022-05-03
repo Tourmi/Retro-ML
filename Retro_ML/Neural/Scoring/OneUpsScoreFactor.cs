@@ -1,7 +1,7 @@
-﻿using SMW_ML.Game.SuperMarioWorld;
+﻿using Retro_ML.Game.SuperMarioWorld;
 using System;
 
-namespace SMW_ML.Neural.Scoring
+namespace Retro_ML.Neural.Scoring
 {
     internal class OneUpsScoreFactor : IScoreFactor
     {

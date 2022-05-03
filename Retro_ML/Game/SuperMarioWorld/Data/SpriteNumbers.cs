@@ -1,4 +1,4 @@
-﻿namespace SMW_ML.Game.SuperMarioWorld.Data
+﻿namespace Retro_ML.Game.SuperMarioWorld.Data
 {
     /// <summary>
     /// Most of the sprite numbers that are in the game. Used to determine if a sprite is good, bad, or solid.

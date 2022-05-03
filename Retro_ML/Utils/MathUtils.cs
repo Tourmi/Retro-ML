@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace SMW_ML.Utils
+namespace Retro_ML.Utils
 {
     internal static class MathUtils
     {

@@ -2,7 +2,7 @@
 using Avalonia.Markup.Xaml;
 using System.Threading.Tasks;
 
-namespace SMW_ML.Views.Components
+namespace Retro_ML.Views.Components
 {
     /// <summary>
     /// Thanks to <see href="https://stackoverflow.com/a/55707749/10614206"/>

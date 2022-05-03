@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Drawing;
 
-namespace SMW_ML.Game.SuperMarioWorld.Data
+namespace Retro_ML.Game.SuperMarioWorld.Data
 {
     /// <summary>
     /// A sprite is any interactable item in the game. Includes enemies, powerups, etc.

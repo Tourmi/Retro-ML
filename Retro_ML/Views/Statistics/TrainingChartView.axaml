@@ -4,8 +4,8 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              xmlns:lvc="clr-namespace:LiveChartsCore.SkiaSharpView.Avalonia;assembly=LiveChartsCore.SkiaSharpView.Avalonia"
-			 xmlns:vm="clr-namespace:SMW_ML.ViewModels.Statistics"
-             x:Class="SMW_ML.Views.Statistics.TrainingChartView">
+			 xmlns:vm="clr-namespace:Retro_ML.ViewModels.Statistics"
+             x:Class="Retro_ML.Views.Statistics.TrainingChartView">
 
 	<Design.DataContext>
 		<vm:TrainingChartViewModel/>

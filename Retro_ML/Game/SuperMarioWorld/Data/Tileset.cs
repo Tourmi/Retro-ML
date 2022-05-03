@@ -2,7 +2,7 @@
 using System.Collections.ObjectModel;
 using System.Linq;
 
-namespace SMW_ML.Game.SuperMarioWorld.Data
+namespace Retro_ML.Game.SuperMarioWorld.Data
 {
     /// <summary>
     /// Class that keeps track of the level tilesets, which tiles are solid, good or bad.

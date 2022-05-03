@@ -1,16 +1,16 @@
 ﻿using Avalonia.Controls;
 using ReactiveUI;
-using SMW_ML.Emulator;
-using SMW_ML.Models.Config;
-using SMW_ML.Neural.Play;
-using SMW_ML.Neural.Play.SharpNeat;
-using SMW_ML.Utils;
-using SMW_ML.ViewModels.Neural;
+using Retro_ML.Emulator;
+using Retro_ML.Models.Config;
+using Retro_ML.Neural.Play;
+using Retro_ML.Neural.Play.SharpNeat;
+using Retro_ML.Utils;
+using Retro_ML.ViewModels.Neural;
 using System;
 using System.IO;
 using System.Threading;
 
-namespace SMW_ML.ViewModels
+namespace Retro_ML.ViewModels
 {
     internal class PlayingPageViewModel : ViewModelBase
     {

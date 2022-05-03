@@ -1,10 +1,10 @@
 ﻿using Newtonsoft.Json;
-using SMW_ML.Neural.Scoring;
-using SMW_ML.Neural.Training.StopCondition;
-using SMW_ML.Utils;
+using Retro_ML.Neural.Scoring;
+using Retro_ML.Neural.Training.StopCondition;
+using Retro_ML.Utils;
 using System.Collections.Generic;
 
-namespace SMW_ML.Models.Config
+namespace Retro_ML.Models.Config
 {
     /// <summary>
     /// Genneric configuration for the application

@@ -1,10 +1,10 @@
 using Avalonia.Controls;
 using Avalonia.Controls.Templates;
-using SMW_ML.ViewModels;
-using SMW_ML.Views;
+using Retro_ML.ViewModels;
+using Retro_ML.Views;
 using System;
 
-namespace SMW_ML
+namespace Retro_ML
 {
     internal class ViewLocator : IDataTemplate
     {

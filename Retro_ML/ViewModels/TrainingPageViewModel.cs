@@ -1,14 +1,14 @@
 ﻿using Avalonia.Controls;
 using Avalonia.Threading;
 using ReactiveUI;
-using SMW_ML.Emulator;
-using SMW_ML.Models.Config;
-using SMW_ML.Neural.Training;
-using SMW_ML.Neural.Training.SharpNeatImpl;
-using SMW_ML.Utils;
-using SMW_ML.ViewModels.Neural;
-using SMW_ML.ViewModels.Statistics;
-using SMW_ML.Views.Components;
+using Retro_ML.Emulator;
+using Retro_ML.Models.Config;
+using Retro_ML.Neural.Training;
+using Retro_ML.Neural.Training.SharpNeatImpl;
+using Retro_ML.Utils;
+using Retro_ML.ViewModels.Neural;
+using Retro_ML.ViewModels.Statistics;
+using Retro_ML.Views.Components;
 using System;
 using System.Collections.ObjectModel;
 using System.IO;
@@ -16,7 +16,7 @@ using System.IO.Compression;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace SMW_ML.ViewModels
+namespace Retro_ML.ViewModels
 {
     internal class TrainingPageViewModel : ViewModelBase
     {

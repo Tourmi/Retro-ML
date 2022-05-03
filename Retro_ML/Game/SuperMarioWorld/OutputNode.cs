@@ -1,4 +1,4 @@
-﻿namespace SMW_ML.Game.SuperMarioWorld
+﻿namespace Retro_ML.Game.SuperMarioWorld
 {
     /// <summary>
     /// Configuration of a single output node

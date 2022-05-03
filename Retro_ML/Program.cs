@@ -2,7 +2,7 @@ using Avalonia;
 using Avalonia.ReactiveUI;
 using System;
 
-namespace SMW_ML
+namespace Retro_ML
 {
     internal class Program
     {

@@ -1,7 +1,7 @@
 ﻿using Newtonsoft.Json;
-using SMW_ML.Utils;
+using Retro_ML.Utils;
 
-namespace SMW_ML.Models.Config
+namespace Retro_ML.Models.Config
 {
     /// <summary>
     /// Configuration for SharpNEAT, stuff related to training the AIs.

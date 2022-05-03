@@ -1,8 +1,8 @@
 ﻿using ReactiveUI;
-using SMW_ML.Neural.Scoring;
+using Retro_ML.Neural.Scoring;
 using System.Collections.ObjectModel;
 
-namespace SMW_ML.ViewModels.Components
+namespace Retro_ML.ViewModels.Components
 {
     internal class ScoreFactorViewModel : ViewModelBase
     {

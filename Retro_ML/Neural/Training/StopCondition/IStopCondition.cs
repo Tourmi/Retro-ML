@@ -1,4 +1,4 @@
-﻿namespace SMW_ML.Neural.Training.StopCondition
+﻿namespace Retro_ML.Neural.Training.StopCondition
 {
     /// <summary>
     /// Interface to be used by the trainer to determine if training should stop or not.

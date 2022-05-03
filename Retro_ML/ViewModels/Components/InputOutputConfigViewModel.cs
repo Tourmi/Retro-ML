@@ -1,7 +1,7 @@
 ﻿using ReactiveUI;
-using SMW_ML.Game.SuperMarioWorld;
+using Retro_ML.Game.SuperMarioWorld;
 
-namespace SMW_ML.ViewModels.Components
+namespace Retro_ML.ViewModels.Components
 {
     internal class InputOutputConfigViewModel : ViewModelBase
     {

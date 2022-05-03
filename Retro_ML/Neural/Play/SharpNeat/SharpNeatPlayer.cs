@@ -3,19 +3,19 @@ using SharpNeat.Neat.Genome;
 using SharpNeat.Neat.Genome.Double;
 using SharpNeat.Neat.Genome.IO;
 using SharpNeat.NeuralNets.Double.ActivationFunctions;
-using SMW_ML.Emulator;
-using SMW_ML.Game.SuperMarioWorld;
-using SMW_ML.Models.Config;
-using SMW_ML.Neural.Scoring;
-using SMW_ML.Utils;
-using SMW_ML.Utils.SharpNeat;
+using Retro_ML.Emulator;
+using Retro_ML.Game.SuperMarioWorld;
+using Retro_ML.Models.Config;
+using Retro_ML.Neural.Scoring;
+using Retro_ML.Utils;
+using Retro_ML.Utils.SharpNeat;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading;
 
-namespace SMW_ML.Neural.Play.SharpNeat
+namespace Retro_ML.Neural.Play.SharpNeat
 {
     internal class SharpNeatPlayer : INeuralPlayer
     {

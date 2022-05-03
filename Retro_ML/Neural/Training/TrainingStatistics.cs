@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 
-namespace SMW_ML.Neural.Training
+namespace Retro_ML.Neural.Training
 {
     /// <summary>
     /// Collection of stats for the training session.

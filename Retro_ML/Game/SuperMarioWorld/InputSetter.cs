@@ -1,8 +1,8 @@
 ﻿using SharpNeat.BlackBox;
-using SMW_ML.Models.Config;
+using Retro_ML.Models.Config;
 using System.Collections.Generic;
 
-namespace SMW_ML.Game.SuperMarioWorld
+namespace Retro_ML.Game.SuperMarioWorld
 {
     /// <summary>
     /// Sets the inputs of the neural network

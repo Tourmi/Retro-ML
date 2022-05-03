@@ -1,12 +1,12 @@
-﻿using SMW_ML.Emulator;
-using SMW_ML.Game.SuperMarioWorld.Data;
-using SMW_ML.Models.Config;
+﻿using Retro_ML.Emulator;
+using Retro_ML.Game.SuperMarioWorld.Data;
+using Retro_ML.Models.Config;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using static SMW_ML.Game.SuperMarioWorld.Addresses;
+using static Retro_ML.Game.SuperMarioWorld.Addresses;
 
-namespace SMW_ML.Game.SuperMarioWorld
+namespace Retro_ML.Game.SuperMarioWorld
 {
     /// <summary>
     /// Takes care of abstracting away the addresses when communicating with the emulator.

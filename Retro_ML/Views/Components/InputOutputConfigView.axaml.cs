@@ -1,7 +1,7 @@
 using Avalonia.Controls;
 using Avalonia.Markup.Xaml;
 
-namespace SMW_ML.Views.Components
+namespace Retro_ML.Views.Components
 {
     public partial class InputOutputConfigView : UserControl
     {

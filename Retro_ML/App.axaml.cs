@@ -1,10 +1,10 @@
 using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
-using SMW_ML.ViewModels;
-using SMW_ML.Views;
+using Retro_ML.ViewModels;
+using Retro_ML.Views;
 
-namespace SMW_ML
+namespace Retro_ML
 {
     public class App : Application
     {
