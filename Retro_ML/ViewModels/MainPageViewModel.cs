@@ -8,7 +8,7 @@ namespace Retro_ML.ViewModels
         public event Action? OnOpenPlayMode;
 
         #region Strings
-        public static string GreetingString => "Super Mario World - Machine Learning";
+        public static string GreetingString => "Retro Games Machine Learning";
         public static string TrainingString => "Training";
         public static string PlayString => "Play mode";
         public static string OpenSettingsString => "Configuration";
