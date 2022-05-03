@@ -1,6 +1,6 @@
 variables:
   GIT_SUBMODULE_STRATEGY: normal
-  GIT_CLONE_PATH: $CI_BUILDS_DIR\smw-ml
+  GIT_CLONE_PATH: $CI_BUILDS_DIR\retro-ml
 
 stages:
   - build-dependencies
@@ -33,11 +33,11 @@ build-app:
     - build-emu
     - build-sharpneat
   artifacts:
-    name: smw-ml-build
+    name: retro-ml-build
     paths:
-      - .\SMW-ML\bin\Release\net6.0\
+      - .\Retro_ML\bin\Release\net6.0\
   script:
-    - cd .\SMW-ML\
+    - cd .\Retro_ML\
     - dotnet build --configuration Release
     - cd .\..\
     
@@ -48,8 +48,8 @@ test-app:
   artifacts:
     name: test-results
     paths:
-      - .\SMW_ML_TEST\TestResults\
+      - .\Retro_ML_TEST\TestResults\
   script:
-    - cd .\SMW_ML_TEST\
+    - cd .\Retro_ML_TEST\
     - dotnet test --logger trx
     - cd .\..\

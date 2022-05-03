@@ -65,7 +65,6 @@ function parseCommand(cmd)
         return
     end
     if string.find(cmd, "read_memory_ranges ") then
-        emu.frameadvance()
         local updated_cmd = string.sub(cmd, 20)
         local bytes = {}
         local space_index = string.find(updated_cmd, " ")

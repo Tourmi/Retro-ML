@@ -3,9 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.1.32104.313
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SMW_ML", "SMW-ML\SMW_ML.csproj", "{A58F9046-96B5-4E52-B173-2DDA9C821C1E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Retro_ML", "Retro_ML\Retro_ML.csproj", "{A58F9046-96B5-4E52-B173-2DDA9C821C1E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SMW_ML_TEST", "SMW_ML_TEST\SMW_ML_TEST.csproj", "{04A5F47C-D2D0-48BC-88D7-A91B7FCF6450}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Retro_ML_TEST", "Retro_ML_TEST\Retro_ML_TEST.csproj", "{04A5F47C-D2D0-48BC-88D7-A91B7FCF6450}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

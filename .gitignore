@@ -220,3 +220,11 @@ src/Web/Avalonia.Web.Blazor/Interop/Typescript/*.js
 ##################
 
 *.sfc
+*.nes
+*.gb
+*.gbc
+*.gba
+*.smc
+*.z64
+*.v64
+*.n64
