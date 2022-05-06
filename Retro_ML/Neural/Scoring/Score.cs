@@ -1,18 +1,13 @@
-﻿using Retro_ML.Game.SuperMarioWorld;
-using Retro_ML.Models.Config;
-using System.Collections.Generic;
-using System.Linq;
+﻿using Retro_ML.Game;
 
 namespace Retro_ML.Neural.Scoring
 {
     /// <summary>
     /// Class that manages the score of a single training session.
     /// </summary>
-    internal class Score
+    public class Score
     {
         private List<IScoreFactor> scoreFactors;
-
-        public Score(ApplicationConfig config) : this(config.GetScoreFactorClones()) { }
 
         public Score(IEnumerable<IScoreFactor> scoreFactors)
         {
@@ -34,7 +29,7 @@ namespace Retro_ML.Neural.Scoring
         /// Should be called on each frame.
         /// </summary>
         /// <param name="dataReader"></param>
-        public void Update(DataFetcher dataReader)
+        public void Update(IDataFetcher dataReader)
         {
             foreach (var scoreFactor in scoreFactors)
             {

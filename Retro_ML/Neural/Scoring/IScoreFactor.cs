@@ -1,5 +1,5 @@
 ﻿using Newtonsoft.Json;
-using Retro_ML.Game.SuperMarioWorld;
+using Retro_ML.Game;
 
 namespace Retro_ML.Neural.Scoring
 {
@@ -36,7 +36,7 @@ namespace Retro_ML.Neural.Scoring
         /// Updates the state of the Score Factor. To be called every frame
         /// </summary>
         /// <param name="dataFetcher"></param>
-        void Update(DataFetcher dataFetcher);
+        void Update(IDataFetcher dataFetcher);
         /// <summary>
         /// The final score of the score factor, after all levels have been processed
         /// </summary>

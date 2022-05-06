@@ -1,7 +1,5 @@
 ﻿using Retro_ML.Arduino;
 using Retro_ML.Game;
-using Retro_ML.Game.SuperMarioWorld;
-using System;
 
 namespace Retro_ML.Emulator
 {
@@ -82,16 +80,16 @@ namespace Retro_ML.Emulator
         /// Returns the data fetcher linked to this emulator.
         /// </summary>
         /// <returns></returns>
-        internal DataFetcher GetDataFetcher();
+        public IDataFetcher GetDataFetcher();
         /// <summary>
         /// Returns the Input Setter related to this emulator
         /// </summary>
         /// <returns></returns>
-        internal InputSetter GetInputSetter();
+        public InputSetter GetInputSetter();
         /// <summary>
         /// Returns the Output Getter related to this emulator.
         /// </summary>
         /// <returns></returns>
-        internal OutputGetter GetOutputGetter();
+        public OutputGetter GetOutputGetter();
     }
 }

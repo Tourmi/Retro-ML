@@ -1,6 +1,6 @@
 ﻿using NUnit.Framework;
-using Retro_ML.Game.SuperMarioWorld;
-using Retro_ML.Models.Config;
+using Retro_ML.Game;
+using Retro_ML.SuperMarioWorld.Configuration;
 
 namespace Retro_ML_TEST.Game.SuperMarioWorld
 {
@@ -12,7 +12,7 @@ namespace Retro_ML_TEST.Game.SuperMarioWorld
         [SetUp]
         public void SetUp()
         {
-            outputGetter = new OutputGetter(new NeuralConfig());
+            outputGetter = new OutputGetter(new SMWNeuralConfig());
         }
 
         [Test]

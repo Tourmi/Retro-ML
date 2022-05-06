@@ -1,6 +1,7 @@
 ﻿using NUnit.Framework;
-using Retro_ML.Game.SuperMarioWorld;
-using Retro_ML.Models.Config;
+using Retro_ML.Game;
+using Retro_ML.SuperMarioWorld.Configuration;
+using Retro_ML.SuperMarioWorld.Game;
 using Retro_ML_TEST.Emulator;
 
 namespace Retro_ML_TEST.Game.SuperMarioWorld
@@ -16,8 +17,8 @@ namespace Retro_ML_TEST.Game.SuperMarioWorld
         public void SetUp()
         {
             mea = new MockEmulatorAdapter();
-            dataFetcher = new DataFetcher(mea, new NeuralConfig());
-            inputSetter = new InputSetter(dataFetcher, new NeuralConfig());
+            dataFetcher = new DataFetcher(mea, new SMWNeuralConfig());
+            inputSetter = new InputSetter(dataFetcher, new SMWNeuralConfig());
         }
 
         [Test]

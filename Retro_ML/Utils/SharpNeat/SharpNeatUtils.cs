@@ -7,7 +7,7 @@ namespace Retro_ML.Utils.SharpNeat
     /// <summary>
     /// Utility functions useful when dealing with the SharpNeat library
     /// </summary>
-    internal static class SharpNeatUtils
+    public static class SharpNeatUtils
     {
         /// <summary>
         /// Returns an array equivalent to the given SharpNeat Vector
