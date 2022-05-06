@@ -14,7 +14,7 @@ namespace Retro_ML_TEST.Emulator
         public event Action<double[], double[]>? LinkedNetworkActivated;
         public event Action<(int sourceNode, int targetNode, double weight)[][], int[]>? ChangedLinkedNetwork;
 
-        public DataFetcher DataFetcher;
+        public SMWDataFetcher DataFetcher;
         public InputSetter InputSetter;
         public OutputGetter OutputGetter;
 
@@ -22,7 +22,7 @@ namespace Retro_ML_TEST.Emulator
 
         public MockEmulatorAdapter()
         {
-            DataFetcher = new DataFetcher(this, new SMWNeuralConfig());
+            DataFetcher = new SMWDataFetcher(this, new SMWNeuralConfig());
             InputSetter = new InputSetter(DataFetcher, new SMWNeuralConfig());
             OutputGetter = new OutputGetter(new SMWNeuralConfig());
 

@@ -10,14 +10,14 @@ namespace Retro_ML_TEST.Game.SuperMarioWorld
     {
         delegate bool TestFunction();
 
-        private DataFetcher? dataFetcher;
+        private SMWDataFetcher? dataFetcher;
         private MockEmulatorAdapter? mockEmulatorAdapter;
 
         [SetUp]
         public void SetUp()
         {
             mockEmulatorAdapter = new MockEmulatorAdapter();
-            dataFetcher = new DataFetcher(mockEmulatorAdapter, new SMWNeuralConfig());
+            dataFetcher = new SMWDataFetcher(mockEmulatorAdapter, new SMWNeuralConfig());
             dataFetcher.NextFrame();
         }
 

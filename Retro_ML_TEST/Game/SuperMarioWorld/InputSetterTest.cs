@@ -10,14 +10,14 @@ namespace Retro_ML_TEST.Game.SuperMarioWorld
     internal class InputSetterTest
     {
         private InputSetter? inputSetter;
-        private DataFetcher? dataFetcher;
+        private SMWDataFetcher? dataFetcher;
         private MockEmulatorAdapter? mea;
 
         [SetUp]
         public void SetUp()
         {
             mea = new MockEmulatorAdapter();
-            dataFetcher = new DataFetcher(mea, new SMWNeuralConfig());
+            dataFetcher = new SMWDataFetcher(mea, new SMWNeuralConfig());
             inputSetter = new InputSetter(dataFetcher, new SMWNeuralConfig());
         }
 

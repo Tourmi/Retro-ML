@@ -9,7 +9,7 @@ namespace Retro_ML.SuperMarioWorld.Game
     /// <summary>
     /// Takes care of abstracting away the addresses when communicating with the emulator.
     /// </summary>
-    internal class DataFetcher : IDataFetcher
+    internal class SMWDataFetcher : IDataFetcher
     {
         public const int INTERNAL_CLOCK_LENGTH = 8;
         private const int TILE_SIZE = 0x10;
@@ -29,7 +29,7 @@ namespace Retro_ML.SuperMarioWorld.Game
 
         private InternalClock internalClock;
 
-        public DataFetcher(IEmulatorAdapter emulator, SMWNeuralConfig neuralConfig)
+        public SMWDataFetcher(IEmulatorAdapter emulator, SMWNeuralConfig neuralConfig)
         {
             this.emulator = emulator;
             frameCache = new();

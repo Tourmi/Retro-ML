@@ -11,13 +11,13 @@ namespace Retro_ML_TEST.Neural.Scoring
     internal class ScoreFactorsTest
     {
         private MockEmulatorAdapter? emu;
-        private DataFetcher? df;
+        private SMWDataFetcher? df;
 
         [SetUp]
         public void SetUp()
         {
             emu = new MockEmulatorAdapter();
-            df = new DataFetcher(emu, new SMWNeuralConfig());
+            df = new SMWDataFetcher(emu, new SMWNeuralConfig());
         }
 
         [Test]

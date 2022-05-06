@@ -32,10 +32,10 @@ namespace Retro_ML.SuperMarioWorld.Neural.Scoring
 
         public void Update(IDataFetcher dataFetcher)
         {
-            Update((DataFetcher)dataFetcher);
+            Update((SMWDataFetcher)dataFetcher);
         }
 
-        private void Update(DataFetcher dataFetcher)
+        private void Update(SMWDataFetcher dataFetcher)
         {
             if (levelFrames >= MAX_TRAINING_FRAMES)
             {

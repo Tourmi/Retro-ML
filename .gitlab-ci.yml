@@ -35,9 +35,9 @@ build-app:
   artifacts:
     name: retro-ml-build
     paths:
-      - .\Retro_ML\bin\Release\net6.0\
+      - .\Application\bin\Release\net6.0\
   script:
-    - cd .\Retro_ML\
+    - cd .\Application\
     - dotnet build --configuration Release
     - cd .\..\
     

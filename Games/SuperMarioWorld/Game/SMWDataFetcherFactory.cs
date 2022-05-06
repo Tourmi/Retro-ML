@@ -5,11 +5,11 @@ using Retro_ML.SuperMarioWorld.Configuration;
 
 namespace Retro_ML.SuperMarioWorld.Game
 {
-    public class DataFetcherFactory : IDataFetcherFactory
+    public class SMWDataFetcherFactory : IDataFetcherFactory
     {
         public IDataFetcher GetDataFetcher(ApplicationConfig config, IEmulatorAdapter emulator)
         {
-            return new DataFetcher(emulator, (SMWNeuralConfig)config.NeuralConfig);
+            return new SMWDataFetcher(emulator, (SMWNeuralConfig)config.NeuralConfig);
         }
     }
 }

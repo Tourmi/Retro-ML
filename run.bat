@@ -1,4 +1,4 @@
 @echo off
 
 cd bin
-call Retro_ML
+call Retro_ML.Application

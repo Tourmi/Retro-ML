@@ -20,7 +20,7 @@ namespace Retro_ML.SuperMarioWorld.Neural.Train
         private readonly EmulatorManager emulatorManager;
         private IEmulatorAdapter? emulator;
         private INeuralTrainer trainer;
-        private DataFetcher? dataFetcher;
+        private SMWDataFetcher? dataFetcher;
         private ApplicationConfig appConfig;
         private InputSetter? inputSetter;
         private OutputGetter? outputGetter;
@@ -42,7 +42,7 @@ namespace Retro_ML.SuperMarioWorld.Neural.Train
                 int[] outputMap = new int[phenome.OutputCount];
                 Array.Copy(phenome.OutputVector.GetField<int[]>("_map"), outputMap, phenome.OutputCount);
                 emulator.NetworkChanged(SharpNeatUtils.GetConnectionLayers(phenome), outputMap);
-                dataFetcher = (DataFetcher)emulator.GetDataFetcher();
+                dataFetcher = (SMWDataFetcher)emulator.GetDataFetcher();
                 inputSetter = emulator.GetInputSetter();
                 outputGetter = emulator.GetOutputGetter();
 

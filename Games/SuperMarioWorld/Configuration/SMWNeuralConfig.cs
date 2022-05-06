@@ -70,36 +70,36 @@ namespace Retro_ML.SuperMarioWorld.Configuration
             int enabledIndex = 0;
             InputNodes.Clear();
 
-            Func<DataFetcher, int, int, bool[,]> tilesFunc = (dataFetcher, gridDistX, gridDistY) => dataFetcher.GetWalkableTilesAroundPosition(gridDistX, gridDistY);
-            Func<DataFetcher, int, int, bool[,]> dangersFunc = (dataFetcher, gridDistX, gridDistY) => dataFetcher.GetDangerousTilesAroundPosition(gridDistX, gridDistY);
-            Func<DataFetcher, int, int, bool[,]> goodiesFunc = (dataFetcher, gridDistX, gridDistY) => dataFetcher.GetGoodTilesAroundPosition(gridDistX, gridDistY);
-            Func<DataFetcher, int, int, bool[,]> waterFunc = (dataFetcher, gridDistX, gridDistY) => dataFetcher.GetWaterTilesAroundPosition(gridDistX, gridDistY);
+            Func<SMWDataFetcher, int, int, bool[,]> tilesFunc = (dataFetcher, gridDistX, gridDistY) => dataFetcher.GetWalkableTilesAroundPosition(gridDistX, gridDistY);
+            Func<SMWDataFetcher, int, int, bool[,]> dangersFunc = (dataFetcher, gridDistX, gridDistY) => dataFetcher.GetDangerousTilesAroundPosition(gridDistX, gridDistY);
+            Func<SMWDataFetcher, int, int, bool[,]> goodiesFunc = (dataFetcher, gridDistX, gridDistY) => dataFetcher.GetGoodTilesAroundPosition(gridDistX, gridDistY);
+            Func<SMWDataFetcher, int, int, bool[,]> waterFunc = (dataFetcher, gridDistX, gridDistY) => dataFetcher.GetWaterTilesAroundPosition(gridDistX, gridDistY);
 
             if (UseGrid)
             {
-                InputNodes.Add(new InputNode("Grid Tiles", EnabledStates[enabledIndex++], (dataFetcher) => tilesFunc((DataFetcher)dataFetcher, GridDistanceX, GridDistanceY), GridWidth, GridHeight));
-                InputNodes.Add(new InputNode("Grid Dangers", EnabledStates[enabledIndex++], (dataFetcher) => dangersFunc((DataFetcher)dataFetcher, GridDistanceX, GridDistanceY), GridWidth, GridHeight));
-                InputNodes.Add(new InputNode("Grid Goodies", EnabledStates[enabledIndex++], (dataFetcher) => goodiesFunc((DataFetcher)dataFetcher, GridDistanceX, GridDistanceY), GridWidth, GridHeight));
-                InputNodes.Add(new InputNode("Grid Water", EnabledStates[enabledIndex++], (dataFetcher) => waterFunc((DataFetcher)dataFetcher, GridDistanceX, GridDistanceY), GridWidth, GridHeight));
+                InputNodes.Add(new InputNode("Grid Tiles", EnabledStates[enabledIndex++], (dataFetcher) => tilesFunc((SMWDataFetcher)dataFetcher, GridDistanceX, GridDistanceY), GridWidth, GridHeight));
+                InputNodes.Add(new InputNode("Grid Dangers", EnabledStates[enabledIndex++], (dataFetcher) => dangersFunc((SMWDataFetcher)dataFetcher, GridDistanceX, GridDistanceY), GridWidth, GridHeight));
+                InputNodes.Add(new InputNode("Grid Goodies", EnabledStates[enabledIndex++], (dataFetcher) => goodiesFunc((SMWDataFetcher)dataFetcher, GridDistanceX, GridDistanceY), GridWidth, GridHeight));
+                InputNodes.Add(new InputNode("Grid Water", EnabledStates[enabledIndex++], (dataFetcher) => waterFunc((SMWDataFetcher)dataFetcher, GridDistanceX, GridDistanceY), GridWidth, GridHeight));
             }
             else
             {
-                InputNodes.Add(new InputNode("Ray Tiles", EnabledStates[enabledIndex++], (dataFetcher) => Raycast.GetRayDistances(tilesFunc((DataFetcher)dataFetcher, RayLength, RayLength), RayLength, RayCount), RaysWidth, RaysHeight));
-                InputNodes.Add(new InputNode("Ray Dangers", EnabledStates[enabledIndex++], (dataFetcher) => Raycast.GetRayDistances(dangersFunc((DataFetcher)dataFetcher, RayLength, RayLength), RayLength, RayCount), RaysWidth, RaysHeight));
-                InputNodes.Add(new InputNode("Ray Goodies", EnabledStates[enabledIndex++], (dataFetcher) => Raycast.GetRayDistances(goodiesFunc((DataFetcher)dataFetcher, RayLength, RayLength), RayLength, RayCount), RaysWidth, RaysHeight));
-                InputNodes.Add(new InputNode("Ray Water", EnabledStates[enabledIndex++], (dataFetcher) => Raycast.GetRayDistances(waterFunc((DataFetcher)dataFetcher, RayLength, RayLength), RayLength, RayCount), RaysWidth, RaysHeight));
+                InputNodes.Add(new InputNode("Ray Tiles", EnabledStates[enabledIndex++], (dataFetcher) => Raycast.GetRayDistances(tilesFunc((SMWDataFetcher)dataFetcher, RayLength, RayLength), RayLength, RayCount), RaysWidth, RaysHeight));
+                InputNodes.Add(new InputNode("Ray Dangers", EnabledStates[enabledIndex++], (dataFetcher) => Raycast.GetRayDistances(dangersFunc((SMWDataFetcher)dataFetcher, RayLength, RayLength), RayLength, RayCount), RaysWidth, RaysHeight));
+                InputNodes.Add(new InputNode("Ray Goodies", EnabledStates[enabledIndex++], (dataFetcher) => Raycast.GetRayDistances(goodiesFunc((SMWDataFetcher)dataFetcher, RayLength, RayLength), RayLength, RayCount), RaysWidth, RaysHeight));
+                InputNodes.Add(new InputNode("Ray Water", EnabledStates[enabledIndex++], (dataFetcher) => Raycast.GetRayDistances(waterFunc((SMWDataFetcher)dataFetcher, RayLength, RayLength), RayLength, RayCount), RaysWidth, RaysHeight));
             }
 
-            InputNodes.Add(new InputNode("On Ground", EnabledStates[enabledIndex++], (dataFetcher) => ((DataFetcher)dataFetcher).IsOnGround()));
-            InputNodes.Add(new InputNode("In Water", EnabledStates[enabledIndex++], (dataFetcher) => ((DataFetcher)dataFetcher).IsInWater()));
-            InputNodes.Add(new InputNode("Raising", EnabledStates[enabledIndex++], (dataFetcher) => ((DataFetcher)dataFetcher).IsRaising()));
-            InputNodes.Add(new InputNode("Sinking", EnabledStates[enabledIndex++], (dataFetcher) => ((DataFetcher)dataFetcher).IsSinking()));
-            InputNodes.Add(new InputNode("Can jump out of water", EnabledStates[enabledIndex++], (dataFetcher) => ((DataFetcher)dataFetcher).CanJumpOutOfWater()));
-            InputNodes.Add(new InputNode("Carrying", EnabledStates[enabledIndex++], (dataFetcher) => ((DataFetcher)dataFetcher).IsCarryingSomething()));
-            InputNodes.Add(new InputNode("Can Climb", EnabledStates[enabledIndex++], (dataFetcher) => ((DataFetcher)dataFetcher).CanClimb()));
-            InputNodes.Add(new InputNode("Max Speed", EnabledStates[enabledIndex++], (dataFetcher) => ((DataFetcher)dataFetcher).IsAtMaxSpeed()));
-            InputNodes.Add(new InputNode("Message Box", EnabledStates[enabledIndex++], (dataFetcher) => ((DataFetcher)dataFetcher).WasDialogBoxOpened()));
-            InputNodes.Add(new InputNode("Internal Clock", EnabledStates[enabledIndex++], (dataFetcher) => ((DataFetcher)dataFetcher).GetInternalClockState(), Math.Min(8, InternalClockLength), Math.Max(1, InternalClockLength / 8)));
+            InputNodes.Add(new InputNode("On Ground", EnabledStates[enabledIndex++], (dataFetcher) => ((SMWDataFetcher)dataFetcher).IsOnGround()));
+            InputNodes.Add(new InputNode("In Water", EnabledStates[enabledIndex++], (dataFetcher) => ((SMWDataFetcher)dataFetcher).IsInWater()));
+            InputNodes.Add(new InputNode("Raising", EnabledStates[enabledIndex++], (dataFetcher) => ((SMWDataFetcher)dataFetcher).IsRaising()));
+            InputNodes.Add(new InputNode("Sinking", EnabledStates[enabledIndex++], (dataFetcher) => ((SMWDataFetcher)dataFetcher).IsSinking()));
+            InputNodes.Add(new InputNode("Can jump out of water", EnabledStates[enabledIndex++], (dataFetcher) => ((SMWDataFetcher)dataFetcher).CanJumpOutOfWater()));
+            InputNodes.Add(new InputNode("Carrying", EnabledStates[enabledIndex++], (dataFetcher) => ((SMWDataFetcher)dataFetcher).IsCarryingSomething()));
+            InputNodes.Add(new InputNode("Can Climb", EnabledStates[enabledIndex++], (dataFetcher) => ((SMWDataFetcher)dataFetcher).CanClimb()));
+            InputNodes.Add(new InputNode("Max Speed", EnabledStates[enabledIndex++], (dataFetcher) => ((SMWDataFetcher)dataFetcher).IsAtMaxSpeed()));
+            InputNodes.Add(new InputNode("Message Box", EnabledStates[enabledIndex++], (dataFetcher) => ((SMWDataFetcher)dataFetcher).WasDialogBoxOpened()));
+            InputNodes.Add(new InputNode("Internal Clock", EnabledStates[enabledIndex++], (dataFetcher) => ((SMWDataFetcher)dataFetcher).GetInternalClockState(), Math.Min(8, InternalClockLength), Math.Max(1, InternalClockLength / 8)));
             InputNodes.Add(new InputNode("Bias", EnabledStates[enabledIndex++], (dataFetcher) => true));
 
             OutputNodes.Clear();

@@ -9,4 +9,4 @@ cd .\Submodules\BizHawk\Dist\
 call QuickTestBuildAndPackage.bat
 cd ..\..\..
 
-dotnet build Retro_ML\Retro_ML.csproj -c Release -o bin
+dotnet build Application\Retro_ML.Application.csproj -c Release -o bin

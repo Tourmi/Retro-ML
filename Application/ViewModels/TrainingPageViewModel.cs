@@ -103,7 +103,7 @@ namespace Retro_ML.Application.ViewModels
             ApplicationConfig appConfig = ApplicationConfig.Deserialize(appConfigJson)!;
 
             NeuralNetwork = new NetworkViewModel(appConfig.NeuralConfig);
-            emulatorManager = new(appConfig, new DataFetcherFactory());
+            emulatorManager = new(appConfig, new SMWDataFetcherFactory());
             trainer = new SMWTrainer(emulatorManager, appConfig);
             trainer.OnStatisticsUpdated += HandleGetStats;
             if (populationToLoad != null)

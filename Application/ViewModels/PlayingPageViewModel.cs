@@ -62,7 +62,7 @@ namespace Retro_ML.Application.ViewModels
             ApplicationConfig appConfig = ApplicationConfig.Deserialize(appConfigJson)!;
 
             NeuralNetwork = new NetworkViewModel(appConfig.NeuralConfig);
-            emulatorManager = new(1, appConfig, new DataFetcherFactory());
+            emulatorManager = new(1, appConfig, new SMWDataFetcherFactory());
             neuralPlayer = new SharpNeatPlayer(emulatorManager, appConfig);
             emulatorManager.GetFirstEmulator().LinkedNetworkActivated += NeuralNetwork.UpdateNodes;
             emulatorManager.GetFirstEmulator().ChangedLinkedNetwork += NeuralNetwork.UpdateTopology;
