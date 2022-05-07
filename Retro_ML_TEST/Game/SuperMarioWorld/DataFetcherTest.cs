@@ -1,6 +1,6 @@
 ﻿using NUnit.Framework;
-using Retro_ML.Game.SuperMarioWorld;
-using Retro_ML.Models.Config;
+using Retro_ML.SuperMarioWorld.Configuration;
+using Retro_ML.SuperMarioWorld.Game;
 using Retro_ML_TEST.Emulator;
 
 namespace Retro_ML_TEST.Game.SuperMarioWorld
@@ -10,14 +10,14 @@ namespace Retro_ML_TEST.Game.SuperMarioWorld
     {
         delegate bool TestFunction();
 
-        private DataFetcher? dataFetcher;
+        private SMWDataFetcher? dataFetcher;
         private MockEmulatorAdapter? mockEmulatorAdapter;
 
         [SetUp]
         public void SetUp()
         {
             mockEmulatorAdapter = new MockEmulatorAdapter();
-            dataFetcher = new DataFetcher(mockEmulatorAdapter, new NeuralConfig());
+            dataFetcher = new SMWDataFetcher(mockEmulatorAdapter, new SMWNeuralConfig());
             dataFetcher.NextFrame();
         }
 
@@ -30,7 +30,7 @@ namespace Retro_ML_TEST.Game.SuperMarioWorld
             dataFetcher.NextFrame();
             Assert.False(dataFetcher!.CanAct(), "The cache should have updated");
             mockEmulatorAdapter!.SetMemory(Addresses.Player.PlayerAnimationState.Address, 0x00);
-            dataFetcher.NextLevel();
+            dataFetcher.NextState();
             Assert.True(dataFetcher!.CanAct(), "The cache should have updated");
         }
 
@@ -43,7 +43,7 @@ namespace Retro_ML_TEST.Game.SuperMarioWorld
             Assert.False(dataFetcher!.IsWaterLevel(), "The cache should not have been updated");
             dataFetcher!.NextFrame();
             Assert.False(dataFetcher!.IsWaterLevel(), "The cache should not have been updated");
-            dataFetcher!.NextLevel();
+            dataFetcher!.NextState();
             Assert.True(dataFetcher!.IsWaterLevel(), "The cache should have been updated");
         }
 
@@ -56,7 +56,7 @@ namespace Retro_ML_TEST.Game.SuperMarioWorld
         [Test]
         public void NextLevel()
         {
-            Assert.DoesNotThrow(() => dataFetcher!.NextLevel());
+            Assert.DoesNotThrow(() => dataFetcher!.NextState());
         }
 
         [Test]
@@ -261,7 +261,7 @@ namespace Retro_ML_TEST.Game.SuperMarioWorld
             Assert.False(result);
 
             mockEmulatorAdapter!.SetMemory(address, newVal);
-            dataFetcher!.NextLevel();
+            dataFetcher!.NextState();
             result = tf();
             if (invertResult) result = !result;
             Assert.True(result);

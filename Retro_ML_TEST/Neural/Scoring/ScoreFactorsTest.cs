@@ -1,7 +1,8 @@
 ﻿using NUnit.Framework;
-using Retro_ML.Game.SuperMarioWorld;
-using Retro_ML.Models.Config;
 using Retro_ML.Neural.Scoring;
+using Retro_ML.SuperMarioWorld.Configuration;
+using Retro_ML.SuperMarioWorld.Game;
+using Retro_ML.SuperMarioWorld.Neural.Scoring;
 using Retro_ML_TEST.Emulator;
 
 namespace Retro_ML_TEST.Neural.Scoring
@@ -10,13 +11,13 @@ namespace Retro_ML_TEST.Neural.Scoring
     internal class ScoreFactorsTest
     {
         private MockEmulatorAdapter? emu;
-        private DataFetcher? df;
+        private SMWDataFetcher? df;
 
         [SetUp]
         public void SetUp()
         {
             emu = new MockEmulatorAdapter();
-            df = new DataFetcher(emu, new NeuralConfig());
+            df = new SMWDataFetcher(emu, new SMWNeuralConfig());
         }
 
         [Test]
@@ -36,7 +37,7 @@ namespace Retro_ML_TEST.Neural.Scoring
 
             emu!.SetMemory(Addresses.Player.PlayerAnimationState.Address, 0x00);
             emu!.SetMemory(Addresses.Level.KeyholeTimer.Address, 0);
-            df.NextLevel();
+            df.NextState();
             score.Update(df);
             Assert.IsFalse(score.ShouldStop);
             emu!.SetMemory(Addresses.Level.EndLevelTimer.Address, 0xFF);
@@ -88,7 +89,7 @@ namespace Retro_ML_TEST.Neural.Scoring
             sf.Update(df);
             Assert.IsTrue(sf.ShouldStop);
             Assert.AreEqual(-50, sf.GetFinalScore());
-            df.NextLevel();
+            df.NextState();
             sf.LevelDone();
             sf.Update(df);
             Assert.AreEqual(-100, sf.GetFinalScore());
@@ -109,7 +110,7 @@ namespace Retro_ML_TEST.Neural.Scoring
             Assert.AreEqual((0.5 + (4 * 16)) * 10, sf.GetFinalScore());
 
             emu.SetMemory(Addresses.Player.PositionX.Address, 0, 0);
-            df.NextLevel();
+            df.NextState();
             sf.Update(df);
             emu.SetMemory(Addresses.Player.PositionX.Address, 0x20, 0);
             df.NextFrame();
@@ -119,7 +120,7 @@ namespace Retro_ML_TEST.Neural.Scoring
 
             emu.SetMemory(Addresses.Player.PositionX.Address, 0, 0);
             emu.SetMemory(Addresses.Player.IsOnGround.Address, 0x00);
-            df.NextLevel();
+            df.NextState();
             sf.Update(df);
             emu.SetMemory(Addresses.Player.PositionX.Address, 0x20, 0);
             df.NextFrame();
@@ -130,7 +131,7 @@ namespace Retro_ML_TEST.Neural.Scoring
             emu.SetMemory(Addresses.Player.PositionX.Address, 0, 0);
             emu.SetMemory(Addresses.Player.IsOnGround.Address, 0x00);
             emu.SetMemory(Addresses.Player.IsInWater.Address, 0x01);
-            df.NextLevel();
+            df.NextState();
             sf.Update(df);
             emu.SetMemory(Addresses.Player.PositionX.Address, 0x20, 0);
             df.NextFrame();
@@ -151,7 +152,7 @@ namespace Retro_ML_TEST.Neural.Scoring
             sf.Update(df);
             Assert.AreEqual((0x02 + 0x0300 + 0x040000) * 5.0 / 100.0, sf.GetFinalScore());
             emu.SetMemory(Addresses.Counters.Score.Address, 0, 0, 0);
-            df.NextLevel();
+            df.NextState();
             sf.LevelDone();
             sf.Update(df);
             Assert.AreEqual((0x02 + 0x0300 + 0x040000) * 5.0 / 100.0, sf.GetFinalScore());
@@ -173,7 +174,7 @@ namespace Retro_ML_TEST.Neural.Scoring
             sf.Update(df);
             Assert.AreEqual(300, sf.GetFinalScore());
             emu.SetMemory(Addresses.Counters.Lives.Address, 0);
-            df.NextLevel();
+            df.NextState();
             sf.LevelDone();
             sf.Update(df);
             emu.SetMemory(Addresses.Counters.Lives.Address, 2);
@@ -210,7 +211,7 @@ namespace Retro_ML_TEST.Neural.Scoring
             sf.Update(df);
             Assert.AreEqual(12, sf.GetFinalScore());
 
-            df.NextLevel();
+            df.NextState();
             sf.LevelDone();
             Assert.AreEqual(12, sf.GetFinalScore());
         }
@@ -229,7 +230,7 @@ namespace Retro_ML_TEST.Neural.Scoring
             sf.Update(df);
             sf.LevelDone();
             Assert.AreEqual(2.0 * 5.0 / (4.0 / 60.0), sf.GetFinalScore());
-            df.NextLevel();
+            df.NextState();
             emu.SetMemory(Addresses.Player.PositionX.Address, 0, 0);
             sf.Update(df);
             emu.SetMemory(Addresses.Player.PositionX.Address, 0x30, 0);
@@ -253,7 +254,7 @@ namespace Retro_ML_TEST.Neural.Scoring
             Assert.IsTrue(sf.ShouldStop);
             sf.LevelDone();
             Assert.AreEqual(-30, sf.GetFinalScore());
-            df!.NextLevel();
+            df!.NextState();
             emu.SetMemory(Addresses.Player.PositionX.Address, 0x00, 0x00);
             sf.Update(df);
             ushort currPos = 0x0000;
@@ -296,7 +297,7 @@ namespace Retro_ML_TEST.Neural.Scoring
         public void TimeTakenScoreFactor()
         {
             TimeTakenScoreFactor sf = new() { ScoreMultiplier = -100 };
-            for (int i = 0; i < Retro_ML.Neural.Scoring.TimeTakenScoreFactor.MAX_TRAINING_FRAMES; i++)
+            for (int i = 0; i < Retro_ML.SuperMarioWorld.Neural.Scoring.TimeTakenScoreFactor.MAX_TRAINING_FRAMES; i++)
             {
                 sf.Update(df!);
                 Assert.IsFalse(sf.ShouldStop, "The score factor shouldn't have stopped yet");
@@ -306,7 +307,7 @@ namespace Retro_ML_TEST.Neural.Scoring
             sf.LevelDone();
             Assert.AreEqual(-100, sf.GetFinalScore());
 
-            for (int i = 0; i < Retro_ML.Neural.Scoring.TimeTakenScoreFactor.MAX_TRAINING_FRAMES; i++)
+            for (int i = 0; i < Retro_ML.SuperMarioWorld.Neural.Scoring.TimeTakenScoreFactor.MAX_TRAINING_FRAMES; i++)
             {
                 sf.Update(df!);
                 Assert.IsFalse(sf.ShouldStop, "The score factor shouldn't have stopped yet");
@@ -330,7 +331,7 @@ namespace Retro_ML_TEST.Neural.Scoring
             sf.LevelDone();
             Assert.AreEqual(1000, sf.GetFinalScore());
             emu.SetMemory(Addresses.Level.EndLevelTimer.Address, 0);
-            df.NextLevel();
+            df.NextState();
             Assert.IsFalse(sf.ShouldStop);
             emu.SetMemory(Addresses.Level.KeyholeTimer.Address, 0x30);
             df.NextFrame();
@@ -353,7 +354,7 @@ namespace Retro_ML_TEST.Neural.Scoring
             Assert.AreEqual(20, sf.GetFinalScore());
             sf.LevelDone();
             emu.SetMemory(Addresses.Counters.YoshiCoinCollected.Address, 0);
-            df.NextLevel();
+            df.NextState();
             sf.Update(df);
             emu.SetMemory(Addresses.Counters.YoshiCoinCollected.Address, 3);
             df.NextFrame();

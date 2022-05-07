@@ -1,0 +1,34 @@
+<Window xmlns="https://github.com/avaloniaui"
+            xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+            xmlns:vm="clr-namespace:Retro_ML.Application.ViewModels;assembly=Retro_ML"
+            xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+            xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+            mc:Ignorable="d" d:DesignWidth="1800" d:DesignHeight="1000"
+			x:Class="Retro_ML.Application.Views.PlayingPageView"
+			IsEnabled="{Binding IsEnabled}"
+			Background="#183048">
+	<Window.Styles>
+		<Style Selector="Canvas">
+			<Setter Property="Background" Value="LightGray"/>
+		</Style>
+	</Window.Styles>
+	<Window.Styles>
+		<StyleInclude Source="/Styles/MainStyles.axaml" />
+	</Window.Styles>
+	<Design.DataContext>
+		<vm:PlayingPageViewModel/>
+	</Design.DataContext>
+
+	<DockPanel LastChildFill="True">
+
+		<StackPanel Spacing="5" DockPanel.Dock="Bottom" Margin="20" Orientation="Horizontal" HorizontalAlignment="Center">
+			<Button Classes="generalButtonBlue" Command="{Binding LoadGenome}" Content="{Binding LoadGenomeString}"/>
+			<Button Classes="generalButtonBlue" Command="{Binding LoadState}" Content="{Binding LoadSaveStateString}"/>
+			<Button Classes="generalButtonBlue" Command="{Binding Start}" Content="{Binding StartString}" IsEnabled="{Binding CanStart}"/>
+			<Button Classes="generalButtonBlue" Command="{Binding Stop}" Content="{Binding StopString}" IsEnabled="{Binding CanStop}"/>
+			<Button Classes="generalButtonBlue" Command="{Binding Exit}" Content="{Binding ExitString}" IsEnabled="{Binding !CanStop}"/>
+		</StackPanel>
+		<ContentControl DockPanel.Dock="Top" Content="{Binding NeuralNetwork}"/>
+	</DockPanel>
+
+</Window>

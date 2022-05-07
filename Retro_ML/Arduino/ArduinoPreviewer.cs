@@ -1,7 +1,5 @@
 ﻿using Retro_ML.Game;
-using System;
 using System.IO.Ports;
-using System.Linq;
 
 namespace Retro_ML.Arduino
 {

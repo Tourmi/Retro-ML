@@ -5,7 +5,7 @@ namespace Retro_ML.Utils
     /// <summary>
     /// Contains useful reflection methods
     /// </summary>
-    internal static class ReflectionTool
+    public static class ReflectionTool
     {
         /// <summary>
         /// Returns the private field of the given instance

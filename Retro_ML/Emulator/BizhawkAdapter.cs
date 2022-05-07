@@ -1,11 +1,7 @@
 ﻿using Retro_ML.Arduino;
+using Retro_ML.Configuration;
 using Retro_ML.Game;
-using Retro_ML.Game.SuperMarioWorld;
-using Retro_ML.Models.Config;
-using System;
 using System.Diagnostics;
-using System.IO;
-using System.Linq;
 using System.Net.Sockets;
 
 namespace Retro_ML.Emulator
@@ -34,7 +30,7 @@ namespace Retro_ML.Emulator
         private readonly Socket client;
         private ArduinoPreviewer? arduinoPreviewer;
 
-        private readonly DataFetcher dataFetcher;
+        private readonly IDataFetcher dataFetcher;
         private readonly InputSetter inputSetter;
         private readonly OutputGetter outputGetter;
 
@@ -42,7 +38,16 @@ namespace Retro_ML.Emulator
 
         private bool waitForOkay = true;
 
-        public BizhawkAdapter(string pathToEmulator, string pathToLuaScript, string pathToROM, string pathToBizhawkConfig, string savestatesPath, string socketIP, string socketPort, Socket server, NeuralConfig neuralConfig)
+        public BizhawkAdapter(string pathToEmulator,
+                              string pathToLuaScript,
+                              string pathToROM,
+                              string pathToBizhawkConfig,
+                              string savestatesPath,
+                              string socketIP,
+                              string socketPort,
+                              Socket server,
+                              ApplicationConfig config,
+                              IDataFetcherFactory dataFetcherFactory)
         {
             ProcessStartInfo startInfo = new(pathToEmulator);
             startInfo.ArgumentList.Add($"--socket_port={socketPort}");
@@ -56,9 +61,9 @@ namespace Retro_ML.Emulator
             client = server.Accept();
             savestates = Directory.GetFiles(savestatesPath);
 
-            dataFetcher = new DataFetcher(this, neuralConfig);
-            inputSetter = new InputSetter(dataFetcher, neuralConfig);
-            outputGetter = new OutputGetter(neuralConfig);
+            this.dataFetcher = dataFetcherFactory.GetDataFetcher(config, this);
+            inputSetter = new InputSetter(dataFetcher, config.NeuralConfig);
+            outputGetter = new OutputGetter(config.NeuralConfig);
         }
         public void SetArduinoPreviewer(ArduinoPreviewer arduinoPreviewer)
         {
@@ -170,7 +175,7 @@ namespace Retro_ML.Emulator
             ChangedLinkedNetwork?.Invoke(connectionLayers, outputIds);
         }
 
-        public DataFetcher GetDataFetcher() => dataFetcher;
+        public IDataFetcher GetDataFetcher() => dataFetcher;
 
         public InputSetter GetInputSetter() => inputSetter;
 

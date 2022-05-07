@@ -1,91 +1,25 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
+
 	<PropertyGroup>
-		<OutputType>WinExe</OutputType>
 		<TargetFramework>net6.0</TargetFramework>
+		<ImplicitUsings>enable</ImplicitUsings>
 		<Nullable>enable</Nullable>
-		<PublishReadyToRun>true</PublishReadyToRun>
-		<ApplicationIcon>Assets/logo.ico</ApplicationIcon>
 	</PropertyGroup>
 
 	<ItemGroup>
-		<InternalsVisibleTo Include="$(AssemblyName)_TEST" />
-	</ItemGroup>
-	
-	<ItemGroup>
-		<Emulator Include="..\Submodules\BizHawk\output\**\*.*" />
-		<ROM Include="smw.sfc" />
+		<InternalsVisibleTo Include="Retro_ML_TEST" />
+		<InternalsVisibleTo Include="Retro_ML.Application" />
 	</ItemGroup>
 
-	<ItemGroup>
-		<AvaloniaResource Include="Assets\**" />
-		<None Remove=".gitignore" />
-	</ItemGroup>
-	<ItemGroup>
-		<PackageReference Include="Avalonia" Version="0.10.11" />
-		<PackageReference Include="Avalonia.Controls.DataGrid" Version="0.10.11" />
-		<PackageReference Include="Avalonia.Desktop" Version="0.10.11" />
-		<!--Condition below is needed to remove Avalonia.Diagnostics package from build output in Release configuration.-->
-		<PackageReference Condition="'$(Configuration)' == 'Debug'" Include="Avalonia.Diagnostics" Version="0.10.11" />
-		<PackageReference Include="Avalonia.ReactiveUI" Version="0.10.11" />
-		<PackageReference Include="Avalonia.Remote.Protocol" Version="0.10.11" />
-		<PackageReference Include="LiveChartsCore.SkiaSharpView.Avalonia" Version="2.0.0-beta.101" />
-		<PackageReference Include="PresentationFramework" Version="4.6.0" />
-		<PackageReference Include="Redzen" Version="13.0.0" />
-		<PackageReference Include="System.IO.Ports" Version="6.0.0" />
-		<PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
-	</ItemGroup>
 	<ItemGroup>
 		<Reference Include="SharpNeat">
 			<HintPath>..\Submodules\SharpNEAT\src\SharpNeat\bin\Release\net6.0\SharpNeat.dll</HintPath>
 		</Reference>
 	</ItemGroup>
+
 	<ItemGroup>
-		<None Update="config\**">
-			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
-			<ExcludeFromSingleFile>true</ExcludeFromSingleFile>
-		</None>
-	</ItemGroup>
-	<ItemGroup>
-	  <Compile Update="Views\Components\ScoreFactorView.axaml.cs">
-	    <DependentUpon>ScoreFactorView.axaml</DependentUpon>
-	  </Compile>
-	  <Compile Update="Views\Components\MessageBox.axaml.cs">
-	    <DependentUpon>MessageBox.axaml</DependentUpon>
-	  </Compile>
-	  <Compile Update="Views\MainPageView.axaml.cs">
-	    <DependentUpon>MainPageView.axaml</DependentUpon>
-	  </Compile>
-	  <Compile Update="Views\TrainingPageView.axaml.cs">
-	    <DependentUpon>TrainingPageView.axaml</DependentUpon>
-	  </Compile>
-	</ItemGroup>
-	<ItemGroup>
-	  <None Update="config\appConfig.json">
-	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-	  </None>
-	  <None Update="config\bizhawkAdapter.lua">
-	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-	  </None>
-	  <None Update="config\bizhawkConfig.ini">
-	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-	  </None>
-	  <None Update="config\bizhawkConfigPlayMode.ini">
-	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-	  </None>
-	  <None Update="config\sharpNeatConfig.json">
-	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-	  </None>
-	  <None Update="Views\Components\MessageBox.xaml">
-	    <Generator>MSBuild:Compile</Generator>
-	  </None>
+		<PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
+		<PackageReference Include="System.IO.Ports" Version="6.0.0" />
 	</ItemGroup>
 
-	<Target Name="CopyEmulator" AfterTargets="AfterCompile">
-		<Error Condition="!Exists('..\Submodules\BizHawk\output\EmuHawk.exe')" Text="The emulator (..\Submodules\BizHawk\output\EmuHawk.exe) is missing, or was not built! " />
-		<Copy SourceFiles="@(Emulator)" DestinationFolder="$(TargetDir)\emu\%(RecursiveDir)" />
-		<Message Text="Copied Emulator to emu\" Importance="high" />
-
-		<Copy Condition="Exists('smw.sfc')" SourceFiles="@(ROM)" DestinationFolder="$(TargetDir)" />
-		<Message Text="Copied ROM to project root" Condition="Exists('$(TargetDir)\smw.sfc')" Importance="high" />
-	</Target>
 </Project>

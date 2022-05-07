@@ -1,18 +1,16 @@
 ﻿using Retro_ML.Arduino;
-using Retro_ML.Models.Config;
+using Retro_ML.Configuration;
+using Retro_ML.Game;
 using Retro_ML.Utils;
-using System;
-using System.Linq;
 using System.Net;
 using System.Net.Sockets;
-using System.Threading;
 
 namespace Retro_ML.Emulator
 {
     /// <summary>
     /// Class that takes care of instantiating and dealing with multi-threaded access to its emulators.
     /// </summary>
-    internal class EmulatorManager
+    public class EmulatorManager
     {
         private const int SOCKET_PORT = 11000;
         private const int MAX_CONNECTIONS = 100;
@@ -22,24 +20,26 @@ namespace Retro_ML.Emulator
 
         private bool trainingMode;
 
-        private readonly Semaphore sem;
+        private readonly Mutex mutex;
         private Socket? server;
         private IPAddress? ipAddress;
+        private IDataFetcherFactory dataFetcherFactory;
 
         private ApplicationConfig applicationConfig;
 
-        public EmulatorManager(ApplicationConfig appConfig) : this(appConfig.Multithread, appConfig)
+        public EmulatorManager(ApplicationConfig appConfig, IDataFetcherFactory dataFetcherFactory) : this(appConfig.Multithread, appConfig, dataFetcherFactory)
         {
         }
 
-        public EmulatorManager(int emulatorCount, ApplicationConfig appConfig)
+        public EmulatorManager(int emulatorCount, ApplicationConfig appConfig, IDataFetcherFactory dataFetcherFactory)
         {
             applicationConfig = appConfig;
 
             this.adapters = new IEmulatorAdapter[emulatorCount];
             this.adaptersTaken = new bool[emulatorCount];
+            this.dataFetcherFactory = dataFetcherFactory;
 
-            sem = new Semaphore(1, 1);
+            mutex = new Mutex();
         }
 
         /// <summary>
@@ -68,7 +68,7 @@ namespace Retro_ML.Emulator
 
             while (chosen == null)
             {
-                sem.WaitOne();
+                mutex.WaitOne();
 
                 var index = Array.IndexOf(adaptersTaken, false);
 
@@ -80,7 +80,7 @@ namespace Retro_ML.Emulator
                     adaptersTaken[index] = true;
                 }
 
-                sem.Release();
+                mutex.ReleaseMutex();
                 Thread.Sleep(100);
             }
 
@@ -93,12 +93,12 @@ namespace Retro_ML.Emulator
         /// <param name="adapter"></param>
         public void FreeOne(IEmulatorAdapter adapter)
         {
-            sem.WaitOne();
+            mutex.WaitOne();
 
             var index = Array.IndexOf(adapters, adapter);
             adaptersTaken[index] = false;
 
-            sem.Release();
+            mutex.ReleaseMutex();
         }
 
         /// <summary>
@@ -107,9 +107,9 @@ namespace Retro_ML.Emulator
         /// <returns></returns>
         public IEmulatorAdapter GetFirstEmulator()
         {
-            sem.WaitOne();
+            mutex.WaitOne();
             InitEmulator(0);
-            sem.Release();
+            mutex.ReleaseMutex();
             return adapters[0]!;
         }
 
@@ -123,7 +123,7 @@ namespace Retro_ML.Emulator
                 Thread.Sleep(100);
             }
 
-            sem.WaitOne();
+            mutex.WaitOne();
 
             for (int i = 0; i < adapters.Length; i++)
             {
@@ -135,7 +135,7 @@ namespace Retro_ML.Emulator
             server?.Dispose();
             server = null;
 
-            sem.Release();
+            mutex.ReleaseMutex();
         }
 
         /// <summary>
@@ -154,7 +154,8 @@ namespace Retro_ML.Emulator
                     socketIP: ipAddress!.ToString(),
                     socketPort: SOCKET_PORT.ToString(),
                     server!,
-                    applicationConfig.NeuralConfig);
+                    applicationConfig,
+                    dataFetcherFactory);
 
                 if (index == 0 && ArduinoPreviewer.ArduinoAvailable(applicationConfig.ArduinoCommunicationPort))
                 {

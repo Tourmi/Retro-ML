@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Threading;
-
-namespace Retro_ML.Utils
+﻿namespace Retro_ML.Utils
 {
-    internal static class Exceptions
+    public static class Exceptions
     {
         private static Queue<Exception> exceptions = new Queue<Exception>();
         private static Semaphore semaphore = new Semaphore(0, 1);

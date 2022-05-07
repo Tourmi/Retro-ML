@@ -1,6 +1,6 @@
 ﻿using NUnit.Framework;
-using Retro_ML.Neural.Training;
-using Retro_ML.Neural.Training.StopCondition;
+using Retro_ML.Neural.Train;
+using Retro_ML.Neural.Train.StopCondition;
 using System;
 using System.Threading;
 
