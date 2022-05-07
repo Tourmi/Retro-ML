@@ -1,4 +1,5 @@
 ﻿using Retro_ML.Arduino;
+using Retro_ML.Configuration;
 using Retro_ML.Emulator;
 using Retro_ML.Game;
 using Retro_ML.SuperMarioWorld.Configuration;
@@ -22,9 +23,9 @@ namespace Retro_ML_TEST.Emulator
 
         public MockEmulatorAdapter()
         {
-            DataFetcher = new SMWDataFetcher(this, new SMWNeuralConfig());
-            InputSetter = new InputSetter(DataFetcher, new SMWNeuralConfig());
-            OutputGetter = new OutputGetter(new SMWNeuralConfig());
+            DataFetcher = new SMWDataFetcher(this, new NeuralConfig(), new SMWPluginConfig());
+            InputSetter = new InputSetter(DataFetcher, new NeuralConfig());
+            OutputGetter = new OutputGetter(new NeuralConfig());
 
             Memory = new Dictionary<uint, byte>();
         }

@@ -1,4 +1,5 @@
-﻿using Retro_ML.Emulator;
+﻿using Retro_ML.Configuration;
+using Retro_ML.Emulator;
 using Retro_ML.Game;
 using Retro_ML.SuperMarioWorld.Configuration;
 using Retro_ML.SuperMarioWorld.Game.Data;
@@ -29,13 +30,13 @@ namespace Retro_ML.SuperMarioWorld.Game
 
         private InternalClock internalClock;
 
-        public SMWDataFetcher(IEmulatorAdapter emulator, SMWNeuralConfig neuralConfig)
+        public SMWDataFetcher(IEmulatorAdapter emulator, NeuralConfig neuralConfig, SMWPluginConfig pluginConfig)
         {
             this.emulator = emulator;
             frameCache = new();
             levelCache = new();
             map16Caches = new Dictionary<uint, ushort[]>();
-            internalClock = new InternalClock(neuralConfig.InternalClockTickLength, neuralConfig.InternalClockLength);
+            internalClock = new InternalClock(pluginConfig.InternalClockTickLength, pluginConfig.InternalClockLength);
         }
 
         /// <summary>

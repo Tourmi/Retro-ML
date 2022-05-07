@@ -3,7 +3,7 @@ using Newtonsoft.Json.Serialization;
 
 namespace Retro_ML.Utils
 {
-    internal static class SerializationUtils
+    public static class SerializationUtils
     {
         public static readonly JsonSerializerSettings JSON_CONFIG = new()
         {

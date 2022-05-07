@@ -1,6 +1,7 @@
 ﻿using Newtonsoft.Json;
 using Retro_ML.Neural.Scoring;
 using Retro_ML.Neural.Train.StopCondition;
+using Retro_ML.Plugin;
 using Retro_ML.Utils;
 
 namespace Retro_ML.Configuration
@@ -13,6 +14,7 @@ namespace Retro_ML.Configuration
         public ApplicationConfig()
         {
             RomPath = "smw.sfc";
+            RomHeaderName = "SUPER MARIOWORLD";
             ArduinoCommunicationPort = "COM3";
             ScoreFactors = new List<IScoreFactor>();
             SaveStates = new List<string>();
@@ -25,6 +27,10 @@ namespace Retro_ML.Configuration
         /// The path for the ROM file to use.
         /// </summary>
         public string RomPath { get; set; }
+        /// <summary>
+        /// The name of the game in the ROM's header file
+        /// </summary>
+        public string RomHeaderName { get; set; }
 
         /// <summary>
         /// The amount of threads and emulator instances the application should use.
@@ -52,6 +58,8 @@ namespace Retro_ML.Configuration
         /// </summary>
         [JsonProperty]
         public NeuralConfig NeuralConfig { get; set; }
+        [JsonIgnore]
+        public IPluginConfig? PluginConfig { get; set; }
 
         /// <summary>
         /// Returns a clone of the configured score factors, should be used if the state of the score factors will be used.
@@ -67,12 +75,24 @@ namespace Retro_ML.Configuration
             }
         }
 
+        /// <summary>
+        /// Returns the game plugin associated with the configuration.
+        /// </summary>
+        /// <returns></returns>
+        public IGamePlugin GetGamePlugin() => PluginUtils.GetGamePlugin(RomHeaderName);
+
         public string Serialize() => JsonConvert.SerializeObject(this, SerializationUtils.JSON_PASCAL_CASE_CONFIG);
 
         public static ApplicationConfig Deserialize(string json)
         {
             ApplicationConfig cfg = JsonConvert.DeserializeObject<ApplicationConfig>(json, SerializationUtils.JSON_PASCAL_CASE_CONFIG)!;
-            cfg.NeuralConfig.InitNodes();
+            var gamePlugin = cfg.GetGamePlugin();
+            cfg.PluginConfig = gamePlugin.GetPluginConfig();
+            if (File.Exists(gamePlugin.PluginConfigPath))
+            {
+                cfg.PluginConfig.Deserialize(File.ReadAllText(gamePlugin.PluginConfigPath));
+            }
+            cfg.PluginConfig.InitNeuralConfig(cfg.NeuralConfig);
 
             return cfg;
         }

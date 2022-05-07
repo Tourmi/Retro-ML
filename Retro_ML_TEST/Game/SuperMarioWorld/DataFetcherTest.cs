@@ -1,4 +1,5 @@
 ﻿using NUnit.Framework;
+using Retro_ML.Configuration;
 using Retro_ML.SuperMarioWorld.Configuration;
 using Retro_ML.SuperMarioWorld.Game;
 using Retro_ML_TEST.Emulator;
@@ -17,7 +18,7 @@ namespace Retro_ML_TEST.Game.SuperMarioWorld
         public void SetUp()
         {
             mockEmulatorAdapter = new MockEmulatorAdapter();
-            dataFetcher = new SMWDataFetcher(mockEmulatorAdapter, new SMWNeuralConfig());
+            dataFetcher = new SMWDataFetcher(mockEmulatorAdapter, new NeuralConfig(), new SMWPluginConfig());
             dataFetcher.NextFrame();
         }
 

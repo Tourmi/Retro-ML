@@ -36,6 +36,7 @@ namespace Retro_ML.Application.ViewModels
             playingPageViewModel.OnExit += HandlePlayingExit;
 
             new Thread(ErrorManagementThread).Start();
+            PluginUtils.GetGamePlugin("SUPER MARIOWORLD"); //Temporary hack to preload DLL
 
             ApplicationConfig applicationConfig = ApplicationConfig.Deserialize(File.ReadAllText(DefaultPaths.APP_CONFIG));
             if (!File.Exists(applicationConfig.RomPath))
@@ -84,8 +85,6 @@ namespace Retro_ML.Application.ViewModels
             playingPageViewModel.OnExit += HandlePlayingExit;
             mainPageViewModel.IsEnabled = true;
         }
-
-
 
         public void ErrorManagementThread()
         {

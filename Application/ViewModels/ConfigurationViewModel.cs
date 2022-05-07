@@ -3,8 +3,6 @@ using ReactiveUI;
 using Retro_ML.Application.Models;
 using Retro_ML.Application.ViewModels.Components;
 using Retro_ML.Configuration;
-using Retro_ML.SuperMarioWorld.Configuration;
-using Retro_ML.SuperMarioWorld.Game;
 using Retro_ML.Utils;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -46,7 +44,7 @@ namespace Retro_ML.Application.ViewModels
         private SharpNeatModel? SharpNeatModel;
         private ApplicationConfig? ApplicationConfig;
 
-        public int[] RayCounts => Raycast.POSSIBLE_RAY_COUNT;
+        public int[] RayCounts => new int[] { 4, 8, 16, 32, 64 };
         public int[] PossibleClockLengths => new int[] { 1, 2, 3, 4, 5, 6, 7, 8, 16 };
 
         public ObservableCollection<Error> ErrorList { get; set; }
@@ -523,13 +521,16 @@ namespace Retro_ML.Application.ViewModels
             }
 
             //Tab Neural
-            ((SMWNeuralConfig)ApplicationConfig.NeuralConfig).UseGrid = UseVisionGrid;
-            ((SMWNeuralConfig)ApplicationConfig.NeuralConfig).GridDistanceX = ViewDistanceHorizontal;
-            ((SMWNeuralConfig)ApplicationConfig.NeuralConfig).GridDistanceY = ViewDistanceVertical;
-            ((SMWNeuralConfig)ApplicationConfig.NeuralConfig).RayLength = RayLength;
-            ((SMWNeuralConfig)ApplicationConfig.NeuralConfig).RayCount = RayCount;
-            ((SMWNeuralConfig)ApplicationConfig.NeuralConfig).InternalClockLength = ClockLength;
-            ((SMWNeuralConfig)ApplicationConfig.NeuralConfig).InternalClockTickLength = ClockTickLength;
+            ApplicationConfig.PluginConfig!["UseGrid"] = UseVisionGrid;
+            ApplicationConfig.PluginConfig["GridDistanceX"] = ViewDistanceHorizontal;
+            ApplicationConfig.PluginConfig["GridDistanceY"] = ViewDistanceVertical;
+            ApplicationConfig.PluginConfig["RayLength"] = RayLength;
+            ApplicationConfig.PluginConfig["RayCount"] = RayCount;
+            ApplicationConfig.PluginConfig["InternalClockLength"] = ClockLength;
+            ApplicationConfig.PluginConfig["InternalClockTickLength"] = ClockTickLength;
+            string pluginConfigPath = ApplicationConfig.GetGamePlugin().PluginConfigPath;
+            Directory.CreateDirectory(Path.GetDirectoryName(pluginConfigPath)!);
+            File.WriteAllText(pluginConfigPath, ApplicationConfig.PluginConfig.Serialize());
 
             int inputCount = ApplicationConfig.NeuralConfig.InputNodes.Count;
             int outputCount = ApplicationConfig.NeuralConfig.OutputNodes.Count;
@@ -659,6 +660,8 @@ namespace Retro_ML.Application.ViewModels
 
             string neuralConfigJson = await File.ReadAllTextAsync(paths.First());
             ApplicationConfig!.NeuralConfig = NeuralConfig.Deserialize(neuralConfigJson);
+            ApplicationConfig.PluginConfig!.InitNeuralConfig(ApplicationConfig.NeuralConfig);
+
             PopulateNeuralConfig();
         }
 
@@ -675,15 +678,15 @@ namespace Retro_ML.Application.ViewModels
                 NeuralConfigs.Add(new(output));
             }
 
-            UseVisionGrid = ((SMWNeuralConfig)ApplicationConfig.NeuralConfig).UseGrid;
-            ViewDistanceHorizontal = ((SMWNeuralConfig)ApplicationConfig.NeuralConfig).GridDistanceX;
-            ViewDistanceVertical = ((SMWNeuralConfig)ApplicationConfig.NeuralConfig).GridDistanceY;
+            UseVisionGrid = (bool)ApplicationConfig.PluginConfig!["UseGrid"];
+            ViewDistanceHorizontal = (int)ApplicationConfig.PluginConfig["GridDistanceX"];
+            ViewDistanceVertical = (int)ApplicationConfig.PluginConfig["GridDistanceY"];
 
-            RayLength = ((SMWNeuralConfig)ApplicationConfig.NeuralConfig).RayLength;
-            RayCount = ((SMWNeuralConfig)ApplicationConfig.NeuralConfig).RayCount;
+            RayLength = (int)ApplicationConfig.PluginConfig["RayLength"];
+            RayCount = (int)ApplicationConfig.PluginConfig["RayCount"];
 
-            ClockLength = ((SMWNeuralConfig)ApplicationConfig.NeuralConfig).InternalClockLength;
-            ClockTickLength = ((SMWNeuralConfig)ApplicationConfig.NeuralConfig).InternalClockTickLength;
+            ClockLength = (int)ApplicationConfig.PluginConfig["InternalClockLength"];
+            ClockTickLength = (int)ApplicationConfig.PluginConfig["InternalClockTickLength"];
         }
 
         #region Validation

@@ -18,6 +18,8 @@
         public const string NEURAL_CONFIG_EXTENSION = "ncfg";
         public const string NEURAL_CONFIG_NAME = $"neuralConfig.{NEURAL_CONFIG_EXTENSION}";
 
+        public const string PLUGINS_DIR = "plugins/";
+
         public const string CURRENT_POPULATION = "current";
         public const string GENOME_DIR = "genomes\\";
         public const string CURRENT_GENOME = "";
