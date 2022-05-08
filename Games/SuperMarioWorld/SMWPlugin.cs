@@ -21,6 +21,6 @@ namespace Retro_ML.SuperMarioWorld
         public IDataFetcherFactory GetDataFetcherFactory() => new SMWDataFetcherFactory();
         public INeuralPlayer GetNeuralPlayer(EmulatorManager emulatorManager, ApplicationConfig appConfig) => new SharpNeatPlayer(emulatorManager, appConfig);
         public INeuralTrainer GetNeuralTrainer(EmulatorManager emulatorManager, ApplicationConfig appConfig) => new SMWTrainer(emulatorManager, appConfig);
-        public IPluginConfig GetPluginConfig() => new SMWPluginConfig();
+        public IGamePluginConfig GetPluginConfig() => new SMWPluginConfig();
     }
 }

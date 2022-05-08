@@ -18,12 +18,6 @@ namespace Retro_ML.Configuration
         object this[string fieldName] { get; set; }
 
         /// <summary>
-        /// Initializes the neural config
-        /// </summary>
-        /// <param name="neuralConfig"></param>
-        void InitNeuralConfig(NeuralConfig neuralConfig);
-
-        /// <summary>
         /// Serializes this plugin's configuration
         /// </summary>
         /// <returns></returns>

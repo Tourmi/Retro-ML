@@ -59,7 +59,7 @@ namespace Retro_ML.Configuration
         [JsonProperty]
         public NeuralConfig NeuralConfig { get; set; }
         [JsonIgnore]
-        public IPluginConfig? PluginConfig { get; set; }
+        public IGamePluginConfig? PluginConfig { get; set; }
 
         /// <summary>
         /// Returns a clone of the configured score factors, should be used if the state of the score factors will be used.

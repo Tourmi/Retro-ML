@@ -10,7 +10,7 @@ namespace Retro_ML.SNES
         public string[] ROMExtensions => new string[] { "sfc", "smc" };
         public string PluginConfigPath => "config/plugins/snes-config.json";
 
-        public IPluginConfig GetPluginConfig()
+        public IGamePluginConfig GetPluginConfig()
         {
             throw new NotImplementedException();
         }

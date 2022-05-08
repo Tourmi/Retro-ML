@@ -7,7 +7,7 @@ using Retro_ML.Utils;
 
 namespace Retro_ML.SuperMarioWorld.Configuration
 {
-    internal class SMWPluginConfig : IPluginConfig
+    internal class SMWPluginConfig : IGamePluginConfig
     {
         public FieldInfo[] Fields => new FieldInfo[]
         {
