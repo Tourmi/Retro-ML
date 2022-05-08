@@ -1,0 +1,21 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+			 xmlns:vm="clr-namespace:Retro_ML.Application.ViewModels.Components.FieldInfo;assembly=Retro_ML.Application"
+             x:Class="Retro_ML.Application.Views.Components.FieldInfo.IntegerView">
+
+	<Design.DataContext>
+		<vm:IntegerViewModel/>
+	</Design.DataContext>
+
+	<UserControl.Styles>
+		<StyleInclude Source="/Styles/MainStyles.axaml" />
+	</UserControl.Styles>
+
+	<StackPanel Spacing="5">
+		<TextBlock Classes="h1" Text="{Binding DisplayName}"/>
+		<NumericUpDown Classes="numericUpDown" Value="{Binding Value}" Minimum="{Binding MinimumValue}" Maximum="{Binding MaximumValue}"/>
+	</StackPanel>
+</UserControl>

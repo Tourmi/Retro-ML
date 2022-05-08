@@ -1,19 +1,15 @@
 ﻿using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Retro_ML.Configuration.FieldInformation;
 
 namespace Retro_ML.Configuration
 {
     public interface IPluginConfig
     {
         /// <summary>
-        /// The available fields for this configuration, as well as their type.
+        /// The available fields for this configuration.
         /// </summary>
         [JsonIgnore]
-        (string fieldName, Type type)[] Fields { get; }
+        FieldInfo[] Fields { get; }
         /// <summary>
         /// Returns or sets the value of the given field
         /// </summary>

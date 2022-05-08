@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Retro_ML.Plugin
+﻿namespace Retro_ML.Plugin
 {
     /// <summary>
     /// Interface to be implemented to add new supported consoles to the application

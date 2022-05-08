@@ -15,7 +15,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Retro_ML.SuperMarioWorld", 
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Retro_ML", "Retro_ML\Retro_ML.csproj", "{94DE3EBD-EED3-4B5F-A2DC-4EAB2AC8EBAF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Retro_ML.SNES", "Consoles\Retro_ML.SNES\Retro_ML.SNES.csproj", "{7735343C-8DCF-4061-B168-0CAA36AA4159}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Retro_ML.SNES", "Consoles\Retro_ML.SNES\Retro_ML.SNES.csproj", "{7735343C-8DCF-4061-B168-0CAA36AA4159}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

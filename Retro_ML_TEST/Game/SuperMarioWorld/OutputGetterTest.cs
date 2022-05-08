@@ -1,7 +1,6 @@
 ﻿using NUnit.Framework;
 using Retro_ML.Configuration;
 using Retro_ML.Game;
-using Retro_ML.SuperMarioWorld.Configuration;
 
 namespace Retro_ML_TEST.Game.SuperMarioWorld
 {

@@ -2,7 +2,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-		xmlns:vm="clr-namespace:Retro_ML.Application.ViewModels;assembly=Retro_ML"
+		xmlns:vm="clr-namespace:Retro_ML.Application.ViewModels;assembly=Retro_ML.Application"
         mc:Ignorable="d" d:DesignWidth="700" d:DesignHeight="500"
         x:Class="Retro_ML.Application.Views.Configuration"
         Title="Configuration"
@@ -32,6 +32,15 @@
 						<TextBlock Classes="p" Text="Selected: "/>
 						<TextBlock Classes="p" Text="{Binding SaveStates}"/>
 					</StackPanel>
+				</TabItem>
+				<TabItem Header="Game" Classes="configTabControl">
+					<ItemsControl Items="{Binding GamePluginConfigFields}">
+						<ItemsControl.ItemsPanel>
+							<ItemsPanelTemplate>
+								<StackPanel Classes="tabContent"/>
+							</ItemsPanelTemplate>
+						</ItemsControl.ItemsPanel>
+					</ItemsControl>
 				</TabItem>
 				<TabItem Header="Training" Classes="configTabControl">
 					<StackPanel Classes="tabContent">
@@ -84,29 +93,10 @@
 						</TextBlock>
 						<Button Content="Load neural configuration" Classes="configButton" Command="{Binding LoadNeuralConfig}"/>
 						
-						<StackPanel Spacing="15" Orientation="Horizontal">
-							<TextBlock Classes="h1" Text="Use Vision Grid" VerticalAlignment="Center"/>
-							<CheckBox IsChecked="{Binding UseVisionGrid}" VerticalAlignment="Center"/>
-						</StackPanel>
-						<TextBlock Classes="h1" Text="Vision Grid Horizontal Distance" IsVisible="{Binding UseVisionGrid}"/>
-						<NumericUpDown Classes="numericUpDown" Value="{Binding ViewDistanceHorizontal}" Minimum="1" Maximum="10" IsVisible="{Binding UseVisionGrid}"/>
-						<TextBlock Classes="h1" Text="Vision Grid Vertical Distance" IsVisible="{Binding UseVisionGrid}"/>
-						<NumericUpDown Classes="numericUpDown" Value="{Binding ViewDistanceVertical}" Minimum="1" Maximum="10" IsVisible="{Binding UseVisionGrid}"/>
-
-						<TextBlock Classes="h1" Text="Vision Ray Distance" IsVisible="{Binding !UseVisionGrid}"/>
-						<NumericUpDown Classes="numericUpDown" Value="{Binding RayLength}" Minimum="1" Maximum="10" IsVisible="{Binding !UseVisionGrid}"/>
-						<TextBlock Classes="h1" Text="Vision Ray Count" IsVisible="{Binding !UseVisionGrid}"/>
-						<ComboBox SelectedItem="{Binding RayCount}" Items="{Binding RayCounts}" IsVisible="{Binding !UseVisionGrid}"/>
-
-						<TextBlock Classes="h1" Text="Internal Clock Tick Length (Frames)"/>
-						<NumericUpDown Classes="numericUpDown" Value="{Binding ClockTickLength}" Minimum="1"/>
-						<TextBlock Classes="h1" Text="Internal Clock Length"/>
-						<ComboBox SelectedItem="{Binding ClockLength}" Items="{Binding PossibleClockLengths}"/>
-
 						<ItemsControl Items="{Binding NeuralConfigs}">
 							<ItemsControl.ItemsPanel>
 								<ItemsPanelTemplate>
-									<StackPanel Classes="tabContent"/>
+									<StackPanel Classes="tabContent" Spacing="10"/>
 								</ItemsPanelTemplate>
 							</ItemsControl.ItemsPanel>
 						</ItemsControl>
