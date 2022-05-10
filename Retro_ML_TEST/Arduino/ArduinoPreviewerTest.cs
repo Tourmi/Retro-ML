@@ -24,8 +24,8 @@ namespace Retro_ML_TEST.Arduino
         {
             Assert.IsNotNull(previewer);
 
-            Assert.DoesNotThrow(() => previewer!.SendInput(new("")));
-            Assert.DoesNotThrow(() => previewer!.SendInput(new("ABXYlrudLRSs")));
+            Assert.DoesNotThrow(() => previewer!.SendInput(new byte[] { 0b0000_0000, 0b0000_0000 }));
+            Assert.DoesNotThrow(() => previewer!.SendInput(new byte[] { 0b1111_1111, 0b0000_1111 }));
         }
 
         [TearDown]

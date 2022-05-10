@@ -564,9 +564,9 @@ namespace Retro_ML.Application.ViewModels
         {
             GamePluginConfigFields.Clear();
 
-            if (ApplicationConfig?.PluginConfig == null) return;
+            if (ApplicationConfig?.GamePluginConfig == null) return;
 
-            var pluginConfig = ApplicationConfig.PluginConfig;
+            var pluginConfig = ApplicationConfig.GamePluginConfig;
 
             foreach (var fieldInfo in pluginConfig.Fields)
             {
@@ -587,9 +587,9 @@ namespace Retro_ML.Application.ViewModels
 
         public void SaveGamePluginConfig()
         {
-            if (ApplicationConfig?.PluginConfig == null) return;
+            if (ApplicationConfig?.GamePluginConfig == null) return;
 
-            var pluginConfig = ApplicationConfig.PluginConfig;
+            var pluginConfig = ApplicationConfig.GamePluginConfig;
 
             foreach (var field in GamePluginConfigFields)
             {
@@ -609,13 +609,13 @@ namespace Retro_ML.Application.ViewModels
 
             string pluginConfigPath = ApplicationConfig.GetGamePlugin().PluginConfigPath;
             Directory.CreateDirectory(Path.GetDirectoryName(pluginConfigPath)!);
-            File.WriteAllText(pluginConfigPath, ApplicationConfig!.PluginConfig!.Serialize());
+            File.WriteAllText(pluginConfigPath, ApplicationConfig!.GamePluginConfig!.Serialize());
         }
 
         public async void SelectRom()
         {
             OpenFileDialog fileDialog = new();
-            fileDialog.Filters.Add(new FileDialogFilter() { Name = "Rom", Extensions = { "sfc" } });
+            fileDialog.Filters.Add(new FileDialogFilter() { Name = "Rom", Extensions = ApplicationConfig!.GetConsolePlugin().ROMExtensions.ToList() });
             fileDialog.AllowMultiple = false;
             fileDialog.Directory = Path.GetFullPath(".");
 
@@ -661,7 +661,7 @@ namespace Retro_ML.Application.ViewModels
 
             string neuralConfigJson = await File.ReadAllTextAsync(paths.First());
             ApplicationConfig!.NeuralConfig = NeuralConfig.Deserialize(neuralConfigJson);
-            ApplicationConfig.PluginConfig!.InitNeuralConfig(ApplicationConfig.NeuralConfig);
+            ApplicationConfig.GamePluginConfig!.InitNeuralConfig(ApplicationConfig.NeuralConfig);
 
             PopulateNeuralConfig();
         }

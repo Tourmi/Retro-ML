@@ -13,9 +13,9 @@ namespace Retro_ML.Plugin
         /// </summary>
         string PluginConfigPath { get; }
         /// <summary>
-        /// Returns a new instance of the <see cref="IGamePluginConfig"/> specific to this plugin
+        /// Returns a new instance of the <see cref="IPluginConfig"/> specific to this plugin
         /// </summary>
         /// <returns></returns>
-        IGamePluginConfig GetPluginConfig();
+        IPluginConfig GetPluginConfig();
     }
 }

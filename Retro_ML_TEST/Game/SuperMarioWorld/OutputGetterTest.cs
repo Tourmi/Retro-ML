@@ -12,7 +12,7 @@ namespace Retro_ML_TEST.Game.SuperMarioWorld
         [SetUp]
         public void SetUp()
         {
-            outputGetter = new OutputGetter(new NeuralConfig());
+            outputGetter = new OutputGetter(new ApplicationConfig());
         }
 
         [Test]

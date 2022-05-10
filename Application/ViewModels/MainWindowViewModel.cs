@@ -36,10 +36,14 @@ namespace Retro_ML.Application.ViewModels
             playingPageViewModel.OnExit += HandlePlayingExit;
 
             new Thread(ErrorManagementThread).Start();
-            PluginUtils.GetGamePlugin("SUPER MARIOWORLD"); //Temporary hack to preload DLL
+            PluginUtils.LoadPlugins();
 
             ApplicationConfig applicationConfig = ApplicationConfig.Deserialize(File.ReadAllText(DefaultPaths.APP_CONFIG));
-            if (!File.Exists(applicationConfig.RomPath))
+            if (string.IsNullOrWhiteSpace(applicationConfig.RomPath))
+            {
+                Exceptions.QueueException(new Exception($"No ROMs are currently specified. Please go into the Configuration to select a ROM before anything else."));
+            }
+            else if (!File.Exists(applicationConfig.RomPath))
             {
                 Exceptions.QueueException(new Exception($"Could not find ROM at path {applicationConfig.RomPath}. Please go into the Configuration to select a ROM before anything else."));
             }

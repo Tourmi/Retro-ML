@@ -1,6 +1,6 @@
 ﻿{
   "romPath": "smw.sfc",
-  "gamePluginName": "SUPER MARIOWORLD",
+  "gamePluginName": "SMW",
   "multithread": 4,
   "arduinoCommunicationPort": "COM3",
   "stopConditions": [

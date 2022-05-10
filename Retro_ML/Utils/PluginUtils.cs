@@ -5,36 +5,44 @@ namespace Retro_ML.Utils
 {
     internal static class PluginUtils
     {
-        private static readonly Dictionary<string, IGamePlugin> gamePlugins = new();
+        private static readonly Dictionary<string, IPlugin> plugins = new();
 
         /// <summary>
-        /// Returns a <see cref="IGamePlugin"/> instance from the plugins folder that's compatible with the given rom header name
+        /// <br>Returns a <see cref="IGamePlugin"/> instance from the loaded plugins that's compatible with the given rom header name.</br>
+        /// <br/>
+        /// <br>Returns <c>null</c> if no plugins exist for the given game.</br>
         /// </summary>
-        /// <param name="romHeaderName"></param>
-        /// <returns></returns>
-        /// <exception cref="Exception"></exception>
-        public static IGamePlugin GetGamePlugin(string romHeaderName)
+        public static IGamePlugin? GetPluginForGame(string romHeaderName)
         {
-            if (gamePlugins.ContainsKey(romHeaderName)) return gamePlugins[romHeaderName];
+            return GamePlugins.Where(p => p.PluginROMHeaderName == romHeaderName).FirstOrDefault();
+        }
+        /// <summary>
+        /// Returns the plugin with the given name.
+        /// </summary>
+        public static T GetPlugin<T>(string pluginName) where T : IPlugin
+        {
+            return (T)plugins[pluginName];
+        }
 
-            var pluginType = typeof(IGamePlugin);
+        /// <summary>
+        /// Function that (re)loads all plugins in the <see cref="DefaultPaths.PLUGINS_DIR"/> directory.
+        /// </summary>
+        public static void LoadPlugins()
+        {
+            plugins.Clear();
+
+            var pluginType = typeof(IPlugin);
             foreach (var file in new DirectoryInfo(DefaultPaths.PLUGINS_DIR).GetFiles("*.dll"))
             {
                 try
                 {
                     Assembly a = AppDomain.CurrentDomain.Load(Assembly.LoadFrom(file.FullName).GetName());
-                    var foundType = GetLoadableTypes(a)
+                    var foundTypes = GetLoadableTypes(a)
                         .Where(pluginType.IsAssignableFrom)
-                        .Where(t => t.IsClass)
-                        .FirstOrDefault();
-                    if (foundType != null)
+                        .Where(t => t.IsClass);
+                    foreach (var foundType in foundTypes)
                     {
-                        var potentialPlugin = (IGamePlugin)Activator.CreateInstance(foundType)!;
-                        if (potentialPlugin.PluginROMHeaderName == romHeaderName)
-                        {
-                            gamePlugins[potentialPlugin.PluginROMHeaderName] = potentialPlugin;
-                            return potentialPlugin;
-                        }
+                        AddPluginInstance((IPlugin)Activator.CreateInstance(foundType)!);
                     }
                 }
                 catch
@@ -42,8 +50,29 @@ namespace Retro_ML.Utils
                     Exceptions.QueueException(new Exception($"Could not load assembly {file.Name}, is it a valid plugin?"));
                 }
             }
+        }
 
-            throw new Exception($"Could not find game plugin {romHeaderName} in {DefaultPaths.PLUGINS_DIR}");
+        /// <summary>
+        /// Returns all the loaded game plugins.
+        /// </summary>
+        public static IEnumerable<IGamePlugin> GamePlugins => plugins.Values.OfType<IGamePlugin>();
+        /// <summary>
+        /// Returns all the loaded console plugins.
+        /// </summary>
+        public static IEnumerable<IConsolePlugin> ConsolePlugins => plugins.Values.OfType<IConsolePlugin>();
+
+        /// <summary>
+        /// Adds the given plugin instance to the list of loaded plugins
+        /// </summary>
+        /// <param name="plugin"></param>
+        /// <exception cref="Exception">Thrown when a plugin with the same name already exists</exception>
+        private static void AddPluginInstance(IPlugin plugin)
+        {
+            if (plugins.ContainsKey(plugin.PluginName))
+            {
+                throw new Exception($"More than one plugin with name {plugin.PluginName} are present in the {DefaultPaths.PLUGINS_DIR} directory");
+            }
+            plugins[plugin.PluginName] = plugin;
         }
 
         /// <summary>
@@ -54,9 +83,8 @@ namespace Retro_ML.Utils
         /// <param name="assembly"></param>
         /// <returns></returns>
         /// <exception cref="ArgumentNullException"></exception>
-        private static IEnumerable<Type> GetLoadableTypes(this Assembly assembly)
+        private static IEnumerable<Type> GetLoadableTypes(Assembly assembly)
         {
-            if (assembly == null) throw new ArgumentNullException("assembly");
             try
             {
                 return assembly.GetTypes();

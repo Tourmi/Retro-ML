@@ -1,4 +1,5 @@
 ﻿using Retro_ML.Configuration;
+using Retro_ML.Game;
 using Retro_ML.Plugin;
 
 namespace Retro_ML.SNES
@@ -10,7 +11,9 @@ namespace Retro_ML.SNES
         public string[] ROMExtensions => new string[] { "sfc", "smc" };
         public string PluginConfigPath => "config/plugins/snes-config.json";
 
-        public IGamePluginConfig GetPluginConfig()
+        public IInput GetInput() => new SNESInput();
+
+        public IPluginConfig GetPluginConfig()
         {
             throw new NotImplementedException();
         }

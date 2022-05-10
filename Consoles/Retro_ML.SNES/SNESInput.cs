@@ -1,9 +1,8 @@
-﻿namespace Retro_ML.Game
+﻿using Retro_ML.Game;
+
+namespace Retro_ML.SNES
 {
-    /// <summary>
-    /// Represents a controller input state, which buttons are pressed, and which are not.
-    /// </summary>
-    public class Input
+    internal class SNESInput : IInput
     {
         public const int BUTTON_COUNT = 12;
 
@@ -40,13 +39,7 @@
 
         private readonly bool[] inputMask = new bool[BUTTON_COUNT];
 
-        public Input(string inputs)
-        {
-            foreach (var chara in inputs)
-            {
-                SetButtonState((Buttons)chara, true);
-            }
-        }
+        public int ButtonCount => BUTTON_COUNT;
 
         /// <summary>
         /// Sets the state of a single button on the controller.
@@ -61,12 +54,7 @@
         /// <returns></returns>
         public bool GetButtonState(Buttons button) => inputMask[Array.IndexOf(buttons, button)];
 
-        /// <summary>
-        /// Returns two bitmaps based on the input, the first one containing, in order, the status of the A B X Y left right up down key. The second one contains the status of LShoulder RShoulder Start Select.
-        /// Used for Serial port communications.
-        /// </summary>
-        /// <returns></returns>
-        public byte[] GetButtonBytes()
+        public byte[] ToArduinoBytes()
         {
             byte byte1 = 0;
 
@@ -85,7 +73,20 @@
             return new byte[] { byte1, byte2 };
         }
 
-        public override string ToString()
+        public void FromString(string value)
+        {
+            for (int i = 0; i < inputMask.Length; i++)
+            {
+                inputMask[i] = false;
+            }
+
+            foreach (var chara in value)
+            {
+                SetButtonState((Buttons)chara, true);
+            }
+        }
+
+        public string GetString()
         {
             string output = "";
             for (int i = 0; i < inputMask.Length; i++)
@@ -100,5 +101,24 @@
         }
 
         public static Buttons IndexToButton(int index) => buttons[index];
+
+        public void SetButton(int index, double value)
+        {
+            inputMask[index] = value > 0;
+        }
+
+        public void ValidateButtons()
+        {
+            if (GetButtonState(Buttons.Left) && GetButtonState(Buttons.Right))
+            {
+                SetButtonState(Buttons.Left, false);
+                SetButtonState(Buttons.Right, false);
+            }
+            if (GetButtonState(Buttons.Up) && GetButtonState(Buttons.Down))
+            {
+                SetButtonState(Buttons.Up, false);
+                SetButtonState(Buttons.Down, false);
+            }
+        }
     }
 }

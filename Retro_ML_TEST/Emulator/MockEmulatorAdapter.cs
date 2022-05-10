@@ -25,7 +25,7 @@ namespace Retro_ML_TEST.Emulator
         {
             DataFetcher = new SMWDataFetcher(this, new NeuralConfig(), new SMWPluginConfig());
             InputSetter = new InputSetter(DataFetcher, new NeuralConfig());
-            OutputGetter = new OutputGetter(new NeuralConfig());
+            OutputGetter = new OutputGetter(new ApplicationConfig());
 
             Memory = new Dictionary<uint, byte>();
         }
@@ -104,7 +104,7 @@ namespace Retro_ML_TEST.Emulator
 
         public int SendInputCallCount = 0;
 
-        public void SendInput(Input input)
+        public void SendInput(IInput input)
         {
             SendInputCallCount++;
         }

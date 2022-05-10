@@ -14,7 +14,7 @@ namespace Retro_ML.Configuration
         public ApplicationConfig()
         {
             RomPath = "smw.sfc";
-            RomHeaderName = "SUPER MARIOWORLD";
+            GamePluginName = "SMW";
             ArduinoCommunicationPort = "COM3";
             ScoreFactors = new List<IScoreFactor>();
             SaveStates = new List<string>();
@@ -30,7 +30,7 @@ namespace Retro_ML.Configuration
         /// <summary>
         /// The name of the game in the ROM's header file
         /// </summary>
-        public string RomHeaderName { get; set; }
+        public string GamePluginName { get; set; }
 
         /// <summary>
         /// The amount of threads and emulator instances the application should use.
@@ -59,7 +59,7 @@ namespace Retro_ML.Configuration
         [JsonProperty]
         public NeuralConfig NeuralConfig { get; set; }
         [JsonIgnore]
-        public IGamePluginConfig? PluginConfig { get; set; }
+        public IGamePluginConfig? GamePluginConfig { get; set; }
 
         /// <summary>
         /// Returns a clone of the configured score factors, should be used if the state of the score factors will be used.
@@ -78,8 +78,11 @@ namespace Retro_ML.Configuration
         /// <summary>
         /// Returns the game plugin associated with the configuration.
         /// </summary>
-        /// <returns></returns>
-        public IGamePlugin GetGamePlugin() => PluginUtils.GetGamePlugin(RomHeaderName);
+        public IGamePlugin GetGamePlugin() => PluginUtils.GetPlugin<IGamePlugin>(GamePluginName);
+        /// <summary>
+        /// Returns the console plugin associated with the current game plugin
+        /// </summary>
+        public IConsolePlugin GetConsolePlugin() => PluginUtils.GetPlugin<IConsolePlugin>(PluginUtils.GetPlugin<IGamePlugin>(GamePluginName).ConsolePluginName);
 
         public string Serialize() => JsonConvert.SerializeObject(this, SerializationUtils.JSON_PASCAL_CASE_CONFIG);
 
@@ -87,12 +90,12 @@ namespace Retro_ML.Configuration
         {
             ApplicationConfig cfg = JsonConvert.DeserializeObject<ApplicationConfig>(json, SerializationUtils.JSON_PASCAL_CASE_CONFIG)!;
             var gamePlugin = cfg.GetGamePlugin();
-            cfg.PluginConfig = gamePlugin.GetPluginConfig();
+            cfg.GamePluginConfig = (IGamePluginConfig)gamePlugin.GetPluginConfig();
             if (File.Exists(gamePlugin.PluginConfigPath))
             {
-                cfg.PluginConfig.Deserialize(File.ReadAllText(gamePlugin.PluginConfigPath));
+                cfg.GamePluginConfig.Deserialize(File.ReadAllText(gamePlugin.PluginConfigPath));
             }
-            cfg.PluginConfig.InitNeuralConfig(cfg.NeuralConfig);
+            cfg.GamePluginConfig.InitNeuralConfig(cfg.NeuralConfig);
 
             return cfg;
         }

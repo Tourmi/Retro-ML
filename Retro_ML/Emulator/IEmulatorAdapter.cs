@@ -37,7 +37,7 @@ namespace Retro_ML.Emulator
         /// Sends the given input to the emulator
         /// </summary>
         /// <param name="input"></param>
-        void SendInput(Input input);
+        void SendInput(IInput input);
         /// <summary>
         /// Advances the emulator by one frame
         /// </summary>
