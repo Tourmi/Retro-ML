@@ -29,9 +29,7 @@ namespace Retro_ML.Configuration
         {
             InputNodes = new List<InputNode>();
             OutputNodes = new List<OutputNode>();
-            EnabledStates = Enumerable.Repeat(true, 15 + 8).Concat(Enumerable.Repeat(false, 4)).ToArray();
-
-            InitNodes();
+            EnabledStates = new bool[0];
         }
 
         /// <summary>
@@ -65,17 +63,11 @@ namespace Retro_ML.Configuration
             return count;
         }
 
-        /// <summary>
-        /// Initializes all of the input and output nodes so that they're ready to use.
-        /// </summary>
-        public virtual void InitNodes() { }
-
         public string Serialize() => JsonConvert.SerializeObject(this, SerializationUtils.JSON_CONFIG);
 
         public static NeuralConfig Deserialize(string json)
         {
             NeuralConfig cfg = JsonConvert.DeserializeObject<NeuralConfig>(json, SerializationUtils.JSON_CONFIG)!;
-            cfg.InitNodes();
 
             return cfg;
         }

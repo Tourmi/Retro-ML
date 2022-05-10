@@ -7,8 +7,7 @@ using Retro_ML.Application.Views.Components;
 using Retro_ML.Configuration;
 using Retro_ML.Emulator;
 using Retro_ML.Neural.Train;
-using Retro_ML.SuperMarioWorld.Game;
-using Retro_ML.SuperMarioWorld.Neural.Train;
+using Retro_ML.Plugin;
 using Retro_ML.Utils;
 using System;
 using System.Collections.ObjectModel;
@@ -101,10 +100,11 @@ namespace Retro_ML.Application.ViewModels
             CanSaveTraining = false;
             string appConfigJson = File.ReadAllText(DefaultPaths.APP_CONFIG);
             ApplicationConfig appConfig = ApplicationConfig.Deserialize(appConfigJson)!;
+            IGamePlugin gamePlugin = appConfig.GetGamePlugin();
 
             NeuralNetwork = new NetworkViewModel(appConfig.NeuralConfig);
-            emulatorManager = new(appConfig, new SMWDataFetcherFactory());
-            trainer = new SMWTrainer(emulatorManager, appConfig);
+            emulatorManager = new(appConfig, gamePlugin.GetDataFetcherFactory());
+            trainer = gamePlugin.GetNeuralTrainer(emulatorManager, appConfig);
             trainer.OnStatisticsUpdated += HandleGetStats;
             if (populationToLoad != null)
             {

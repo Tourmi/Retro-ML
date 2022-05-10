@@ -4,7 +4,7 @@ using Retro_ML.Application.ViewModels.Neural;
 using Retro_ML.Configuration;
 using Retro_ML.Emulator;
 using Retro_ML.Neural.Play;
-using Retro_ML.SuperMarioWorld.Game;
+using Retro_ML.Plugin;
 using Retro_ML.Utils;
 using System;
 using System.IO;
@@ -60,10 +60,11 @@ namespace Retro_ML.Application.ViewModels
         {
             string appConfigJson = File.ReadAllText(DefaultPaths.APP_CONFIG);
             ApplicationConfig appConfig = ApplicationConfig.Deserialize(appConfigJson)!;
+            IGamePlugin gamePlugin = appConfig.GetGamePlugin();
 
             NeuralNetwork = new NetworkViewModel(appConfig.NeuralConfig);
-            emulatorManager = new(1, appConfig, new SMWDataFetcherFactory());
-            neuralPlayer = new SharpNeatPlayer(emulatorManager, appConfig);
+            emulatorManager = new(1, appConfig, gamePlugin.GetDataFetcherFactory());
+            neuralPlayer = gamePlugin.GetNeuralPlayer(emulatorManager, appConfig);
             emulatorManager.GetFirstEmulator().LinkedNetworkActivated += NeuralNetwork.UpdateNodes;
             emulatorManager.GetFirstEmulator().ChangedLinkedNetwork += NeuralNetwork.UpdateTopology;
         }

@@ -35,6 +35,9 @@
 		</None>
 	</ItemGroup>
 	<ItemGroup>
+	  <Compile Update="Views\Components\FieldInfo\BoolView.axaml.cs">
+	    <DependentUpon>BoolView.axaml</DependentUpon>
+	  </Compile>
 	  <Compile Update="Views\Components\ScoreFactorView.axaml.cs">
 	    <DependentUpon>ScoreFactorView.axaml</DependentUpon>
 	  </Compile>
@@ -61,6 +64,9 @@
 	  <None Update="config\bizhawkConfigPlayMode.ini">
 	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 	  </None>
+	  <None Update="config\plugins\smw-config.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
 	  <None Update="config\sharpNeatConfig.json">
 	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 	  </None>
@@ -69,8 +75,14 @@
 	  </None>
 	</ItemGroup>
 	<ItemGroup>
-	  <ProjectReference Include="..\Games\SuperMarioWorld\Retro_ML.SuperMarioWorld.csproj" />
 	  <ProjectReference Include="..\Retro_ML\Retro_ML.csproj" />
+	</ItemGroup>
+	<ItemGroup>
+	  <Folder Include="ViewModels\Configuration\" />
+	  <Folder Include="Views\Configuration\" />
+	</ItemGroup>
+	<ItemGroup>
+	  <None Include="..\.editorconfig" Link=".editorconfig" />
 	</ItemGroup>
 
 	<Target Name="CopyEmulator" AfterTargets="AfterCompile">

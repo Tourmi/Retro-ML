@@ -1,5 +1,4 @@
-﻿using Retro_ML.Game;
-using System.IO.Ports;
+﻿using System.IO.Ports;
 
 namespace Retro_ML.Arduino
 {
@@ -15,9 +14,26 @@ namespace Retro_ML.Arduino
             serial.Open();
         }
 
-        public void SendInput(Input input)
+        /// <summary>
+        /// Sends the bytes to the Arduino.                                            <br/>
+        /// Must be two bytes long, and the order of the bit flags should be as follow:<br/>
+        /// <br>[0]: A</br>
+        /// <br>[1]: B</br>
+        /// <br>[2]: X</br>
+        /// <br>[3]: Y</br>
+        /// <br>[4]: Left</br>
+        /// <br>[5]: Right</br>
+        /// <br>[6]: Up</br>
+        /// <br>[7]: Down</br>
+        /// <br>[8]: Left Shoulder</br>
+        /// <br>[9]: Right Shoulder</br>
+        /// <br>[10]: Start</br>
+        /// <br>[11]: Select</br>
+        /// </summary>
+        /// <param name="inputBytes"></param>
+        public void SendInput(byte[] inputBytes)
         {
-            serial.Write(input.GetButtonBytes(), 0, 2);
+            serial.Write(inputBytes, 0, 2);
         }
 
         public void Dispose()

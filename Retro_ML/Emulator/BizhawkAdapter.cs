@@ -63,7 +63,7 @@ namespace Retro_ML.Emulator
 
             this.dataFetcher = dataFetcherFactory.GetDataFetcher(config, this);
             inputSetter = new InputSetter(dataFetcher, config.NeuralConfig);
-            outputGetter = new OutputGetter(config.NeuralConfig);
+            outputGetter = new OutputGetter(config);
         }
         public void SetArduinoPreviewer(ArduinoPreviewer arduinoPreviewer)
         {
@@ -118,10 +118,10 @@ namespace Retro_ML.Emulator
             return Read(totalCount);
         }
 
-        public void SendInput(Input input)
+        public void SendInput(IInput input)
         {
-            arduinoPreviewer?.SendInput(input);
-            SendCommand(Commands.SEND_INPUT, input);
+            arduinoPreviewer?.SendInput(input.ToArduinoBytes());
+            SendCommand(Commands.SEND_INPUT, input.GetString());
         }
 
         public void Dispose()

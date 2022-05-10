@@ -9,7 +9,7 @@ namespace Retro_ML.SuperMarioWorld.Game
     {
         public IDataFetcher GetDataFetcher(ApplicationConfig config, IEmulatorAdapter emulator)
         {
-            return new SMWDataFetcher(emulator, (SMWNeuralConfig)config.NeuralConfig);
+            return new SMWDataFetcher(emulator, config.NeuralConfig, (SMWPluginConfig)config.GamePluginConfig!);
         }
     }
 }

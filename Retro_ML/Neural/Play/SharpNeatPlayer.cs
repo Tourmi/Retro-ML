@@ -12,7 +12,7 @@ using SharpNeat.NeuralNets.Double.ActivationFunctions;
 
 namespace Retro_ML.Neural.Play
 {
-    internal class SharpNeatPlayer : INeuralPlayer
+    public class SharpNeatPlayer : INeuralPlayer
     {
         private readonly Semaphore syncSemaphore;
         private readonly EmulatorManager emulatorManager;

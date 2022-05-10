@@ -1,0 +1,9 @@
+{
+  "useGrid": false,
+  "gridDistanceX": 4,
+  "gridDistanceY": 4,
+  "rayLength": 10,
+  "rayCount": 16,
+  "internalClockLength": 4,
+  "internalClockTickLength": 2
+}

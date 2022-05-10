@@ -2,9 +2,9 @@
 using ReactiveUI;
 using Retro_ML.Application.Models;
 using Retro_ML.Application.ViewModels.Components;
+using Retro_ML.Application.ViewModels.Components.FieldInfo;
 using Retro_ML.Configuration;
-using Retro_ML.SuperMarioWorld.Configuration;
-using Retro_ML.SuperMarioWorld.Game;
+using Retro_ML.Configuration.FieldInformation;
 using Retro_ML.Utils;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -46,11 +46,10 @@ namespace Retro_ML.Application.ViewModels
         private SharpNeatModel? SharpNeatModel;
         private ApplicationConfig? ApplicationConfig;
 
-        public int[] RayCounts => Raycast.POSSIBLE_RAY_COUNT;
-        public int[] PossibleClockLengths => new int[] { 1, 2, 3, 4, 5, 6, 7, 8, 16 };
-
         public ObservableCollection<Error> ErrorList { get; set; }
         public ObservableCollection<string> DispMethodList { get; set; }
+
+        public ObservableCollection<ViewModelBase> GamePluginConfigFields { get; }
 
         private string _romPath;
         [DataMember]
@@ -321,55 +320,7 @@ namespace Retro_ML.Application.ViewModels
         }
 
         public ObservableCollection<ScoreFactorViewModel> Objectives { get; set; }
-
-        private bool _useVisionGrid = false;
-        public bool UseVisionGrid
-        {
-            get => _useVisionGrid;
-            set => this.RaiseAndSetIfChanged(ref _useVisionGrid, value);
-        }
-        private int _viewDistanceHorizontal = 4;
-        public int ViewDistanceHorizontal
-        {
-            get => _viewDistanceHorizontal;
-            set => this.RaiseAndSetIfChanged(ref _viewDistanceHorizontal, value);
-        }
-        private int _viewDistanceVertical = 4;
-        public int ViewDistanceVertical
-        {
-            get => _viewDistanceVertical;
-            set => this.RaiseAndSetIfChanged(ref _viewDistanceVertical, value);
-        }
-
-        private int _rayLength = 6;
-        public int RayLength
-        {
-            get => _rayLength;
-            set => this.RaiseAndSetIfChanged(ref _rayLength, value);
-        }
-        private int _rayCountIndex = 2;
-        public int RayCount
-        {
-            get => _rayCountIndex;
-            set => this.RaiseAndSetIfChanged(ref _rayCountIndex, value);
-        }
-
-        private int _clockLength = 8;
-        public int ClockLength
-        {
-            get => _clockLength;
-            set => this.RaiseAndSetIfChanged(ref _clockLength, value);
-        }
-        private int _clockTickLength = 1;
-        public int ClockTickLength
-        {
-            get => _clockTickLength;
-            set => this.RaiseAndSetIfChanged(ref _clockTickLength, value);
-        }
-
-
         public ObservableCollection<InputOutputConfigViewModel> NeuralConfigs { get; }
-
 
         public new event PropertyChangedEventHandler PropertyChanged;
         protected void OnPropertyChanged(string name)
@@ -377,12 +328,13 @@ namespace Retro_ML.Application.ViewModels
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
         }
 
-
         #endregion
 
         #region Constructor
         public ConfigurationViewModel()
         {
+            GamePluginConfigFields = new ObservableCollection<ViewModelBase>();
+
             DispMethodList = new ObservableCollection<string>()
             {
                 "OpenGL",
@@ -508,6 +460,9 @@ namespace Retro_ML.Application.ViewModels
             }
             ApplicationConfig.SaveStates = _saveStates;
 
+            //Tab Game
+            SaveGamePluginConfig();
+
             //Tab Objectives
             for (int i = 0; i < Objectives.Count; i++)
             {
@@ -523,14 +478,6 @@ namespace Retro_ML.Application.ViewModels
             }
 
             //Tab Neural
-            ((SMWNeuralConfig)ApplicationConfig.NeuralConfig).UseGrid = UseVisionGrid;
-            ((SMWNeuralConfig)ApplicationConfig.NeuralConfig).GridDistanceX = ViewDistanceHorizontal;
-            ((SMWNeuralConfig)ApplicationConfig.NeuralConfig).GridDistanceY = ViewDistanceVertical;
-            ((SMWNeuralConfig)ApplicationConfig.NeuralConfig).RayLength = RayLength;
-            ((SMWNeuralConfig)ApplicationConfig.NeuralConfig).RayCount = RayCount;
-            ((SMWNeuralConfig)ApplicationConfig.NeuralConfig).InternalClockLength = ClockLength;
-            ((SMWNeuralConfig)ApplicationConfig.NeuralConfig).InternalClockTickLength = ClockTickLength;
-
             int inputCount = ApplicationConfig.NeuralConfig.InputNodes.Count;
             int outputCount = ApplicationConfig.NeuralConfig.OutputNodes.Count;
             for (int i = 0; i < inputCount; i++)
@@ -599,6 +546,9 @@ namespace Retro_ML.Application.ViewModels
 
             SetSaveStates(ApplicationConfig.SaveStates);
 
+            //Tab Game
+            LoadGamePluginConfig();
+
             //Tab Objectives
             Objectives.Clear();
             foreach (var obj in ApplicationConfig.ScoreFactors)
@@ -610,10 +560,62 @@ namespace Retro_ML.Application.ViewModels
             PopulateNeuralConfig();
         }
 
+        public void LoadGamePluginConfig()
+        {
+            GamePluginConfigFields.Clear();
+
+            if (ApplicationConfig?.GamePluginConfig == null) return;
+
+            var pluginConfig = ApplicationConfig.GamePluginConfig;
+
+            foreach (var fieldInfo in pluginConfig.Fields)
+            {
+                switch (fieldInfo)
+                {
+                    case BoolFieldInfo fi:
+                        GamePluginConfigFields.Add(new BoolViewModel(fi, (bool)pluginConfig[fi.Name]));
+                        break;
+                    case IntegerChoiceFieldInfo fi:
+                        GamePluginConfigFields.Add(new IntegerChoiceViewModel(fi, (int)pluginConfig[fi.Name]));
+                        break;
+                    case IntegerFieldInfo fi:
+                        GamePluginConfigFields.Add(new IntegerViewModel(fi, (int)pluginConfig[fi.Name]));
+                        break;
+                }
+            }
+        }
+
+        public void SaveGamePluginConfig()
+        {
+            if (ApplicationConfig?.GamePluginConfig == null) return;
+
+            var pluginConfig = ApplicationConfig.GamePluginConfig;
+
+            foreach (var field in GamePluginConfigFields)
+            {
+                switch (field)
+                {
+                    case BoolViewModel vm:
+                        pluginConfig[vm.FieldName] = vm.IsChecked;
+                        break;
+                    case IntegerChoiceViewModel vm:
+                        pluginConfig[vm.FieldName] = vm.Value;
+                        break;
+                    case IntegerViewModel vm:
+                        pluginConfig[vm.FieldName] = vm.Value;
+                        break;
+                }
+            }
+
+            string pluginConfigPath = ApplicationConfig.GetGamePlugin().PluginConfigPath;
+            Directory.CreateDirectory(Path.GetDirectoryName(pluginConfigPath)!);
+            File.WriteAllText(pluginConfigPath, ApplicationConfig!.GamePluginConfig!.Serialize());
+        }
+
         public async void SelectRom()
         {
             OpenFileDialog fileDialog = new();
-            fileDialog.Filters.Add(new FileDialogFilter() { Name = "Rom", Extensions = { "sfc" } });
+            fileDialog.Filters.Add(new FileDialogFilter() { Name = "Rom", Extensions = ApplicationConfig!.GetConsolePlugin().ROMExtensions.ToList() });
             fileDialog.AllowMultiple = false;
             fileDialog.Directory = Path.GetFullPath(".");
 
@@ -659,6 +661,8 @@ namespace Retro_ML.Application.ViewModels
 
             string neuralConfigJson = await File.ReadAllTextAsync(paths.First());
             ApplicationConfig!.NeuralConfig = NeuralConfig.Deserialize(neuralConfigJson);
+            ApplicationConfig.GamePluginConfig!.InitNeuralConfig(ApplicationConfig.NeuralConfig);
+
             PopulateNeuralConfig();
         }
 
@@ -674,16 +678,6 @@ namespace Retro_ML.Application.ViewModels
             {
                 NeuralConfigs.Add(new(output));
             }
-
-            UseVisionGrid = ((SMWNeuralConfig)ApplicationConfig.NeuralConfig).UseGrid;
-            ViewDistanceHorizontal = ((SMWNeuralConfig)ApplicationConfig.NeuralConfig).GridDistanceX;
-            ViewDistanceVertical = ((SMWNeuralConfig)ApplicationConfig.NeuralConfig).GridDistanceY;
-
-            RayLength = ((SMWNeuralConfig)ApplicationConfig.NeuralConfig).RayLength;
-            RayCount = ((SMWNeuralConfig)ApplicationConfig.NeuralConfig).RayCount;
-
-            ClockLength = ((SMWNeuralConfig)ApplicationConfig.NeuralConfig).InternalClockLength;
-            ClockTickLength = ((SMWNeuralConfig)ApplicationConfig.NeuralConfig).InternalClockTickLength;
         }
 
         #region Validation

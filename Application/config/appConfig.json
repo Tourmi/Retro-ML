@@ -1,6 +1,7 @@
 ﻿{
   "romPath": "smw.sfc",
-  "multithread": 10,
+  "gamePluginName": "SMW",
+  "multithread": 4,
   "arduinoCommunicationPort": "COM3",
   "stopConditions": [
     {
@@ -162,8 +163,6 @@
     "config\\SaveStates\\yoshi-island-1.State"
   ],
   "neuralConfig": {
-    "$type": "Retro_ML.SuperMarioWorld.Configuration.SMWNeuralConfig, Retro_ML.SuperMarioWorld",
-    "useGrid": false,
     "enabledStates": [
       true,
       true,
@@ -192,12 +191,6 @@
       false,
       false,
       false
-    ],
-    "gridDistanceX": 4,
-    "gridDistanceY": 4,
-    "rayLength": 4,
-    "rayCount": 16,
-    "internalClockLength": 16,
-    "internalClockTickLength": 2
+    ]
   }
 }
