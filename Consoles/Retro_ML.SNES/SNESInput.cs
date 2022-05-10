@@ -100,8 +100,6 @@ namespace Retro_ML.SNES
             return output;
         }
 
-        public static Buttons IndexToButton(int index) => buttons[index];
-
         public void SetButton(int index, double value)
         {
             inputMask[index] = value > 0;

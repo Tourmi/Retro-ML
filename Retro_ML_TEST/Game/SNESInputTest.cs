@@ -79,23 +79,5 @@ namespace Retro_ML_TEST.Game
             input.FromString("sSRLdurlYXBA");
             Assert.AreEqual("ABXYlrudLRSs", input.GetString());
         }
-
-        [Test]
-        public void IndexToButton()
-        {
-            int currIndex = 0;
-            Assert.AreEqual(SNESInput.Buttons.A, SNESInput.IndexToButton(currIndex++));
-            Assert.AreEqual(SNESInput.Buttons.B, SNESInput.IndexToButton(currIndex++));
-            Assert.AreEqual(SNESInput.Buttons.X, SNESInput.IndexToButton(currIndex++));
-            Assert.AreEqual(SNESInput.Buttons.Y, SNESInput.IndexToButton(currIndex++));
-            Assert.AreEqual(SNESInput.Buttons.Left, SNESInput.IndexToButton(currIndex++));
-            Assert.AreEqual(SNESInput.Buttons.Right, SNESInput.IndexToButton(currIndex++));
-            Assert.AreEqual(SNESInput.Buttons.Up, SNESInput.IndexToButton(currIndex++));
-            Assert.AreEqual(SNESInput.Buttons.Down, SNESInput.IndexToButton(currIndex++));
-            Assert.AreEqual(SNESInput.Buttons.LeftShoulder, SNESInput.IndexToButton(currIndex++));
-            Assert.AreEqual(SNESInput.Buttons.RightShoulder, SNESInput.IndexToButton(currIndex++));
-            Assert.AreEqual(SNESInput.Buttons.Start, SNESInput.IndexToButton(currIndex++));
-            Assert.AreEqual(SNESInput.Buttons.Select, SNESInput.IndexToButton(currIndex++));
-        }
     }
 }
