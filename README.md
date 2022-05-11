@@ -1,7 +1,7 @@
-# Super Mario World - Machine Learning
-A project by Tourmi & Voltage98 
+# Retro Machine Learning
+A project by Tourmi, Voltage98 & Jaewongtongsoup
 --------
-Training a Super Mario World AI that's able to beat levels on its own, as well as completing or optimizing various objectives
+Training AIs that are able to get better at various games, as well as completing or optimizing various objectives
 
 [MIT License](LICENSE)
 
