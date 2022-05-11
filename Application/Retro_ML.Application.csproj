@@ -10,6 +10,8 @@
 	<ItemGroup>
 		<Emulator Include="..\Submodules\BizHawk\output\**\*.*" />
 		<ROM Include="smw.sfc" />
+		<Plugins Include="..\Games\*\$(OutDir)\Retro_ML.*.dll" />
+		<Plugins Include="..\Consoles\*\$(OutDir)\Retro_ML.*.dll" />
 	</ItemGroup>
 
 	<ItemGroup>
@@ -92,5 +94,12 @@
 
 		<Copy Condition="Exists('smw.sfc')" SourceFiles="@(ROM)" DestinationFolder="$(TargetDir)" />
 		<Message Text="Copied ROM to project root" Condition="Exists('$(TargetDir)\smw.sfc')" Importance="high" />
+	</Target>
+	<Target Name="BeforePlugins" AfterTargets="AfterCompile">
+		<MakeDir Directories="$(TargetDir)plugins" />
+	</Target>
+	<Target Name="CopyPlugins" AfterTargets="BeforePlugins">
+		<Copy SourceFiles="%(Plugins.Identity)" DestinationFolder="$(TargetDir)plugins"/>
+		<Message Text="Copied: %(Plugins.Identity) to $(TargetDir)plugins\" Importance="high"/>
 	</Target>
 </Project>

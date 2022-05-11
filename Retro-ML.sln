@@ -4,6 +4,10 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 VisualStudioVersion = 17.1.32104.313
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Retro_ML.Application", "Application\Retro_ML.Application.csproj", "{A58F9046-96B5-4E52-B173-2DDA9C821C1E}"
+	ProjectSection(ProjectDependencies) = postProject
+		{030FDB49-1AB0-4983-B287-5481AF3B464A} = {030FDB49-1AB0-4983-B287-5481AF3B464A}
+		{7735343C-8DCF-4061-B168-0CAA36AA4159} = {7735343C-8DCF-4061-B168-0CAA36AA4159}
+	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Retro_ML_TEST", "Retro_ML_TEST\Retro_ML_TEST.csproj", "{04A5F47C-D2D0-48BC-88D7-A91B7FCF6450}"
 EndProject
@@ -12,6 +16,9 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Consoles", "Consoles", "{10512FB0-B56B-48D4-A9EB-3E70F5AC0AE6}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Retro_ML.SuperMarioWorld", "Games\SuperMarioWorld\Retro_ML.SuperMarioWorld.csproj", "{030FDB49-1AB0-4983-B287-5481AF3B464A}"
+	ProjectSection(ProjectDependencies) = postProject
+		{7735343C-8DCF-4061-B168-0CAA36AA4159} = {7735343C-8DCF-4061-B168-0CAA36AA4159}
+	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Retro_ML", "Retro_ML\Retro_ML.csproj", "{94DE3EBD-EED3-4B5F-A2DC-4EAB2AC8EBAF}"
 EndProject
