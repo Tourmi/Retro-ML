@@ -9,7 +9,15 @@
 	
 	<ItemGroup>
 		<Emulator Include="..\Submodules\BizHawk\output\**\*.*" />
-		<ROM Include="smw.sfc" />
+		<ROMs Include="*.nes" />
+		<ROMs Include="*.sfc" />
+		<ROMs Include="*.smc" />
+		<ROMs Include="*.n64" />
+		<ROMs Include="*.z64" />
+		<ROMs Include="*.v64" />
+		<ROMs Include="*.gb" />
+		<ROMs Include="*.gbc" />
+		<ROMs Include="*.gba" />
 		<Plugins Include="..\Games\**\$(OutDir)\Retro_ML.*.dll" />
 		<Plugins Include="..\Consoles\**\$(OutDir)\Retro_ML.*.dll" />
 	</ItemGroup>
@@ -92,12 +100,12 @@
 		<Copy SourceFiles="@(Emulator)" DestinationFolder="$(TargetDir)\emu\%(RecursiveDir)" />
 		<Message Text="Copied Emulator to emu\" Importance="high" />
 
-		<Copy Condition="Exists('smw.sfc')" SourceFiles="@(ROM)" DestinationFolder="$(TargetDir)" />
-		<Message Text="Copied ROM to project root" Condition="Exists('$(TargetDir)\smw.sfc')" Importance="high" />
+		<Copy SourceFiles="%(ROMs.Identity)" DestinationFolder="$(TargetDir)" />
+		<Message Text="Copied %(ROMs.Identity) to $(TargetDir)" Importance="high" />
 	</Target>
 	<Target Name="CopyPlugins" AfterTargets="AfterCompile">
 		<MakeDir Directories="$(TargetDir)plugins" />
-		<Copy SourceFiles="%(Plugins.Identity)" DestinationFolder="$(TargetDir)plugins"/>
-		<Message Text="Copied: %(Plugins.Identity) to $(TargetDir)plugins\" Importance="high"/>
+		<Copy SourceFiles="%(Plugins.Identity)" DestinationFolder="$(TargetDir)plugins" />
+		<Message Text="Copied: %(Plugins.Identity) to $(TargetDir)plugins\" Importance="high" />
 	</Target>
 </Project>
