@@ -25,7 +25,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Retro_ML", "Retro_ML\Retro_
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Retro_ML.SNES", "Consoles\Retro_ML.SNES\Retro_ML.SNES.csproj", "{7735343C-8DCF-4061-B168-0CAA36AA4159}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Retro_ML.GameBoy", "Retro_ML.GameBoy\Retro_ML.GameBoy.csproj", "{F5E1C73C-1ECF-4B27-8E6F-A4AEC6E9C29B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Retro_ML.GameBoy", "Consoles\Retro_ML.GameBoy\Retro_ML.GameBoy.csproj", "{F5E1C73C-1ECF-4B27-8E6F-A4AEC6E9C29B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
