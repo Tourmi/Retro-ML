@@ -95,10 +95,8 @@
 		<Copy Condition="Exists('smw.sfc')" SourceFiles="@(ROM)" DestinationFolder="$(TargetDir)" />
 		<Message Text="Copied ROM to project root" Condition="Exists('$(TargetDir)\smw.sfc')" Importance="high" />
 	</Target>
-	<Target Name="BeforePlugins" AfterTargets="AfterCompile">
+	<Target Name="CopyPlugins" AfterTargets="AfterCompile">
 		<MakeDir Directories="$(TargetDir)plugins" />
-	</Target>
-	<Target Name="CopyPlugins" AfterTargets="BeforePlugins">
 		<Copy SourceFiles="%(Plugins.Identity)" DestinationFolder="$(TargetDir)plugins"/>
 		<Message Text="Copied: %(Plugins.Identity) to $(TargetDir)plugins\" Importance="high"/>
 	</Target>
