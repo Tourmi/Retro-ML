@@ -2,6 +2,7 @@
 using Retro_ML.Configuration;
 using Retro_ML.Configuration.FieldInformation;
 using Retro_ML.Neural;
+using Retro_ML.Neural.Scoring;
 using Retro_ML.Tetris.Game;
 using Retro_ML.Utils;
 
@@ -13,6 +14,8 @@ namespace Retro_ML.Tetris.Configuration
         {
 
         };
+
+        public List<IScoreFactor> ScoreFactors { get; set; }
 
         public object this[string fieldName]
         {
@@ -33,13 +36,17 @@ namespace Retro_ML.Tetris.Configuration
             }
         }
 
+        public TetrisPluginConfig()
+        {
+            ScoreFactors = new List<IScoreFactor>();
+        }
 
         public string Serialize() => JsonConvert.SerializeObject(this, SerializationUtils.JSON_CONFIG);
 
         public void Deserialize(string json)
         {
             TetrisPluginConfig cfg = JsonConvert.DeserializeObject<TetrisPluginConfig>(json, SerializationUtils.JSON_CONFIG)!;
-
+            ScoreFactors = cfg.ScoreFactors;
         }
 
         public void InitNeuralConfig(NeuralConfig neuralConfig)
