@@ -10,8 +10,8 @@
 	<ItemGroup>
 		<Emulator Include="..\Submodules\BizHawk\output\**\*.*" />
 		<ROM Include="smw.sfc" />
-		<Plugins Include="..\Games\*\$(OutDir)\Retro_ML.*.dll" />
-		<Plugins Include="..\Consoles\*\$(OutDir)\Retro_ML.*.dll" />
+		<Plugins Include="..\Games\**\$(OutDir)\Retro_ML.*.dll" />
+		<Plugins Include="..\Consoles\**\$(OutDir)\Retro_ML.*.dll" />
 	</ItemGroup>
 
 	<ItemGroup>
