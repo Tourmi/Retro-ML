@@ -2,6 +2,7 @@
 using Retro_ML.Configuration;
 using Retro_ML.Configuration.FieldInformation;
 using Retro_ML.Neural;
+using Retro_ML.Neural.Scoring;
 using Retro_ML.SuperMarioWorld.Game;
 using Retro_ML.Utils;
 
@@ -108,6 +109,13 @@ namespace Retro_ML.SuperMarioWorld.Configuration
         [JsonIgnore]
         public int RaysHeight => 4;
 
+        public List<IScoreFactor> ScoreFactors { get; set; }
+
+        public SMWPluginConfig()
+        {
+            ScoreFactors = new List<IScoreFactor>();
+        }
+
         public string Serialize() => JsonConvert.SerializeObject(this, SerializationUtils.JSON_CONFIG);
 
         public void Deserialize(string json)
@@ -121,6 +129,7 @@ namespace Retro_ML.SuperMarioWorld.Configuration
             RayCount = cfg.RayCount;
             InternalClockLength = cfg.InternalClockLength;
             InternalClockTickLength = cfg.InternalClockTickLength;
+            ScoreFactors = cfg.ScoreFactors;
         }
 
         public void InitNeuralConfig(NeuralConfig neuralConfig)

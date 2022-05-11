@@ -16,7 +16,6 @@ namespace Retro_ML.Configuration
             RomPath = "smw.sfc";
             GamePluginName = "SMW";
             ArduinoCommunicationPort = "COM3";
-            ScoreFactors = new List<IScoreFactor>();
             SaveStates = new List<string>();
             StopConditions = new List<IStopCondition>() { new FitnessStopCondition(), new GenerationCountStopCondition(), new PlateauStopCondition(), new TimeStopCondition() };
 
@@ -46,10 +45,6 @@ namespace Retro_ML.Configuration
         [JsonProperty]
         public List<IStopCondition> StopConditions { get; set; }
         /// <summary>
-        /// The score factors used to determine the score of the training.
-        /// </summary>
-        public List<IScoreFactor> ScoreFactors { get; set; }
-        /// <summary>
         /// The save states to use for training.
         /// </summary>
         public List<string> SaveStates { get; set; }
@@ -67,7 +62,7 @@ namespace Retro_ML.Configuration
         /// <returns></returns>
         public IEnumerable<IScoreFactor> GetScoreFactorClones()
         {
-            foreach (var factor in ScoreFactors)
+            foreach (var factor in GamePluginConfig!.ScoreFactors)
             {
                 if (factor.IsDisabled) continue;
 

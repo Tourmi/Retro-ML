@@ -464,16 +464,17 @@ namespace Retro_ML.Application.ViewModels
             SaveGamePluginConfig();
 
             //Tab Objectives
+            var scoreFactors = ApplicationConfig.GamePluginConfig!.ScoreFactors;
             for (int i = 0; i < Objectives.Count; i++)
             {
-                ApplicationConfig.ScoreFactors[i].ScoreMultiplier = Objectives[i].Multiplier;
-                if (ApplicationConfig.ScoreFactors[i].CanBeDisabled)
+                scoreFactors[i].ScoreMultiplier = Objectives[i].Multiplier;
+                if (scoreFactors[i].CanBeDisabled)
                 {
-                    ApplicationConfig.ScoreFactors[i].IsDisabled = !Objectives[i].IsChecked;
+                    scoreFactors[i].IsDisabled = !Objectives[i].IsChecked;
                 }
-                for (int j = 0; j < ApplicationConfig.ScoreFactors[i].ExtraFields.Count(); j++)
+                for (int j = 0; j < scoreFactors[i].ExtraFields.Count(); j++)
                 {
-                    ApplicationConfig.ScoreFactors[i].ExtraFields[j].Value = Objectives[i].ExtraFields[j].Value;
+                    scoreFactors[i].ExtraFields[j].Value = Objectives[i].ExtraFields[j].Value;
                 }
             }
 
@@ -551,7 +552,7 @@ namespace Retro_ML.Application.ViewModels
 
             //Tab Objectives
             Objectives.Clear();
-            foreach (var obj in ApplicationConfig.ScoreFactors)
+            foreach (var obj in ApplicationConfig.GamePluginConfig!.ScoreFactors)
             {
                 Objectives.Add(new(obj));
             }
