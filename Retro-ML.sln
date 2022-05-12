@@ -16,7 +16,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Games", "Games", "{605AEA40
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Consoles", "Consoles", "{10512FB0-B56B-48D4-A9EB-3E70F5AC0AE6}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Retro_ML.SuperMarioWorld", "Games\SuperMarioWorld\Retro_ML.SuperMarioWorld.csproj", "{030FDB49-1AB0-4983-B287-5481AF3B464A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Retro_ML.SuperMarioWorld", "Games\Retro_ML.SuperMarioWorld\Retro_ML.SuperMarioWorld.csproj", "{030FDB49-1AB0-4983-B287-5481AF3B464A}"
 	ProjectSection(ProjectDependencies) = postProject
 		{7735343C-8DCF-4061-B168-0CAA36AA4159} = {7735343C-8DCF-4061-B168-0CAA36AA4159}
 	EndProjectSection
