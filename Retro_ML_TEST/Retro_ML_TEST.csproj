@@ -19,6 +19,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Consoles\Retro_ML.SNES\Retro_ML.SNES.csproj" />
+    <ProjectReference Include="..\Games\Retro_ML.SuperMarioWorld\Retro_ML.SuperMarioWorld.csproj" />
     <ProjectReference Include="..\Games\SuperMarioWorld\Retro_ML.SuperMarioWorld.csproj" />
     <ProjectReference Include="..\Retro_ML\Retro_ML.csproj" />
   </ItemGroup>
