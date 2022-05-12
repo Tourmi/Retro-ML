@@ -4,6 +4,7 @@ using Retro_ML.Configuration.FieldInformation;
 using Retro_ML.Neural;
 using Retro_ML.Neural.Scoring;
 using Retro_ML.SuperMarioWorld.Game;
+using Retro_ML.SuperMarioWorld.Neural.Scoring;
 using Retro_ML.Utils;
 
 namespace Retro_ML.SuperMarioWorld.Configuration
@@ -113,7 +114,21 @@ namespace Retro_ML.SuperMarioWorld.Configuration
 
         public SMWPluginConfig()
         {
-            ScoreFactors = new List<IScoreFactor>();
+            ScoreFactors = new List<IScoreFactor>()
+            {
+                new DiedScoreFactor() { IsDisabled=false, ScoreMultiplier=-5 },
+                new WonLevelScoreFactor() { IsDisabled=false, ScoreMultiplier=100 },
+                new DistanceScoreFactor() { IsDisabled=false, ScoreMultiplier=1 },
+                new StopMovingScoreFactor() { IsDisabled=false, ScoreMultiplier=-5 },
+                new SpeedScoreFactor() { IsDisabled=false, ScoreMultiplier=0.025 },
+                new TimeTakenScoreFactor() { IsDisabled=false, ScoreMultiplier=-10 },
+                new CoinsScoreFactor() { IsDisabled=true, ScoreMultiplier=1 },
+                new YoshiCoinsScoreFactor() { IsDisabled=true, ScoreMultiplier=2 },
+                new OneUpsScoreFactor() { IsDisabled=true, ScoreMultiplier=4 },
+                new HighScoreScoreFactor() { IsDisabled=true, ScoreMultiplier=0.1 },
+                new PowerUpScoreFactor() { IsDisabled=true, ScoreMultiplier=4 },
+                new TakenDamageScoreFactor() { IsDisabled=true, ScoreMultiplier=-1 }
+            };
         }
 
         public string Serialize() => JsonConvert.SerializeObject(this, SerializationUtils.JSON_CONFIG);
