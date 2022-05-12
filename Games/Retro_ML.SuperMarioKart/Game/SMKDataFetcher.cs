@@ -49,19 +49,22 @@ namespace Retro_ML.SuperMarioKart.Game
             internalClock.Reset();
         }
 
-        public double[,] GetTiles()
-        {
-            var bytes = Read(Racetrack.TileMap);
-            var result = new double[64, 64];
-            int currIndex = 0;
-            for (int i = 0; i < bytes.Length; i++)
-            {
-                if ((i % 128) < 32 || (i % 128) >= 32 + 64 || (i / 128) < 32 || (i / 128) >= 32 + 64) continue;
-                result[currIndex / 64, currIndex % 64] = bytes[i] / 256.0;
-                currIndex++;
-            }
+        public byte GetMaxCheckpoint() => ReadSingle(Race.CheckpointCount);
+        public byte GetCurrentCheckpoint() => ReadSingle(Racer.CurrentCheckpointNumber);
+        public sbyte GetCurrentLap() => (sbyte)(ReadSingle(Racer.CurrentLap) - 128);
 
-            return result;
+        public double GetHeadingDifference()
+        {
+            var flowmap = Read(Racetrack.FlowMap);
+            var racerX = (ushort)ToUnsignedInteger(Read(Racer.XPosition));
+            var racerY = (ushort)ToUnsignedInteger(Read(Racer.YPosition));
+            var flowX = racerX / 32;
+            var flowY = racerY / 32;
+
+            byte currAngle = (byte)(ToUnsignedInteger(Read(Racer.HeadingAngle)) / 256);
+            byte currFlowAngle = flowmap[flowY * 64 + flowX];
+
+            return ((sbyte)(currFlowAngle - currAngle)) / (double)sbyte.MaxValue;
         }
 
         public bool[,] GetInternalClockState() => internalClock.GetStates();

@@ -4,7 +4,7 @@
     /// <br>RAM addresses used in Super Mario World.</br>
     /// <br/>
     /// <br>Big thanks to </br>
-    /// <br>- smkdan <see href="https://smkdan.eludevisibility.org/smk.html#Starting"/></br>
+    /// <br>- smkdan <see href="https://smkdan.eludevisibility.org/smk.html"/></br>
     /// <br>- MrL314 <see href="https://www.smwcentral.net/?p=viewthread&amp;t=93458"/></br>
     /// <br>- DataCrystal Wiki <see href="https://datacrystal.romhacking.net/wiki/Super_Mario_Kart:RAM_map"/></br>
     /// </summary>
@@ -43,6 +43,10 @@
             /// <br>4: 150cc</br>
             /// </summary>
             public static AddressData CC => new(0x30, 1);
+            /// <summary>
+            /// The amount of checkpoints in the current race.
+            /// </summary>
+            public static AddressData CheckpointCount => new(0x148, 1, AddressData.CacheDurations.Race);
         }
 
         /// <summary>

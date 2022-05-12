@@ -4,6 +4,7 @@ using Retro_ML.Configuration.FieldInformation;
 using Retro_ML.Neural;
 using Retro_ML.Neural.Scoring;
 using Retro_ML.SuperMarioKart.Game;
+using Retro_ML.SuperMarioKart.Neural.Scoring;
 using Retro_ML.Utils;
 
 namespace Retro_ML.SuperMarioKart.Configuration
@@ -50,7 +51,12 @@ namespace Retro_ML.SuperMarioKart.Configuration
 
         public SMKPluginConfig()
         {
-            ScoreFactors = new List<IScoreFactor>();
+            ScoreFactors = new List<IScoreFactor>()
+            {
+                new CheckpointReachedScoreFactor() { IsDisabled=false, ScoreMultiplier=10 },
+                new FinishedRaceScoreFactor() { IsDisabled=false, ScoreMultiplier=1000 },
+                new TimeTakenScoreFactor() { IsDisabled=false, ScoreMultiplier=-1 },
+            };
         }
 
         public string Serialize() => JsonConvert.SerializeObject(this, SerializationUtils.JSON_CONFIG);
@@ -70,8 +76,7 @@ namespace Retro_ML.SuperMarioKart.Configuration
                 neuralConfig.EnabledStates = Enumerable.Repeat(true, 3 + 6).Concat(Enumerable.Repeat(false, 2)).Concat(Enumerable.Repeat(true, 2)).Concat(Enumerable.Repeat(false, 2)).ToArray();
             }
             neuralConfig.InputNodes.Clear();
-
-            neuralConfig.InputNodes.Add(new InputNode("Tiles", neuralConfig.EnabledStates[enabledIndex++], (dataFetcher) => ((SMKDataFetcher)dataFetcher).GetTiles(), 64, 64));
+            neuralConfig.InputNodes.Add(new InputNode("Heading", neuralConfig.EnabledStates[enabledIndex++], (dataFetcher) => ((SMKDataFetcher)dataFetcher).GetHeadingDifference()));
             neuralConfig.InputNodes.Add(new InputNode("Internal Clock", neuralConfig.EnabledStates[enabledIndex++], (dataFetcher) => ((SMKDataFetcher)dataFetcher).GetInternalClockState(), Math.Min(8, InternalClockLength), Math.Max(1, InternalClockLength / 8)));
             neuralConfig.InputNodes.Add(new InputNode("Bias", neuralConfig.EnabledStates[enabledIndex++], (dataFetcher) => true));
 
