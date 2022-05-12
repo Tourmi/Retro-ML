@@ -55,6 +55,7 @@ namespace Retro_ML.Tetris.Neural.Train
                         break;
                     }
                     emulator.LoadState(Path.GetFullPath(state));
+                    WaitThenStart();
                     emulator.NextFrame();
                     dataFetcher.NextState();
 
@@ -100,6 +101,23 @@ namespace Retro_ML.Tetris.Neural.Train
 
             emulator!.SendInput(outputGetter!.GetControllerInput(phenome.OutputVector));
             emulator!.NextFrame();
+        }
+
+        private void WaitThenStart()
+        {
+            for (int i = Random.Shared.Next(120); i > 0; i--)
+            {
+                emulator!.NextFrame();
+            }
+
+            var input = appConfig.GetConsolePlugin().GetInput();
+            input.FromString("S");
+            emulator!.SendInput(input);
+
+            for(int i = 0; i < 8; i++)
+            {
+                emulator!.NextFrame();
+            }
         }
     }
 }

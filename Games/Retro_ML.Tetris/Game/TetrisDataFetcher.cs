@@ -15,6 +15,13 @@ namespace Retro_ML.Tetris.Game
         private readonly IEmulatorAdapter emulator;
         private readonly Dictionary<uint, byte[]> frameCache;
 
+        private const int PLAY_WIDTH = 10;
+        private const int PLAY_HEIGHT = 17;
+        private const int PLAY_OFFSET_X = 2;
+        private const int PLAY_OFFSET_Y = 1;
+
+        private const byte SOLID_TILES_START = 128;
+        private const byte SOLID_TILES_END = 143;
 
         public TetrisDataFetcher(IEmulatorAdapter emulator, NeuralConfig neuralConfig, TetrisPluginConfig pluginConfig)
         {
@@ -41,16 +48,68 @@ namespace Retro_ML.Tetris.Game
 
         }
 
-        public bool[,] GetBackgroundTiles()
+        public uint GetSingles() => ToUnsignedInteger(Read(Score.Single));
+        public uint GetDoubles() => ToUnsignedInteger(Read(Score.Double));
+        public uint GetTriples() =>  ToUnsignedInteger(Read(Score.Triple));
+        public uint GetTetrises() => ToUnsignedInteger(Read(Score.Tetris));
+
+        /// <summary>
+        /// Returns the play area solid tiles 
+        /// </summary>
+        /// <returns></returns>
+        public bool[,] GetSolidTiles()
         {
             var bytes = Read(Addresses.BackgroundTiles);
             bool[,] solidTiles = new bool[32, 32];
-            for(int i = 0; i < bytes.Length; i++)
+            for (int i = 0; i < bytes.Length; i++)
             {
-                solidTiles[i/32, i%32] = bytes[i] >= 128 && bytes[i] <= 143;
+                solidTiles[i / 32, i % 32] = bytes[i] >= SOLID_TILES_START && bytes[i] <= SOLID_TILES_END;
             }
 
-            return solidTiles;
+            bool[,] tiles = new bool[PLAY_HEIGHT, PLAY_WIDTH];
+            for (int i = PLAY_OFFSET_Y; i < PLAY_HEIGHT + PLAY_OFFSET_Y; i++)
+            {
+                for (int j = PLAY_OFFSET_X; j < PLAY_WIDTH + PLAY_OFFSET_X; j++)
+                {
+                    tiles[i - PLAY_OFFSET_Y, j - PLAY_OFFSET_X] = solidTiles[i, j];
+
+                }
+            }
+
+            return tiles;
+        }
+
+        /// <summary>
+        /// Returns the tiles being placed and their rotation
+        /// </summary>
+        /// <returns></returns>
+        public bool[,] GetCurrentBlock() => GetBlockForType(ReadSingle(CurrentBlock.Type));
+
+        public bool[,] GetNextBlock() => GetBlockForType(ReadSingle(NextBlock.Type));
+
+        private bool[,] GetBlockForType(byte blockType)
+        {
+            bool[,] block = new bool[7, 4];
+
+            if (blockType >= 7 * 4)
+            {
+                return block;
+            }
+
+            //If blockType is a square, set every rotation to true
+            if (blockType / 4 == 0x3)
+            {
+                block[3, 0] = true;
+                block[3, 1] = true;
+                block[3, 2] = true;
+                block[3, 3] = true;
+            }
+            else
+            {
+                block[blockType / 4, blockType % 4] = true;
+            }
+
+            return block;
         }
 
         /// <summary>
@@ -163,7 +222,7 @@ namespace Retro_ML.Tetris.Game
         {
             (AddressData, bool)[] toRead = new (AddressData, bool)[]
             {
-
+                new (BackgroundTiles, false), new (Score.Single, false), new (Score.Double, false), new (Score.Triple, false), new(Score.Tetris, false)
             };
 
             _ = Read(toRead);

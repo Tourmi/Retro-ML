@@ -23,8 +23,4 @@
 			<HintPath>..\..\Submodules\SharpNEAT\src\SharpNeat\bin\Release\net6.0\SharpNeat.dll</HintPath>
 		</Reference>
 	</ItemGroup>
-
-	<ItemGroup>
-	  <Folder Include="Neural\Scoring\" />
-	</ItemGroup>
 </Project>

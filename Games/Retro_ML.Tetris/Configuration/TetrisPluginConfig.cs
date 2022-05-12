@@ -4,6 +4,7 @@ using Retro_ML.Configuration.FieldInformation;
 using Retro_ML.Neural;
 using Retro_ML.Neural.Scoring;
 using Retro_ML.Tetris.Game;
+using Retro_ML.Tetris.Neural.Scoring;
 using Retro_ML.Utils;
 
 namespace Retro_ML.Tetris.Configuration
@@ -38,7 +39,14 @@ namespace Retro_ML.Tetris.Configuration
 
         public TetrisPluginConfig()
         {
-            ScoreFactors = new List<IScoreFactor>();
+            ScoreFactors = new List<IScoreFactor>()
+            {
+                new LineClearedScoreFactor()
+                {
+                    IsDisabled = false,
+                    ScoreMultiplier = 1
+                }
+            };
         }
 
         public string Serialize() => JsonConvert.SerializeObject(this, SerializationUtils.JSON_CONFIG);
@@ -53,13 +61,14 @@ namespace Retro_ML.Tetris.Configuration
         {
 
             int enabledIndex = 0;
-            if (neuralConfig.EnabledStates.Length != 12)
+            if (neuralConfig.EnabledStates.Length != 13)
             {
-                neuralConfig.EnabledStates = Enumerable.Repeat(true, 2 + 6).Concat(Enumerable.Repeat(false, 4)).ToArray();
+                neuralConfig.EnabledStates = Enumerable.Repeat(true, 3 + 4).Concat(Enumerable.Repeat(false, 6)).ToArray();
             }
 
             neuralConfig.InputNodes.Clear();
-            neuralConfig.InputNodes.Add(new InputNode("Tiles", neuralConfig.EnabledStates[enabledIndex++], (dataFetcher) => ((TetrisDataFetcher)dataFetcher).GetBackgroundTiles(), 32, 32));
+            neuralConfig.InputNodes.Add(new InputNode("Tiles", neuralConfig.EnabledStates[enabledIndex++], (dataFetcher) => ((TetrisDataFetcher)dataFetcher).GetSolidTiles(), 10, 17));
+            neuralConfig.InputNodes.Add(new InputNode("Current Block", neuralConfig.EnabledStates[enabledIndex++], (dataFetcher) => ((TetrisDataFetcher)dataFetcher).GetCurrentBlock(), 4, 7));
             neuralConfig.InputNodes.Add(new InputNode("Bias", neuralConfig.EnabledStates[enabledIndex++], (dataFetcher) => true));
 
             neuralConfig.OutputNodes.Clear();

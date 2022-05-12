@@ -152,6 +152,7 @@ function parseCommand(cmd)
         end
 
         joypad.set(inputs, 1)
+        joypad.set(inputs)
         okay()
         return
     end

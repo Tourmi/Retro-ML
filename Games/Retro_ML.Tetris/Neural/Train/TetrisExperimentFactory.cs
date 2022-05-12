@@ -8,7 +8,7 @@ namespace Retro_ML.Tetris.Neural.Train
 {
     internal class TetrisExperimentFactory : INeatExperimentFactory
     {
-        public string Id => "smw-experiment-factory";
+        public string Id => "tetris-experiment-factory";
 
         private readonly EmulatorManager emulatorManager;
         private readonly ApplicationConfig appConfig;
