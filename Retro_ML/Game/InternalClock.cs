@@ -1,6 +1,6 @@
-﻿namespace Retro_ML.SuperMarioWorld.Game
+﻿namespace Retro_ML.Game
 {
-    internal class InternalClock
+    public class InternalClock
     {
         private int tickLength;
         private int internalClockTimer;

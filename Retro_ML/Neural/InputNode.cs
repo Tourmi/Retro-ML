@@ -56,6 +56,11 @@ namespace Retro_ML.Neural
             TotalHeight = totalHeight;
         }
 
+        public InputNode(string name, bool shouldUse, Func<IDataFetcher, double> getStateFunc) : this(name, shouldUse, false)
+        {
+            getStateFunction = getStateFunc;
+        }
+
         public InputNode(string name, bool shouldUse, Func<IDataFetcher, double[,]> getStatesFunc, int totalWidth, int totalHeight) : this(name, shouldUse, true)
         {
             getStatesFunction = getStatesFunc;
