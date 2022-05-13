@@ -1,15 +1,10 @@
 ﻿using Retro_ML.Game;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace Retro_ML.GameBoy
+namespace Retro_ML.Famicom
 {
-    internal class GameBoyInput : IInput
+    internal class FamicomInput : IInput
     {
-        public const int BUTTON_COUNT = 10;
+        public const int BUTTON_COUNT = 8;
 
         private static readonly Buttons[] buttons = new Buttons[] {
             Buttons.A,
@@ -18,8 +13,6 @@ namespace Retro_ML.GameBoy
             Buttons.Right,
             Buttons.Up,
             Buttons.Down,
-            Buttons.LeftShoulder,
-            Buttons.RightShoulder,
             Buttons.Start,
             Buttons.Select
         };
@@ -32,8 +25,6 @@ namespace Retro_ML.GameBoy
             Right = 'r',
             Up = 'u',
             Down = 'd',
-            LeftShoulder = 'L',
-            RightShoulder = 'R',
             Start = 'S',
             Select = 's'
         }
@@ -62,7 +53,7 @@ namespace Retro_ML.GameBoy
 
             for (int i = 0; i < 8; i++)
             {
-                //Skipping x/y buttons for GB
+                //Skipping x/y buttons for NES
                 if (i == 2 || i == 3) continue;
                 byte1 |= (byte)((inputMask[currentIndex] ? 1 : 0) << i);
                 currentIndex++;
@@ -70,9 +61,11 @@ namespace Retro_ML.GameBoy
 
             byte byte2 = 0;
 
-            for (int i = 0; i < 4; i++)
+            //Skipping left/right shoulders for NES
+            for (int i = 2; i < 4; i++)
             {
                 byte2 |= (byte)((inputMask[currentIndex] ? 1 : 0) << i);
+                currentIndex++;
             }
 
             return new byte[] { byte1, byte2 };
