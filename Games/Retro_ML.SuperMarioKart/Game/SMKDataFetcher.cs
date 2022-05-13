@@ -59,8 +59,8 @@ namespace Retro_ML.SuperMarioKart.Game
             var flowmap = Read(Racetrack.FlowMap);
             var racerX = (ushort)ToUnsignedInteger(Read(Racer.XPosition));
             var racerY = (ushort)ToUnsignedInteger(Read(Racer.YPosition));
-            var flowX = racerX / 16;
-            var flowY = racerY / 16;
+            var flowX = Math.Clamp(racerX / 16, 0, 63);
+            var flowY = Math.Clamp(racerY / 16, 0, 63);
 
             byte currAngle = (byte)(ToUnsignedInteger(Read(Racer.HeadingAngle)) / 256);
             byte currFlowAngle = flowmap[flowY * 64 + flowX];

@@ -100,11 +100,11 @@
             /// </summary>
             public static AddressData CharacterNumber => new(0x1012, 1);
             /// <summary>
-            /// X position of the racer (To tile position -> (XPosition)/8)
+            /// X position of the racer (To tile sprite position -> (XPosition)/8)
             /// </summary>
             public static AddressData XPosition => new(0x1018, 2);
             /// <summary>
-            /// Y position of the racer (To tile position -> (YPosition)/8)
+            /// Y position of the racer (To tile sprite position -> (YPosition)/8)
             /// </summary>
             public static AddressData YPosition => new(0x101C, 2);
             /// <summary>

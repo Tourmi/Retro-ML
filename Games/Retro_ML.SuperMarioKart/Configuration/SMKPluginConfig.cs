@@ -79,7 +79,7 @@ namespace Retro_ML.SuperMarioKart.Configuration
                 neuralConfig.EnabledStates = Enumerable.Repeat(true, 3 + 6).Concat(Enumerable.Repeat(false, 2)).Concat(Enumerable.Repeat(true, 2)).Concat(Enumerable.Repeat(false, 2)).ToArray();
             }
             neuralConfig.InputNodes.Clear();
-            neuralConfig.InputNodes.Add(new InputNode("Heading", neuralConfig.EnabledStates[enabledIndex++], (dataFetcher) => ((SMKDataFetcher)dataFetcher).GetHeadingDifference()));
+            neuralConfig.InputNodes.Add(new InputNode("FlowMap direction", neuralConfig.EnabledStates[enabledIndex++], (dataFetcher) => ((SMKDataFetcher)dataFetcher).GetHeadingDifference()));
             neuralConfig.InputNodes.Add(new InputNode("Internal Clock", neuralConfig.EnabledStates[enabledIndex++], (dataFetcher) => ((SMKDataFetcher)dataFetcher).GetInternalClockState(), Math.Min(8, InternalClockLength), Math.Max(1, InternalClockLength / 8)));
             neuralConfig.InputNodes.Add(new InputNode("Bias", neuralConfig.EnabledStates[enabledIndex++], (dataFetcher) => true));
 
