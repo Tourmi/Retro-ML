@@ -460,9 +460,6 @@ namespace Retro_ML.Application.ViewModels
             }
             ApplicationConfig.SaveStates = _saveStates;
 
-            //Tab Game
-            SaveGamePluginConfig();
-
             //Tab Objectives
             var scoreFactors = ApplicationConfig.GamePluginConfig!.ScoreFactors;
             for (int i = 0; i < Objectives.Count; i++)
@@ -477,6 +474,9 @@ namespace Retro_ML.Application.ViewModels
                     scoreFactors[i].ExtraFields[j].Value = Objectives[i].ExtraFields[j].Value;
                 }
             }
+
+            //Tab Game
+            SaveGamePluginConfig();
 
             //Tab Neural
             int inputCount = ApplicationConfig.NeuralConfig.InputNodes.Count;
