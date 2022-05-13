@@ -4,8 +4,8 @@
     /// <br>RAM addresses used in Super Mario World.</br>
     /// <br/>
     /// <br>Big thanks to </br>
-    /// <br>- smkdan <see href="https://smkdan.eludevisibility.org/smk.html"/></br>
     /// <br>- MrL314 <see href="https://www.smwcentral.net/?p=viewthread&amp;t=93458"/></br>
+    /// <br>- smkdan <see href="https://smkdan.eludevisibility.org/smk.html"/></br>
     /// <br>- DataCrystal Wiki <see href="https://datacrystal.romhacking.net/wiki/Super_Mario_Kart:RAM_map"/></br>
     /// </summary>
     internal static class Addresses
@@ -80,6 +80,35 @@
             /// Checkpoint Lakitu Drop Y-Coordinate Table (2 bytes each)
             /// </summary>
             public static AddressData CheckPointsLakituY => new(0x0800, 0x100, AddressData.CacheDurations.Race);
+            /// <summary>
+            /// <br>0x10: ramp                                                                        </br>
+            /// <br>0x12: Choco Island mini ramp?                                                     </br>
+            /// <br>0x14: unused powerup square                                                       </br>
+            /// <br>0x16: speed boost                                                                 </br>
+            /// <br>0x18: oil slick                                                                   </br>
+            /// <br>0x1A: Coin                                                                        </br>
+            /// <br>0x1C: Choco Island ramp                                                           </br>
+            /// <br>0x20: off edge                                                                    </br>
+            /// <br>0x22: deep water                                                                  </br>
+            /// <br>0x24: lava                                                                        </br>
+            /// <br>0x40: mario circuit road, ghost valley road, used powerup square, rainbow road    </br>
+            /// <br>0x42: ghost valley transition tiles                                               </br>
+            /// <br>0x44: bowser castle road                                                          </br>
+            /// <br>0x46: donut plains track                                                          </br>
+            /// <br>0x4A: koopa beach sand                                                            </br>
+            /// <br>0x4C: choco island track                                                          </br>
+            /// <br>0x4E: ghost valley rough bit, bowser castle rough bit, ice                        </br>
+            /// <br>0x50: choco island bridges                                                        </br>
+            /// <br>0x52: choco island slightly rough bit of track                                    </br>
+            /// <br>0x54: mario circuit off road                                                      </br>
+            /// <br>0x56: choco island off road                                                       </br>
+            /// <br>0x58: snow                                                                        </br>
+            /// <br>0x5A: koopa beach bushes, donut plains grass                                      </br>
+            /// <br>0x5C: shallow-water                                                               </br>
+            /// <br>0x5E: mud puddle                                                                  </br>
+            /// <br>0x80: wall                                                                        </br>
+            /// </summary>
+            public static AddressData TileSurfaceTypes => new(0x0B00, 0x100, AddressData.CacheDurations.Race);
         }
 
         /// <summary>

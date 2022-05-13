@@ -13,29 +13,40 @@
 
             foreach (int rayCount in POSSIBLE_RAY_COUNT)
             {
-                var rays = new (double x, double y)[rayCount];
-
-                double mulRad = Math.Tau * 1.0 / rayCount;
-                for (int i = 0; i < rayCount; i++)
-                {
-                    (double sin, double cos) = Math.SinCos(mulRad * i);
-                    // We invert the cos, since a negative value actually is up.
-                    rays[i] = (Math.Round(sin, 4), Math.Round(-cos, 4));
-                }
-
-                precomputedRays[rayCount] = rays;
+                precomputedRays[rayCount] = GetRays(0, rayCount);
             }
         }
 
-        public static double[,] GetRayDistances(bool[,] tiles, int rayRadius, int rayCount)
+        private static (double x, double y)[] GetRays(double initialAngle, int rayCount)
+        {
+            var rays = new (double x, double y)[rayCount];
+
+            double mulRad = Math.Tau / rayCount;
+            for (int i = 0; i < rayCount; i++)
+            {
+                (double sin, double cos) = Math.SinCos(mulRad * i + initialAngle);
+                // We invert the cos, since a negative value actually is up.
+                rays[i] = (sin, -cos);
+            }
+
+            return rays;
+        }
+
+        public static double[,] GetRayDistances(bool[,] tiles, int rayRadius, int rayCount, double offsetAngle = 0)
         {
             double[,] distances = new double[OUTPUT_HEIGHT, rayCount / OUTPUT_HEIGHT];
             int raysPerRow = rayCount / OUTPUT_HEIGHT;
+            var rays = precomputedRays[rayCount];
+            if (offsetAngle != 0)
+            {
+                rays = GetRays(offsetAngle, rayCount);
+            }
+
             for (int i = 0; i < OUTPUT_HEIGHT; i++)
             {
                 for (int j = 0; j < raysPerRow; j++)
                 {
-                    distances[i, j] = CastRay(tiles, rayRadius, precomputedRays[rayCount][i * raysPerRow + j]);
+                    distances[i, j] = CastRay(tiles, rayRadius, rays[i * raysPerRow + j]);
                 }
             }
 

@@ -4,6 +4,7 @@ using Retro_ML.Configuration.FieldInformation;
 using Retro_ML.Neural;
 using Retro_ML.Neural.Scoring;
 using Retro_ML.SuperMarioKart.Game;
+using Retro_ML.SuperMarioKart.Game.Data;
 using Retro_ML.SuperMarioKart.Neural.Scoring;
 using Retro_ML.Utils;
 
@@ -13,6 +14,8 @@ namespace Retro_ML.SuperMarioKart.Configuration
     {
         public FieldInfo[] Fields => new FieldInfo[]
         {
+            new IntegerFieldInfo(nameof(ViewDistance), "View Distance", 4, 64, 1),
+            new IntegerChoiceFieldInfo(nameof(Raycount), "Raycast count", new int[] { 4, 8, 16, 32, 64 }),
             new IntegerFieldInfo(nameof(InternalClockTickLength), "Internal Clock Tick Length (Frames)", 1, 3600, 1),
             new IntegerChoiceFieldInfo(nameof(InternalClockLength), "Internal Clock Length", new int[] {1,2,3,4,5,6,7,8,16 })
         };
@@ -23,6 +26,8 @@ namespace Retro_ML.SuperMarioKart.Configuration
             {
                 return fieldName switch
                 {
+                    nameof(ViewDistance) => ViewDistance,
+                    nameof(Raycount) => Raycount,
                     nameof(InternalClockLength) => InternalClockLength,
                     nameof(InternalClockTickLength) => InternalClockTickLength,
                     _ => 0,
@@ -32,11 +37,21 @@ namespace Retro_ML.SuperMarioKart.Configuration
             {
                 switch (fieldName)
                 {
+                    case nameof(ViewDistance): ViewDistance = (int)value; break;
+                    case nameof(Raycount): Raycount = (int)value; break;
                     case nameof(InternalClockLength): InternalClockLength = (int)value; break;
                     case nameof(InternalClockTickLength): InternalClockTickLength = (int)value; break;
                 }
             }
         }
+        /// <summary>
+        /// How many tiles ahead we can see
+        /// </summary>
+        public int ViewDistance { get; set; } = 32;
+        /// <summary>
+        /// The amount of rays to send out
+        /// </summary>
+        public int Raycount { get; set; } = 16;
 
         /// <summary>
         /// The amount of inputs for the internal clock.
@@ -53,10 +68,11 @@ namespace Retro_ML.SuperMarioKart.Configuration
         {
             ScoreFactors = new List<IScoreFactor>()
             {
-                new CheckpointReachedScoreFactor() { IsDisabled=false, ScoreMultiplier=10 },
-                new FinishedRaceScoreFactor() { IsDisabled=false, ScoreMultiplier=1000 },
+                new CheckpointReachedScoreFactor() { IsDisabled=false, ScoreMultiplier=1 },
+                new FinishedRaceScoreFactor() { IsDisabled=false, ScoreMultiplier=100 },
                 new TimeTakenScoreFactor() { IsDisabled=false, ScoreMultiplier=-0.1 },
-                new OffRoadScoreFactor() { IsDisabled=false, ScoreMultiplier=-1 }
+                new OffRoadScoreFactor() { IsDisabled=false, ScoreMultiplier=-1 },
+                new LakituScoreFactor() { IsDisabled=false, ScoreMultiplier=-10 },
             };
         }
 
@@ -74,12 +90,22 @@ namespace Retro_ML.SuperMarioKart.Configuration
         public void InitNeuralConfig(NeuralConfig neuralConfig)
         {
             int enabledIndex = 0;
-            if (neuralConfig.EnabledStates.Length != 15)
+            if (neuralConfig.EnabledStates.Length != 18)
             {
-                neuralConfig.EnabledStates = Enumerable.Repeat(true, 3 + 6).Concat(Enumerable.Repeat(false, 2)).Concat(Enumerable.Repeat(true, 2)).Concat(Enumerable.Repeat(false, 2)).ToArray();
+                neuralConfig.EnabledStates =
+                    Enumerable.Repeat(true, 2) // Flowmap, offroad
+                    .Concat(Enumerable.Repeat(false, 3)) // Pit, solid & clock
+                    .Concat(Enumerable.Repeat(true, 1 + 6)) // Bias & first 6 outputs
+                    .Concat(Enumerable.Repeat(false, 2)) // No up and down buttons
+                    .Concat(Enumerable.Repeat(true, 1)) // Left shoulder
+                    .Concat(Enumerable.Repeat(false, 3)) // right shoulder, start, select
+                    .ToArray();
             }
             neuralConfig.InputNodes.Clear();
             neuralConfig.InputNodes.Add(new InputNode("FlowMap direction", neuralConfig.EnabledStates[enabledIndex++], (dataFetcher) => ((SMKDataFetcher)dataFetcher).GetHeadingDifference()));
+            neuralConfig.InputNodes.Add(new InputNode("Offroad", neuralConfig.EnabledStates[enabledIndex++], (dataFetcher) => ((SMKDataFetcher)dataFetcher).GetRays(ViewDistance, Raycount, TiletypeSurface.IsOffroad), Raycount / 4, 4));
+            neuralConfig.InputNodes.Add(new InputNode("Solid", neuralConfig.EnabledStates[enabledIndex++], (dataFetcher) => ((SMKDataFetcher)dataFetcher).GetRays(ViewDistance, Raycount, TiletypeSurface.IsSolid), Raycount / 4, 4));
+            neuralConfig.InputNodes.Add(new InputNode("Pit", neuralConfig.EnabledStates[enabledIndex++], (dataFetcher) => ((SMKDataFetcher)dataFetcher).GetRays(ViewDistance, Raycount, TiletypeSurface.IsPit), Raycount / 4, 4));
             neuralConfig.InputNodes.Add(new InputNode("Internal Clock", neuralConfig.EnabledStates[enabledIndex++], (dataFetcher) => ((SMKDataFetcher)dataFetcher).GetInternalClockState(), Math.Min(8, InternalClockLength), Math.Max(1, InternalClockLength / 8)));
             neuralConfig.InputNodes.Add(new InputNode("Bias", neuralConfig.EnabledStates[enabledIndex++], (dataFetcher) => true));
 

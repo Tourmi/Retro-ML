@@ -2,6 +2,7 @@
 using Retro_ML.Emulator;
 using Retro_ML.Game;
 using Retro_ML.SuperMarioKart.Configuration;
+using Retro_ML.Utils;
 using static Retro_ML.SuperMarioKart.Game.Addresses;
 
 namespace Retro_ML.SuperMarioKart.Game
@@ -11,7 +12,9 @@ namespace Retro_ML.SuperMarioKart.Game
     /// </summary>
     internal class SMKDataFetcher : IDataFetcher
     {
-        public const int INTERNAL_CLOCK_LENGTH = 8;
+        private const int TILES_ROW_COUNT = 128;
+        private const int TILES_COLUMN_COUNT = 128;
+        private const int SURROUNDING_TILES_RANGE = 32;
 
         private readonly IEmulatorAdapter emulator;
         private readonly Dictionary<uint, byte[]> frameCache;
@@ -48,7 +51,10 @@ namespace Retro_ML.SuperMarioKart.Game
 
             internalClock.Reset();
         }
-
+        public ushort GetPositionX() => (ushort)ToUnsignedInteger(Read(Racer.XPosition));
+        public ushort GetPositionY() => (ushort)ToUnsignedInteger(Read(Racer.YPosition));
+        public ushort GetHeadingAngle() => (ushort)ToUnsignedInteger(Read(Racer.HeadingAngle));
+        public byte GetKartStatus() => ReadSingle(Racer.KartStatus);
         public byte GetMaxCheckpoint() => ReadSingle(Race.CheckpointCount);
         public byte GetCurrentCheckpoint() => ReadSingle(Racer.CurrentCheckpointNumber);
         public sbyte GetCurrentLap() => (sbyte)(ReadSingle(Racer.CurrentLap) - 128);
@@ -62,13 +68,59 @@ namespace Retro_ML.SuperMarioKart.Game
             var flowX = Math.Clamp(racerX / 16, 0, 63);
             var flowY = Math.Clamp(racerY / 16, 0, 63);
 
-            byte currAngle = (byte)(ToUnsignedInteger(Read(Racer.HeadingAngle)) / 256);
+            byte currAngle = (byte)(GetHeadingAngle() / 256);
             byte currFlowAngle = flowmap[flowY * 64 + flowX];
 
             return ((sbyte)(currFlowAngle - currAngle)) / (double)sbyte.MaxValue;
         }
 
         public bool[,] GetInternalClockState() => internalClock.GetStates();
+
+        /// <summary>
+        /// Returns the distance to specific tiles that satisfy the <paramref name="isSurfaceFunc"/> condition.
+        /// </summary>
+        public double[,] GetRays(int distance, int rayCount, Func<byte, bool> isSurfaceFunc)
+        {
+            return Raycast.GetRayDistances(GetTiles(distance, distance, isSurfaceFunc), distance, rayCount, GetHeadingAngle() / (double)ushort.MaxValue * Math.Tau);
+        }
+
+        /// <summary>
+        /// Returns the tiles surrounding the player in the <paramref name="xDist"/> and <paramref name="yDist"/> directions, which satisfy the <paramref name="isSurfaceFunc"/> function.
+        /// </summary>
+        public bool[,] GetTiles(int xDist, int yDist, Func<byte, bool> isSurfaceFunc)
+        {
+            var tileTypes = Read(Racetrack.TileSurfaceTypes);
+            var surroundingTiles = GetSurroundingTiles(GetPositionX() / 8, GetPositionY() / 8, xDist, yDist);
+            var offroadTiles = new bool[surroundingTiles.GetLength(0), surroundingTiles.GetLength(1)];
+            for (int i = 0; i < offroadTiles.GetLength(0); i++)
+            {
+                for (int j = 0; j < offroadTiles.GetLength(1); j++)
+                {
+                    byte tile = surroundingTiles[i, j];
+                    offroadTiles[i, j] = isSurfaceFunc(tileTypes[tile]);
+                }
+            }
+
+            return offroadTiles;
+        }
+
+        private byte[,] GetSurroundingTiles(int xPos, int yPos, int xDist, int yDist)
+        {
+            byte[] tiles = Read(Racetrack.TileMap);
+            byte[,] nearbyTiles = new byte[yDist * 2 + 1, xDist * 2 + 1];
+            for (int y = -yDist; y <= yDist; y++)
+            {
+                for (int x = -xDist; x <= xDist; x++)
+                {
+                    nearbyTiles[y + yDist, x + xDist] = tiles[
+                                Math.Clamp(y + yPos, 0, TILES_ROW_COUNT - 1) * TILES_COLUMN_COUNT +
+                                Math.Clamp(x + xPos, 0, TILES_COLUMN_COUNT - 1)
+                            ];
+                }
+            }
+
+            return nearbyTiles;
+        }
 
         /// <summary>
         /// Reads the Low and High bytes at the addresses specified in AddressData, and puts them together into ushorts, assuming little Endian.
