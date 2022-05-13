@@ -5,7 +5,7 @@ namespace Retro_ML.SuperMarioKart.Neural.Scoring
 {
     internal class TimeTakenScoreFactor : IScoreFactor
     {
-        public const string MAXIMUM_TRAINING_TIME = "Maximum Training Time";
+        public const string MAXIMUM_TRAINING_TIME = "Maximum Time";
 
         private bool shouldStop = false;
         private double currScore;

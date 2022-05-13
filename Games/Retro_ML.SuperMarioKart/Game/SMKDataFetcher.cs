@@ -52,14 +52,15 @@ namespace Retro_ML.SuperMarioKart.Game
         public byte GetMaxCheckpoint() => ReadSingle(Race.CheckpointCount);
         public byte GetCurrentCheckpoint() => ReadSingle(Racer.CurrentCheckpointNumber);
         public sbyte GetCurrentLap() => (sbyte)(ReadSingle(Racer.CurrentLap) - 128);
+        public bool IsOffroad() => ReadSingle(Racer.KartStatus) == 0x10;
 
         public double GetHeadingDifference()
         {
             var flowmap = Read(Racetrack.FlowMap);
             var racerX = (ushort)ToUnsignedInteger(Read(Racer.XPosition));
             var racerY = (ushort)ToUnsignedInteger(Read(Racer.YPosition));
-            var flowX = racerX / 32;
-            var flowY = racerY / 32;
+            var flowX = racerX / 16;
+            var flowY = racerY / 16;
 
             byte currAngle = (byte)(ToUnsignedInteger(Read(Racer.HeadingAngle)) / 256);
             byte currFlowAngle = flowmap[flowY * 64 + flowX];

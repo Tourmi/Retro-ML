@@ -6,7 +6,11 @@ namespace Retro_ML.SuperMarioKart.Neural.Scoring
 {
     internal class CheckpointReachedScoreFactor : IScoreFactor
     {
+        private const string MAX_TIME_WITHOUT_PROGRESS = "Max time w/o progress";
+
         private bool init = false;
+        private bool shouldStop = false;
+        private int framesWithoutCheckpoint;
         private double currScore;
         private int maxCheckpoint = 0;
         private int currCheckpoint = 0;
@@ -14,10 +18,13 @@ namespace Retro_ML.SuperMarioKart.Neural.Scoring
 
         public CheckpointReachedScoreFactor()
         {
-            ExtraFields = Array.Empty<ExtraField>();
+            ExtraFields = new ExtraField[]
+            {
+                new ExtraField(MAX_TIME_WITHOUT_PROGRESS, 10)
+            };
         }
 
-        public bool ShouldStop => false;
+        public bool ShouldStop => shouldStop;
         public double ScoreMultiplier { get; set; }
 
         public string Name => "Checkpoint Reached";
@@ -36,6 +43,7 @@ namespace Retro_ML.SuperMarioKart.Neural.Scoring
             if (!init)
             {
                 init = true;
+                framesWithoutCheckpoint = 0;
                 maxCheckpoint = df.GetMaxCheckpoint();
                 previousCheckpoint = df.GetCurrentCheckpoint() + df.GetCurrentLap() * maxCheckpoint;
             }
@@ -45,12 +53,21 @@ namespace Retro_ML.SuperMarioKart.Neural.Scoring
             {
                 currScore += ScoreMultiplier * (currCheckpoint - previousCheckpoint);
                 previousCheckpoint = currCheckpoint;
+                framesWithoutCheckpoint = 0;
             }
+
+            if (framesWithoutCheckpoint >= ExtraField.GetValue(ExtraFields, MAX_TIME_WITHOUT_PROGRESS) * 60)
+            {
+                shouldStop = true;
+            }
+
+            framesWithoutCheckpoint++;
         }
 
         public void LevelDone()
         {
             init = false;
+            shouldStop = false;
         }
 
         public IScoreFactor Clone()

@@ -100,13 +100,13 @@
             /// </summary>
             public static AddressData CharacterNumber => new(0x1012, 1);
             /// <summary>
-            /// X position of the racer (To tile position -> (XPosition-1)/16)
+            /// X position of the racer (To tile position -> (XPosition)/8)
             /// </summary>
             public static AddressData XPosition => new(0x1018, 2);
             /// <summary>
-            /// Y position of the racer (To tile position -> (YPosition-1)/16)
+            /// Y position of the racer (To tile position -> (YPosition)/8)
             /// </summary>
-            public static AddressData YPosition => new(0x101C, 4);
+            public static AddressData YPosition => new(0x101C, 2);
             /// <summary>
             /// X velocity of the racer
             /// </summary>
@@ -127,6 +127,10 @@
             /// [00: On ground, 02: Jump/Hop/Ramp, 04: Fallen off, 06: In Lava, 08: In water, 0A: currently unknown, 0C: Lakitu taking coins from driver]
             /// </summary>
             public static AddressData KartStatus => new(0x10A0, 1);
+            /// <summary>
+            /// 0x10 if offroad, 0x20 if on road
+            /// </summary>
+            public static AddressData OnRoad => new(0x1028, 1);
             /// <summary>
             /// Current checkpoint number of the racer
             /// </summary>

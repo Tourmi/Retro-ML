@@ -45,7 +45,7 @@ namespace Retro_ML.SuperMarioKart.Configuration
         /// <summary>
         /// The amount of frames before the clock moves to the next state.
         /// </summary>
-        public int InternalClockTickLength { get; set; } = 2;
+        public int InternalClockTickLength { get; set; } = 15;
 
         public List<IScoreFactor> ScoreFactors { get; set; }
 
@@ -55,7 +55,8 @@ namespace Retro_ML.SuperMarioKart.Configuration
             {
                 new CheckpointReachedScoreFactor() { IsDisabled=false, ScoreMultiplier=10 },
                 new FinishedRaceScoreFactor() { IsDisabled=false, ScoreMultiplier=1000 },
-                new TimeTakenScoreFactor() { IsDisabled=false, ScoreMultiplier=-1 },
+                new TimeTakenScoreFactor() { IsDisabled=false, ScoreMultiplier=-0.1 },
+                new OffRoadScoreFactor() { IsDisabled=false, ScoreMultiplier=-1 }
             };
         }
 
@@ -66,6 +67,8 @@ namespace Retro_ML.SuperMarioKart.Configuration
             SMKPluginConfig cfg = JsonConvert.DeserializeObject<SMKPluginConfig>(json, SerializationUtils.JSON_CONFIG)!;
 
             ScoreFactors = cfg.ScoreFactors;
+            InternalClockLength = cfg.InternalClockLength;
+            InternalClockTickLength = cfg.InternalClockTickLength;
         }
 
         public void InitNeuralConfig(NeuralConfig neuralConfig)
