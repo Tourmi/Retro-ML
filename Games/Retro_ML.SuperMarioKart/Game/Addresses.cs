@@ -91,6 +91,7 @@
             /// <br>0x20: off edge                                                                    </br>
             /// <br>0x22: deep water                                                                  </br>
             /// <br>0x24: lava                                                                        </br>
+            /// <br>0x28: RR pit?                                                                     </br>
             /// <br>0x40: mario circuit road, ghost valley road, used powerup square, rainbow road    </br>
             /// <br>0x42: ghost valley transition tiles                                               </br>
             /// <br>0x44: bowser castle road                                                          </br>

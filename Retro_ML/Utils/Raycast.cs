@@ -13,33 +13,60 @@
 
             foreach (int rayCount in POSSIBLE_RAY_COUNT)
             {
-                precomputedRays[rayCount] = GetRays(0, rayCount);
+                precomputedRays[rayCount] = GetRays(0, Math.Tau, rayCount);
             }
         }
 
-        private static (double x, double y)[] GetRays(double initialAngle, int rayCount)
+        private static (double x, double y)[] GetRays(double forwardAngle, double angleRange, int rayCount)
         {
             var rays = new (double x, double y)[rayCount];
 
-            double mulRad = Math.Tau / rayCount;
-            for (int i = 0; i < rayCount; i++)
+            if (Math.Abs(angleRange - Math.Tau) > 0.001)
             {
-                (double sin, double cos) = Math.SinCos(mulRad * i + initialAngle);
-                // We invert the cos, since a negative value actually is up.
-                rays[i] = (sin, -cos);
+                double mulRad = angleRange / (rayCount - 2);
+                int halfRayCount = rayCount / 2;
+
+                //Left side
+                for (int i = 0; i < halfRayCount; i++)
+                {
+                    double angle = mulRad * (-i) + forwardAngle;
+                    if (angle < 0) angle += Math.Tau;
+                    (double sin, double cos) = Math.SinCos(angle);
+                    // We invert the cos, since a negative value actually is up.
+                    rays[i] = (sin, -cos);
+                }
+
+                //Right side
+                for (int i = 0; i < halfRayCount; i++)
+                {
+                    (double sin, double cos) = Math.SinCos(mulRad * i + forwardAngle);
+                    // We invert the cos, since a negative value actually is up.
+                    rays[i + halfRayCount] = (sin, -cos);
+                }
+            }
+            else
+            {
+                //Full 360
+                double mulRad = Math.Tau / rayCount;
+                for (int i = 0; i < rayCount; i++)
+                {
+                    (double sin, double cos) = Math.SinCos(mulRad * i + forwardAngle);
+                    // We invert the cos, since a negative value actually is up.
+                    rays[i] = (sin, -cos);
+                }
             }
 
             return rays;
         }
 
-        public static double[,] GetRayDistances(bool[,] tiles, int rayRadius, int rayCount, double offsetAngle = 0)
+        public static double[,] GetRayDistances(bool[,] tiles, int rayRadius, int rayCount, double forwardAngle = 0, double angleRange = Math.Tau)
         {
             double[,] distances = new double[OUTPUT_HEIGHT, rayCount / OUTPUT_HEIGHT];
             int raysPerRow = rayCount / OUTPUT_HEIGHT;
             var rays = precomputedRays[rayCount];
-            if (offsetAngle != 0)
+            if (forwardAngle != 0 || Math.Abs(angleRange - Math.Tau) > 0.001)
             {
-                rays = GetRays(offsetAngle, rayCount);
+                rays = GetRays(forwardAngle, angleRange, rayCount);
             }
 
             for (int i = 0; i < OUTPUT_HEIGHT; i++)

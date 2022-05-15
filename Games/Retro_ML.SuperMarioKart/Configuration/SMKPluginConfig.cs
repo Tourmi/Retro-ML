@@ -15,6 +15,7 @@ namespace Retro_ML.SuperMarioKart.Configuration
         public FieldInfo[] Fields => new FieldInfo[]
         {
             new IntegerFieldInfo(nameof(ViewDistance), "View Distance", 4, 64, 1),
+            new IntegerFieldInfo(nameof(ViewAngle), "View Angle (Degrees)", 10, 360, 10),
             new IntegerChoiceFieldInfo(nameof(Raycount), "Raycast count", new int[] { 4, 8, 16, 32, 64 }),
             new IntegerFieldInfo(nameof(InternalClockTickLength), "Internal Clock Tick Length (Frames)", 1, 3600, 1),
             new IntegerChoiceFieldInfo(nameof(InternalClockLength), "Internal Clock Length", new int[] {1,2,3,4,5,6,7,8,16 })
@@ -27,6 +28,7 @@ namespace Retro_ML.SuperMarioKart.Configuration
                 return fieldName switch
                 {
                     nameof(ViewDistance) => ViewDistance,
+                    nameof(ViewAngle) => ViewAngle,
                     nameof(Raycount) => Raycount,
                     nameof(InternalClockLength) => InternalClockLength,
                     nameof(InternalClockTickLength) => InternalClockTickLength,
@@ -38,6 +40,7 @@ namespace Retro_ML.SuperMarioKart.Configuration
                 switch (fieldName)
                 {
                     case nameof(ViewDistance): ViewDistance = (int)value; break;
+                    case nameof(ViewAngle): ViewAngle = (int)value; break;
                     case nameof(Raycount): Raycount = (int)value; break;
                     case nameof(InternalClockLength): InternalClockLength = (int)value; break;
                     case nameof(InternalClockTickLength): InternalClockTickLength = (int)value; break;
@@ -48,6 +51,10 @@ namespace Retro_ML.SuperMarioKart.Configuration
         /// How many tiles ahead we can see
         /// </summary>
         public int ViewDistance { get; set; } = 32;
+        /// <summary>
+        /// The maximum angle at which the AI can see
+        /// </summary>
+        public int ViewAngle { get; set; } = 180;
         /// <summary>
         /// The amount of rays to send out
         /// </summary>
@@ -85,6 +92,9 @@ namespace Retro_ML.SuperMarioKart.Configuration
             ScoreFactors = cfg.ScoreFactors;
             InternalClockLength = cfg.InternalClockLength;
             InternalClockTickLength = cfg.InternalClockTickLength;
+            ViewDistance = cfg.ViewDistance;
+            ViewAngle = cfg.ViewAngle;
+            Raycount = cfg.Raycount;
         }
 
         public void InitNeuralConfig(NeuralConfig neuralConfig)

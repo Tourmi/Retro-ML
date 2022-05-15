@@ -1,6 +1,6 @@
 ﻿{
-  "romPath": "smw.sfc",
-  "gamePluginName": "SMW",
+  "romPath": "smk.sfc",
+  "gamePluginName": "SMK",
   "multithread": 4,
   "arduinoCommunicationPort": "COM3",
   "stopConditions": [
@@ -38,7 +38,7 @@
     }
   ],
   "saveStates": [
-    "config\\SaveStates\\yoshi-island-1.State"
+    "config\\SaveStates\\SMK\\TT_Yoshi_MarioCircuit1.State"
   ],
   "neuralConfig": {
     "enabledStates": [

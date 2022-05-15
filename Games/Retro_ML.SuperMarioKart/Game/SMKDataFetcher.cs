@@ -19,6 +19,7 @@ namespace Retro_ML.SuperMarioKart.Game
         private readonly IEmulatorAdapter emulator;
         private readonly Dictionary<uint, byte[]> frameCache;
         private readonly Dictionary<uint, byte[]> raceCache;
+        private readonly SMKPluginConfig pluginConfig;
 
         private InternalClock internalClock;
 
@@ -27,6 +28,7 @@ namespace Retro_ML.SuperMarioKart.Game
             this.emulator = emulator;
             frameCache = new();
             raceCache = new();
+            this.pluginConfig = pluginConfig;
             internalClock = new InternalClock(pluginConfig.InternalClockTickLength, pluginConfig.InternalClockLength);
         }
 
@@ -81,7 +83,7 @@ namespace Retro_ML.SuperMarioKart.Game
         /// </summary>
         public double[,] GetRays(int distance, int rayCount, Func<byte, bool> isSurfaceFunc)
         {
-            return Raycast.GetRayDistances(GetTiles(distance, distance, isSurfaceFunc), distance, rayCount, GetHeadingAngle() / (double)ushort.MaxValue * Math.Tau);
+            return Raycast.GetRayDistances(GetTiles(distance, distance, isSurfaceFunc), distance, rayCount, GetHeadingAngle() / (double)ushort.MaxValue * Math.Tau, Math.Tau * pluginConfig.ViewAngle / 360.0);
         }
 
         /// <summary>
