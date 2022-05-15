@@ -2,6 +2,8 @@
 {
     public interface IInput
     {
+        public const double INPUT_THRESHOLD = 0.5;
+
         /// <summary>
         /// Returns the amount of buttons or axis for the input method.
         /// </summary>
