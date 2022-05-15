@@ -91,17 +91,17 @@ namespace Retro_ML.SuperMarioKart.Game
         {
             var tileTypes = Read(Racetrack.TileSurfaceTypes);
             var surroundingTiles = GetSurroundingTiles(GetPositionX() / 8, GetPositionY() / 8, xDist, yDist);
-            var offroadTiles = new bool[surroundingTiles.GetLength(0), surroundingTiles.GetLength(1)];
-            for (int i = 0; i < offroadTiles.GetLength(0); i++)
+            var tiles = new bool[surroundingTiles.GetLength(0), surroundingTiles.GetLength(1)];
+            for (int i = 0; i < tiles.GetLength(0); i++)
             {
-                for (int j = 0; j < offroadTiles.GetLength(1); j++)
+                for (int j = 0; j < tiles.GetLength(1); j++)
                 {
                     byte tile = surroundingTiles[i, j];
-                    offroadTiles[i, j] = isSurfaceFunc(tileTypes[tile]);
+                    tiles[i, j] = isSurfaceFunc(tileTypes[tile]);
                 }
             }
 
-            return offroadTiles;
+            return tiles;
         }
 
         private byte[,] GetSurroundingTiles(int xPos, int yPos, int xDist, int yDist)
