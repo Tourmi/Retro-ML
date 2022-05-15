@@ -1,9 +1,4 @@
 ﻿using Retro_ML.Game;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Retro_ML.GameBoy
 {
@@ -107,7 +102,7 @@ namespace Retro_ML.GameBoy
 
         public void SetButton(int index, double value)
         {
-            inputMask[index] = value > 0;
+            inputMask[index] = value > IInput.INPUT_THRESHOLD;
         }
 
         public void ValidateButtons()

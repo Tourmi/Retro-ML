@@ -3,6 +3,7 @@ using Avalonia.Media;
 using Avalonia.Threading;
 using ReactiveUI;
 using Retro_ML.Configuration;
+using Retro_ML.Game;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -30,8 +31,16 @@ namespace Retro_ML.Application.ViewModels.Neural
                 Value = value;
 
                 Color currColor;
-                if (value <= 0) currColor = BaseColor;
+                if (value <= -1) currColor = NegativeColor;
                 else if (value >= 1) currColor = targetColor;
+                else if (value < 0)
+                {
+                    byte r = (byte)(BaseColor.R + (NegativeColor.R - BaseColor.R) * value);
+                    byte g = (byte)(BaseColor.G + (NegativeColor.G - BaseColor.G) * value);
+                    byte b = (byte)(BaseColor.B + (NegativeColor.B - BaseColor.B) * value);
+
+                    currColor = Color.FromRgb(r, g, b);
+                }
                 else
                 {
                     byte r = (byte)(BaseColor.R + (targetColor.R - BaseColor.R) * value);
@@ -100,6 +109,7 @@ namespace Retro_ML.Application.ViewModels.Neural
         }
         public static Color BaseColor = Color.Parse("#444");
         public static Color MiddleNodeColor = Color.Parse("#ACA");
+        public static Color NegativeColor = Color.Parse("#000");
         public static Color DefaultActiveColor = Color.Parse("#EEE");
         public static Color DangerActiveColor = Color.Parse("#E00");
         public static Color GoodiesActiveColor = Color.Parse("#0E0");
@@ -330,7 +340,7 @@ namespace Retro_ML.Application.ViewModels.Neural
                 {
                     double prevValue = nodeGroup.Nodes[i].Value;
                     double value = states[i + startIndex];
-                    if (nodeGroup.IsOutput) value = value > 0 ? 1 : 0;
+                    if (nodeGroup.IsOutput) value = value > IInput.INPUT_THRESHOLD ? 1 : 0;
                     if (prevValue != value && !(prevValue <= 0 && value <= 0) && !(prevValue >= 1 && value >= 1))
                     {
                         nodeGroup.Nodes[i] = new Node(value, nodeGroup.TargetColor);

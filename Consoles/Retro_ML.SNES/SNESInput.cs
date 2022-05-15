@@ -102,7 +102,7 @@ namespace Retro_ML.SNES
 
         public void SetButton(int index, double value)
         {
-            inputMask[index] = value > 0;
+            inputMask[index] = value > IInput.INPUT_THRESHOLD;
         }
 
         public void ValidateButtons()
