@@ -283,15 +283,15 @@ namespace Retro_ML.SuperMarioKart.Game
             var xVelocities = ReadMultiple(Racers.XVelocity, Racers.SingleRacer, Racers.AllRacers).ToArray();
             var yVelocities = ReadMultiple(Racers.YVelocity, Racers.SingleRacer, Racers.AllRacers).ToArray();
 
-            Obstacle[] racers = new Obstacle[xPositions.Length];
-            for (int i = 1; i < racers.Length; i++)
+            Obstacle[] racers = new Obstacle[xPositions.Length - 1];
+            for (int i = 0; i < racers.Length; i++)
             {
-                racers[i] = new Obstacle()
+                racers[i - 1] = new Obstacle()
                 {
-                    XPos = (short)ToUnsignedInteger(xPositions[i]),
-                    YPos = (short)ToUnsignedInteger(yPositions[i]),
-                    XVelocity = (short)ToUnsignedInteger(xVelocities[i]),
-                    YVelocity = (short)ToUnsignedInteger(yVelocities[i])
+                    XPos = (short)ToUnsignedInteger(xPositions[i + 1]),
+                    YPos = (short)ToUnsignedInteger(yPositions[i + 1]),
+                    XVelocity = (short)ToUnsignedInteger(xVelocities[i + 1]),
+                    YVelocity = (short)ToUnsignedInteger(yVelocities[i + 1])
                 };
             }
 
