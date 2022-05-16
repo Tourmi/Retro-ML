@@ -56,17 +56,17 @@ namespace Retro_ML.SuperMarioKart.Game
 
             internalClock.Reset();
         }
-        public ushort GetPositionX() => (ushort)ToUnsignedInteger(Read(Racer.XPosition));
-        public ushort GetPositionY() => (ushort)ToUnsignedInteger(Read(Racer.YPosition));
-        public ushort GetHeadingAngle() => (ushort)ToUnsignedInteger(Read(Racer.HeadingAngle));
+        public ushort GetPositionX() => (ushort)ToUnsignedInteger(Read(Racers.XPosition));
+        public ushort GetPositionY() => (ushort)ToUnsignedInteger(Read(Racers.YPosition));
+        public ushort GetHeadingAngle() => (ushort)ToUnsignedInteger(Read(Racers.HeadingAngle));
         public double GetHeadingAngleRadians() => GetHeadingAngle() / (double)ushort.MaxValue * Math.Tau;
-        public byte GetKartStatus() => ReadSingle(Racer.KartStatus);
+        public byte GetKartStatus() => ReadSingle(Racers.KartStatus);
         public byte GetMaxCheckpoint() => ReadSingle(Race.CheckpointCount);
-        public byte GetCurrentCheckpoint() => ReadSingle(Racer.CurrentCheckpointNumber);
-        public sbyte GetCurrentLap() => (sbyte)(ReadSingle(Racer.CurrentLap) - 128);
-        public bool IsOffroad() => ReadSingle(Racer.KartStatus) == 0x10;
+        public byte GetCurrentCheckpoint() => ReadSingle(Racers.CurrentCheckpointNumber);
+        public sbyte GetCurrentLap() => (sbyte)(ReadSingle(Racers.CurrentLap) - 128);
+        public bool IsOffroad() => ReadSingle(Racers.OffRoad) == 0x10;
         public ushort GetTrackNumber() => (ushort)ToUnsignedInteger(Read(Racetrack.Number));
-        public ushort GetCollisionTimer() => (ushort)ToUnsignedInteger(Read(Racer.CollisionTimer));
+        public ushort GetCollisionTimer() => (ushort)ToUnsignedInteger(Read(Racers.CollisionTimer));
         public byte GetRaceStatus() => ReadSingle(Race.RaceStatus);
         public byte GetCoins() => ReadSingle(Race.Coins);
         public bool IsItemReady() => ReadSingle(Race.ItemState) == 0xC0;
@@ -87,8 +87,8 @@ namespace Retro_ML.SuperMarioKart.Game
         public double GetHeadingDifference()
         {
             var flowmap = Read(Racetrack.FlowMap);
-            var racerX = (ushort)ToUnsignedInteger(Read(Racer.XPosition));
-            var racerY = (ushort)ToUnsignedInteger(Read(Racer.YPosition));
+            var racerX = (ushort)ToUnsignedInteger(Read(Racers.XPosition));
+            var racerY = (ushort)ToUnsignedInteger(Read(Racers.YPosition));
             var flowX = Math.Clamp(racerX / 16, 0, 63);
             var flowY = Math.Clamp(racerY / 16, 0, 63);
 
@@ -108,10 +108,24 @@ namespace Retro_ML.SuperMarioKart.Game
             return Raycast.GetRayDistances(GetSurroundingTilesOfType(distance, distance, isSurfaceFunc), distance, rayCount, GetHeadingAngleRadians(), Math.Tau * pluginConfig.ViewAngle / 360.0);
         }
 
+        public double[,] GetObstacleRays(int distance, int rayCount)
+        {
+            var objectRays = Raycast.GetRayDistances(GetSurroundingObjects(distance, distance), distance, rayCount, GetHeadingAngleRadians(), Math.Tau * pluginConfig.ViewAngle / 360.0);
+            var itemRays = Raycast.GetRayDistances(GetSurroundingItems(distance, distance), distance, rayCount, GetHeadingAngleRadians(), Math.Tau * pluginConfig.ViewAngle / 360.0);
+            return Raycast.CombineRays(objectRays, itemRays);
+        }
+
+        public double[,] GetRacersRays(int distance, int rayCount)
+        {
+            var racerRays = Raycast.GetRayDistances(GetSurroundingRacers(distance, distance), distance, rayCount, GetHeadingAngleRadians(), Math.Tau * pluginConfig.ViewAngle / 360.0);
+
+            return racerRays;
+        }
+
         /// <summary>
         /// Returns the tiles surrounding the player in the <paramref name="xDist"/> and <paramref name="yDist"/> directions, which satisfy the <paramref name="isSurfaceFunc"/> function.
         /// </summary>
-        public bool[,] GetSurroundingTilesOfType(int xDist, int yDist, Func<byte, bool> isSurfaceFunc)
+        private bool[,] GetSurroundingTilesOfType(int xDist, int yDist, Func<byte, bool> isSurfaceFunc)
         {
             var tileTypes = Read(Racetrack.TileSurfaceTypes);
             var surroundingTiles = GetSurroundingTiles(xDist, yDist);
@@ -149,13 +163,6 @@ namespace Retro_ML.SuperMarioKart.Game
             return nearbyTiles;
         }
 
-        public double[,] GetObstacleRays(int distance, int rayCount)
-        {
-            var objectRays = Raycast.GetRayDistances(GetSurroundingObjects(distance, distance), distance, rayCount, GetHeadingAngleRadians(), Math.Tau * pluginConfig.ViewAngle / 360.0);
-            var itemRays = Raycast.GetRayDistances(GetSurroundingItems(distance, distance), distance, rayCount, GetHeadingAngleRadians(), Math.Tau * pluginConfig.ViewAngle / 360.0);
-            return Raycast.CombineRays(objectRays, itemRays);
-        }
-
         private bool[,] GetSurroundingObjects(int xDist, int yDist)
         {
             int xPos = GetPositionX() / 8;
@@ -188,6 +195,25 @@ namespace Retro_ML.SuperMarioKart.Game
                 for (int x = -xDist; x <= xDist; x++)
                 {
                     nearbyTiles[y + yDist, x + xDist] = items.Any(o => o.IsThreatTo(xPos + x, yPos + y));
+                }
+            }
+
+            return nearbyTiles;
+        }
+
+        private bool[,] GetSurroundingRacers(int xDist, int yDist)
+        {
+            int xPos = GetPositionX() / 8;
+            int yPos = GetPositionY() / 8;
+            var racers = GetRacers();
+
+            bool[,] nearbyTiles = new bool[yDist * 2 + 1, xDist * 2 + 1];
+
+            for (int y = -yDist; y <= yDist; y++)
+            {
+                for (int x = -xDist; x <= xDist; x++)
+                {
+                    nearbyTiles[y + yDist, x + xDist] = racers.Any(o => o.IsThreatTo(xPos + x, yPos + y));
                 }
             }
 
@@ -240,6 +266,28 @@ namespace Retro_ML.SuperMarioKart.Game
             }
 
             return items;
+        }
+
+        private Obstacle[] GetRacers()
+        {
+            var xPositions = ReadMultiple(Racers.XPosition, Racers.SingleRacer, Racers.AllRacers).ToArray();
+            var yPositions = ReadMultiple(Racers.YPosition, Racers.SingleRacer, Racers.AllRacers).ToArray();
+            var xVelocities = ReadMultiple(Racers.XVelocity, Racers.SingleRacer, Racers.AllRacers).ToArray();
+            var yVelocities = ReadMultiple(Racers.YVelocity, Racers.SingleRacer, Racers.AllRacers).ToArray();
+
+            Obstacle[] racers = new Obstacle[xPositions.Length];
+            for (int i = 1; i < racers.Length; i++)
+            {
+                racers[i] = new Obstacle()
+                {
+                    XPos = (short)ToUnsignedInteger(xPositions[i]),
+                    YPos = (short)ToUnsignedInteger(yPositions[i]),
+                    XVelocity = (short)ToUnsignedInteger(xVelocities[i]),
+                    YVelocity = (short)ToUnsignedInteger(yVelocities[i])
+                };
+            }
+
+            return racers;
         }
 
         /// <summary>
@@ -405,85 +453,46 @@ namespace Retro_ML.SuperMarioKart.Game
             {
             };
 
-            uint offset = TrackObjects.SingleObject.Length;
-            for (uint i = 0; i < TrackObjects.AllObjects.Length; i += offset)
-            {
-                toRead.Add((new AddressData()
-                {
-                    Address = TrackObjects.ObjectXPos.Address + i * offset,
-                    CacheDuration = TrackObjects.ObjectXPos.CacheDuration,
-                    Length = TrackObjects.ObjectXPos.Length
-                }, false));
+            toRead.AddRange(GetCalculatedAddresses(TrackObjects.AllObjects.Length, TrackObjects.SingleObject.Length,
+                TrackObjects.ObjectXPos,
+                TrackObjects.ObjectYPos,
+                TrackObjects.ObjectZPos,
+                TrackObjects.ObjectZVelocity
+                ));
 
-                toRead.Add((new AddressData()
-                {
-                    Address = TrackObjects.ObjectYPos.Address + i * offset,
-                    CacheDuration = TrackObjects.ObjectYPos.CacheDuration,
-                    Length = TrackObjects.ObjectYPos.Length
-                }, false));
+            toRead.AddRange(GetCalculatedAddresses(Items.AllItems.Length, Items.SingleItem.Length,
+                Items.ItemXPos,
+                Items.ItemYPos,
+                Items.ItemZPos,
+                Items.ItemXVelocity,
+                Items.ItemYVelocity,
+                Items.ItemZVelocity
+                ));
 
-                toRead.Add((new AddressData()
-                {
-                    Address = TrackObjects.ObjectZPos.Address + i * offset,
-                    CacheDuration = TrackObjects.ObjectZPos.CacheDuration,
-                    Length = TrackObjects.ObjectZPos.Length
-                }, false));
-
-                toRead.Add((new AddressData()
-                {
-                    Address = TrackObjects.ObjectZVelocity.Address + i * offset,
-                    CacheDuration = TrackObjects.ObjectZVelocity.CacheDuration,
-                    Length = TrackObjects.ObjectZVelocity.Length
-                }, false));
-            }
-            offset = Items.SingleItem.Length;
-            for (uint i = 0; i < Items.AllItems.Length; i += offset)
-            {
-
-                toRead.Add((new AddressData()
-                {
-                    Address = Items.ItemXPos.Address + i * offset,
-                    CacheDuration = Items.ItemXPos.CacheDuration,
-                    Length = Items.ItemXPos.Length
-                }, false));
-
-                toRead.Add((new AddressData()
-                {
-                    Address = Items.ItemYPos.Address + i * offset,
-                    CacheDuration = Items.ItemYPos.CacheDuration,
-                    Length = Items.ItemYPos.Length
-                }, false));
-
-                toRead.Add((new AddressData()
-                {
-                    Address = Items.ItemZPos.Address + i * offset,
-                    CacheDuration = Items.ItemZPos.CacheDuration,
-                    Length = Items.ItemZPos.Length
-                }, false));
-
-                toRead.Add((new AddressData()
-                {
-                    Address = Items.ItemXVelocity.Address + i * offset,
-                    CacheDuration = Items.ItemXVelocity.CacheDuration,
-                    Length = Items.ItemXVelocity.Length
-                }, false));
-
-                toRead.Add((new AddressData()
-                {
-                    Address = Items.ItemYVelocity.Address + i * offset,
-                    CacheDuration = Items.ItemYVelocity.CacheDuration,
-                    Length = Items.ItemYVelocity.Length
-                }, false));
-
-                toRead.Add((new AddressData()
-                {
-                    Address = Items.ItemZVelocity.Address + i * offset,
-                    CacheDuration = Items.ItemZVelocity.CacheDuration,
-                    Length = Items.ItemZVelocity.Length
-                }, false));
-            }
+            toRead.AddRange(GetCalculatedAddresses(Racers.AllRacers.Length, Racers.SingleRacer.Length,
+                Racers.XPosition,
+                Racers.YPosition,
+                Racers.XVelocity,
+                Racers.YVelocity
+                ));
 
             _ = Read(toRead.ToArray());
+        }
+
+        private static IEnumerable<(AddressData, bool hasHighByte)> GetCalculatedAddresses(uint totalLength, uint offset, params AddressData[] baseAddresses)
+        {
+            for (uint i = 0; i < totalLength; i += offset)
+            {
+                for (int j = 0; j < baseAddresses.Length; j++)
+                {
+                    yield return (new AddressData()
+                    {
+                        Address = baseAddresses[j].Address + i * offset,
+                        CacheDuration = baseAddresses[j].CacheDuration,
+                        Length = baseAddresses[j].Length
+                    }, baseAddresses[j].HighByteAddress != 0);
+                }
+            }
         }
 
         private static uint ToUnsignedInteger(byte[] bytes)

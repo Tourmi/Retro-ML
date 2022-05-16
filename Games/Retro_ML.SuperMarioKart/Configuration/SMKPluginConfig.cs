@@ -103,15 +103,18 @@ namespace Retro_ML.SuperMarioKart.Configuration
         public void InitNeuralConfig(NeuralConfig neuralConfig)
         {
             int enabledIndex = 0;
-            if (neuralConfig.EnabledStates.Length != 9 + 12)
+            if (neuralConfig.EnabledStates.Length != 10 + 12)
             {
                 neuralConfig.EnabledStates = new bool[]
                 {
                     true, //flowmap
                     true, //obstacles
+                    false, //racers
                     true, //offroad
                     false, //solid
                     false, //pit
+                    false, //goodies
+                    false, //current item
                     false, //clock
                     true, //bias
 
@@ -132,6 +135,7 @@ namespace Retro_ML.SuperMarioKart.Configuration
             neuralConfig.InputNodes.Clear();
             neuralConfig.InputNodes.Add(new InputNode("FlowMap direction", neuralConfig.EnabledStates[enabledIndex++], (dataFetcher) => ((SMKDataFetcher)dataFetcher).GetHeadingDifference()));
             neuralConfig.InputNodes.Add(new InputNode("Obstacles", neuralConfig.EnabledStates[enabledIndex++], (dataFetcher) => ((SMKDataFetcher)dataFetcher).GetObstacleRays(ViewDistance, Raycount), Raycount / 4, 4));
+            neuralConfig.InputNodes.Add(new InputNode("Racers", neuralConfig.EnabledStates[enabledIndex++], (dataFetcher) => ((SMKDataFetcher)dataFetcher).GetRacersRays(ViewDistance, Raycount), Raycount / 4, 4));
             neuralConfig.InputNodes.Add(new InputNode("Offroad", neuralConfig.EnabledStates[enabledIndex++], (dataFetcher) => ((SMKDataFetcher)dataFetcher).GetRays(ViewDistance, Raycount, TiletypeSurface.IsOffroad), Raycount / 4, 4));
             neuralConfig.InputNodes.Add(new InputNode("Solid", neuralConfig.EnabledStates[enabledIndex++], (dataFetcher) => ((SMKDataFetcher)dataFetcher).GetRays(ViewDistance, Raycount, TiletypeSurface.IsSolid), Raycount / 4, 4));
             neuralConfig.InputNodes.Add(new InputNode("Pit", neuralConfig.EnabledStates[enabledIndex++], (dataFetcher) => ((SMKDataFetcher)dataFetcher).GetRays(ViewDistance, Raycount, TiletypeSurface.IsPit), Raycount / 4, 4));

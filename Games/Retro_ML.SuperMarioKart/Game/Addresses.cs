@@ -151,16 +151,16 @@
         /// <summary>
         /// Regroups addresses relating to a racer
         /// </summary>
-        public static class Racer
+        public static class Racers
         {
             /// <summary>
             /// Table of all 8 racers, 256 bytes each.
             /// </summary>
-            public static AddressData Racers => new(0x1000, 0x800);
+            public static AddressData AllRacers => new(0x1000, 0x800);
             /// <summary>
             /// All of the information for the main racer
             /// </summary>
-            public static AddressData MainRacer => new(0x1000, 0x100);
+            public static AddressData SingleRacer => new(0x1000, 0x100);
             /// <summary>
             /// What character this racer is. [00: Mario, 02: Luigi, 04: Bowser, 06: Peach, 08: DK, 0A: Koopa, 0C: Toad 0E: Yoshi]
             /// </summary>
@@ -181,6 +181,10 @@
             /// Y velocity of the racer
             /// </summary>
             public static AddressData YVelocity => new(0x1024, 2);
+            /// <summary>
+            /// 0x10 : offroad, 0x20 : on road
+            /// </summary>
+            public static AddressData OffRoad => new(0x1028, 1);
             /// <summary>
             /// Current heading direction of the racer
             /// </summary>
