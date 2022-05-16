@@ -69,6 +69,20 @@ namespace Retro_ML.SuperMarioKart.Game
         public ushort GetCollisionTimer() => (ushort)ToUnsignedInteger(Read(Racer.CollisionTimer));
         public byte GetRaceStatus() => ReadSingle(Race.RaceStatus);
         public byte GetCoins() => ReadSingle(Race.Coins);
+        public bool IsItemReady() => ReadSingle(Race.ItemState) == 0xC0;
+
+        public bool[,] GetCurrentItem()
+        {
+            bool[,] currentItem = new bool[3, 3];
+
+            if (IsItemReady())
+            {
+                byte itemId = ReadSingle(Race.ItemId);
+                currentItem[itemId / 3, itemId % 3] = true;
+            }
+
+            return currentItem;
+        }
 
         public double GetHeadingDifference()
         {

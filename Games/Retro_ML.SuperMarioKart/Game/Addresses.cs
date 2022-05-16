@@ -58,6 +58,27 @@
             /// Amount of coins the first player currently has.
             /// </summary>
             public static AddressData Coins => new(0xE00, 1);
+            /// <summary>
+            /// <br>Current state of the item in the item box.</br>
+            /// <br>0x00 No item</br>
+            /// <br>0x80 Flashing</br>
+            /// <br>0x90 Boo theft</br>
+            /// <br>0xA0 Rolling</br>
+            /// <br>0xC0 Ready to use</br>
+            /// </summary>
+            public static AddressData ItemState => new(0xd71, 1);
+            /// <summary>
+            /// <br>0x00     Mushroom         </br>
+            /// <br>0x01     Feather          </br>
+            /// <br>0x02     Star             </br>
+            /// <br>0x03     Banana           </br>
+            /// <br>0x04     Green shell      </br>
+            /// <br>0x05     Red shell        </br>
+            /// <br>0x06     Boo (Battle only)</br>
+            /// <br>0x07     Coins            </br>
+            /// <br>0x08     Thunder          </br>
+            /// </summary>
+            public static AddressData ItemId => new(0xd7c, 1);
         }
 
         /// <summary>

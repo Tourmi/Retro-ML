@@ -103,7 +103,7 @@ namespace Retro_ML.SuperMarioKart.Configuration
         public void InitNeuralConfig(NeuralConfig neuralConfig)
         {
             int enabledIndex = 0;
-            if (neuralConfig.EnabledStates.Length != 19)
+            if (neuralConfig.EnabledStates.Length != 20)
             {
                 neuralConfig.EnabledStates = new bool[]
                 {
@@ -136,6 +136,7 @@ namespace Retro_ML.SuperMarioKart.Configuration
             neuralConfig.InputNodes.Add(new InputNode("Solid", neuralConfig.EnabledStates[enabledIndex++], (dataFetcher) => ((SMKDataFetcher)dataFetcher).GetRays(ViewDistance, Raycount, TiletypeSurface.IsSolid), Raycount / 4, 4));
             neuralConfig.InputNodes.Add(new InputNode("Pit", neuralConfig.EnabledStates[enabledIndex++], (dataFetcher) => ((SMKDataFetcher)dataFetcher).GetRays(ViewDistance, Raycount, TiletypeSurface.IsPit), Raycount / 4, 4));
             neuralConfig.InputNodes.Add(new InputNode("Goodies", neuralConfig.EnabledStates[enabledIndex++], (dataFetcher) => ((SMKDataFetcher)dataFetcher).GetRays(ViewDistance, Raycount, TiletypeSurface.IsGoodTile), Raycount / 4, 4));
+            neuralConfig.InputNodes.Add(new InputNode("Current Item", neuralConfig.EnabledStates[enabledIndex++], (dataFetcher) => ((SMKDataFetcher)dataFetcher).GetCurrentItem(), 3, 3));
             neuralConfig.InputNodes.Add(new InputNode("Internal Clock", neuralConfig.EnabledStates[enabledIndex++], (dataFetcher) => ((SMKDataFetcher)dataFetcher).GetInternalClockState(), Math.Min(8, InternalClockLength), Math.Max(1, InternalClockLength / 8)));
             neuralConfig.InputNodes.Add(new InputNode("Bias", neuralConfig.EnabledStates[enabledIndex++], (dataFetcher) => true));
 
