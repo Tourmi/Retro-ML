@@ -50,15 +50,15 @@ namespace Retro_ML.SuperMarioKart.Configuration
         /// <summary>
         /// How many tiles ahead we can see
         /// </summary>
-        public int ViewDistance { get; set; } = 32;
+        public int ViewDistance { get; set; } = 16;
         /// <summary>
         /// The maximum angle at which the AI can see
         /// </summary>
-        public int ViewAngle { get; set; } = 180;
+        public int ViewAngle { get; set; } = 150;
         /// <summary>
         /// The amount of rays to send out
         /// </summary>
-        public int Raycount { get; set; } = 16;
+        public int Raycount { get; set; } = 8;
 
         /// <summary>
         /// The amount of inputs for the internal clock.
