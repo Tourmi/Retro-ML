@@ -75,10 +75,11 @@ namespace Retro_ML.SuperMarioKart.Configuration
         {
             ScoreFactors = new List<IScoreFactor>()
             {
-                new CheckpointReachedScoreFactor() { IsDisabled=false, ScoreMultiplier=1 },
                 new FinishedRaceScoreFactor() { IsDisabled=false, ScoreMultiplier=100 },
-                new TimeTakenScoreFactor() { IsDisabled=false, ScoreMultiplier=-0.1 },
-                new OffRoadScoreFactor() { IsDisabled=false, ScoreMultiplier=-1 },
+                new StoppedProgressingScoreFactor() { IsDisabled=false, ScoreMultiplier=-15 },
+                new CheckpointReachedScoreFactor() { IsDisabled=false, ScoreMultiplier=5 },
+                new TimeTakenScoreFactor() { IsDisabled=false, ScoreMultiplier=-1 },
+                new OffRoadScoreFactor() { IsDisabled=false, ScoreMultiplier=-2 },
                 new LakituScoreFactor() { IsDisabled=false, ScoreMultiplier=-10 },
                 new CollisionScoreFactor() { IsDisabled=false, ScoreMultiplier=-1 },
             };
@@ -103,14 +104,29 @@ namespace Retro_ML.SuperMarioKart.Configuration
             int enabledIndex = 0;
             if (neuralConfig.EnabledStates.Length != 19)
             {
-                neuralConfig.EnabledStates =
-                    Enumerable.Repeat(true, 3) // Flowmap, offroad, obstacles
-                    .Concat(Enumerable.Repeat(false, 3)) // Pit, solid & clock
-                    .Concat(Enumerable.Repeat(true, 1 + 6)) // Bias & first 6 outputs
-                    .Concat(Enumerable.Repeat(false, 2)) // No up and down buttons
-                    .Concat(Enumerable.Repeat(true, 1)) // Left shoulder
-                    .Concat(Enumerable.Repeat(false, 3)) // right shoulder, start, select
-                    .ToArray();
+                neuralConfig.EnabledStates = new bool[]
+                {
+                    true, //flowmap
+                    true, //obstacles
+                    true, //offroad
+                    false, //solid
+                    false, //pit
+                    false, //clock
+                    true, //bias
+
+                    false, //a
+                    true, //b
+                    false, //x
+                    true, //y
+                    true, //left
+                    true, //right
+                    false, //up
+                    false, //down
+                    true, //left shoulder
+                    false, //right shoulder
+                    false, //start
+                    false //select
+                };
             }
             neuralConfig.InputNodes.Clear();
             neuralConfig.InputNodes.Add(new InputNode("FlowMap direction", neuralConfig.EnabledStates[enabledIndex++], (dataFetcher) => ((SMKDataFetcher)dataFetcher).GetHeadingDifference()));

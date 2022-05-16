@@ -48,6 +48,12 @@
             /// The amount of checkpoints in the current race.
             /// </summary>
             public static AddressData CheckpointCount => new(0x148, 1, AddressData.CacheDurations.Race);
+            /// <summary>
+            /// <br>Current race status</br>
+            /// <br>4: Countdown</br>
+            /// <br>6: Racing</br>
+            /// </summary>
+            public static AddressData RaceStatus => new(0x3A, 1, AddressData.CacheDurations.Frame);
         }
 
         /// <summary>
