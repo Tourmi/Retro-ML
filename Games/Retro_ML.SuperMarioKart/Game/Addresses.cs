@@ -15,7 +15,8 @@
             public enum CacheDurations
             {
                 Frame,
-                Race
+                Race,
+                PerTrack
             }
 
             public AddressData(uint address, uint length, CacheDurations cacheDuration = CacheDurations.Frame, uint highByteLocation = 0)
@@ -55,31 +56,35 @@
         public static class Racetrack
         {
             /// <summary>
+            /// Number of the current racetrack
+            /// </summary>
+            public static AddressData Number => new(0x0124, 2, AddressData.CacheDurations.Race);
+            /// <summary>
             /// Tile Sprite Map (128x128)
             /// </summary>
-            public static AddressData TileMap => new(0x1_0000, 0x4000, AddressData.CacheDurations.Race);
+            public static AddressData TileMap => new(0x1_0000, 0x4000, AddressData.CacheDurations.PerTrack);
             /// <summary>
             /// Flow Map of "Forward" angles of map for each 2x2 tile area. (64x64)
             /// </summary>
-            public static AddressData FlowMap => new(0x1_4000, 0x1000, AddressData.CacheDurations.Race);
+            public static AddressData FlowMap => new(0x1_4000, 0x1000, AddressData.CacheDurations.PerTrack);
             /// <summary>
             /// Checkpoint pointer for each 2x2 tile area (64x64)
             /// 
             /// See <see cref="CheckpointsSpeedAngle"/>, <see cref="CheckPointsLakituX"/>, <see cref="CheckPointsLakituY"/>
             /// </summary>
-            public static AddressData CheckpointData => new(0x1_5000, 0x1000, AddressData.CacheDurations.Race);
+            public static AddressData CheckpointData => new(0x1_5000, 0x1000, AddressData.CacheDurations.PerTrack);
             /// <summary>
             /// Checkpoint Speed and Angle Table (2 bytes, Low: Speed, High: Angle)
             /// </summary>
-            public static AddressData CheckpointsSpeedAngle => new(0x0800, 0x100, AddressData.CacheDurations.Race);
+            public static AddressData CheckpointsSpeedAngle => new(0x0800, 0x100, AddressData.CacheDurations.PerTrack);
             /// <summary>
             /// Checkpoint Lakitu Drop X-Coordinate Table (2 bytes each)
             /// </summary>
-            public static AddressData CheckPointsLakituX => new(0x0800, 0x100, AddressData.CacheDurations.Race);
+            public static AddressData CheckPointsLakituX => new(0x0800, 0x100, AddressData.CacheDurations.PerTrack);
             /// <summary>
             /// Checkpoint Lakitu Drop Y-Coordinate Table (2 bytes each)
             /// </summary>
-            public static AddressData CheckPointsLakituY => new(0x0800, 0x100, AddressData.CacheDurations.Race);
+            public static AddressData CheckPointsLakituY => new(0x0800, 0x100, AddressData.CacheDurations.PerTrack);
             /// <summary>
             /// <br>0x10: ramp                                                                        </br>
             /// <br>0x12: Choco Island mini ramp?                                                     </br>
@@ -109,7 +114,7 @@
             /// <br>0x5E: mud puddle                                                                  </br>
             /// <br>0x80: wall                                                                        </br>
             /// </summary>
-            public static AddressData TileSurfaceTypes => new(0x0B00, 0x100, AddressData.CacheDurations.Race);
+            public static AddressData TileSurfaceTypes => new(0x0B00, 0x100, AddressData.CacheDurations.PerTrack);
         }
 
         /// <summary>

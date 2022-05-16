@@ -19,6 +19,7 @@ namespace Retro_ML.SuperMarioKart.Game
         private readonly IEmulatorAdapter emulator;
         private readonly Dictionary<uint, byte[]> frameCache;
         private readonly Dictionary<uint, byte[]> raceCache;
+        private readonly Dictionary<ushort, Dictionary<uint, byte[]>> perTrackCache;
         private readonly SMKPluginConfig pluginConfig;
 
         private InternalClock internalClock;
@@ -28,6 +29,7 @@ namespace Retro_ML.SuperMarioKart.Game
             this.emulator = emulator;
             frameCache = new();
             raceCache = new();
+            perTrackCache = new();
             this.pluginConfig = pluginConfig;
             internalClock = new InternalClock(pluginConfig.InternalClockTickLength, pluginConfig.InternalClockLength);
         }
@@ -61,6 +63,7 @@ namespace Retro_ML.SuperMarioKart.Game
         public byte GetCurrentCheckpoint() => ReadSingle(Racer.CurrentCheckpointNumber);
         public sbyte GetCurrentLap() => (sbyte)(ReadSingle(Racer.CurrentLap) - 128);
         public bool IsOffroad() => ReadSingle(Racer.KartStatus) == 0x10;
+        public ushort GetTrackNumber() => (ushort)ToUnsignedInteger(Read(Racetrack.Number));
 
         public double GetHeadingDifference()
         {
@@ -237,13 +240,22 @@ namespace Retro_ML.SuperMarioKart.Game
         /// <returns></returns>
         private Dictionary<uint, byte[]> GetCacheToUse(AddressData addressData)
         {
-            var cacheToUse = frameCache;
-            if (addressData.CacheDuration == AddressData.CacheDurations.Race)
+            switch (addressData.CacheDuration)
             {
-                cacheToUse = raceCache;
+                case AddressData.CacheDurations.Frame:
+                    return frameCache;
+                case AddressData.CacheDurations.Race:
+                    return raceCache;
+                case AddressData.CacheDurations.PerTrack:
+                    ushort trackNumber = GetTrackNumber();
+                    if (!perTrackCache.ContainsKey(trackNumber))
+                    {
+                        perTrackCache[trackNumber] = new Dictionary<uint, byte[]>();
+                    }
+                    return perTrackCache[trackNumber];
+                default:
+                    return frameCache;
             }
-
-            return cacheToUse;
         }
 
         private void InitFrameCache()
