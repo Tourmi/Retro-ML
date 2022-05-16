@@ -54,6 +54,10 @@
             /// <br>6: Racing</br>
             /// </summary>
             public static AddressData RaceStatus => new(0x3A, 1, AddressData.CacheDurations.Frame);
+            /// <summary>
+            /// Amount of coins the first player currently has.
+            /// </summary>
+            public static AddressData Coins => new(0xE00, 1);
         }
 
         /// <summary>

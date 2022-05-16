@@ -82,6 +82,7 @@ namespace Retro_ML.SuperMarioKart.Configuration
                 new OffRoadScoreFactor() { IsDisabled=false, ScoreMultiplier=-2 },
                 new LakituScoreFactor() { IsDisabled=false, ScoreMultiplier=-10 },
                 new CollisionScoreFactor() { IsDisabled=false, ScoreMultiplier=-1 },
+                new CoinsScoreFactor() { IsDisabled=true, ScoreMultiplier=1 },
             };
         }
 
@@ -114,7 +115,7 @@ namespace Retro_ML.SuperMarioKart.Configuration
                     false, //clock
                     true, //bias
 
-                    false, //a
+                    true, //a
                     true, //b
                     false, //x
                     true, //y
@@ -134,6 +135,7 @@ namespace Retro_ML.SuperMarioKart.Configuration
             neuralConfig.InputNodes.Add(new InputNode("Offroad", neuralConfig.EnabledStates[enabledIndex++], (dataFetcher) => ((SMKDataFetcher)dataFetcher).GetRays(ViewDistance, Raycount, TiletypeSurface.IsOffroad), Raycount / 4, 4));
             neuralConfig.InputNodes.Add(new InputNode("Solid", neuralConfig.EnabledStates[enabledIndex++], (dataFetcher) => ((SMKDataFetcher)dataFetcher).GetRays(ViewDistance, Raycount, TiletypeSurface.IsSolid), Raycount / 4, 4));
             neuralConfig.InputNodes.Add(new InputNode("Pit", neuralConfig.EnabledStates[enabledIndex++], (dataFetcher) => ((SMKDataFetcher)dataFetcher).GetRays(ViewDistance, Raycount, TiletypeSurface.IsPit), Raycount / 4, 4));
+            neuralConfig.InputNodes.Add(new InputNode("Goodies", neuralConfig.EnabledStates[enabledIndex++], (dataFetcher) => ((SMKDataFetcher)dataFetcher).GetRays(ViewDistance, Raycount, TiletypeSurface.IsGoodTile), Raycount / 4, 4));
             neuralConfig.InputNodes.Add(new InputNode("Internal Clock", neuralConfig.EnabledStates[enabledIndex++], (dataFetcher) => ((SMKDataFetcher)dataFetcher).GetInternalClockState(), Math.Min(8, InternalClockLength), Math.Max(1, InternalClockLength / 8)));
             neuralConfig.InputNodes.Add(new InputNode("Bias", neuralConfig.EnabledStates[enabledIndex++], (dataFetcher) => true));
 

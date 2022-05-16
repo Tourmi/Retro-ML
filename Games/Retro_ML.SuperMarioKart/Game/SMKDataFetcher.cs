@@ -68,6 +68,7 @@ namespace Retro_ML.SuperMarioKart.Game
         public ushort GetTrackNumber() => (ushort)ToUnsignedInteger(Read(Racetrack.Number));
         public ushort GetCollisionTimer() => (ushort)ToUnsignedInteger(Read(Racer.CollisionTimer));
         public byte GetRaceStatus() => ReadSingle(Race.RaceStatus);
+        public byte GetCoins() => ReadSingle(Race.Coins);
 
         public double GetHeadingDifference()
         {
