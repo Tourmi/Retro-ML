@@ -286,7 +286,7 @@ namespace Retro_ML.SuperMarioKart.Game
             Obstacle[] racers = new Obstacle[xPositions.Length - 1];
             for (int i = 0; i < racers.Length; i++)
             {
-                racers[i - 1] = new Obstacle()
+                racers[i] = new Obstacle()
                 {
                     XPos = (short)ToUnsignedInteger(xPositions[i + 1]),
                     YPos = (short)ToUnsignedInteger(yPositions[i + 1]),
@@ -495,7 +495,7 @@ namespace Retro_ML.SuperMarioKart.Game
                 {
                     yield return (new AddressData()
                     {
-                        Address = baseAddresses[j].Address + i * offset,
+                        Address = baseAddresses[j].Address + i,
                         CacheDuration = baseAddresses[j].CacheDuration,
                         Length = baseAddresses[j].Length
                     }, baseAddresses[j].HighByteAddress != 0);
