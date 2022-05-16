@@ -13,7 +13,7 @@ namespace Retro_ML.SuperMarioKart.Neural.Scoring
         private bool wasInCollision;
         private int collisionCount;
 
-        public string Name => "Lakitu";
+        public string Name => "Collisions";
 
         public bool CanBeDisabled => true;
 
