@@ -1,6 +1,6 @@
 ﻿namespace Retro_ML.SuperMarioKart.Game.Data
 {
-    internal class TrackObject
+    internal class Obstacle
     {
         private const int MAX_COLLIDE_HEIGHT = 5;
 
@@ -9,6 +9,8 @@
         public short YPos { get; set; }
         public short YTilePos => (short)(YPos / 8);
         public short ZPos { get; set; }
+        public short XVelocity { get; set; }
+        public short YVelocity { get; set; }
         public short ZVelocity { get; set; }
 
         public bool IsThreatTo(int xTilePos, int yTilePos)

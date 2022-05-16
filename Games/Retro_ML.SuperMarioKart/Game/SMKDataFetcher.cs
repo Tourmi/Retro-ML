@@ -151,7 +151,9 @@ namespace Retro_ML.SuperMarioKart.Game
 
         public double[,] GetObstacleRays(int distance, int rayCount)
         {
-            return Raycast.GetRayDistances(GetSurroundingObjects(distance, distance), distance, rayCount, GetHeadingAngleRadians(), Math.Tau * pluginConfig.ViewAngle / 360.0);
+            var objectRays = Raycast.GetRayDistances(GetSurroundingObjects(distance, distance), distance, rayCount, GetHeadingAngleRadians(), Math.Tau * pluginConfig.ViewAngle / 360.0);
+            var itemRays = Raycast.GetRayDistances(GetSurroundingItems(distance, distance), distance, rayCount, GetHeadingAngleRadians(), Math.Tau * pluginConfig.ViewAngle / 360.0);
+            return Raycast.CombineRays(objectRays, itemRays);
         }
 
         private bool[,] GetSurroundingObjects(int xDist, int yDist)
@@ -173,17 +175,36 @@ namespace Retro_ML.SuperMarioKart.Game
             return nearbyTiles;
         }
 
-        private TrackObject[] GetTrackObjects()
+        private bool[,] GetSurroundingItems(int xDist, int yDist)
+        {
+            int xPos = GetPositionX() / 8;
+            int yPos = GetPositionY() / 8;
+            var items = GetItems();
+
+            bool[,] nearbyTiles = new bool[yDist * 2 + 1, xDist * 2 + 1];
+
+            for (int y = -yDist; y <= yDist; y++)
+            {
+                for (int x = -xDist; x <= xDist; x++)
+                {
+                    nearbyTiles[y + yDist, x + xDist] = items.Any(o => o.IsThreatTo(xPos + x, yPos + y));
+                }
+            }
+
+            return nearbyTiles;
+        }
+
+        private Obstacle[] GetTrackObjects()
         {
             var xPositions = ReadMultiple(TrackObjects.ObjectXPos, TrackObjects.Object, TrackObjects.Objects).ToArray();
             var yPositions = ReadMultiple(TrackObjects.ObjectYPos, TrackObjects.Object, TrackObjects.Objects).ToArray();
             var zPositions = ReadMultiple(TrackObjects.ObjectZPos, TrackObjects.Object, TrackObjects.Objects).ToArray();
             var zVelocities = ReadMultiple(TrackObjects.ObjectZVelocity, TrackObjects.Object, TrackObjects.Objects).ToArray();
 
-            TrackObject[] objects = new TrackObject[xPositions.Length];
+            Obstacle[] objects = new Obstacle[xPositions.Length];
             for (int i = 0; i < objects.Length; i++)
             {
-                objects[i] = new TrackObject()
+                objects[i] = new Obstacle()
                 {
                     XPos = (short)ToUnsignedInteger(xPositions[i]),
                     YPos = (short)ToUnsignedInteger(yPositions[i]),
@@ -193,6 +214,32 @@ namespace Retro_ML.SuperMarioKart.Game
             }
 
             return objects;
+        }
+
+        private Obstacle[] GetItems()
+        {
+            var xPositions = ReadMultiple(Items.ItemXPos, Items.SingleItem, Items.AllItems).ToArray();
+            var yPositions = ReadMultiple(Items.ItemYPos, Items.SingleItem, Items.AllItems).ToArray();
+            var zPositions = ReadMultiple(Items.ItemZPos, Items.SingleItem, Items.AllItems).ToArray();
+            var xVelocities = ReadMultiple(Items.ItemXVelocity, Items.SingleItem, Items.AllItems).ToArray();
+            var yVelocities = ReadMultiple(Items.ItemYVelocity, Items.SingleItem, Items.AllItems).ToArray();
+            var zVelocities = ReadMultiple(Items.ItemZVelocity, Items.SingleItem, Items.AllItems).ToArray();
+
+            Obstacle[] items = new Obstacle[xPositions.Length];
+            for (int i = 0; i < items.Length; i++)
+            {
+                items[i] = new Obstacle()
+                {
+                    XPos = (short)ToUnsignedInteger(xPositions[i]),
+                    YPos = (short)ToUnsignedInteger(yPositions[i]),
+                    ZPos = (short)ToUnsignedInteger(zPositions[i]),
+                    XVelocity = (short)ToUnsignedInteger(xVelocities[i]),
+                    YVelocity = (short)ToUnsignedInteger(yVelocities[i]),
+                    ZVelocity = (short)ToUnsignedInteger(zVelocities[i])
+                };
+            }
+
+            return items;
         }
 
         /// <summary>

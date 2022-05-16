@@ -258,5 +258,44 @@
             /// </summary>
             public static AddressData ObjectZVelocity => new(0x1866, 2);
         }
+
+        /// <summary>
+        /// Regroups addresses relating to items together
+        /// </summary>
+        public static class Items
+        {
+            /// <summary>
+            /// All of the current items data
+            /// </summary>
+            public static AddressData AllItems => new(0x1A00, 0x300);
+            /// <summary>
+            /// The data for the first item
+            /// </summary>
+            public static AddressData SingleItem => new(0x1A00, 0x80);
+            /// <summary>
+            /// X position of an item
+            /// </summary>
+            public static AddressData ItemXPos => new(0x1A18, 2);
+            /// <summary>
+            /// Y position of an item
+            /// </summary>
+            public static AddressData ItemYPos => new(0x1A1C, 2);
+            /// <summary>
+            /// Z position of an item
+            /// </summary>
+            public static AddressData ItemZPos => new(0x1A20, 2);
+            /// <summary>
+            /// X velocity of an item. Signed number
+            /// </summary>
+            public static AddressData ItemXVelocity => new(0x1A62, 2);
+            /// <summary>
+            /// Y velocity of an item. Signed number
+            /// </summary>
+            public static AddressData ItemYVelocity => new(0x1A64, 2);
+            /// <summary>
+            /// Z velocity of an item. Signed number
+            /// </summary>
+            public static AddressData ItemZVelocity => new(0x1A66, 2);
+        }
     }
 }
