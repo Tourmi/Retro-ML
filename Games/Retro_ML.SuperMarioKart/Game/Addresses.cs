@@ -79,6 +79,14 @@
             /// <br>0x08     Thunder          </br>
             /// </summary>
             public static AddressData ItemId => new(0xd7c, 1);
+            /// <summary>
+            /// <br>Current race type.</br>
+            /// <br>0x00 : Grand Prix</br>
+            /// <br>0x02 : Multiplayer Race</br>
+            /// <br>0x04 : Time Trial</br>
+            /// <br>0x06 : Battle</br>
+            /// </summary>
+            public static AddressData Type => new(0x2C, 1);
         }
 
         /// <summary>

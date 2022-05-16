@@ -6,6 +6,8 @@ namespace Retro_ML.SuperMarioKart.Neural.Scoring
 {
     internal class FinishedRaceScoreFactor : IScoreFactor
     {
+        private const string FINAL_RANKING = "Ranking multiplier";
+
         private double currScore;
 
         public string Name => "Finished race";
@@ -22,7 +24,10 @@ namespace Retro_ML.SuperMarioKart.Neural.Scoring
 
         public FinishedRaceScoreFactor()
         {
-            ExtraFields = Array.Empty<ExtraField>();
+            ExtraFields = new ExtraField[]
+            {
+                new ExtraField(FINAL_RANKING, 0.5)
+            };
         }
 
         public double GetFinalScore() => currScore;
@@ -34,10 +39,16 @@ namespace Retro_ML.SuperMarioKart.Neural.Scoring
 
         public void Update(IDataFetcher dataFetcher)
         {
-            if (!shouldStop && ((SMKDataFetcher)dataFetcher).GetCurrentLap() >= 5)
+            var df = (SMKDataFetcher)dataFetcher;
+            if (!shouldStop && df.GetCurrentLap() >= 5)
             {
                 shouldStop = true;
-                currScore += ScoreMultiplier;
+                double rankingMultiplier = 0;
+                if (df.IsRace())
+                {
+                    rankingMultiplier = (8 - df.GetRanking()) * ExtraField.GetValue(ExtraFields, FINAL_RANKING);
+                }
+                currScore += ScoreMultiplier * (1 + rankingMultiplier);
             }
         }
 

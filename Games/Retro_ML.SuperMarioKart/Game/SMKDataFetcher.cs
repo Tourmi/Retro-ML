@@ -70,6 +70,8 @@ namespace Retro_ML.SuperMarioKart.Game
         public byte GetRaceStatus() => ReadSingle(Race.RaceStatus);
         public byte GetCoins() => ReadSingle(Race.Coins);
         public bool IsItemReady() => ReadSingle(Race.ItemState) == 0xC0;
+        public byte GetRanking() => (byte)(ReadSingle(Racers.CurrentRank) / 2);
+        public bool IsRace() => ReadSingle(Race.Type) <= 2;
         public double GetSpeedOutOfMaxSpeed()
         {
             uint maxSpeed = ToUnsignedInteger(Read(Racers.MaximumSpeed));
