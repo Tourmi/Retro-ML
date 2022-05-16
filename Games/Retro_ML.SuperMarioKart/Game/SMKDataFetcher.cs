@@ -66,6 +66,7 @@ namespace Retro_ML.SuperMarioKart.Game
         public sbyte GetCurrentLap() => (sbyte)(ReadSingle(Racer.CurrentLap) - 128);
         public bool IsOffroad() => ReadSingle(Racer.KartStatus) == 0x10;
         public ushort GetTrackNumber() => (ushort)ToUnsignedInteger(Read(Racetrack.Number));
+        public ushort GetCollisionTimer() => (ushort)ToUnsignedInteger(Read(Racer.CollisionTimer));
 
         public double GetHeadingDifference()
         {

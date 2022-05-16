@@ -163,6 +163,10 @@
             /// </summary>
             public static AddressData KartStatus => new(0x10A0, 1);
             /// <summary>
+            /// Timer that's set whenever the racer collides with something
+            /// </summary>
+            public static AddressData CollisionTimer => new(0x1052, 2);
+            /// <summary>
             /// 0x10 if offroad, 0x20 if on road
             /// </summary>
             public static AddressData OnRoad => new(0x1028, 1);

@@ -80,6 +80,7 @@ namespace Retro_ML.SuperMarioKart.Configuration
                 new TimeTakenScoreFactor() { IsDisabled=false, ScoreMultiplier=-0.1 },
                 new OffRoadScoreFactor() { IsDisabled=false, ScoreMultiplier=-1 },
                 new LakituScoreFactor() { IsDisabled=false, ScoreMultiplier=-10 },
+                new CollisionScoreFactor() { IsDisabled=false, ScoreMultiplier=-1 },
             };
         }
 
