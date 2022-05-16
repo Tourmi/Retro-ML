@@ -103,7 +103,7 @@ namespace Retro_ML.SuperMarioKart.Configuration
         public void InitNeuralConfig(NeuralConfig neuralConfig)
         {
             int enabledIndex = 0;
-            if (neuralConfig.EnabledStates.Length != 20)
+            if (neuralConfig.EnabledStates.Length != 9 + 12)
             {
                 neuralConfig.EnabledStates = new bool[]
                 {
