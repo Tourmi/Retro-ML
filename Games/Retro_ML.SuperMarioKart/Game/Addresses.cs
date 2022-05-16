@@ -235,11 +235,11 @@
             /// <summary>
             /// All 4 track objects, splitted in 0x80 byte groups
             /// </summary>
-            public static AddressData Objects => new(0x1800, 0x200);
+            public static AddressData AllObjects => new(0x1800, 0x200);
             /// <summary>
             /// First track object's data
             /// </summary>
-            public static AddressData Object => new(0x1800, 0x80);
+            public static AddressData SingleObject => new(0x1800, 0x80);
             /// <summary>
             /// X position of the first object
             /// </summary>

@@ -196,10 +196,10 @@ namespace Retro_ML.SuperMarioKart.Game
 
         private Obstacle[] GetTrackObjects()
         {
-            var xPositions = ReadMultiple(TrackObjects.ObjectXPos, TrackObjects.Object, TrackObjects.Objects).ToArray();
-            var yPositions = ReadMultiple(TrackObjects.ObjectYPos, TrackObjects.Object, TrackObjects.Objects).ToArray();
-            var zPositions = ReadMultiple(TrackObjects.ObjectZPos, TrackObjects.Object, TrackObjects.Objects).ToArray();
-            var zVelocities = ReadMultiple(TrackObjects.ObjectZVelocity, TrackObjects.Object, TrackObjects.Objects).ToArray();
+            var xPositions = ReadMultiple(TrackObjects.ObjectXPos, TrackObjects.SingleObject, TrackObjects.AllObjects).ToArray();
+            var yPositions = ReadMultiple(TrackObjects.ObjectYPos, TrackObjects.SingleObject, TrackObjects.AllObjects).ToArray();
+            var zPositions = ReadMultiple(TrackObjects.ObjectZPos, TrackObjects.SingleObject, TrackObjects.AllObjects).ToArray();
+            var zVelocities = ReadMultiple(TrackObjects.ObjectZVelocity, TrackObjects.SingleObject, TrackObjects.AllObjects).ToArray();
 
             Obstacle[] objects = new Obstacle[xPositions.Length];
             for (int i = 0; i < objects.Length; i++)
@@ -401,11 +401,89 @@ namespace Retro_ML.SuperMarioKart.Game
 
         private void InitFrameCache()
         {
-            (AddressData, bool)[] toRead = new (AddressData, bool)[]
+            List<(AddressData, bool)> toRead = new()
             {
             };
 
-            _ = Read(toRead);
+            uint offset = TrackObjects.SingleObject.Length;
+            for (uint i = 0; i < TrackObjects.AllObjects.Length; i += offset)
+            {
+                toRead.Add((new AddressData()
+                {
+                    Address = TrackObjects.ObjectXPos.Address + i * offset,
+                    CacheDuration = TrackObjects.ObjectXPos.CacheDuration,
+                    Length = TrackObjects.ObjectXPos.Length
+                }, false));
+
+                toRead.Add((new AddressData()
+                {
+                    Address = TrackObjects.ObjectYPos.Address + i * offset,
+                    CacheDuration = TrackObjects.ObjectYPos.CacheDuration,
+                    Length = TrackObjects.ObjectYPos.Length
+                }, false));
+
+                toRead.Add((new AddressData()
+                {
+                    Address = TrackObjects.ObjectZPos.Address + i * offset,
+                    CacheDuration = TrackObjects.ObjectZPos.CacheDuration,
+                    Length = TrackObjects.ObjectZPos.Length
+                }, false));
+
+                toRead.Add((new AddressData()
+                {
+                    Address = TrackObjects.ObjectZVelocity.Address + i * offset,
+                    CacheDuration = TrackObjects.ObjectZVelocity.CacheDuration,
+                    Length = TrackObjects.ObjectZVelocity.Length
+                }, false));
+            }
+            offset = Items.SingleItem.Length;
+            for (uint i = 0; i < Items.AllItems.Length; i += offset)
+            {
+
+                toRead.Add((new AddressData()
+                {
+                    Address = Items.ItemXPos.Address + i * offset,
+                    CacheDuration = Items.ItemXPos.CacheDuration,
+                    Length = Items.ItemXPos.Length
+                }, false));
+
+                toRead.Add((new AddressData()
+                {
+                    Address = Items.ItemYPos.Address + i * offset,
+                    CacheDuration = Items.ItemYPos.CacheDuration,
+                    Length = Items.ItemYPos.Length
+                }, false));
+
+                toRead.Add((new AddressData()
+                {
+                    Address = Items.ItemZPos.Address + i * offset,
+                    CacheDuration = Items.ItemZPos.CacheDuration,
+                    Length = Items.ItemZPos.Length
+                }, false));
+
+                toRead.Add((new AddressData()
+                {
+                    Address = Items.ItemXVelocity.Address + i * offset,
+                    CacheDuration = Items.ItemXVelocity.CacheDuration,
+                    Length = Items.ItemXVelocity.Length
+                }, false));
+
+                toRead.Add((new AddressData()
+                {
+                    Address = Items.ItemYVelocity.Address + i * offset,
+                    CacheDuration = Items.ItemYVelocity.CacheDuration,
+                    Length = Items.ItemYVelocity.Length
+                }, false));
+
+                toRead.Add((new AddressData()
+                {
+                    Address = Items.ItemZVelocity.Address + i * offset,
+                    CacheDuration = Items.ItemZVelocity.CacheDuration,
+                    Length = Items.ItemZVelocity.Length
+                }, false));
+            }
+
+            _ = Read(toRead.ToArray());
         }
 
         private static uint ToUnsignedInteger(byte[] bytes)
