@@ -190,10 +190,6 @@
             /// </summary>
             public static AddressData YVelocity => new(0x1024, 2);
             /// <summary>
-            /// 0x10 : offroad, 0x20 : on road
-            /// </summary>
-            public static AddressData OffRoad => new(0x1028, 1);
-            /// <summary>
             /// Current heading direction of the racer
             /// </summary>
             public static AddressData HeadingAngle => new(0x102A, 2);

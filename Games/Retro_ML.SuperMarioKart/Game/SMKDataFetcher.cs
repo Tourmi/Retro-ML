@@ -4,6 +4,7 @@ using Retro_ML.Game;
 using Retro_ML.SuperMarioKart.Configuration;
 using Retro_ML.SuperMarioKart.Game.Data;
 using Retro_ML.Utils;
+
 using static Retro_ML.SuperMarioKart.Game.Addresses;
 
 namespace Retro_ML.SuperMarioKart.Game
@@ -64,7 +65,7 @@ namespace Retro_ML.SuperMarioKart.Game
         public byte GetMaxCheckpoint() => ReadSingle(Race.CheckpointCount);
         public byte GetCurrentCheckpoint() => ReadSingle(Racers.CurrentCheckpointNumber);
         public sbyte GetCurrentLap() => (sbyte)(ReadSingle(Racers.CurrentLap) - 128);
-        public bool IsOffroad() => ReadSingle(Racers.OffRoad) == 0x10;
+        public bool IsOffroad() => ReadSingle(Racers.OnRoad) == 0x10;
         public ushort GetTrackNumber() => (ushort)ToUnsignedInteger(Read(Racetrack.Number));
         public ushort GetCollisionTimer() => (ushort)ToUnsignedInteger(Read(Racers.CollisionTimer));
         public byte GetRaceStatus() => ReadSingle(Race.RaceStatus);
@@ -178,13 +179,16 @@ namespace Retro_ML.SuperMarioKart.Game
 
             var objects = GetTrackObjects();
             bool[,] nearbyTiles = new bool[yDist * 2 + 1, xDist * 2 + 1];
+            var dangerousTiles = objects.SelectMany(r => r.GetThreateningTiles());
 
-            for (int y = -yDist; y <= yDist; y++)
+            foreach (var (x, y) in dangerousTiles)
             {
-                for (int x = -xDist; x <= xDist; x++)
-                {
-                    nearbyTiles[y + yDist, x + xDist] = objects.Any(o => o.IsThreatTo(xPos + x, yPos + y));
-                }
+                int correctedX = x - xPos;
+                int correctedY = y - yPos;
+                if (correctedX < -xDist || correctedX > xDist) continue;
+                if (correctedY < -yDist || correctedY > yDist) continue;
+
+                nearbyTiles[correctedY + yDist, correctedX + xDist] = true;
             }
 
             return nearbyTiles;
@@ -197,13 +201,16 @@ namespace Retro_ML.SuperMarioKart.Game
             var items = GetItems();
 
             bool[,] nearbyTiles = new bool[yDist * 2 + 1, xDist * 2 + 1];
+            var dangerousTiles = items.SelectMany(r => r.GetThreateningTiles());
 
-            for (int y = -yDist; y <= yDist; y++)
+            foreach (var (x, y) in dangerousTiles)
             {
-                for (int x = -xDist; x <= xDist; x++)
-                {
-                    nearbyTiles[y + yDist, x + xDist] = items.Any(o => o.IsThreatTo(xPos + x, yPos + y));
-                }
+                int correctedX = x - xPos;
+                int correctedY = y - yPos;
+                if (correctedX < -xDist || correctedX > xDist) continue;
+                if (correctedY < -yDist || correctedY > yDist) continue;
+
+                nearbyTiles[correctedY + yDist, correctedX + xDist] = true;
             }
 
             return nearbyTiles;
@@ -216,13 +223,16 @@ namespace Retro_ML.SuperMarioKart.Game
             var racers = GetRacers();
 
             bool[,] nearbyTiles = new bool[yDist * 2 + 1, xDist * 2 + 1];
+            var dangerousTiles = racers.SelectMany(r => r.GetThreateningTiles());
 
-            for (int y = -yDist; y <= yDist; y++)
+            foreach (var (x, y) in dangerousTiles)
             {
-                for (int x = -xDist; x <= xDist; x++)
-                {
-                    nearbyTiles[y + yDist, x + xDist] = racers.Any(o => o.IsThreatTo(xPos + x, yPos + y));
-                }
+                int correctedX = x - xPos;
+                int correctedY = y - yPos;
+                if (correctedX < -xDist || correctedX > xDist) continue;
+                if (correctedY < -yDist || correctedY > yDist) continue;
+
+                nearbyTiles[correctedY + yDist, correctedX + xDist] = true;
             }
 
             return nearbyTiles;
@@ -459,6 +469,20 @@ namespace Retro_ML.SuperMarioKart.Game
         {
             List<(AddressData, bool)> toRead = new()
             {
+                new (Racers.KartStatus, false),
+                new (Racers.MaximumSpeed, false),
+                new (Racers.AbsoluteSpeed, false),
+                new (Racers.HeadingAngle, false),
+                new (Racers.CurrentRank, false),
+                new (Racers.CurrentLap, false),
+                new (Racers.CollisionTimer, false),
+                new (Racers.CurrentCheckpointNumber, false),
+                new (Racers.FlowmapDirection, false),
+                new (Racers.OnRoad, false),
+                new (Race.CheckpointCount, false),
+                new (Race.RaceStatus, false),
+                new (Race.Coins, false),
+                new (Race.ItemState, false),
             };
 
             toRead.AddRange(GetCalculatedAddresses(TrackObjects.AllObjects.Length, TrackObjects.SingleObject.Length,

@@ -13,14 +13,12 @@
         public short YVelocity { get; set; }
         public short ZVelocity { get; set; }
 
-        public bool IsThreatTo(int xTilePos, int yTilePos)
+        public IEnumerable<(int x, int y)> GetThreateningTiles()
         {
-            if (xTilePos != XTilePos || yTilePos != YTilePos) return false;
+            if (ZPos > MAX_COLLIDE_HEIGHT && ZVelocity >= 0) yield break;
+            if (ZPos < 0 && ZVelocity <= 0) yield break;
 
-            if (ZPos > MAX_COLLIDE_HEIGHT && ZVelocity >= 0) return false;
-            if (ZPos < 0 && ZVelocity <= 0) return false;
-
-            return true;
+            yield return new(XTilePos, YTilePos);
         }
     }
 }
