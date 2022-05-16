@@ -2,6 +2,7 @@
 using Retro_ML.Emulator;
 using Retro_ML.Game;
 using Retro_ML.SuperMarioKart.Configuration;
+using Retro_ML.SuperMarioKart.Game.Data;
 using Retro_ML.Utils;
 using static Retro_ML.SuperMarioKart.Game.Addresses;
 
@@ -58,6 +59,7 @@ namespace Retro_ML.SuperMarioKart.Game
         public ushort GetPositionX() => (ushort)ToUnsignedInteger(Read(Racer.XPosition));
         public ushort GetPositionY() => (ushort)ToUnsignedInteger(Read(Racer.YPosition));
         public ushort GetHeadingAngle() => (ushort)ToUnsignedInteger(Read(Racer.HeadingAngle));
+        public double GetHeadingAngleRadians() => GetHeadingAngle() / (double)ushort.MaxValue * Math.Tau;
         public byte GetKartStatus() => ReadSingle(Racer.KartStatus);
         public byte GetMaxCheckpoint() => ReadSingle(Race.CheckpointCount);
         public byte GetCurrentCheckpoint() => ReadSingle(Racer.CurrentCheckpointNumber);
@@ -86,16 +88,16 @@ namespace Retro_ML.SuperMarioKart.Game
         /// </summary>
         public double[,] GetRays(int distance, int rayCount, Func<byte, bool> isSurfaceFunc)
         {
-            return Raycast.GetRayDistances(GetTiles(distance, distance, isSurfaceFunc), distance, rayCount, GetHeadingAngle() / (double)ushort.MaxValue * Math.Tau, Math.Tau * pluginConfig.ViewAngle / 360.0);
+            return Raycast.GetRayDistances(GetSurroundingTilesOfType(distance, distance, isSurfaceFunc), distance, rayCount, GetHeadingAngleRadians(), Math.Tau * pluginConfig.ViewAngle / 360.0);
         }
 
         /// <summary>
         /// Returns the tiles surrounding the player in the <paramref name="xDist"/> and <paramref name="yDist"/> directions, which satisfy the <paramref name="isSurfaceFunc"/> function.
         /// </summary>
-        public bool[,] GetTiles(int xDist, int yDist, Func<byte, bool> isSurfaceFunc)
+        public bool[,] GetSurroundingTilesOfType(int xDist, int yDist, Func<byte, bool> isSurfaceFunc)
         {
             var tileTypes = Read(Racetrack.TileSurfaceTypes);
-            var surroundingTiles = GetSurroundingTiles(GetPositionX() / 8, GetPositionY() / 8, xDist, yDist);
+            var surroundingTiles = GetSurroundingTiles(xDist, yDist);
             var tiles = new bool[surroundingTiles.GetLength(0), surroundingTiles.GetLength(1)];
             for (int i = 0; i < tiles.GetLength(0); i++)
             {
@@ -109,8 +111,11 @@ namespace Retro_ML.SuperMarioKart.Game
             return tiles;
         }
 
-        private byte[,] GetSurroundingTiles(int xPos, int yPos, int xDist, int yDist)
+        private byte[,] GetSurroundingTiles(int xDist, int yDist)
         {
+            int xPos = GetPositionX() / 8;
+            int yPos = GetPositionY() / 8;
+
             byte[] tiles = Read(Racetrack.TileMap);
             byte[,] nearbyTiles = new byte[yDist * 2 + 1, xDist * 2 + 1];
             for (int y = -yDist; y <= yDist; y++)
@@ -125,6 +130,52 @@ namespace Retro_ML.SuperMarioKart.Game
             }
 
             return nearbyTiles;
+        }
+
+        public double[,] GetObstacleRays(int distance, int rayCount)
+        {
+            return Raycast.GetRayDistances(GetSurroundingObjects(distance, distance), distance, rayCount, GetHeadingAngleRadians(), Math.Tau * pluginConfig.ViewAngle / 360.0);
+        }
+
+        private bool[,] GetSurroundingObjects(int xDist, int yDist)
+        {
+            int xPos = GetPositionX() / 8;
+            int yPos = GetPositionY() / 8;
+
+            var objects = GetTrackObjects();
+            bool[,] nearbyTiles = new bool[yDist * 2 + 1, xDist * 2 + 1];
+
+            for (int y = -yDist; y <= yDist; y++)
+            {
+                for (int x = -xDist; x <= xDist; x++)
+                {
+                    nearbyTiles[y + yDist, x + xDist] = objects.Any(o => o.IsThreatTo(xPos + x, yPos + y));
+                }
+            }
+
+            return nearbyTiles;
+        }
+
+        private TrackObject[] GetTrackObjects()
+        {
+            var xPositions = ReadMultiple(TrackObjects.ObjectXPos, TrackObjects.Object, TrackObjects.Objects).ToArray();
+            var yPositions = ReadMultiple(TrackObjects.ObjectYPos, TrackObjects.Object, TrackObjects.Objects).ToArray();
+            var zPositions = ReadMultiple(TrackObjects.ObjectZPos, TrackObjects.Object, TrackObjects.Objects).ToArray();
+            var zVelocities = ReadMultiple(TrackObjects.ObjectZVelocity, TrackObjects.Object, TrackObjects.Objects).ToArray();
+
+            TrackObject[] objects = new TrackObject[xPositions.Length];
+            for (int i = 0; i < objects.Length; i++)
+            {
+                objects[i] = new TrackObject()
+                {
+                    XPos = (short)ToUnsignedInteger(xPositions[i]),
+                    YPos = (short)ToUnsignedInteger(yPositions[i]),
+                    ZPos = (short)ToUnsignedInteger(zPositions[i]),
+                    ZVelocity = (short)ToUnsignedInteger(zVelocities[i])
+                };
+            }
+
+            return objects;
         }
 
         /// <summary>
@@ -174,6 +225,32 @@ namespace Retro_ML.SuperMarioKart.Game
             }
 
             return cacheToUse[addressData.Address];
+        }
+
+        /// <summary>
+        /// Reads into multiple groups of bytes according to the given offset and total byte sizes.
+        /// </summary>
+        /// <param name="addressData"></param>
+        /// <param name="offset"></param>
+        /// <param name="total"></param>
+        /// <returns></returns>
+        private IEnumerable<byte[]> ReadMultiple(AddressData addressData, AddressData offset, AddressData total)
+        {
+            uint count = total.Length / offset.Length;
+            var results = new byte[count][];
+            var toRead = new List<(AddressData, bool)>();
+            for (int i = 0; i < results.Length; i++)
+            {
+                toRead.Add((new AddressData((uint)(addressData.Address + i * offset.Length), addressData.Length, addressData.CacheDuration, (uint)(addressData.HighByteAddress + i * offset.Length)), addressData.HighByteAddress != 0));
+            }
+            var result = Read(toRead.ToArray());
+            var bytesPerItem = (addressData.HighByteAddress == 0 ? 1 : 2) * addressData.Length;
+            for (long i = 0; i < result.Length; i += bytesPerItem)
+            {
+                var bytes = new byte[bytesPerItem];
+                Array.Copy(result, i, bytes, 0, bytesPerItem);
+                yield return bytes;
+            }
         }
 
         /// <summary>

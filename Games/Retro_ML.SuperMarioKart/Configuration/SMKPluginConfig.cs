@@ -100,10 +100,10 @@ namespace Retro_ML.SuperMarioKart.Configuration
         public void InitNeuralConfig(NeuralConfig neuralConfig)
         {
             int enabledIndex = 0;
-            if (neuralConfig.EnabledStates.Length != 18)
+            if (neuralConfig.EnabledStates.Length != 19)
             {
                 neuralConfig.EnabledStates =
-                    Enumerable.Repeat(true, 2) // Flowmap, offroad
+                    Enumerable.Repeat(true, 3) // Flowmap, offroad, obstacles
                     .Concat(Enumerable.Repeat(false, 3)) // Pit, solid & clock
                     .Concat(Enumerable.Repeat(true, 1 + 6)) // Bias & first 6 outputs
                     .Concat(Enumerable.Repeat(false, 2)) // No up and down buttons
@@ -113,6 +113,7 @@ namespace Retro_ML.SuperMarioKart.Configuration
             }
             neuralConfig.InputNodes.Clear();
             neuralConfig.InputNodes.Add(new InputNode("FlowMap direction", neuralConfig.EnabledStates[enabledIndex++], (dataFetcher) => ((SMKDataFetcher)dataFetcher).GetHeadingDifference()));
+            neuralConfig.InputNodes.Add(new InputNode("Obstacles", neuralConfig.EnabledStates[enabledIndex++], (dataFetcher) => ((SMKDataFetcher)dataFetcher).GetObstacleRays(ViewDistance, Raycount), Raycount / 4, 4));
             neuralConfig.InputNodes.Add(new InputNode("Offroad", neuralConfig.EnabledStates[enabledIndex++], (dataFetcher) => ((SMKDataFetcher)dataFetcher).GetRays(ViewDistance, Raycount, TiletypeSurface.IsOffroad), Raycount / 4, 4));
             neuralConfig.InputNodes.Add(new InputNode("Solid", neuralConfig.EnabledStates[enabledIndex++], (dataFetcher) => ((SMKDataFetcher)dataFetcher).GetRays(ViewDistance, Raycount, TiletypeSurface.IsSolid), Raycount / 4, 4));
             neuralConfig.InputNodes.Add(new InputNode("Pit", neuralConfig.EnabledStates[enabledIndex++], (dataFetcher) => ((SMKDataFetcher)dataFetcher).GetRays(ViewDistance, Raycount, TiletypeSurface.IsPit), Raycount / 4, 4));

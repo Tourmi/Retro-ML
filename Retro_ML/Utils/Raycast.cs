@@ -121,5 +121,29 @@
 
             return 0;
         }
+
+        /// <summary>
+        /// Combine the given rays to the highest values, between each group of rays given
+        /// </summary>
+        /// <param name="rays"></param>
+        /// <returns></returns>
+        public static double[,] CombineRays(params double[][,] rays)
+        {
+            var result = new double[rays[0].GetLength(0), rays[0].GetLength(1)];
+
+            for (int i = 0; i < rays.Length; i++)
+            {
+                for (int j = 0; j < rays[i].GetLength(0); j++)
+                {
+                    for (int k = 0; k < rays[i].GetLength(1); k++)
+                    {
+                        double currVal = rays[i][j, k];
+                        if (currVal > result[j, k]) result[j, k] = currVal;
+                    }
+                }
+            }
+
+            return result;
+        }
     }
 }

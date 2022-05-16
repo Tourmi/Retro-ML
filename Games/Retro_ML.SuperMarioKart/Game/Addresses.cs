@@ -191,5 +191,37 @@
             /// </summary>
             public static AddressData MiniTurboTimer => new(0x10FC, 1);
         }
+
+        /// <summary>
+        /// Regroups addresses related to track objects, such as pipes, thwomps, etc
+        /// </summary>
+        public static class TrackObjects
+        {
+            /// <summary>
+            /// All 4 track objects, splitted in 0x80 byte groups
+            /// </summary>
+            public static AddressData Objects => new(0x1800, 0x200);
+            /// <summary>
+            /// First track object's data
+            /// </summary>
+            public static AddressData Object => new(0x1800, 0x80);
+            /// <summary>
+            /// X position of the first object
+            /// </summary>
+            public static AddressData ObjectXPos => new(0x1818, 2);
+            /// <summary>
+            /// Y position of the first object
+            /// </summary>
+            public static AddressData ObjectYPos => new(0x181C, 2);
+            /// <summary>
+            /// Z position of the first object
+            /// </summary>
+            public static AddressData ObjectZPos => new(0x1820, 2);
+
+            /// <summary>
+            /// Z velocity of the first object. Signed number
+            /// </summary>
+            public static AddressData ObjectZVelocity => new(0x1866, 2);
+        }
     }
 }
