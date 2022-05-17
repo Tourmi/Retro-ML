@@ -69,9 +69,9 @@ namespace Retro_ML.Tetris.Configuration
         {
 
             int enabledIndex = 0;
-            if (neuralConfig.EnabledStates.Length != 13)
+            if (neuralConfig.EnabledStates.Length != 15)
             {
-                neuralConfig.EnabledStates = Enumerable.Repeat(true, 3 + 4).Concat(Enumerable.Repeat(false, 6)).ToArray();
+                neuralConfig.EnabledStates = Enumerable.Repeat(true, 5 + 4).Concat(Enumerable.Repeat(false, 6)).ToArray();
             }
 
             neuralConfig.InputNodes.Clear();
