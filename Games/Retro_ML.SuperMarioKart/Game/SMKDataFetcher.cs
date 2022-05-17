@@ -4,7 +4,6 @@ using Retro_ML.Game;
 using Retro_ML.SuperMarioKart.Configuration;
 using Retro_ML.SuperMarioKart.Game.Data;
 using Retro_ML.Utils;
-
 using static Retro_ML.SuperMarioKart.Game.Addresses;
 
 namespace Retro_ML.SuperMarioKart.Game
@@ -308,32 +307,6 @@ namespace Retro_ML.SuperMarioKart.Game
         }
 
         /// <summary>
-        /// Reads the Low and High bytes at the addresses specified in AddressData, and puts them together into ushorts, assuming little Endian.
-        /// </summary>
-        /// <param name="addressData"></param>
-        /// <returns></returns>
-        private ushort[] ReadLowHighBytes(AddressData addressData)
-        {
-            var cacheToUse = GetCacheToUse(addressData);
-            if (!cacheToUse.ContainsKey(addressData.Address))
-            {
-                cacheToUse[addressData.Address] = emulator.ReadMemory(addressData.Address, addressData.Length);
-            }
-            if (!cacheToUse.ContainsKey(addressData.HighByteAddress))
-            {
-                cacheToUse[addressData.HighByteAddress] = emulator.ReadMemory(addressData.HighByteAddress, addressData.Length);
-            }
-
-            var result = new ushort[addressData.Length];
-            for (int i = 0; i < addressData.Length; i++)
-            {
-                result[i] = (ushort)(cacheToUse[addressData.Address][i] + (cacheToUse[addressData.HighByteAddress][i] << 8));
-            }
-
-            return result;
-        }
-
-        /// <summary>
         /// Reads a single byte from the emulator's memory
         /// </summary>
         /// <param name="addressData"></param>
@@ -476,9 +449,7 @@ namespace Retro_ML.SuperMarioKart.Game
                 new (Racers.CurrentLap, false),
                 new (Racers.CollisionTimer, false),
                 new (Racers.CurrentCheckpointNumber, false),
-                new (Racers.FlowmapDirection, false),
                 new (Racers.OnRoad, false),
-                new (Race.CheckpointCount, false),
                 new (Race.RaceStatus, false),
                 new (Race.Coins, false),
                 new (Race.ItemState, false),
@@ -491,21 +462,24 @@ namespace Retro_ML.SuperMarioKart.Game
                 TrackObjects.ObjectZVelocity
                 ));
 
-            toRead.AddRange(GetCalculatedAddresses(Items.AllItems.Length, Items.SingleItem.Length,
-                Items.ItemXPos,
-                Items.ItemYPos,
-                Items.ItemZPos,
-                Items.ItemXVelocity,
-                Items.ItemYVelocity,
-                Items.ItemZVelocity
-                ));
+            if (IsRace())
+            {
+                toRead.AddRange(GetCalculatedAddresses(Items.AllItems.Length, Items.SingleItem.Length,
+                    Items.ItemXPos,
+                    Items.ItemYPos,
+                    Items.ItemZPos,
+                    Items.ItemXVelocity,
+                    Items.ItemYVelocity,
+                    Items.ItemZVelocity
+                    ));
 
-            toRead.AddRange(GetCalculatedAddresses(Racers.AllRacers.Length, Racers.SingleRacer.Length,
-                Racers.XPosition,
-                Racers.YPosition,
-                Racers.XVelocity,
-                Racers.YVelocity
-                ));
+                toRead.AddRange(GetCalculatedAddresses(Racers.AllRacers.Length, Racers.SingleRacer.Length,
+                    Racers.XPosition,
+                    Racers.YPosition,
+                    Racers.XVelocity,
+                    Racers.YVelocity
+                    ));
+            }
 
             _ = Read(toRead.ToArray());
         }
