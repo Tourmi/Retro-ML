@@ -63,7 +63,7 @@
 	</ItemGroup>
 	<ItemGroup>
 	  <None Update="config\appConfig.json">
-	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 	  </None>
 	  <None Update="config\bizhawkAdapter.lua">
 	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>

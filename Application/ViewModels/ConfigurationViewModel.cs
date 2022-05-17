@@ -47,6 +47,7 @@ namespace Retro_ML.Application.ViewModels
         private ApplicationConfig? ApplicationConfig;
 
         public ObservableCollection<Error> ErrorList { get; set; }
+        public ObservableCollection<string> GamePlugins { get; set; }
         public ObservableCollection<string> DispMethodList { get; set; }
 
         public ObservableCollection<ViewModelBase> GamePluginConfigFields { get; }
@@ -62,6 +63,44 @@ namespace Retro_ML.Application.ViewModels
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(RomPath)));
             }
         }
+
+        private string _gamePlugin;
+        [DataMember]
+        public string GamePluginName
+        {
+            get => _gamePlugin;
+            set
+            {
+                this.RaiseAndSetIfChanged(ref _gamePlugin, value);
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(GamePluginName)));
+                ReloadGamePlugin();
+            }
+        }
+
+        private string _pluginGameName;
+        [DataMember]
+        public string PluginGameName
+        {
+            get => _pluginGameName;
+            set
+            {
+                this.RaiseAndSetIfChanged(ref _pluginGameName, value);
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(PluginGameName)));
+            }
+        }
+
+        private string _pluginConsoleName;
+        [DataMember]
+        public string PluginConsoleName
+        {
+            get => _pluginConsoleName;
+            set
+            {
+                this.RaiseAndSetIfChanged(ref _pluginConsoleName, value);
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(PluginConsoleName)));
+            }
+        }
+
 
         private int _multithread;
         [DataMember]
@@ -323,10 +362,6 @@ namespace Retro_ML.Application.ViewModels
         public ObservableCollection<InputOutputConfigViewModel> NeuralConfigs { get; }
 
         public new event PropertyChangedEventHandler PropertyChanged;
-        protected void OnPropertyChanged(string name)
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
-        }
 
         #endregion
 
@@ -334,6 +369,16 @@ namespace Retro_ML.Application.ViewModels
         public ConfigurationViewModel()
         {
             GamePluginConfigFields = new ObservableCollection<ViewModelBase>();
+
+            GamePlugins = new ObservableCollection<string>();
+            PluginUtils.LoadPlugins();
+            foreach (var plugin in PluginUtils.GamePlugins)
+            {
+                GamePlugins.Add(plugin.PluginName);
+            }
+            _pluginConsoleName = "";
+            _gamePlugin = "";
+            _pluginGameName = "";
 
             DispMethodList = new ObservableCollection<string>()
             {
@@ -451,6 +496,7 @@ namespace Retro_ML.Application.ViewModels
             if (ApplicationConfig == null) { return; }
 
             ApplicationConfig.RomPath = RomPath;
+            ApplicationConfig.GamePluginName = GamePluginName;
             ApplicationConfig.Multithread = Multithread;
             ApplicationConfig.ArduinoCommunicationPort = ArduinoPort!;
             for (int i = 0; i < StopConditions.Count; i++)
@@ -536,6 +582,7 @@ namespace Retro_ML.Application.ViewModels
             if (ApplicationConfig == null) { return; }
 
             RomPath = ApplicationConfig.RomPath;
+            GamePluginName = ApplicationConfig.GamePluginName;
             Multithread = ApplicationConfig.Multithread;
             ArduinoPort = ApplicationConfig.ArduinoCommunicationPort;
 
@@ -551,11 +598,7 @@ namespace Retro_ML.Application.ViewModels
             LoadGamePluginConfig();
 
             //Tab Objectives
-            Objectives.Clear();
-            foreach (var obj in ApplicationConfig.GamePluginConfig!.ScoreFactors)
-            {
-                Objectives.Add(new(obj));
-            }
+            LoadObjectives();
 
             //Tab Neural
             PopulateNeuralConfig();
@@ -583,6 +626,15 @@ namespace Retro_ML.Application.ViewModels
                         GamePluginConfigFields.Add(new IntegerViewModel(fi, (int)pluginConfig[fi.Name]));
                         break;
                 }
+            }
+        }
+
+        private void LoadObjectives()
+        {
+            Objectives.Clear();
+            foreach (var obj in ApplicationConfig!.GamePluginConfig!.ScoreFactors)
+            {
+                Objectives.Add(new(obj));
             }
         }
 
@@ -679,6 +731,18 @@ namespace Retro_ML.Application.ViewModels
             {
                 NeuralConfigs.Add(new(output));
             }
+        }
+
+        private void ReloadGamePlugin()
+        {
+            ApplicationConfig!.GamePluginName = GamePluginName;
+            var gamePlugin = ApplicationConfig!.GetGamePlugin();
+            PluginGameName = gamePlugin.PluginGameName;
+            PluginConsoleName = ApplicationConfig.GetConsolePlugin().ConsoleName;
+
+            PopulateNeuralConfig();
+            LoadGamePluginConfig();
+            LoadObjectives();
         }
 
         #region Validation

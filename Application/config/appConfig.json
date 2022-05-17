@@ -1,47 +1,47 @@
 {
-  "romPath": "smw.sfc",
-  "gamePluginName": "SMW",
-  "multithread": 4,
-  "arduinoCommunicationPort": "COM3",
-  "stopConditions": [
+  "RomPath": "smw.sfc",
+  "GamePluginName": "SMW",
+  "Multithread": 4,
+  "ArduinoCommunicationPort": "COM3",
+  "StopConditions": [
     {
       "$type": "Retro_ML.Neural.Train.StopCondition.FitnessStopCondition, Retro_ML",
-      "name": "Stop when fitness reached",
-      "shouldUse": false,
-      "hasParam": true,
-      "paramName": "Target fitness",
-      "paramValue": 2000
+      "Name": "Stop when fitness reached",
+      "ShouldUse": false,
+      "HasParam": true,
+      "ParamName": "Target fitness",
+      "ParamValue": 2000
     },
     {
       "$type": "Retro_ML.Neural.Train.StopCondition.GenerationCountStopCondition, Retro_ML",
-      "name": "Stop after X generations",
-      "shouldUse": false,
-      "hasParam": true,
-      "paramName": "Generations",
-      "paramValue": 250
+      "Name": "Stop after X generations",
+      "ShouldUse": false,
+      "HasParam": true,
+      "ParamName": "Generations",
+      "ParamValue": 250
     },
     {
       "$type": "Retro_ML.Neural.Train.StopCondition.PlateauStopCondition, Retro_ML",
-      "name": "Stop when plateau reached",
-      "shouldUse": false,
-      "hasParam": true,
-      "paramName": "Maximum plateau length",
-      "paramValue": 100
+      "Name": "Stop when plateau reached",
+      "ShouldUse": false,
+      "HasParam": true,
+      "ParamName": "Maximum plateau length",
+      "ParamValue": 100
     },
     {
       "$type": "Retro_ML.Neural.Train.StopCondition.TimeStopCondition, Retro_ML",
-      "name": "Stop after X minutes",
-      "shouldUse": false,
-      "hasParam": true,
-      "paramName": "Minutes",
-      "paramValue": 60
+      "Name": "Stop after X minutes",
+      "ShouldUse": false,
+      "HasParam": true,
+      "ParamName": "Minutes",
+      "ParamValue": 60
     }
   ],
-  "saveStates": [
-    "config\\SaveStates\\yoshi-island-1.State"
+  "SaveStates": [
+    "config\\SaveStates\\SMW\\yoshi-island-1.State"
   ],
-  "neuralConfig": {
-    "enabledStates": [
+  "NeuralConfig": {
+    "EnabledStates": [
       true,
       true,
       true,

@@ -14,7 +14,7 @@ namespace Retro_ML.Configuration
         public ApplicationConfig()
         {
             RomPath = "smw.sfc";
-            GamePluginName = "SMW";
+            gamePluginName = "SMW";
             ArduinoCommunicationPort = "COM3";
             SaveStates = new List<string>();
             StopConditions = new List<IStopCondition>() { new FitnessStopCondition(), new GenerationCountStopCondition(), new PlateauStopCondition(), new TimeStopCondition() };
@@ -27,9 +27,18 @@ namespace Retro_ML.Configuration
         /// </summary>
         public string RomPath { get; set; }
         /// <summary>
-        /// The name of the game in the ROM's header file
+        /// The name of the current game plugin
         /// </summary>
-        public string GamePluginName { get; set; }
+        private string gamePluginName;
+        public string GamePluginName
+        {
+            get => gamePluginName;
+            set
+            {
+                gamePluginName = value;
+                ResetGamePluginConfig();
+            }
+        }
 
         /// <summary>
         /// The amount of threads and emulator instances the application should use.
@@ -84,15 +93,20 @@ namespace Retro_ML.Configuration
         public static ApplicationConfig Deserialize(string json)
         {
             ApplicationConfig cfg = JsonConvert.DeserializeObject<ApplicationConfig>(json, SerializationUtils.JSON_PASCAL_CASE_CONFIG)!;
-            var gamePlugin = cfg.GetGamePlugin();
-            cfg.GamePluginConfig = (IGamePluginConfig)gamePlugin.GetPluginConfig();
-            if (File.Exists(gamePlugin.PluginConfigPath))
-            {
-                cfg.GamePluginConfig.Deserialize(File.ReadAllText(gamePlugin.PluginConfigPath));
-            }
-            cfg.GamePluginConfig.InitNeuralConfig(cfg.NeuralConfig);
+            cfg.ResetGamePluginConfig();
 
             return cfg;
+        }
+
+        private void ResetGamePluginConfig()
+        {
+            var gamePlugin = GetGamePlugin();
+            GamePluginConfig = (IGamePluginConfig)gamePlugin.GetPluginConfig();
+            if (File.Exists(gamePlugin.PluginConfigPath))
+            {
+                GamePluginConfig.Deserialize(File.ReadAllText(gamePlugin.PluginConfigPath));
+            }
+            GamePluginConfig.InitNeuralConfig(NeuralConfig);
         }
     }
 }

@@ -23,6 +23,10 @@
 						<TextBlock Classes="h1" Text="ROM Path"/>
 						<TextBlock Text="{Binding RomPath}"/>
 						<Button Command="{Binding SelectRom}" Classes="configButton" Content="Select ROM"/>
+						<TextBlock Classes="h1" Text="Game plugin"/>
+						<ComboBox Items="{Binding GamePlugins}" SelectedItem="{Binding GamePluginName}"/>
+						<TextBlock Text="{Binding PluginGameName}"/>
+						<TextBlock Text="{Binding PluginConsoleName}"/>
 						<TextBlock Classes="h1" Text="Multithread"/>
 						<NumericUpDown Classes="numericTextBox" Value="{Binding Multithread}" Minimum="1"/>
 						<TextBlock Classes="h1" Text="Communication Port with Arduino"/>
@@ -33,7 +37,7 @@
 						<TextBlock Classes="p" Text="{Binding SaveStates}"/>
 					</StackPanel>
 				</TabItem>
-				<TabItem Header="Game" Classes="configTabControl">
+				<TabItem Header="{Binding GamePluginName}" Classes="configTabControl">
 					<ItemsControl Items="{Binding GamePluginConfigFields}">
 						<ItemsControl.ItemsPanel>
 							<ItemsPanelTemplate>
