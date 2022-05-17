@@ -6,7 +6,7 @@ namespace Retro_ML.SuperMarioKart.Neural.Scoring
 {
     internal class StoppedProgressingScoreFactor : IScoreFactor
     {
-        private const string MAX_TIME_WITHOUT_PROGRESS = "Max time w/o progress";
+        public const string MAX_TIME_WITHOUT_PROGRESS = "Max time w/o progress";
 
         private bool init = false;
         private bool shouldStop = false;
@@ -55,16 +55,15 @@ namespace Retro_ML.SuperMarioKart.Neural.Scoring
                 framesWithoutCheckpoint = 0;
                 previousCheckpoint = currCheckpoint;
             }
+            else if (df.GetRaceStatus() == 0x06)
+            {
+                framesWithoutCheckpoint++;
+            }
 
             if (framesWithoutCheckpoint >= ExtraField.GetValue(ExtraFields, MAX_TIME_WITHOUT_PROGRESS) * 60)
             {
                 currScore += ScoreMultiplier;
                 shouldStop = true;
-            }
-
-            if (df.GetRaceStatus() == 6)
-            {
-                framesWithoutCheckpoint++;
             }
         }
 

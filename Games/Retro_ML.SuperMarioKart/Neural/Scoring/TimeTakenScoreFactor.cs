@@ -34,12 +34,12 @@ namespace Retro_ML.SuperMarioKart.Neural.Scoring
 
         public void Update(IDataFetcher dataFetcher)
         {
+            levelFrames++;
+            currScore += ScoreMultiplier / 60.0;
             if (levelFrames >= ExtraField.GetValue(ExtraFields, MAXIMUM_RACE_TIME) * 60)
             {
                 shouldStop = true;
             }
-            levelFrames++;
-            currScore += ScoreMultiplier / 60.0;
         }
 
         public void LevelDone()

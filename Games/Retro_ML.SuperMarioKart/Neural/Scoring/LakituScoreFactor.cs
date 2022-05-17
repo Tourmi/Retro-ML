@@ -6,7 +6,7 @@ namespace Retro_ML.SuperMarioKart.Neural.Scoring
 {
     internal class LakituScoreFactor : IScoreFactor
     {
-        private const string STOP_AFTER_X_FALLS = "Stop after X falls";
+        public const string STOP_AFTER_X_FALLS = "Stop after X falls";
 
         private double currScore;
         private bool isInit;

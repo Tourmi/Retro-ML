@@ -6,7 +6,7 @@ namespace Retro_ML.SuperMarioKart.Neural.Scoring
 {
     internal class CollisionScoreFactor : IScoreFactor
     {
-        private const string STOP_AFTER_X_COLLISIONS = "Maximum collisions";
+        public const string STOP_AFTER_X_COLLISIONS = "Maximum collisions";
 
         private double currScore;
         private bool isInit;

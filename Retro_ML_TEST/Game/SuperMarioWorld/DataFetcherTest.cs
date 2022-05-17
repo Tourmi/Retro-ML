@@ -65,7 +65,7 @@ namespace Retro_ML_TEST.Game.SuperMarioWorld
         {
             Assert.AreEqual(0, dataFetcher!.GetPositionX());
 
-            //Big endian bytes
+            //Small endian bytes
             mockEmulatorAdapter!.SetMemory(Addresses.Player.PositionX.Address, new byte[] { 0xFF, 0x01 });
             dataFetcher.NextFrame();
             Assert.AreEqual(0x01FF, dataFetcher!.GetPositionX());
@@ -76,7 +76,7 @@ namespace Retro_ML_TEST.Game.SuperMarioWorld
         {
             Assert.AreEqual(0, dataFetcher!.GetPositionY());
 
-            //Big endian bytes
+            //Small endian bytes
             mockEmulatorAdapter!.SetMemory(Addresses.Player.PositionY.Address, new byte[] { 0xFF, 0x01 });
 
             dataFetcher.NextFrame();

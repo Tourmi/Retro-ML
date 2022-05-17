@@ -6,7 +6,7 @@ namespace Retro_ML.SuperMarioKart.Neural.Scoring
 {
     internal class FinishedRaceScoreFactor : IScoreFactor
     {
-        private const string FINAL_RANKING = "Ranking multiplier";
+        public const string FINAL_RANKING = "Ranking multiplier";
 
         private double currScore;
 
@@ -40,7 +40,7 @@ namespace Retro_ML.SuperMarioKart.Neural.Scoring
         public void Update(IDataFetcher dataFetcher)
         {
             var df = (SMKDataFetcher)dataFetcher;
-            if (!shouldStop && df.GetCurrentLap() >= 5)
+            if (df.GetCurrentLap() >= 5)
             {
                 shouldStop = true;
                 double rankingMultiplier = 0;

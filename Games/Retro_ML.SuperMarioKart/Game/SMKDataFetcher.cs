@@ -16,7 +16,6 @@ namespace Retro_ML.SuperMarioKart.Game
     {
         private const int TILES_ROW_COUNT = 128;
         private const int TILES_COLUMN_COUNT = 128;
-        private const int SURROUNDING_TILES_RANGE = 32;
 
         private readonly IEmulatorAdapter emulator;
         private readonly Dictionary<uint, byte[]> frameCache;

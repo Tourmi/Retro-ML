@@ -6,7 +6,7 @@ namespace Retro_ML.SuperMarioKart.Neural.Scoring
 {
     internal class CoinsScoreFactor : IScoreFactor
     {
-        private const string LOSING_COINS_MULT = "Losing coins mult.";
+        public const string LOSING_COINS_MULT = "Losing coins mult.";
 
         private double currScore;
         private bool isInit;

@@ -86,7 +86,7 @@
             /// <br>0x04 : Time Trial</br>
             /// <br>0x06 : Battle</br>
             /// </summary>
-            public static AddressData Type => new(0x2C, 1);
+            public static AddressData Type => new(0x2C, 1, AddressData.CacheDurations.Race);
         }
 
         /// <summary>
