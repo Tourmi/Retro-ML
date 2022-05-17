@@ -25,6 +25,15 @@
         /// </summary>
         public static readonly AddressData BackgroundTiles = new(0x9800, 1024);
 
+        /// <summary>
+        /// Indicate the current state of the game
+        /// <br>00 = in-game                        </br>
+        /// <br>01 = shortly before game over screen</br>
+        /// <br>04 = game over screen               </br>
+        /// <br></br>
+        /// </summary>
+        public static readonly AddressData GameStatus = new AddressData(0x00ffe1, 1);
+
         public class Score
         {
             public static readonly AddressData Single = new(0x00c0ac, 4);
@@ -37,7 +46,7 @@
         {
             public static readonly AddressData PosX = new(0x00c202, 1);
 
-            public static readonly AddressData PosY = new(0x00c202, 1);
+            public static readonly AddressData PosY = new(0x00c201, 1);
 
             /// <summary>
             /// Higher numbers mean counter-clockwise rotation.
@@ -83,7 +92,7 @@
         }
 
         public class NextBlock
-        {    
+        {
             /// <summary>
             /// Higher numbers mean counter-clockwise rotation.
             /// <br>0x00:L Shape </br>

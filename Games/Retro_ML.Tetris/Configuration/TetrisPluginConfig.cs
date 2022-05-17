@@ -13,7 +13,7 @@ namespace Retro_ML.Tetris.Configuration
     {
         public FieldInfo[] Fields => new FieldInfo[]
         {
-
+             new IntegerFieldInfo(nameof(VisibleRows), "Visible Rows", 4, 17, 1),
         };
 
         public List<IScoreFactor> ScoreFactors { get; set; }
@@ -24,7 +24,7 @@ namespace Retro_ML.Tetris.Configuration
             {
                 return fieldName switch
                 {
-
+                    nameof(VisibleRows) => VisibleRows,
                     _ => 0,
                 };
             }
@@ -32,10 +32,12 @@ namespace Retro_ML.Tetris.Configuration
             {
                 switch (fieldName)
                 {
-
+                    case nameof(VisibleRows): VisibleRows = (int)value; break;
                 }
             }
         }
+
+        public int VisibleRows { get; set; } = 4;
 
         public TetrisPluginConfig()
         {
@@ -45,6 +47,11 @@ namespace Retro_ML.Tetris.Configuration
                 {
                     IsDisabled = false,
                     ScoreMultiplier = 1
+                },
+                new GameOverScoreFactor()
+                {
+                    IsDisabled = false,
+                    ScoreMultiplier = -10
                 }
             };
         }
@@ -55,6 +62,7 @@ namespace Retro_ML.Tetris.Configuration
         {
             TetrisPluginConfig cfg = JsonConvert.DeserializeObject<TetrisPluginConfig>(json, SerializationUtils.JSON_CONFIG)!;
             ScoreFactors = cfg.ScoreFactors;
+            VisibleRows = cfg.VisibleRows;
         }
 
         public void InitNeuralConfig(NeuralConfig neuralConfig)
@@ -67,8 +75,10 @@ namespace Retro_ML.Tetris.Configuration
             }
 
             neuralConfig.InputNodes.Clear();
-            neuralConfig.InputNodes.Add(new InputNode("Tiles", neuralConfig.EnabledStates[enabledIndex++], (dataFetcher) => ((TetrisDataFetcher)dataFetcher).GetSolidTiles(), 10, 17));
+            neuralConfig.InputNodes.Add(new InputNode("Tiles", neuralConfig.EnabledStates[enabledIndex++], (dataFetcher) => ((TetrisDataFetcher)dataFetcher).GetSolidTiles(), 10, VisibleRows));
             neuralConfig.InputNodes.Add(new InputNode("Current Block", neuralConfig.EnabledStates[enabledIndex++], (dataFetcher) => ((TetrisDataFetcher)dataFetcher).GetCurrentBlock(), 4, 7));
+            neuralConfig.InputNodes.Add(new InputNode("Current Pos X", neuralConfig.EnabledStates[enabledIndex++], (dataFetcher) => ((TetrisDataFetcher)dataFetcher).GetPositionX()));
+            neuralConfig.InputNodes.Add(new InputNode("Current Pos Y", neuralConfig.EnabledStates[enabledIndex++], (dataFetcher) => ((TetrisDataFetcher)dataFetcher).GetPositionY()));
             neuralConfig.InputNodes.Add(new InputNode("Bias", neuralConfig.EnabledStates[enabledIndex++], (dataFetcher) => true));
 
             neuralConfig.OutputNodes.Clear();

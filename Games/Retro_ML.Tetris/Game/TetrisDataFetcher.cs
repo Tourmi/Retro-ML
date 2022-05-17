@@ -19,13 +19,17 @@ namespace Retro_ML.Tetris.Game
         private const int PLAY_HEIGHT = 17;
         private const int PLAY_OFFSET_X = 2;
         private const int PLAY_OFFSET_Y = 1;
+       // private const int NUMBER_OF_ROWS_TO_SEE = 4;
 
         private const byte SOLID_TILES_START = 128;
         private const byte SOLID_TILES_END = 143;
 
+        private TetrisPluginConfig pluginConfig;
+
         public TetrisDataFetcher(IEmulatorAdapter emulator, NeuralConfig neuralConfig, TetrisPluginConfig pluginConfig)
         {
             this.emulator = emulator;
+            this.pluginConfig = pluginConfig;
             frameCache = new();
         }
 
@@ -50,8 +54,12 @@ namespace Retro_ML.Tetris.Game
 
         public uint GetSingles() => ToUnsignedInteger(Read(Score.Single));
         public uint GetDoubles() => ToUnsignedInteger(Read(Score.Double));
-        public uint GetTriples() =>  ToUnsignedInteger(Read(Score.Triple));
+        public uint GetTriples() => ToUnsignedInteger(Read(Score.Triple));
         public uint GetTetrises() => ToUnsignedInteger(Read(Score.Tetris));
+        public bool IsGameOver() => ReadSingle(GameStatus) == 0x01;
+
+        public double GetPositionX() => (ReadSingle(CurrentBlock.PosX) - 31) / 8 / 10.0;
+        public double GetPositionY() => (ReadSingle(CurrentBlock.PosY) - 24) / 8 / 17.0;
 
         /// <summary>
         /// Returns the play area solid tiles 
@@ -66,17 +74,34 @@ namespace Retro_ML.Tetris.Game
                 solidTiles[i / 32, i % 32] = bytes[i] >= SOLID_TILES_START && bytes[i] <= SOLID_TILES_END;
             }
 
+            int firstLineWithTile = -1;
             bool[,] tiles = new bool[PLAY_HEIGHT, PLAY_WIDTH];
             for (int i = PLAY_OFFSET_Y; i < PLAY_HEIGHT + PLAY_OFFSET_Y; i++)
             {
                 for (int j = PLAY_OFFSET_X; j < PLAY_WIDTH + PLAY_OFFSET_X; j++)
                 {
-                    tiles[i - PLAY_OFFSET_Y, j - PLAY_OFFSET_X] = solidTiles[i, j];
+                    if (firstLineWithTile == -1)
+                        if (solidTiles[i, j])
+                            firstLineWithTile = i - PLAY_OFFSET_Y;
 
+                    tiles[i - PLAY_OFFSET_Y, j - PLAY_OFFSET_X] = solidTiles[i, j];
                 }
             }
 
-            return tiles;
+            bool[,] newTiles = new bool[pluginConfig.VisibleRows, PLAY_WIDTH];
+            if (firstLineWithTile != -1)
+            {
+                firstLineWithTile = Math.Min(firstLineWithTile, PLAY_HEIGHT - pluginConfig.VisibleRows);
+                for (int i = firstLineWithTile; i - firstLineWithTile < pluginConfig.VisibleRows; i++)
+                {
+                    for (int j = 0; j < PLAY_WIDTH; j++)
+                    {
+                        newTiles[i - firstLineWithTile, j] = tiles[i, j];
+                    }
+                }
+            }
+
+            return newTiles;
         }
 
         /// <summary>
@@ -110,6 +135,11 @@ namespace Retro_ML.Tetris.Game
             }
 
             return block;
+        }
+
+        public void GetCurrentBlockPosition()
+        {
+            
         }
 
         /// <summary>
