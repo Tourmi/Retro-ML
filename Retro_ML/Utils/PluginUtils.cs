@@ -16,6 +16,7 @@ namespace Retro_ML.Utils
         {
             return GamePlugins.Where(p => p.PluginROMHeaderName == romHeaderName).FirstOrDefault();
         }
+
         /// <summary>
         /// Returns the plugin with the given name.
         /// </summary>
