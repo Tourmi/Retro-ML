@@ -14,12 +14,14 @@ namespace Retro_ML.Tetris.Game
 
         private readonly IEmulatorAdapter emulator;
         private readonly Dictionary<uint, byte[]> frameCache;
+        private readonly Dictionary<uint, byte[]> tilesCache;
+
+        private double oldY;
 
         private const int PLAY_WIDTH = 10;
         private const int PLAY_HEIGHT = 17;
         private const int PLAY_OFFSET_X = 2;
         private const int PLAY_OFFSET_Y = 1;
-       // private const int NUMBER_OF_ROWS_TO_SEE = 4;
 
         private const byte SOLID_TILES_START = 128;
         private const byte SOLID_TILES_END = 143;
@@ -31,6 +33,7 @@ namespace Retro_ML.Tetris.Game
             this.emulator = emulator;
             this.pluginConfig = pluginConfig;
             frameCache = new();
+            tilesCache = new();
         }
 
         /// <summary>
@@ -49,14 +52,16 @@ namespace Retro_ML.Tetris.Game
         public void NextState()
         {
             frameCache.Clear();
+            tilesCache.Clear();
 
+            oldY = 0.0;
         }
 
         public uint GetSingles() => ToUnsignedInteger(Read(Score.Single));
         public uint GetDoubles() => ToUnsignedInteger(Read(Score.Double));
         public uint GetTriples() => ToUnsignedInteger(Read(Score.Triple));
         public uint GetTetrises() => ToUnsignedInteger(Read(Score.Tetris));
-        public bool IsGameOver() => ReadSingle(GameStatus) == 0x01;
+        public bool IsGameOver() => ReadSingle(GameStatus) == 0x01 || ReadSingle(GameStatus) == 0x04 || ReadSingle(GameStatus) == 0x0D;
 
         public double GetPositionX() => (ReadSingle(CurrentBlock.PosX) - 31) / 8 / 10.0;
         public double GetPositionY() => (ReadSingle(CurrentBlock.PosY) - 24) / 8 / 17.0;
@@ -139,7 +144,7 @@ namespace Retro_ML.Tetris.Game
 
         public void GetCurrentBlockPosition()
         {
-            
+
         }
 
         /// <summary>
@@ -149,7 +154,7 @@ namespace Retro_ML.Tetris.Game
         /// <returns></returns>
         private ushort[] ReadLowHighBytes(AddressData addressData)
         {
-            var cacheToUse = frameCache;
+            var cacheToUse = GetCacheToUse(addressData);
             if (!cacheToUse.ContainsKey(addressData.Address))
             {
                 cacheToUse[addressData.Address] = emulator.ReadMemory(addressData.Address, addressData.Length);
@@ -182,7 +187,7 @@ namespace Retro_ML.Tetris.Game
         /// <returns></returns>
         private byte[] Read(AddressData addressData)
         {
-            var cacheToUse = frameCache;
+            var cacheToUse = GetCacheToUse(addressData);
             if (!cacheToUse.ContainsKey(addressData.Address))
             {
                 cacheToUse[addressData.Address] = emulator.ReadMemory(addressData.Address, addressData.Length);
@@ -204,7 +209,7 @@ namespace Retro_ML.Tetris.Game
 
             foreach ((AddressData address, bool isLowHighByte) in addresses)
             {
-                var cacheToUse = frameCache;
+                var cacheToUse = GetCacheToUse(address);
                 if (!cacheToUse.ContainsKey(address.Address))
                 {
                     toFetch.Add((address.Address, address.Length));
@@ -229,7 +234,7 @@ namespace Retro_ML.Tetris.Game
             {
                 int count = (int)address.Length;
 
-                var cacheToUse = frameCache;
+                var cacheToUse = GetCacheToUse(address);
                 if (!cacheToUse.ContainsKey(address.Address))
                 {
                     cacheToUse[address.Address] = data[dataIndex..(dataIndex + count)];
@@ -246,6 +251,27 @@ namespace Retro_ML.Tetris.Game
             }
 
             return bytes.ToArray();
+        }
+
+        /// <summary>
+        /// Which cache to use depending on the AddressData
+        /// </summary>
+        /// <param name="addressData"></param>
+        /// <returns></returns>
+        private Dictionary<uint, byte[]> GetCacheToUse(AddressData addressData)
+        {
+            var cacheToUse = frameCache;
+            if (addressData.CacheDuration == AddressData.CacheDurations.Tiles)
+            {
+                cacheToUse = tilesCache;
+                if (GetPositionY() < oldY)
+                {
+                    cacheToUse.Clear();
+                }
+                oldY = GetPositionY();
+            }
+
+            return cacheToUse;
         }
 
         private void InitFrameCache()

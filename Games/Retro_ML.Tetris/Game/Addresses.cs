@@ -8,28 +8,37 @@
     {
         public struct AddressData
         {
-            public AddressData(uint address, uint length, uint highByteLocation = 0)
+            public enum CacheDurations
+            {
+                Frame,
+                Tiles
+            }
+
+            public AddressData(uint address, uint length, CacheDurations cacheDuration = CacheDurations.Frame, uint highByteLocation = 0)
             {
                 Address = address;
                 Length = length;
+                CacheDuration = cacheDuration;
                 HighByteAddress = highByteLocation;
             }
 
             public uint Address;
             public uint Length;
+            public CacheDurations CacheDuration;
             public uint HighByteAddress;
         }
 
         /// <summary>
         /// Where background tiles start in VRAM
         /// </summary>
-        public static readonly AddressData BackgroundTiles = new(0x9800, 1024);
+        public static readonly AddressData BackgroundTiles = new(0x9800, 1024, AddressData.CacheDurations.Tiles);
 
         /// <summary>
         /// Indicate the current state of the game
         /// <br>00 = in-game                        </br>
         /// <br>01 = shortly before game over screen</br>
         /// <br>04 = game over screen               </br>
+        /// <br>0D = game lost animation            </br>
         /// <br></br>
         /// </summary>
         public static readonly AddressData GameStatus = new AddressData(0x00ffe1, 1);
@@ -65,10 +74,10 @@
             /// <br>0x0a:I Shape </br>
             /// <br>0x0b:I Shape </br>
             /// <br></br>
-            /// <br>0x0c:Square Shape </br>
-            /// <br>0x0d:Square Shape </br>
-            /// <br>0x0e:Square Shape </br>
-            /// <br>0x0f:Square Shape </br>
+            /// <br>0x0C:Square Shape </br>
+            /// <br>0x0D:Square Shape </br>
+            /// <br>0x0E:Square Shape </br>
+            /// <br>0x0F:Square Shape </br>
             /// <br></br>
             /// <br>0x10:Z Shape </br>
             /// <br>0x11:Z Shape </br>
@@ -82,8 +91,8 @@
             /// <br></br>
             /// <br>0x18:T Shape </br>
             /// <br>0x19:T Shape </br>
-            /// <br>0x1a:T Shape </br>
-            /// <br>0x1b:T Shape </br>
+            /// <br>0x1A:T Shape </br>
+            /// <br>0x1B:T Shape </br>
             /// </summary>
             public static readonly AddressData Type = new(0x00c203, 1);
 

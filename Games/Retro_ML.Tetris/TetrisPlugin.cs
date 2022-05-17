@@ -6,6 +6,7 @@ using Retro_ML.Neural.Train;
 using Retro_ML.Plugin;
 using Retro_ML.Tetris.Configuration;
 using Retro_ML.Tetris.Game;
+using Retro_ML.Tetris.Neural.Play;
 using Retro_ML.Tetris.Neural.Train;
 using System;
 using System.Collections.Generic;
@@ -25,7 +26,7 @@ namespace Retro_ML.Tetris
 
         public IDataFetcherFactory GetDataFetcherFactory() => new TetrisDataFetcherFactory();
 
-        public INeuralPlayer GetNeuralPlayer(EmulatorManager emulatorManager, ApplicationConfig appConfig) => new SharpNeatPlayer(emulatorManager, appConfig);
+        public INeuralPlayer GetNeuralPlayer(EmulatorManager emulatorManager, ApplicationConfig appConfig) => new TetrisPlayer(emulatorManager, appConfig);
 
         public INeuralTrainer GetNeuralTrainer(EmulatorManager emulatorManager, ApplicationConfig appConfig) => new TetrisTrainer(emulatorManager, appConfig);
 

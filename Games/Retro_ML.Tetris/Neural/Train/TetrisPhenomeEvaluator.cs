@@ -101,6 +101,7 @@ namespace Retro_ML.Tetris.Neural.Train
 
             emulator!.SendInput(outputGetter!.GetControllerInput(phenome.OutputVector));
             emulator!.NextFrame();
+            emulator!.NextFrame();
         }
 
         private void WaitThenStart()
@@ -114,7 +115,7 @@ namespace Retro_ML.Tetris.Neural.Train
             input.FromString("S");
             emulator!.SendInput(input);
 
-            for(int i = 0; i < 8; i++)
+            for (int i = 0; i < 8; i++)
             {
                 emulator!.NextFrame();
             }
