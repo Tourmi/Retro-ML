@@ -6,7 +6,7 @@ namespace Retro_ML.SuperMarioKart.Neural.Scoring
 {
     internal class OffRoadScoreFactor : IScoreFactor
     {
-        private const string STOP_AFTER = "Stop after";
+        public const string STOP_AFTER = "Stop after";
 
         private bool shouldStop = false;
         private double currScore;
@@ -52,7 +52,7 @@ namespace Retro_ML.SuperMarioKart.Neural.Scoring
                 framesOffroad = 0;
             }
 
-            if (framesOffroad >= ExtraField.GetValue(ExtraFields, STOP_AFTER))
+            if (framesOffroad >= ExtraField.GetValue(ExtraFields, STOP_AFTER) * 60.0)
             {
                 shouldStop = true;
             }

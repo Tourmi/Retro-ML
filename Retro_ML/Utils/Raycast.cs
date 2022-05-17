@@ -13,29 +13,67 @@
 
             foreach (int rayCount in POSSIBLE_RAY_COUNT)
             {
-                var rays = new (double x, double y)[rayCount];
-
-                double mulRad = Math.Tau * 1.0 / rayCount;
-                for (int i = 0; i < rayCount; i++)
-                {
-                    (double sin, double cos) = Math.SinCos(mulRad * i);
-                    // We invert the cos, since a negative value actually is up.
-                    rays[i] = (Math.Round(sin, 4), Math.Round(-cos, 4));
-                }
-
-                precomputedRays[rayCount] = rays;
+                precomputedRays[rayCount] = GetRays(0, Math.Tau, rayCount);
             }
         }
 
-        public static double[,] GetRayDistances(bool[,] tiles, int rayRadius, int rayCount)
+        private static (double x, double y)[] GetRays(double forwardAngle, double angleRange, int rayCount)
+        {
+            var rays = new (double x, double y)[rayCount];
+
+            if (Math.Abs(angleRange - Math.Tau) > 0.001)
+            {
+                double mulRad = angleRange / (rayCount - 2);
+                int halfRayCount = rayCount / 2;
+
+                //Left side
+                for (int i = 0; i < halfRayCount; i++)
+                {
+                    double angle = mulRad * (-i) + forwardAngle;
+                    if (angle < 0) angle += Math.Tau;
+                    (double sin, double cos) = Math.SinCos(angle);
+                    // We invert the cos, since a negative value actually is up.
+                    rays[i] = (sin, -cos);
+                }
+
+                //Right side
+                for (int i = 0; i < halfRayCount; i++)
+                {
+                    (double sin, double cos) = Math.SinCos(mulRad * i + forwardAngle);
+                    // We invert the cos, since a negative value actually is up.
+                    rays[i + halfRayCount] = (sin, -cos);
+                }
+            }
+            else
+            {
+                //Full 360
+                double mulRad = Math.Tau / rayCount;
+                for (int i = 0; i < rayCount; i++)
+                {
+                    (double sin, double cos) = Math.SinCos(mulRad * i + forwardAngle);
+                    // We invert the cos, since a negative value actually is up.
+                    rays[i] = (sin, -cos);
+                }
+            }
+
+            return rays;
+        }
+
+        public static double[,] GetRayDistances(bool[,] tiles, int rayRadius, int rayCount, double forwardAngle = 0, double angleRange = Math.Tau)
         {
             double[,] distances = new double[OUTPUT_HEIGHT, rayCount / OUTPUT_HEIGHT];
             int raysPerRow = rayCount / OUTPUT_HEIGHT;
+            var rays = precomputedRays[rayCount];
+            if (forwardAngle != 0 || Math.Abs(angleRange - Math.Tau) > 0.001)
+            {
+                rays = GetRays(forwardAngle, angleRange, rayCount);
+            }
+
             for (int i = 0; i < OUTPUT_HEIGHT; i++)
             {
                 for (int j = 0; j < raysPerRow; j++)
                 {
-                    distances[i, j] = CastRay(tiles, rayRadius, precomputedRays[rayCount][i * raysPerRow + j]);
+                    distances[i, j] = CastRay(tiles, rayRadius, rays[i * raysPerRow + j]);
                 }
             }
 
@@ -82,6 +120,30 @@
             }
 
             return 0;
+        }
+
+        /// <summary>
+        /// Combine the given rays to the highest values, between each group of rays given
+        /// </summary>
+        /// <param name="rays"></param>
+        /// <returns></returns>
+        public static double[,] CombineRays(params double[][,] rays)
+        {
+            var result = new double[rays[0].GetLength(0), rays[0].GetLength(1)];
+
+            for (int i = 0; i < rays.Length; i++)
+            {
+                for (int j = 0; j < rays[i].GetLength(0); j++)
+                {
+                    for (int k = 0; k < rays[i].GetLength(1); k++)
+                    {
+                        double currVal = rays[i][j, k];
+                        if (currVal > result[j, k]) result[j, k] = currVal;
+                    }
+                }
+            }
+
+            return result;
         }
     }
 }

@@ -4,23 +4,30 @@ using Retro_ML.SuperMarioKart.Game;
 
 namespace Retro_ML.SuperMarioKart.Neural.Scoring
 {
-    internal class CheckpointReachedScoreFactor : IScoreFactor
+    internal class StoppedProgressingScoreFactor : IScoreFactor
     {
+        public const string MAX_TIME_WITHOUT_PROGRESS = "Max time w/o progress";
+
         private bool init = false;
+        private bool shouldStop = false;
+        private int framesWithoutCheckpoint;
         private double currScore;
         private int maxCheckpoint = 0;
         private int currCheckpoint = 0;
         private int previousCheckpoint = 0;
 
-        public CheckpointReachedScoreFactor()
+        public StoppedProgressingScoreFactor()
         {
-            ExtraFields = Array.Empty<ExtraField>();
+            ExtraFields = new ExtraField[]
+            {
+                new ExtraField(MAX_TIME_WITHOUT_PROGRESS, 4)
+            };
         }
 
-        public bool ShouldStop => false;
+        public bool ShouldStop => shouldStop;
         public double ScoreMultiplier { get; set; }
 
-        public string Name => "Checkpoint Reached";
+        public string Name => "Stopped progressing";
 
         public bool CanBeDisabled => true;
 
@@ -36,26 +43,39 @@ namespace Retro_ML.SuperMarioKart.Neural.Scoring
             if (!init)
             {
                 init = true;
+                framesWithoutCheckpoint = 0;
                 maxCheckpoint = df.GetMaxCheckpoint();
                 previousCheckpoint = df.GetCurrentCheckpoint() + df.GetCurrentLap() * maxCheckpoint;
             }
+
             currCheckpoint = df.GetCurrentCheckpoint() + df.GetCurrentLap() * maxCheckpoint;
 
             if (currCheckpoint > previousCheckpoint)
             {
-                currScore += ScoreMultiplier * (currCheckpoint - previousCheckpoint);
+                framesWithoutCheckpoint = 0;
                 previousCheckpoint = currCheckpoint;
+            }
+            else if (df.GetRaceStatus() == 0x06)
+            {
+                framesWithoutCheckpoint++;
+            }
+
+            if (framesWithoutCheckpoint >= ExtraField.GetValue(ExtraFields, MAX_TIME_WITHOUT_PROGRESS) * 60)
+            {
+                currScore += ScoreMultiplier;
+                shouldStop = true;
             }
         }
 
         public void LevelDone()
         {
             init = false;
+            shouldStop = false;
         }
 
         public IScoreFactor Clone()
         {
-            return new CheckpointReachedScoreFactor() { IsDisabled = IsDisabled, ScoreMultiplier = ScoreMultiplier };
+            return new StoppedProgressingScoreFactor() { IsDisabled = IsDisabled, ScoreMultiplier = ScoreMultiplier, ExtraFields = ExtraFields };
         }
     }
 }

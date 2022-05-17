@@ -6,7 +6,7 @@ using Retro_ML.SuperMarioWorld.Game;
 using Retro_ML.SuperMarioWorld.Neural.Scoring;
 using Retro_ML_TEST.Emulator;
 
-namespace Retro_ML_TEST.Neural.Scoring
+namespace Retro_ML_TEST.Game.SuperMarioWorld
 {
     [TestFixture]
     internal class ScoreFactorsTest
@@ -108,7 +108,7 @@ namespace Retro_ML_TEST.Neural.Scoring
             df!.NextFrame();
             sf.Update(df);
             sf.LevelDone();
-            Assert.AreEqual((0.5 + (4 * 16)) * 10, sf.GetFinalScore());
+            Assert.AreEqual((0.5 + 4 * 16) * 10, sf.GetFinalScore());
 
             emu.SetMemory(Addresses.Player.PositionX.Address, 0, 0);
             df.NextState();

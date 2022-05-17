@@ -5,7 +5,7 @@ namespace Retro_ML.SuperMarioKart.Neural.Scoring
 {
     internal class TimeTakenScoreFactor : IScoreFactor
     {
-        public const string MAXIMUM_TRAINING_TIME = "Maximum Time";
+        public const string MAXIMUM_RACE_TIME = "Maximum Race Time";
 
         private bool shouldStop = false;
         private double currScore;
@@ -15,7 +15,7 @@ namespace Retro_ML.SuperMarioKart.Neural.Scoring
         {
             ExtraFields = new ExtraField[]
             {
-                new(MAXIMUM_TRAINING_TIME, 120)
+                new(MAXIMUM_RACE_TIME, 240)
             };
         }
 
@@ -34,12 +34,12 @@ namespace Retro_ML.SuperMarioKart.Neural.Scoring
 
         public void Update(IDataFetcher dataFetcher)
         {
-            if (levelFrames >= ExtraField.GetValue(ExtraFields, MAXIMUM_TRAINING_TIME) * 60)
+            levelFrames++;
+            currScore += ScoreMultiplier / 60.0;
+            if (levelFrames >= ExtraField.GetValue(ExtraFields, MAXIMUM_RACE_TIME) * 60)
             {
                 shouldStop = true;
             }
-            levelFrames++;
-            currScore += ScoreMultiplier / 60.0;
         }
 
         public void LevelDone()
