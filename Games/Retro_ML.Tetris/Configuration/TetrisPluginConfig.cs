@@ -52,6 +52,11 @@ namespace Retro_ML.Tetris.Configuration
                 {
                     IsDisabled = false,
                     ScoreMultiplier = -10
+                },
+                new TimeTakenScoreFactor()
+                {
+                    IsDisabled = false,
+                    ScoreMultiplier = 0.01
                 }
             };
         }
