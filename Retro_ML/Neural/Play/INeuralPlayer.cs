@@ -6,6 +6,11 @@
     public interface INeuralPlayer : IDisposable
     {
         /// <summary>
+        /// Called once the player goes through all save states and all genomes
+        /// </summary>
+        event Action? FinishedPlaying;
+
+        /// <summary>
         /// Whether or not the player is currently running
         /// </summary>
         bool IsPlaying { get; }
@@ -17,16 +22,15 @@
         /// Stops playing. Can safely dispose the player after calling this.
         /// </summary>
         void StopPlaying();
-
         /// <summary>
-        /// Loads the genome at the given path.
+        /// Loads the genomes at the given paths.
         /// </summary>
-        /// <param name="path"></param>
-        bool LoadGenome(string path);
+        /// <param name="paths"></param>
+        bool LoadGenomes(string[] paths);
         /// <summary>
-        /// The save state to load
+        /// The save states to load
         /// </summary>
-        /// <param name="path"></param>
-        void LoadState(string path);
+        /// <param name="paths"></param>
+        void LoadStates(string[] paths);
     }
 }

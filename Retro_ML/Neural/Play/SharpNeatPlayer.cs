@@ -14,13 +14,15 @@ namespace Retro_ML.Neural.Play
 {
     public class SharpNeatPlayer : INeuralPlayer
     {
+        public event Action? FinishedPlaying;
+
         private readonly Semaphore syncSemaphore;
         private readonly EmulatorManager emulatorManager;
         private readonly IEmulatorAdapter emulator;
 
         private MetaNeatGenome<double> metaGenome;
-        private IBlackBox<double>? blackBox;
-        private string? state;
+        private readonly List<IBlackBox<double>> blackBoxes;
+        private readonly List<string> states;
 
         private IDataFetcher dataFetcher;
         private InputSetter inputSetter;
@@ -29,9 +31,10 @@ namespace Retro_ML.Neural.Play
 
         private bool shouldStop;
 
+
         public bool IsPlaying { get; private set; }
 
-        public SharpNeatPlayer(EmulatorManager emulatorManager, ApplicationConfig appConfig, params IScoreFactor[] scoreFactors)
+        public SharpNeatPlayer(EmulatorManager emulatorManager, ApplicationConfig appConfig)
         {
             metaGenome = new MetaNeatGenome<double>(
                     inputNodeCount: appConfig.NeuralConfig.GetInputCount(),
@@ -42,11 +45,47 @@ namespace Retro_ML.Neural.Play
             emulatorManager.Init(false);
             emulator = emulatorManager.WaitOne();
             syncSemaphore = new Semaphore(1, 1);
-            this.scoreFactors = scoreFactors;
+            scoreFactors = appConfig.GetScoreFactorClones().ToArray();
+
+            blackBoxes = new();
+            states = new();
 
             dataFetcher = emulator.GetDataFetcher();
             inputSetter = emulator.GetInputSetter();
             outputGetter = emulator.GetOutputGetter();
+        }
+
+        public bool LoadGenomes(string[] paths)
+        {
+            bool shouldRestart = IsPlaying;
+            StopPlaying();
+
+            blackBoxes.Clear();
+            foreach (var path in paths.OrderBy(p => p))
+            {
+                if (!LoadGenome(path))
+                {
+                    return false;
+                }
+            }
+
+            if (shouldRestart) StartPlaying();
+            return true;
+        }
+
+        public void LoadStates(string[] paths)
+        {
+            bool shouldRestart = IsPlaying;
+            StopPlaying();
+
+            states.Clear();
+
+            foreach (var path in paths)
+            {
+                LoadState(path);
+            }
+
+            if (shouldRestart) StartPlaying();
         }
 
         public void StartPlaying()
@@ -55,11 +94,11 @@ namespace Retro_ML.Neural.Play
             {
                 throw new InvalidOperationException("Already playing");
             }
-            if (blackBox == null)
+            if (blackBoxes.Count == 0)
             {
                 throw new InvalidOperationException("A genome wasn't loaded before playing");
             }
-            if (state == null)
+            if (states.Count == 0)
             {
                 throw new InvalidOperationException("A save state wasn't loaded before playing");
             }
@@ -76,23 +115,17 @@ namespace Retro_ML.Neural.Play
             syncSemaphore.Release();
         }
 
-        public bool LoadGenome(string path)
+        private bool LoadGenome(string path)
         {
             if (!VerifyGenome(path))
             {
-                Exceptions.QueueException(new Exception("Could not load genome. It uses a different Neural Configuration."));
+                Exceptions.QueueException(new Exception($"Could not load genome {path}. It uses a different Neural Configuration."));
                 return false;
             }
-
-            bool shouldRestart = IsPlaying;
-            StopPlaying();
-
             var loader = NeatGenomeLoaderFactory.CreateLoaderDouble(metaGenome);
 
             NeatGenomeDecoderAcyclic decoder = new();
-            blackBox = decoder.Decode(loader.Load(path));
-
-            if (shouldRestart) StartPlaying();
+            blackBoxes.Add(decoder.Decode(loader.Load(path)));
             return true;
         }
 
@@ -105,13 +138,9 @@ namespace Retro_ML.Neural.Play
             return input == metaGenome.InputNodeCount && output == metaGenome.OutputNodeCount;
         }
 
-        public void LoadState(string path)
+        private void LoadState(string path)
         {
-            bool shouldRestart = IsPlaying;
-            StopPlaying();
-
-            state = Path.GetFullPath(path);
-            if (shouldRestart) StartPlaying();
+            states.Add(Path.GetFullPath(path));
         }
 
         /// <summary>
@@ -123,23 +152,12 @@ namespace Retro_ML.Neural.Play
             {
                 IsPlaying = true;
                 syncSemaphore.WaitOne();
-                UpdateNetwork();
-                while (!shouldStop)
-                {
-                    emulator.LoadState(state!);
-                    emulator.NextFrame();
-                    dataFetcher.NextState();
 
-                    Score score = new(scoreFactors.Select(s => s.Clone()));
+                DoPlayLoop();
 
-                    while (!shouldStop && !score.ShouldStop)
-                    {
-                        DoFrame();
-                        score.Update(dataFetcher);
-                    }
-                }
                 syncSemaphore.Release();
                 IsPlaying = false;
+                FinishedPlaying?.Invoke();
             }
             catch (Exception ex)
             {
@@ -148,9 +166,56 @@ namespace Retro_ML.Neural.Play
         }
 
         /// <summary>
+        /// Goes through every savestates for every loaded black boxes
+        /// </summary>
+        private void DoPlayLoop()
+        {
+            var blackBoxesEnum = blackBoxes.GetEnumerator();
+            blackBoxesEnum.MoveNext();
+            UpdateNetwork(blackBoxesEnum.Current);
+
+            var statesEnum = states.GetEnumerator();
+            while (!shouldStop)
+            {
+                if (!statesEnum.MoveNext())
+                {
+                    if (!blackBoxesEnum.MoveNext())
+                    {
+                        break;
+                    }
+                    UpdateNetwork(blackBoxesEnum.Current);
+                    statesEnum = states.GetEnumerator();
+                    statesEnum.MoveNext();
+
+                }
+                DoSaveState(statesEnum.Current, blackBoxesEnum.Current);
+            }
+        }
+
+        /// <summary>
+        /// Plays the game starting from the given savestate.
+        /// </summary>
+        /// <param name="saveState"></param>
+        /// <param name="blackBox"></param>
+        private void DoSaveState(string saveState, IBlackBox<double> blackBox)
+        {
+            emulator.LoadState(saveState);
+            emulator.NextFrame();
+            dataFetcher.NextState();
+
+            Score score = new(scoreFactors.Select(s => s.Clone()));
+
+            while (!shouldStop && !score.ShouldStop)
+            {
+                DoFrame(blackBox);
+                score.Update(dataFetcher);
+            }
+        }
+
+        /// <summary>
         /// Executes one frame of play mode
         /// </summary>
-        private void DoFrame()
+        private void DoFrame(IBlackBox<double> blackBox)
         {
             blackBox!.ResetState();
             inputSetter.SetInputs(blackBox.InputVector);
@@ -163,21 +228,21 @@ namespace Retro_ML.Neural.Play
             emulator.NetworkUpdated(SharpNeatUtils.VectorToArray(blackBox.InputVector), SharpNeatUtils.VectorToArray(blackBox.OutputVector));
         }
 
+        /// <summary>
+        /// Sends the network changed event.
+        /// </summary>
+        private void UpdateNetwork(IBlackBox<double> blackBox)
+        {
+            int[] outputMap = new int[blackBox!.OutputCount];
+            Array.Copy(blackBox.OutputVector.GetField<int[]>("_map"), outputMap, blackBox.OutputCount);
+            emulator.NetworkChanged(SharpNeatUtils.GetConnectionLayers(blackBox), outputMap);
+        }
+
         public void Dispose()
         {
             emulatorManager.FreeOne(emulator);
 
             emulatorManager.Clean();
-        }
-
-        /// <summary>
-        /// Sends the network changed event.
-        /// </summary>
-        private void UpdateNetwork()
-        {
-            int[] outputMap = new int[blackBox!.OutputCount];
-            Array.Copy(blackBox.OutputVector.GetField<int[]>("_map"), outputMap, blackBox.OutputCount);
-            emulator.NetworkChanged(SharpNeatUtils.GetConnectionLayers(blackBox), outputMap);
         }
     }
 }

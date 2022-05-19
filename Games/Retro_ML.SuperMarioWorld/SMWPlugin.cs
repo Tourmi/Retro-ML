@@ -6,7 +6,6 @@ using Retro_ML.Neural.Train;
 using Retro_ML.Plugin;
 using Retro_ML.SuperMarioWorld.Configuration;
 using Retro_ML.SuperMarioWorld.Game;
-using Retro_ML.SuperMarioWorld.Neural.Scoring;
 using Retro_ML.SuperMarioWorld.Neural.Train;
 
 namespace Retro_ML.SuperMarioWorld
@@ -20,7 +19,7 @@ namespace Retro_ML.SuperMarioWorld
         public string PluginConfigPath => "config/plugins/smw-config.json";
 
         public IDataFetcherFactory GetDataFetcherFactory() => new SMWDataFetcherFactory();
-        public INeuralPlayer GetNeuralPlayer(EmulatorManager emulatorManager, ApplicationConfig appConfig) => new SharpNeatPlayer(emulatorManager, appConfig, new DiedScoreFactor(), new WonLevelScoreFactor());
+        public INeuralPlayer GetNeuralPlayer(EmulatorManager emulatorManager, ApplicationConfig appConfig) => new SharpNeatPlayer(emulatorManager, appConfig);
         public INeuralTrainer GetNeuralTrainer(EmulatorManager emulatorManager, ApplicationConfig appConfig) => new SMWTrainer(emulatorManager, appConfig);
         public IPluginConfig GetPluginConfig() => new SMWPluginConfig();
     }
