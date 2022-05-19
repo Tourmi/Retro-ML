@@ -72,6 +72,28 @@ namespace Retro_ML.Tetris.Game
         /// <returns></returns>
         public bool[,] GetSolidTiles()
         {
+            var solidTiles = GetAllTiles();
+
+            var playingTiles = GetPlayingTiles(solidTiles, out int firstLineWithTile);
+
+            bool[,] tilesToGiveAI = new bool[pluginConfig.VisibleRows, PLAY_WIDTH];
+            if (firstLineWithTile != -1)
+            {
+                firstLineWithTile = Math.Min(firstLineWithTile, PLAY_HEIGHT - pluginConfig.VisibleRows);
+                for (int i = firstLineWithTile; i - firstLineWithTile < pluginConfig.VisibleRows; i++)
+                {
+                    for (int j = 0; j < PLAY_WIDTH; j++)
+                    {
+                        tilesToGiveAI[i - firstLineWithTile, j] = playingTiles[i, j];
+                    }
+                }
+            }
+
+            return tilesToGiveAI;
+        }
+
+        private bool[,] GetAllTiles()
+        {
             var bytes = Read(Addresses.BackgroundTiles);
             bool[,] solidTiles = new bool[32, 32];
             for (int i = 0; i < bytes.Length; i++)
@@ -79,8 +101,13 @@ namespace Retro_ML.Tetris.Game
                 solidTiles[i / 32, i % 32] = bytes[i] >= SOLID_TILES_START && bytes[i] <= SOLID_TILES_END;
             }
 
-            int firstLineWithTile = -1;
-            bool[,] tiles = new bool[PLAY_HEIGHT, PLAY_WIDTH];
+            return solidTiles;
+        }
+
+        private bool[,] GetPlayingTiles(bool[,] solidTiles, out int firstLineWithTile)
+        {
+            firstLineWithTile = -1;
+            bool[,] playingTiles = new bool[PLAY_HEIGHT, PLAY_WIDTH];
             for (int i = PLAY_OFFSET_Y; i < PLAY_HEIGHT + PLAY_OFFSET_Y; i++)
             {
                 for (int j = PLAY_OFFSET_X; j < PLAY_WIDTH + PLAY_OFFSET_X; j++)
@@ -89,24 +116,11 @@ namespace Retro_ML.Tetris.Game
                         if (solidTiles[i, j])
                             firstLineWithTile = i - PLAY_OFFSET_Y;
 
-                    tiles[i - PLAY_OFFSET_Y, j - PLAY_OFFSET_X] = solidTiles[i, j];
+                    playingTiles[i - PLAY_OFFSET_Y, j - PLAY_OFFSET_X] = solidTiles[i, j];
                 }
             }
 
-            bool[,] newTiles = new bool[pluginConfig.VisibleRows, PLAY_WIDTH];
-            if (firstLineWithTile != -1)
-            {
-                firstLineWithTile = Math.Min(firstLineWithTile, PLAY_HEIGHT - pluginConfig.VisibleRows);
-                for (int i = firstLineWithTile; i - firstLineWithTile < pluginConfig.VisibleRows; i++)
-                {
-                    for (int j = 0; j < PLAY_WIDTH; j++)
-                    {
-                        newTiles[i - firstLineWithTile, j] = tiles[i, j];
-                    }
-                }
-            }
-
-            return newTiles;
+            return playingTiles;
         }
 
         /// <summary>
@@ -142,9 +156,65 @@ namespace Retro_ML.Tetris.Game
             return block;
         }
 
-        public void GetCurrentBlockPosition()
+        public int GetNumberOfHoles()
         {
+            return CountHoles(GetPlayingTiles(GetAllTiles(), out _));
+        }
 
+        private int CountHoles(bool[,] tiles)
+        {
+            bool[,] visited = new bool[PLAY_HEIGHT, PLAY_WIDTH];
+
+            int count = 0;
+            for (int i = 0; i < PLAY_HEIGHT; i++)
+            {
+                for (int j = 0; j < PLAY_WIDTH; j++)
+                {
+                    if (!tiles[i, j] && !visited[i, j])
+                    {
+                        DFS(tiles, i, j, visited);
+                        count++;
+                    }
+                }
+            }
+            return count - 1;
+        }
+
+        /// <summary>
+        /// Try to visit all empty tiles in current section
+        /// </summary>
+        /// <param name="tiles"></param>
+        /// <param name="row"></param>
+        /// <param name="col"></param>
+        /// <param name="visited"></param>
+        private void DFS(bool[,] tiles, int row, int col, bool[,] visited)
+        {
+            visited[row, col] = true;
+
+            int[] rowNbr = new int[] { 0, -1, 0, 1 };
+            int[] colNbr = new int[] { -1, 0, 1, 0 };
+
+            for (int k = 0; k < 4; k++)
+            {
+                if (IsSafe(tiles, row + rowNbr[k], col + colNbr[k], visited))
+                {
+                    DFS(tiles, row + rowNbr[k], col + colNbr[k], visited);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Check if the index are within the array bounds and if it was already visited
+        /// </summary>
+        /// <param name="M"></param>
+        /// <param name="row"></param>
+        /// <param name="col"></param>
+        /// <param name="visited"></param>
+        /// <returns></returns>
+        private static bool IsSafe(bool[,] M, int row,
+                           int col, bool[,] visited)
+        {
+            return (row >= 0) && (row < PLAY_HEIGHT) && (col >= 0) && (col < PLAY_WIDTH) && (!M[row, col] && !visited[row, col]);
         }
 
         /// <summary>

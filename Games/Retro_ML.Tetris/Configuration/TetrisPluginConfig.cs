@@ -57,6 +57,11 @@ namespace Retro_ML.Tetris.Configuration
                 {
                     IsDisabled = false,
                     ScoreMultiplier = 0.01
+                },
+                new HoleScoreFactor()
+                {
+                    IsDisabled = false,
+                    ScoreMultiplier = -1
                 }
             };
         }
