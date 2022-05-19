@@ -20,13 +20,14 @@ namespace Retro_ML.Application.ViewModels
         public static string ExitString => "Return to main menu";
         public static string StartString => "Start";
         public static string StopString => "Stop";
-        public static string LoadGenomeString => "Load genome";
-        public static string LoadSaveStateString => "Load save state";
+        public static string LoadGenomeString => "Load genomes";
+        public static string LoadSaveStateString => "Load save states";
         #endregion
 
         private INeuralPlayer? neuralPlayer;
         private EmulatorManager? emulatorManager;
         private NetworkViewModel? neuralNetwork;
+        private ApplicationConfig? appConfig;
 
         private bool loadedState = false;
         private bool loadedGenome = false;
@@ -59,12 +60,13 @@ namespace Retro_ML.Application.ViewModels
         public void Init()
         {
             string appConfigJson = File.ReadAllText(DefaultPaths.APP_CONFIG);
-            ApplicationConfig appConfig = ApplicationConfig.Deserialize(appConfigJson)!;
+            appConfig = ApplicationConfig.Deserialize(appConfigJson)!;
             IGamePlugin gamePlugin = appConfig.GetGamePlugin();
 
             NeuralNetwork = new NetworkViewModel(appConfig.NeuralConfig);
             emulatorManager = new(1, appConfig, gamePlugin.GetDataFetcherFactory());
             neuralPlayer = gamePlugin.GetNeuralPlayer(emulatorManager, appConfig);
+            neuralPlayer.FinishedPlaying += HandlePlayStopped;
             emulatorManager.GetFirstEmulator().LinkedNetworkActivated += NeuralNetwork.UpdateNodes;
             emulatorManager.GetFirstEmulator().ChangedLinkedNetwork += NeuralNetwork.UpdateTopology;
         }
@@ -73,18 +75,17 @@ namespace Retro_ML.Application.ViewModels
         {
             OpenFileDialog fileDialog = new();
             fileDialog.Filters.Add(new FileDialogFilter() { Name = "Genome", Extensions = { "genome" } });
-            fileDialog.AllowMultiple = false;
+            fileDialog.AllowMultiple = true;
             fileDialog.Directory = Path.GetFullPath(".");
 
             string[]? paths = await fileDialog.ShowAsync(ViewLocator.GetMainWindow());
-            string path = paths?[0] ?? "";
 
-            if (string.IsNullOrWhiteSpace(path))
+            if ((paths?.Length ?? 0) == 0)
             {
                 return;
             }
 
-            if (neuralPlayer!.LoadGenome(path))
+            if (neuralPlayer!.LoadGenomes(paths!))
             {
                 loadedGenome = true;
                 UpdateCanStart();
@@ -95,18 +96,17 @@ namespace Retro_ML.Application.ViewModels
         {
             OpenFileDialog fileDialog = new();
             fileDialog.Filters.Add(new FileDialogFilter() { Name = "Save State", Extensions = { "State" } });
-            fileDialog.AllowMultiple = false;
-            fileDialog.Directory = Path.GetFullPath("./config/SaveStates");
+            fileDialog.AllowMultiple = true;
+            fileDialog.Directory = Path.GetFullPath($"./config/SaveStates/{appConfig!.GamePluginName}");
 
             string[]? paths = await fileDialog.ShowAsync(ViewLocator.GetMainWindow());
-            string path = paths?[0] ?? "";
 
-            if (string.IsNullOrWhiteSpace(path))
+            if ((paths?.Length ?? 0) == 0)
             {
                 return;
             }
 
-            neuralPlayer!.LoadState(path);
+            neuralPlayer!.LoadStates(paths!);
             loadedState = true;
             UpdateCanStart();
         }
@@ -141,5 +141,11 @@ namespace Retro_ML.Application.ViewModels
         }
 
         private void UpdateCanStart() => CanStart = loadedGenome && loadedState && !neuralPlayer!.IsPlaying;
+
+        private void HandlePlayStopped()
+        {
+            UpdateCanStart();
+            CanStop = false;
+        }
     }
 }
