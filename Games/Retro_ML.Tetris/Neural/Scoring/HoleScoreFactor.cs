@@ -15,6 +15,7 @@ namespace Retro_ML.Tetris.Neural.Scoring
 
         private bool shouldStop = false;
         private double currScore;
+        private int nbHoles;
 
         public HoleScoreFactor()
         {
@@ -44,9 +45,8 @@ namespace Retro_ML.Tetris.Neural.Scoring
 
         private void Update(TetrisDataFetcher dataFetcher)
         {
-            var nbHoles = dataFetcher.GetNumberOfHoles();
+            nbHoles = dataFetcher.GetNumberOfHoles();
 
-            currScore += ScoreMultiplier;
             if (nbHoles >= ExtraField.GetValue(ExtraFields, NUMBER_OF_HOLES))
             {
                 shouldStop = true;
@@ -56,6 +56,7 @@ namespace Retro_ML.Tetris.Neural.Scoring
         public void LevelDone()
         {
             shouldStop = false;
+            currScore += ScoreMultiplier * nbHoles;
         }
 
         public IScoreFactor Clone()
