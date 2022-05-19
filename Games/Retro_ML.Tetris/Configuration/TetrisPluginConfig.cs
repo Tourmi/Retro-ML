@@ -14,6 +14,7 @@ namespace Retro_ML.Tetris.Configuration
         public FieldInfo[] Fields => new FieldInfo[]
         {
              new IntegerFieldInfo(nameof(VisibleRows), "Visible Rows", 4, 17, 1),
+             new IntegerFieldInfo(nameof(NbAttempts), "Number of Attempts", 1, 5, 1),
              new BoolFieldInfo(nameof(UseNormalizedHeights), "Use Normalized Heights")
         };
 
@@ -26,6 +27,7 @@ namespace Retro_ML.Tetris.Configuration
                 return fieldName switch
                 {
                     nameof(VisibleRows) => VisibleRows,
+                    nameof(NbAttempts) => NbAttempts,
                     nameof(UseNormalizedHeights) => UseNormalizedHeights,
                     _ => 0,
                 };
@@ -35,12 +37,14 @@ namespace Retro_ML.Tetris.Configuration
                 switch (fieldName)
                 {
                     case nameof(VisibleRows): VisibleRows = (int)value; break;
+                    case nameof(NbAttempts): NbAttempts = (int)value; break;
                     case nameof(UseNormalizedHeights): UseNormalizedHeights = (bool)value; break;
                 }
             }
         }
 
         public int VisibleRows { get; set; } = 4;
+        public int NbAttempts { get; set; } = 1;
         public bool UseNormalizedHeights { get; set; } = true;
 
         public TetrisPluginConfig()
@@ -50,7 +54,7 @@ namespace Retro_ML.Tetris.Configuration
                 new LineClearedScoreFactor()
                 {
                     IsDisabled = false,
-                    ScoreMultiplier = 1
+                    ScoreMultiplier = 10
                 },
                 new GameOverScoreFactor()
                 {
@@ -60,12 +64,12 @@ namespace Retro_ML.Tetris.Configuration
                 new TimeTakenScoreFactor()
                 {
                     IsDisabled = false,
-                    ScoreMultiplier = 0.01
+                    ScoreMultiplier = 0.1
                 },
                 new HoleScoreFactor()
                 {
                     IsDisabled = false,
-                    ScoreMultiplier = -1
+                    ScoreMultiplier = -2
                 }
             };
         }
@@ -77,6 +81,7 @@ namespace Retro_ML.Tetris.Configuration
             TetrisPluginConfig cfg = JsonConvert.DeserializeObject<TetrisPluginConfig>(json, SerializationUtils.JSON_CONFIG)!;
             ScoreFactors = cfg.ScoreFactors;
             VisibleRows = cfg.VisibleRows;
+            NbAttempts = cfg.NbAttempts;
             UseNormalizedHeights = cfg.UseNormalizedHeights;
         }
 

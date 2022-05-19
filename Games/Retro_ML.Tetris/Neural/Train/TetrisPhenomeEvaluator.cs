@@ -3,6 +3,7 @@ using Retro_ML.Emulator;
 using Retro_ML.Game;
 using Retro_ML.Neural.Scoring;
 using Retro_ML.Neural.Train;
+using Retro_ML.Tetris.Configuration;
 using Retro_ML.Tetris.Game;
 //using Retro_ML.Tetris.Game;
 using Retro_ML.Utils;
@@ -54,24 +55,31 @@ namespace Retro_ML.Tetris.Neural.Train
                     {
                         break;
                     }
-                    emulator.LoadState(Path.GetFullPath(state));
-                    WaitThenStart();
-                    emulator.NextFrame();
-                    dataFetcher.NextState();
-
-                    while (!score.ShouldStop)
+                    for (int i = 0; i < ((TetrisPluginConfig)appConfig.GamePluginConfig!).NbAttempts; i++)
                     {
                         if (trainer.ForceStop)
                         {
                             break;
                         }
-                        DoFrame(phenome);
+                        emulator.LoadState(Path.GetFullPath(state));
+                        WaitThenStart();
+                        emulator.NextFrame();
+                        dataFetcher.NextState();
 
-                        score.Update(dataFetcher);
-                        dataFetcher.NextFrame();
-                        emulator.NetworkUpdated(SharpNeatUtils.VectorToArray(phenome.InputVector), SharpNeatUtils.VectorToArray(phenome.OutputVector));
+                        while (!score.ShouldStop)
+                        {
+                            if (trainer.ForceStop)
+                            {
+                                break;
+                            }
+                            DoFrame(phenome);
+
+                            score.Update(dataFetcher);
+                            dataFetcher.NextFrame();
+                            emulator.NetworkUpdated(SharpNeatUtils.VectorToArray(phenome.InputVector), SharpNeatUtils.VectorToArray(phenome.OutputVector));
+                        }
+                        score.LevelDone();
                     }
-                    score.LevelDone();
                 }
 
                 dataFetcher = null;
