@@ -17,10 +17,9 @@ git submodule update --init
 * .NET SDK 6.0 or higher must be installed
 * Microsoft Visual C++ 2010 SP1 Runtime (x64) must be installed for Bizhawk to run
 * Microsoft Visual C++ Redistributable for Visual Studio 2015, 2017 and 2019
-* A Super Mario World ROM File
 
 ## Building the dependencies
-Run these commands starting from the root of the repository. Alternatively, you may use the `buildDependencies.bat` script.
+Run these commands starting from the root of the repository. Alternatively, you may use the `build.bat` script.
 
 ### SharpNEAT
 ```
@@ -36,14 +35,14 @@ call QuickTestBuildAndPackage.bat
 
 ## Building the application
 ```
-cd .\SMW-ML\
+cd .\Application\
 dotnet build --configuration Release
 ```
 
 ## Running the application
 You may use the `run.bat` file to run the program, once the dependencies are built.
 
-You will need to provide a Super Mario World ROM file through the configuration if the root directory of the program doesn't contain the ROM file (`smw.sfc`).
+You will need to provide a ROM file in the configuration for the game you want to train on.
 
 ## Using the application
 
@@ -135,7 +134,9 @@ This page is used to make specific genomes play on specific levels, both of them
 ![Image of the app configuration menu](docs/config-app.png)  
 
 * **ROM Path**
-  * The path to the Super Mario World ROM file. Clicking the `Select ROM` button allows to select a new ROM.
+  * The path to the ROM file. Clicking the `Select ROM` button allows to select a new ROM.
+* **Game Plugin**
+  * The game plugin to use for the ROM. The available plugins will be the ones present in the `./plugins/` folder.
 * **Multithread**
   * This is the amount of emulators which will be booted while training. It is recommended to not put this value higher than the amount of cores within your computer, as performance will be greatly affected. For the fastest training, at the cost of using up all of the CPU resources available, set to the exact amount of cores in your computer. Otherwise, set to a lower value.
 * **Communication Port with Arduino**
@@ -144,72 +145,40 @@ This page is used to make specific genomes play on specific levels, both of them
 * **Save states to use**
   * By clicking the button, you can select the save states you want to use for training. At least one must be selected.
 
+#### Game Plugin
+This tab's name changes to the current game's plugin name when a new plugin is loaded. The configuration on this page is unique for the currently loaded game plugin, so refer to the plugin's `README.md` for information on the different fields.
+
 #### Training
 ![Image of the neural network configuration menu](docs/config-training.png)  
 
 * **Number of AIs**
   * Determines the total population size of the training. Making it too big will make evolution really slow, while making it too small will make break-throughs extremely rare.
 * **Initial connections**
-  * We recommend leaving this option at 0, but it allows the specification of a percentage of predefined connections when training a new AI. Should be higher or equal to 0, but lower than 1.
+  * We recommend leaving this option at 0, but it allows the specification of a percentage of predefined connections when training a new AI. 
+  * Should be higher or equal to 0, but lower than 1.
 * **Species count**
-  * Determines the number of species to use for the NEAT algorithm. A higher value will make breakthroughs more common while training, but a value that's too high will be detrimental to the evolution of the individual species. The amount of AIs per species is equal to `Number of AI / Species Count`
+  * Determines the number of species to use for the NEAT algorithm. A higher value will make breakthroughs more common while training, but a value that's too high will be detrimental to the evolution of the individual species. 
+  * The amount of AIs per species is equal to `Number of AI / Species Count`
 * **Elitism proportion**
-  * The percentage of species to keep in each generation. Should be higher than 0, but lower than 1. New species will be created from the species that are kept, either by sexual reproduction, or asexual reproduction
+  * The percentage of species to keep in each generation. New species will be created from the species that are kept, either by sexual reproduction, or asexual reproduction.
+  * Should be higher than 0, but lower than 1. 
 * **Selection proportion**
-  * The percentage of AIs to keep between each generation, within a species. Should be higher than 0, but lower or equal to 1. New AIs will be created within the species based on the AIs that are kept.
+  * The percentage of AIs to keep between each generation, within a species. New AIs will be created within the species based on the AIs that are kept.
+  * Should be higher than 0, but lower or equal to 1.
 
 #### Objectives
 ![Image of the objectives configuration menu](docs/config-objectives.png)  
 
-This page lists all of the available training objectives. Some of them cannot be disabled, but the multiplier can be set to 0 so it won't affect the score, at least. The values pictured are the recommended values when training AIs from nothing, but you may experiment at your leisure.
+This page lists all of the available training objectives. Some of them cannot be disabled, but the multiplier can be set to 0 so it won't affect the score, at least. Please refer to your current game plugin's `README.md` for information about specific objectives.
+
+Note that for objectives, the term "Reward" also refers to negative rewards, or punishments.
+Turning off an objective also turns off its stop condition.
 
 * **Enabled**
   * Whether or not this objective will affect the score.
-  * Also, some objectives cuts the training short when a certain condition is satisfied (Dying for `Died`, completing the level for `Won level`, etc). This behaviour is disabled when the objective is disabled.
+  * Also, some objectives cut the training short when a certain condition is satisfied (Dying for `Died`, completing the level for `Won level`, etc). This behaviour is disabled when the objective is disabled.
 * **Multiplier**
-  * The amount by which to multiply the objective's score.
-
-##### Objectives information
-
-* **Died**
-  * The amount of points to attribute to an AI that died. 
-  * It is recommended to set this value to a negative value to discourage AIs from killing themselves.
-* **Distance travelled**
-  * Points to attribute for each tile the AI traverses. This is based on the maximum distance, so going back and forth will not give more points.
-  * The AI must be grounded for points to be attributed, so jumping down a pit will not give extra points.
-  * East, West, Up, Down multipliers
-    * Specific multipliers for distance traveled in the respective directions. These are multiplied with the objective's multiplier.
-* **Stopped moving**
-  * Stops the current level if the AI has stopped progressing through the level. This is based on the maximum distance reached so far, not the current position.
-  * It is recommended to leave this enabled, but you may disable it if you want AIs to stay on the level for up to the maximum duration.
-  * A negative amount of points is recommended to discourage the AI from idling, moving back and forth, and looping forever.
-* **Time taken**
-  * Gives points when the AI takes way too long to complete a level. Recommended to set to a negative value and leave enabled in case AIs decide to take way too much time on a level.
-* **Speed**
-  * Gives points based on the speed of the AI. 
-  * The formula is `(Maximum Tiles distance / Seconds taken) * Multiplier * Direction Multiplier`
-  * Horizontal and vertical multipliers
-    * Additional multipliers for the direction of the AI. 
-* **Won level**
-  * The amount of points to attribute if the AI wins a level. Ideally, this should be a high value to encourage actually finishing levels.
-  * Goal and Key multipliers
-    * Set one of these to 0 or a negative value if you want to prioritize finishing a level with a key, or through the regular level ending.
-* **Coins**
-  * The amount of points to give the AI per coin collected.
-* **Yoshi Coins**
-  * The amount of points to give the AI per Yoshi Coin collected
-* **1-ups**
-  * The amount of points to give the AI per 1-up collected from any source.
-* **High Score**
-  * The amount of points to give the AI for its in-game high-score.
-  * The formula is `(In-game High Score / 1000) * Multiplier`
-  * So a high-score of 55200 with a multiplier of 2 will give a total amount of points of 110.4 to the AI.
-* **Power Up**
-  * Points given whenever the AI collects a power up it didn't have yet.
-  * Mushroom, Cape, Flower multipliers
-    * Additional multiplier for the type of power-up collected. If the global multiplier is 4, and the cape multiplier is 2, then the AI is awarded 8 points for collecting a Cape.
-* **Taken Damage**
-  * Points applied whenever an AI takes damage, not counting dying. 
+  * The amount by which to multiply the objective's reward.
 
 #### Stop Conditions
 ![Image of the stop conditions menu](docs/config-stop-conditions.png)
@@ -230,29 +199,9 @@ This page lists the available stop conditions for training sessions. Satisfying 
 
 This page lists all of the inputs and outputs that can be toggled for the neural networks, as well as the distance (in tiles) that the AI can see.  
 ⚠ Changing any of these values will make previously trained AIs incompatible with the application ⚠
-* **View distance horizontal** `VDH`
-  * The horizontal distance that the AI can see for, in tiles, not including the tile the AI is on. This means that if we set both the horizontal and vertical distances to 4, a 9x9 grid of inputs will be used.
-* **View distance vertical** `VDV`
-  * The vertical distance that the AI can see for, in tiles, not including the tile the AI is on. This means that if we set both the horizontal and vertical distances to 4, a 9x9 grid of inputs will be used.
-* **Input nodes**
-  * Tiles : The tiles the AI can stand on. `(VDH * 2 + 1) * (VDV * 2 + 1)` total nodes.
-  * Dangers : The dangerous tiles around the AI. Includes dangerous tiles as well as dangerous sprites. `(VDH * 2 + 1) * (VDV * 2 + 1)` total nodes.
-  * Goodies : The "good" tiles around the AI. Includes coins, powerups, blocks that contain items. `(VDH * 2 + 1) * (VDV * 2 + 1)` total nodes.
-  * Water : The water tiles around the AI. `(VDH * 2 + 1) * (VDV * 2 + 1)` total nodes.
-  * On ground : Whether or not the AI is touching the ground.
-  * In water : Whether or not the AI is in water
-  * Raising : Whether or not the AI is raising, both out of a jump as well as while swimming.
-  * Sinking : Whether or not the AI is falling, both out of a jump as well as while swimming.
-  * Can jump out of water : Whether or not the AI will get out of the water by jumping.
-  * Carrying : Whether or not the AI is carrying something.
-  * Can Climb : ⚠Not guaranteed to always be right. Whether or not the AI can climb at the moment.
-  * Max Speed : Whether or not the AI has reached maximum speed.
-  * Message box : Whether or not there currently is a message box open.
-  * Internal clock : Timed bias value. Alternates between on and off every couple frames.
-  * Bias : Bias value. Always on.
-* **Output nodes**
-  * The output nodes are self-explanatory, there is one for each button available on an SNES controller.
-  
+
+Refer to the current game plugin's `README.md` for information about the different Neural Inputs/Outputs.
+
 ##### Emulator tabs
 ![Image of one of the emulator menus](docs/config-emulator.png)
 
