@@ -25,12 +25,13 @@ namespace Retro_ML.Neural.Play
         private IDataFetcher dataFetcher;
         private InputSetter inputSetter;
         private OutputGetter outputGetter;
+        private readonly IScoreFactor[] scoreFactors;
 
         private bool shouldStop;
 
         public bool IsPlaying { get; private set; }
 
-        public SharpNeatPlayer(EmulatorManager emulatorManager, ApplicationConfig appConfig)
+        public SharpNeatPlayer(EmulatorManager emulatorManager, ApplicationConfig appConfig, params IScoreFactor[] scoreFactors)
         {
             metaGenome = new MetaNeatGenome<double>(
                     inputNodeCount: appConfig.NeuralConfig.GetInputCount(),
@@ -41,6 +42,7 @@ namespace Retro_ML.Neural.Play
             emulatorManager.Init(false);
             emulator = emulatorManager.WaitOne();
             syncSemaphore = new Semaphore(1, 1);
+            this.scoreFactors = scoreFactors;
 
             dataFetcher = emulator.GetDataFetcher();
             inputSetter = emulator.GetInputSetter();
@@ -128,7 +130,7 @@ namespace Retro_ML.Neural.Play
                     emulator.NextFrame();
                     dataFetcher.NextState();
 
-                    Score score = new(new List<IScoreFactor>() { });
+                    Score score = new(scoreFactors.Select(s => s.Clone()));
 
                     while (!shouldStop && !score.ShouldStop)
                     {
