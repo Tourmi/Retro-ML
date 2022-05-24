@@ -1,0 +1,111 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+	<PropertyGroup>
+		<OutputType>WinExe</OutputType>
+		<TargetFramework>net6.0</TargetFramework>
+		<Nullable>enable</Nullable>
+		<PublishReadyToRun>true</PublishReadyToRun>
+		<ApplicationIcon>Assets/logo.ico</ApplicationIcon>
+	</PropertyGroup>
+	
+	<ItemGroup>
+		<Emulator Include="..\Submodules\BizHawk\output\**\*.*" />
+		<ROMs Include="*.nes" />
+		<ROMs Include="*.sfc" />
+		<ROMs Include="*.smc" />
+		<ROMs Include="*.n64" />
+		<ROMs Include="*.z64" />
+		<ROMs Include="*.v64" />
+		<ROMs Include="*.gb" />
+		<ROMs Include="*.gbc" />
+		<ROMs Include="*.gba" />
+		<Plugins Include="..\Games\**\$(OutDir)\Retro_ML.*.dll" />
+		<Plugins Include="..\Consoles\**\$(OutDir)\Retro_ML.*.dll" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<AvaloniaResource Include="Assets\**" />
+		<None Remove=".gitignore" />
+	</ItemGroup>
+	<ItemGroup>
+		<PackageReference Include="Avalonia" Version="0.10.11" />
+		<PackageReference Include="Avalonia.Controls.DataGrid" Version="0.10.11" />
+		<PackageReference Include="Avalonia.Desktop" Version="0.10.11" />
+		<!--Condition below is needed to remove Avalonia.Diagnostics package from build output in Release configuration.-->
+		<PackageReference Condition="'$(Configuration)' == 'Debug'" Include="Avalonia.Diagnostics" Version="0.10.11" />
+		<PackageReference Include="Avalonia.ReactiveUI" Version="0.10.11" />
+		<PackageReference Include="Avalonia.Remote.Protocol" Version="0.10.11" />
+		<PackageReference Include="LiveChartsCore.SkiaSharpView.Avalonia" Version="2.0.0-beta.101" />
+		<PackageReference Include="Redzen" Version="13.0.0" />
+		<PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
+	</ItemGroup>
+	<ItemGroup>
+		<None Update="config\**">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+			<ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+		</None>
+	</ItemGroup>
+	<ItemGroup>
+	  <Compile Update="Views\Components\FieldInfo\BoolView.axaml.cs">
+	    <DependentUpon>BoolView.axaml</DependentUpon>
+	  </Compile>
+	  <Compile Update="Views\Components\ScoreFactorView.axaml.cs">
+	    <DependentUpon>ScoreFactorView.axaml</DependentUpon>
+	  </Compile>
+	  <Compile Update="Views\Components\MessageBox.axaml.cs">
+	    <DependentUpon>MessageBox.axaml</DependentUpon>
+	  </Compile>
+	  <Compile Update="Views\MainPageView.axaml.cs">
+	    <DependentUpon>MainPageView.axaml</DependentUpon>
+	  </Compile>
+	  <Compile Update="Views\TrainingPageView.axaml.cs">
+	    <DependentUpon>TrainingPageView.axaml</DependentUpon>
+	  </Compile>
+	</ItemGroup>
+	<ItemGroup>
+	  <None Update="config\appConfig.json">
+		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="config\bizhawkAdapter.lua">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="config\bizhawkConfig.ini">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="config\bizhawkConfigPlayMode.ini">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="config\plugins\smw-config.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="config\sharpNeatConfig.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="Views\Components\MessageBox.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </None>
+	</ItemGroup>
+	<ItemGroup>
+	  <ProjectReference Include="..\Retro_ML\Retro_ML.csproj" />
+	</ItemGroup>
+	<ItemGroup>
+	  <Folder Include="ViewModels\Configuration\" />
+	  <Folder Include="Views\Configuration\" />
+	</ItemGroup>
+	<ItemGroup>
+	  <None Include="..\.editorconfig" Link=".editorconfig" />
+	</ItemGroup>
+
+	<Target Name="CopyEmulator" AfterTargets="AfterCompile">
+		<Error Condition="!Exists('..\Submodules\BizHawk\output\EmuHawk.exe')" Text="The emulator (..\Submodules\BizHawk\output\EmuHawk.exe) is missing, or was not built! " />
+		<Copy SourceFiles="@(Emulator)" DestinationFolder="$(TargetDir)\emu\%(RecursiveDir)" />
+		<Message Text="Copied Emulator to emu\" Importance="high" />
+
+		<Copy SourceFiles="%(ROMs.Identity)" DestinationFolder="$(TargetDir)" />
+		<Message Text="Copied %(ROMs.Identity) to $(TargetDir)" Importance="high" />
+	</Target>
+	<Target Name="CopyPlugins" AfterTargets="AfterCompile">
+		<MakeDir Directories="$(TargetDir)plugins" />
+		<Copy SourceFiles="%(Plugins.Identity)" DestinationFolder="$(TargetDir)plugins" />
+		<Message Text="Copied: %(Plugins.Identity) to $(TargetDir)plugins\" Importance="high" />
+	</Target>
+</Project>

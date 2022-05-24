@@ -1,0 +1,25 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="600" d:DesignHeight="200"
+			 xmlns:vm="clr-namespace:Retro_ML.Application.ViewModels.Components;assembly=Retro_ML.Application"
+             x:Class="Retro_ML.Application.Views.Components.StopConditionView">
+
+	<UserControl.Styles>
+		<StyleInclude Source="/Styles/MainStyles.axaml" />
+	</UserControl.Styles>
+
+	<StackPanel>
+		<TextBlock Classes="h1" Margin="5" Text="{Binding Name}"/>
+		<StackPanel Margin="5" Spacing="10" Orientation="Horizontal">
+			<TextBlock Classes="p" Text="Is Enabled" VerticalAlignment="Center"/>
+			<CheckBox IsChecked="{Binding IsChecked}" VerticalAlignment="Center"/>
+		</StackPanel>
+		<StackPanel Margin="5" Spacing="10" Orientation="Horizontal" IsVisible="{Binding HasParam}">
+			<TextBlock Classes="p" Text="{Binding ParamName}" VerticalAlignment="Center"/>
+			<NumericUpDown Value="{Binding ParamValue}" ShowButtonSpinner="False" Increment="1" Minimum="1" Maximum="999999999" VerticalAlignment="Center"/>
+		</StackPanel>
+
+	</StackPanel>
+</UserControl>

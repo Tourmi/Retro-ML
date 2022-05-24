@@ -1,0 +1,74 @@
+{
+  "RomPath": "smw.sfc",
+  "GamePluginName": "SMW",
+  "Multithread": 4,
+  "ArduinoCommunicationPort": "COM3",
+  "StopConditions": [
+    {
+      "$type": "Retro_ML.Neural.Train.StopCondition.FitnessStopCondition, Retro_ML",
+      "Name": "Stop when fitness reached",
+      "ShouldUse": false,
+      "HasParam": true,
+      "ParamName": "Target fitness",
+      "ParamValue": 2000
+    },
+    {
+      "$type": "Retro_ML.Neural.Train.StopCondition.GenerationCountStopCondition, Retro_ML",
+      "Name": "Stop after X generations",
+      "ShouldUse": false,
+      "HasParam": true,
+      "ParamName": "Generations",
+      "ParamValue": 250
+    },
+    {
+      "$type": "Retro_ML.Neural.Train.StopCondition.PlateauStopCondition, Retro_ML",
+      "Name": "Stop when plateau reached",
+      "ShouldUse": false,
+      "HasParam": true,
+      "ParamName": "Maximum plateau length",
+      "ParamValue": 100
+    },
+    {
+      "$type": "Retro_ML.Neural.Train.StopCondition.TimeStopCondition, Retro_ML",
+      "Name": "Stop after X minutes",
+      "ShouldUse": false,
+      "HasParam": true,
+      "ParamName": "Minutes",
+      "ParamValue": 60
+    }
+  ],
+  "SaveStates": [
+    "config\\SaveStates\\SMW\\yoshi-island-1.State"
+  ],
+  "NeuralConfig": {
+    "EnabledStates": [
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      false,
+      false,
+      false,
+      false
+    ]
+  }
+}
