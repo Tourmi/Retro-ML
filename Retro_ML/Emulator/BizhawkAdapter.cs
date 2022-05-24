@@ -20,7 +20,8 @@ namespace Retro_ML.Emulator
             public const string EXIT_CODE = "exit {0}";
             public const string LOAD_ROM = "load_rom {0}";
             public const string LOAD_STATE = "load_state {0}";
-            public const string NEXT_FRAME = "next_frame";
+            public const string NEXT_FRAME = "next_frame ";
+            public const string NEXT_FRAMES = "next_frames {0} {1}";
             public const string READ_MEMORY = "read_memory {0}";
             public const string READ_MEMORY_RANGE = "read_memory_range {0} {1}";
             public const string READ_MEMORY_RANGES = "read_memory_ranges {0}";
@@ -88,6 +89,11 @@ namespace Retro_ML.Emulator
         public void NextFrame()
         {
             SendCommand(Commands.NEXT_FRAME);
+        }
+
+        public void NextFrames(int frameCount, bool repeatInput)
+        {
+            SendCommand(Commands.NEXT_FRAMES, frameCount, repeatInput);
         }
 
         public byte ReadMemory(uint addr)
