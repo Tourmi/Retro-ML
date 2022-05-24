@@ -18,7 +18,8 @@ namespace Retro_ML.SuperMarioKart.Configuration
             new IntegerFieldInfo(nameof(ViewAngle), "View Angle (Degrees)", 10, 360, 10),
             new IntegerChoiceFieldInfo(nameof(Raycount), "Raycast count", new int[] { 4, 8, 16, 32, 64 }),
             new IntegerFieldInfo(nameof(InternalClockTickLength), "Internal Clock Tick Length (Frames)", 1, 3600, 1),
-            new IntegerChoiceFieldInfo(nameof(InternalClockLength), "Internal Clock Length", new int[] {1,2,3,4,5,6,7,8,16 })
+            new IntegerChoiceFieldInfo(nameof(InternalClockLength), "Internal Clock Length", new int[] {1,2,3,4,5,6,7,8,16 }),
+            new IntegerFieldInfo(nameof(FrameSkip), "Frames to skip", 0, 15, 1)
         };
 
         public object this[string fieldName]
@@ -32,6 +33,7 @@ namespace Retro_ML.SuperMarioKart.Configuration
                     nameof(Raycount) => Raycount,
                     nameof(InternalClockLength) => InternalClockLength,
                     nameof(InternalClockTickLength) => InternalClockTickLength,
+                    nameof(FrameSkip) => FrameSkip,
                     _ => 0,
                 };
             }
@@ -44,6 +46,7 @@ namespace Retro_ML.SuperMarioKart.Configuration
                     case nameof(Raycount): Raycount = (int)value; break;
                     case nameof(InternalClockLength): InternalClockLength = (int)value; break;
                     case nameof(InternalClockTickLength): InternalClockTickLength = (int)value; break;
+                    case nameof(FrameSkip): FrameSkip = (int)value; break;
                 }
             }
         }
@@ -68,6 +71,10 @@ namespace Retro_ML.SuperMarioKart.Configuration
         /// The amount of frames before the clock moves to the next state.
         /// </summary>
         public int InternalClockTickLength { get; set; } = 15;
+        /// <summary>
+        /// Skips this amount of frames for every neural network updates.
+        /// </summary>
+        public int FrameSkip { get; set; } = 0;
 
         public List<IScoreFactor> ScoreFactors { get; set; }
 
@@ -98,6 +105,7 @@ namespace Retro_ML.SuperMarioKart.Configuration
             ViewDistance = cfg.ViewDistance;
             ViewAngle = cfg.ViewAngle;
             Raycount = cfg.Raycount;
+            FrameSkip = cfg.FrameSkip;
         }
 
         public void InitNeuralConfig(NeuralConfig neuralConfig)

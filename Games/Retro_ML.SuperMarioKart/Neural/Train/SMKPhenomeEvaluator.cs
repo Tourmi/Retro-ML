@@ -3,6 +3,7 @@ using Retro_ML.Emulator;
 using Retro_ML.Game;
 using Retro_ML.Neural.Scoring;
 using Retro_ML.Neural.Train;
+using Retro_ML.SuperMarioKart.Configuration;
 using Retro_ML.SuperMarioKart.Game;
 using Retro_ML.Utils;
 using Retro_ML.Utils.SharpNeat;
@@ -22,6 +23,7 @@ namespace Retro_ML.SuperMarioKart.Neural.Train
         private INeuralTrainer trainer;
         private SMKDataFetcher? dataFetcher;
         private ApplicationConfig appConfig;
+        private SMKPluginConfig pluginConfig;
         private InputSetter? inputSetter;
         private OutputGetter? outputGetter;
 
@@ -29,6 +31,7 @@ namespace Retro_ML.SuperMarioKart.Neural.Train
         {
             this.emulatorManager = emulatorManager;
             this.appConfig = appConfig;
+            this.pluginConfig = (SMKPluginConfig)appConfig.GamePluginConfig!;
             this.trainer = trainer;
         }
 
@@ -98,7 +101,7 @@ namespace Retro_ML.SuperMarioKart.Neural.Train
             phenome.Activate();
 
             emulator!.SendInput(outputGetter!.GetControllerInput(phenome.OutputVector));
-            emulator!.NextFrame();
+            emulator!.NextFrames(pluginConfig.FrameSkip + 1, true);
         }
     }
 }
