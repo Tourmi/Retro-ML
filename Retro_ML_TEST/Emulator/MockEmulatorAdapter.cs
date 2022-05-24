@@ -65,6 +65,11 @@ namespace Retro_ML_TEST.Emulator
             NextFrameCallCount++;
         }
 
+        public void NextFrames(int frameCount, bool repeatInput)
+        {
+            NextFrameCallCount += frameCount;
+        }
+
         public void SetMemory(uint addr, byte b)
         {
             Memory[addr] = b;

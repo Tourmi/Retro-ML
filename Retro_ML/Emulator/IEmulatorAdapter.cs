@@ -43,6 +43,12 @@ namespace Retro_ML.Emulator
         /// </summary>
         void NextFrame();
         /// <summary>
+        /// Advances the emulator by <paramref name="frameCount"/>. <paramref name="repeatInput"/> repeats the input for every frame if set to true, otherwise, the inputs will be released after the first frame.
+        /// </summary>
+        /// <param name="frameCount">Advances the emulator by this amount of frames.</param>
+        /// <param name="repeatInput">Repeats the input for every frame if set to true, otherwise, the inputs will be released after the first frame.</param>
+        void NextFrames(int frameCount, bool repeatInput);
+        /// <summary>
         /// Loads the given ROM
         /// </summary>
         /// <param name="path"></param>

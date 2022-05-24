@@ -16,21 +16,20 @@ namespace Retro_ML.Neural.Play
     {
         public event Action? FinishedPlaying;
 
-        private readonly Semaphore syncSemaphore;
-        private readonly EmulatorManager emulatorManager;
-        private readonly IEmulatorAdapter emulator;
+        protected readonly Semaphore syncSemaphore;
+        protected readonly EmulatorManager emulatorManager;
+        protected readonly IEmulatorAdapter emulator;
 
-        private MetaNeatGenome<double> metaGenome;
-        private readonly List<IBlackBox<double>> blackBoxes;
-        private readonly List<string> states;
+        protected MetaNeatGenome<double> metaGenome;
+        protected readonly List<IBlackBox<double>> blackBoxes;
+        protected readonly List<string> states;
 
-        private IDataFetcher dataFetcher;
-        private InputSetter inputSetter;
-        private OutputGetter outputGetter;
-        private readonly IScoreFactor[] scoreFactors;
+        protected IDataFetcher dataFetcher;
+        protected InputSetter inputSetter;
+        protected OutputGetter outputGetter;
+        protected readonly IScoreFactor[] scoreFactors;
 
-        private bool shouldStop;
-
+        protected bool shouldStop;
 
         public bool IsPlaying { get; private set; }
 
@@ -55,7 +54,7 @@ namespace Retro_ML.Neural.Play
             outputGetter = emulator.GetOutputGetter();
         }
 
-        public bool LoadGenomes(string[] paths)
+        public virtual bool LoadGenomes(string[] paths)
         {
             bool shouldRestart = IsPlaying;
             StopPlaying();
@@ -73,7 +72,7 @@ namespace Retro_ML.Neural.Play
             return true;
         }
 
-        public void LoadStates(string[] paths)
+        public virtual void LoadStates(string[] paths)
         {
             bool shouldRestart = IsPlaying;
             StopPlaying();
@@ -88,7 +87,7 @@ namespace Retro_ML.Neural.Play
             if (shouldRestart) StartPlaying();
         }
 
-        public void StartPlaying()
+        public virtual void StartPlaying()
         {
             if (IsPlaying)
             {
@@ -108,14 +107,14 @@ namespace Retro_ML.Neural.Play
             new Thread(Play).Start();
         }
 
-        public void StopPlaying()
+        public virtual void StopPlaying()
         {
             shouldStop = true;
             syncSemaphore.WaitOne();
             syncSemaphore.Release();
         }
 
-        private bool LoadGenome(string path)
+        protected virtual bool LoadGenome(string path)
         {
             if (!VerifyGenome(path))
             {
@@ -129,7 +128,7 @@ namespace Retro_ML.Neural.Play
             return true;
         }
 
-        private bool VerifyGenome(string path)
+        protected virtual bool VerifyGenome(string path)
         {
             string[] inputOutput = File.ReadLines(path).Where(l => !l.Trim().StartsWith("#") && !string.IsNullOrEmpty(l.Trim())).First().Trim().Split(null);
             int input = int.Parse(inputOutput[0]);
@@ -138,7 +137,7 @@ namespace Retro_ML.Neural.Play
             return input == metaGenome.InputNodeCount && output == metaGenome.OutputNodeCount;
         }
 
-        private void LoadState(string path)
+        protected virtual void LoadState(string path)
         {
             states.Add(Path.GetFullPath(path));
         }
@@ -146,7 +145,7 @@ namespace Retro_ML.Neural.Play
         /// <summary>
         /// Play loop
         /// </summary>
-        private void Play()
+        protected virtual void Play()
         {
             try
             {
@@ -168,7 +167,7 @@ namespace Retro_ML.Neural.Play
         /// <summary>
         /// Goes through every savestates for every loaded black boxes
         /// </summary>
-        private void DoPlayLoop()
+        protected virtual void DoPlayLoop()
         {
             var blackBoxesEnum = blackBoxes.GetEnumerator();
             blackBoxesEnum.MoveNext();
@@ -197,7 +196,7 @@ namespace Retro_ML.Neural.Play
         /// </summary>
         /// <param name="saveState"></param>
         /// <param name="blackBox"></param>
-        private void DoSaveState(string saveState, IBlackBox<double> blackBox)
+        protected virtual void DoSaveState(string saveState, IBlackBox<double> blackBox)
         {
             emulator.LoadState(saveState);
             emulator.NextFrame();
@@ -215,7 +214,7 @@ namespace Retro_ML.Neural.Play
         /// <summary>
         /// Executes one frame of play mode
         /// </summary>
-        private void DoFrame(IBlackBox<double> blackBox)
+        protected virtual void DoFrame(IBlackBox<double> blackBox)
         {
             blackBox!.ResetState();
             inputSetter.SetInputs(blackBox.InputVector);
@@ -231,14 +230,14 @@ namespace Retro_ML.Neural.Play
         /// <summary>
         /// Sends the network changed event.
         /// </summary>
-        private void UpdateNetwork(IBlackBox<double> blackBox)
+        protected void UpdateNetwork(IBlackBox<double> blackBox)
         {
             int[] outputMap = new int[blackBox!.OutputCount];
             Array.Copy(blackBox.OutputVector.GetField<int[]>("_map"), outputMap, blackBox.OutputCount);
             emulator.NetworkChanged(SharpNeatUtils.GetConnectionLayers(blackBox), outputMap);
         }
 
-        public void Dispose()
+        public virtual void Dispose()
         {
             emulatorManager.FreeOne(emulator);
 

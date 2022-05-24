@@ -7,6 +7,13 @@ function table_concat(t1,t2)
     return t1
 end
 
+function str_to_bool(str)
+    if str == nil then
+        return false
+    end
+    return string.lower(str) == 'true'
+end
+
 function okay() 
     comm.socketServerSendBytes({1})
 end
@@ -42,8 +49,30 @@ function parseCommand(cmd)
         okay()
         return
     end
-    if string.find(cmd, "next_frame") then
+    if string.find(cmd, "next_frame ") then
         emu.frameadvance()
+        okay()
+        return
+    end
+    if string.find(cmd, "next_frames ") then
+        local updated_cmd = string.sub(cmd, 13)
+        local space_index = string.find(updated_cmd, " ")
+        local total_frames_str = string.sub(updated_cmd, 1, space_index)
+        local repeat_input_str = string.sub(updated_cmd, space_index + 1)
+
+        local total_frames = tonumber(total_frames_str)
+        local repeat_input = str_to_bool(repeat_input_str)
+
+        local input = joypad.get()
+
+        for i=1,total_frames do
+            emu.frameadvance()
+            
+            if repeat_input and i ~= total_frames then
+                joypad.set(input)
+            end
+        end
+        
         okay()
         return
     end
