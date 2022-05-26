@@ -92,6 +92,40 @@ namespace Retro_ML.Tetris.Game
             return tilesToGiveAI;
         }
 
+        public double[,] GetNormalizedHeight()
+        {
+            double[,] normalizedHeights = new double[1, PLAY_WIDTH];
+            var heights = GetColumnHeights();
+
+            int median = heights.OrderBy(i => i).ToArray()[PLAY_WIDTH / 2];
+
+            for (int i = 0; i < heights.Length; i++)
+            {
+                normalizedHeights[0, i] = (heights[i] - median) / (double)pluginConfig.VisibleRows;
+            }
+
+            return normalizedHeights;
+        }
+
+        public int[] GetColumnHeights()
+        {
+            var solidTiles = GetAllTiles();
+            var playingTiles = GetPlayingTiles(solidTiles, out _);
+
+            int[] heights = new int[PLAY_WIDTH];
+            for (int i = PLAY_HEIGHT - 1; i >= 0; i--)
+            {
+                for (int j = 0; j < PLAY_WIDTH; j++)
+                {
+                    if (playingTiles[i, j])
+                    {
+                        heights[j] = PLAY_HEIGHT - i;
+                    }
+                }
+            }
+            return heights;
+        }
+
         private bool[,] GetAllTiles()
         {
             var bytes = Read(Addresses.BackgroundTiles);
@@ -161,7 +195,7 @@ namespace Retro_ML.Tetris.Game
             return CountHoles(GetPlayingTiles(GetAllTiles(), out _));
         }
 
-        private int CountHoles(bool[,] tiles)
+        public int CountHoles(bool[,] tiles)
         {
             bool[,] visited = new bool[PLAY_HEIGHT, PLAY_WIDTH];
 
