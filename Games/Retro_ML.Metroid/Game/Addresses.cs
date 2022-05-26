@@ -42,7 +42,17 @@
             /// Y position of camera scroll
             /// </summary>
             public static readonly AddressData ScrollY = new(0xFD);
+        }
 
+        public static class Gamestate
+        {
+            /// <summary>
+            /// <br>Current game mode                   </br>
+            /// <br>3: playing                          </br>
+            /// <br>5: paused                           </br>
+            /// <br>TODO : Figure out values for dying  </br>
+            /// </summary>
+            public static readonly AddressData Mode = new(0x1E);
             /// <summary>
             /// Current Y position on the map
             /// </summary>
@@ -67,17 +77,6 @@
             /// <br>4 = scrolling down to center a door before room transition</br>
             /// </summary>
             public static readonly AddressData InADoor = new(0x56);
-        }
-
-        public static class Game
-        {
-            /// <summary>
-            /// <br>Current game mode                   </br>
-            /// <br>3: playing                          </br>
-            /// <br>5: paused                           </br>
-            /// <br>TODO : Figure out values for dying  </br>
-            /// </summary>
-            public static readonly AddressData Mode = new(0x1E);
         }
 
         public static class Progress
@@ -160,9 +159,17 @@
             /// </summary>
             public static readonly AddressData VerticalSpeed = new(0x308);
             /// <summary>
+            /// The fractional part of Samus' horizontal speed
+            /// </summary>
+            public static readonly AddressData VerticalFractionalSpeed = new(0x312);
+            /// <summary>
             /// Signed byte for Samus' horizontal speed
             /// </summary>
             public static readonly AddressData HorizontalSpeed = new(0x309);
+            /// <summary>
+            /// The fractional part of Samus' horizontal speed
+            /// </summary>
+            public static readonly AddressData HorizontalFractionalSpeed = new(0x313);
             /// <summary>
             /// Set when Samus is hit by an enemy
             /// </summary>
@@ -170,7 +177,7 @@
             /// <summary>
             /// Screen Samus is currently in. (0 or 1)
             /// </summary>
-            public static readonly AddressData Screen = new(0x30C);
+            public static readonly AddressData CurrentScreen = new(0x30C);
             /// <summary>
             /// Samus Y position within room
             /// </summary>
@@ -180,10 +187,6 @@
             /// </summary>
             public static readonly AddressData XPosition = new(0x30E);
             /// <summary>
-            /// Samus' maximum horizontal speed
-            /// </summary>
-            public static readonly AddressData MaxSpeed = new(0x316);
-            /// <summary>
             /// Set to 1 when Samus is using missiles
             /// </summary>
             public static readonly AddressData UsingMissiles = new(0x10E);
@@ -192,7 +195,7 @@
         public static class Elevator
         {
             /// <summary>
-            /// Current status of the elevator. 
+            /// Current status of the elevator. 0 if inactive
             /// </summary>
             public static readonly AddressData Status = new(0x320);
             /// <summary>

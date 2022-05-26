@@ -2,6 +2,7 @@
 using Retro_ML.Emulator;
 using Retro_ML.Game;
 using Retro_ML.Metroid.Configuration;
+using Retro_ML.Utils;
 using static Retro_ML.Metroid.Game.Addresses;
 
 namespace Retro_ML.Metroid.Game
@@ -11,6 +12,11 @@ namespace Retro_ML.Metroid.Game
     /// </summary>
     internal class MetroidDataFetcher : IDataFetcher
     {
+        public const int MAXIMUM_VERTICAL_SPEED = 0x500;
+        public const int MAXIMUM_HORIZONTAL_SPEED = 0x180;
+        public const int INVINCIBILITY_TIMER_LENGTH = 50;
+        public const int TANK_HEALTH = 1000;
+
         private readonly IEmulatorAdapter emulator;
         private readonly Dictionary<uint, byte[]> frameCache;
         private readonly Dictionary<uint, byte[]> roomCache;
@@ -51,12 +57,74 @@ namespace Retro_ML.Metroid.Game
 
         public bool[,] GetInternalClockState() => internalClock.GetStates();
 
+        public ushort GetSamusHealth() => (ushort)ReadNybbleDigitsToUlong(Samus.Health);
+        public ushort GetMaximumHealth() => (ushort)((ReadSingle(Progress.EnergyTanks) + 1) * TANK_HEALTH - 1);
+        public double GetSamusHealthRatio() => GetSamusHealth() / (double)GetMaximumHealth();
+        public ushort GetDeathCount() => (ushort)ReadULong(Progress.Deaths);
+        public byte GetSamusXPosition() => ReadSingle(Samus.XPosition);
+        public byte GetSamusYPosition() => ReadSingle(Samus.YPosition);
+        public bool IsSamusLookingRight() => ReadSingle(Samus.LookingDirection) == 0;
+        public bool IsSamusInLava() => ReadSingle(Samus.InLava) == 1;
+        public bool IsMetroidOnSamusHead() => ReadSingle(Samus.HasMetroidOnHead) == 1;
+        public bool IsSamusOnElevator() => ReadSingle(Samus.IsOnElevator) == 1;
+        public bool IsSamusUsingMissiles() => ReadSingle(Samus.UsingMissiles) == 1;
+        public double SamusInvincibilityTimer() => ReadSingle(Samus.InvincibleTimer) / (double)INVINCIBILITY_TIMER_LENGTH;
+        public double GetCurrentMissiles() => ReadSingle(Progress.Missiles) / Math.Max(1.0, ReadSingle(Progress.MissileCapacity));
+
+        public byte GetMapX() => ReadSingle(Gamestate.MapX);
+        public byte GetMapY() => ReadSingle(Gamestate.MapY);
+
+        public double GetSamusVerticalSpeed() => (((sbyte)ReadSingle(Samus.VerticalSpeed)) * 0x100 + ReadSingle(Samus.VerticalFractionalSpeed)) / (double)MAXIMUM_VERTICAL_SPEED;
+        public double GetSamusHorizontalSpeed() => (((sbyte)ReadSingle(Samus.HorizontalSpeed)) * 0x100 + ReadSingle(Samus.HorizontalFractionalSpeed)) / (double)MAXIMUM_HORIZONTAL_SPEED;
+
         /// <summary>
         /// Reads a single byte from the emulator's memory
         /// </summary>
         /// <param name="addressData"></param>
         /// <returns></returns>
         private byte ReadSingle(AddressData addressData) => Read(addressData)[0];
+        /// <summary>
+        /// Reads up to 8 bytes from the address, assuming little endian.
+        /// </summary>
+        /// <param name="bytes"></param>
+        /// <returns></returns>
+        private ulong ReadULong(AddressData addressData)
+        {
+            var bytes = Read(addressData);
+            ulong value = 0;
+            for (int i = 0; i < bytes.Length && i < 8; i++)
+            {
+                value += (ulong)bytes[i] << i * 8;
+            }
+            return value;
+        }
+
+        /// <summary>
+        /// <br>Reads up to 8 bytes from the address, assuming byte-wise little endian, and interprets all nybbles as decimal digits.</br>
+        /// <br>Examples:</br>
+        /// <code><br>0x3412 -> 1234  </br>
+        /// <br>0x90   -> 90    </br>
+        /// <br>0x0180 -> 8001  </br>
+        /// <br>0x4    -> 4     </br>
+        /// <br>0xA    -> 10    </br></code>
+        /// </summary>
+        /// <param name="addressData"></param>
+        /// <returns></returns>
+        private ulong ReadNybbleDigitsToUlong(AddressData addressData)
+        {
+            var bytes = Read(addressData);
+            ulong value = 0;
+            for (int i = 0; i < bytes.Length && i < 8; i++)
+            {
+                var currByte = bytes[i];
+
+                var smallDigit = currByte & 0b0000_1111;
+                var bigDigit = (currByte & 0b1111_0000) >> 4;
+                value += ((ulong)(smallDigit + bigDigit * 10)) * 100.PosPow(i);
+            }
+
+            return value;
+        }
 
         /// <summary>
         /// Reads a specific amount of bytes from the emulator's memory, using the AddressData
@@ -188,16 +256,6 @@ namespace Retro_ML.Metroid.Game
                     };
                 }
             }
-        }
-
-        private static uint ToUnsignedInteger(byte[] bytes)
-        {
-            uint value = 0;
-            for (int i = 0; i < bytes.Length; i++)
-            {
-                value += (uint)bytes[i] << i * 8;
-            }
-            return value;
         }
     }
 }
