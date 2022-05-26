@@ -214,9 +214,9 @@
             /// </summary>
             public static readonly AddressData IsEnemyUpPresent = new(0x000F, 5);
             /// <summary>
-            /// Horizontal position of Enemy in the screen, in pixels. There can be 5 enemy max in the screen at a time.
+            /// Enemy hitboxes (5x4 bytes, x1,y1 x2,y2)
             /// </summary>
-            public static readonly AddressData EnemyScreenPositionX = new(0x0087, 5);
+            public static readonly AddressData EnemyPositions = new(0x04B0, 20);
             /// <summary>
             /// Vertical position of Enemy in the screen, in pixels. There can be 5 enemy max in the screen at a time.
             /// </summary>

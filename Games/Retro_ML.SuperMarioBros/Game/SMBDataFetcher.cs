@@ -57,6 +57,8 @@ namespace Retro_ML.SuperMarioBros.Game
 
         public ushort GetPositionX() => (ushort)(ReadSingle(Player.MarioPositionX) + (ReadSingle(GameState.CurrentScreen)*0x100));
         public byte GetPositionY() => ReadSingle(Player.MarioPositionY);
+        public byte[] IsEnemyPresent() => Read(Sprite.IsEnemyUpPresent);
+        public byte[] GetEnemyPosition() => Read(Sprite.EnemyPositions);
         public bool IsOnGround() => ToUnsignedInteger(Read(Player.MarioActionState)) == 0;
         public bool IsInWater() => ToUnsignedInteger(Read(Player.IsSwimming)) == 0;
         //Tochange
@@ -92,7 +94,40 @@ namespace Retro_ML.SuperMarioBros.Game
         public bool[,] GetDangerousTilesAroundPosition(int x_dist, int y_dist)
         {
             bool[,] result = new bool[y_dist * 2 + 1, x_dist * 2 + 1];
-            
+
+            //To know how many enemies are present on the map / which memory slot to check for their position
+            byte[] isEnemyUp = IsEnemyPresent();
+
+            byte[] enemyPos = GetEnemyPosition();
+
+            for (int i = 0; i < 5; i++)
+            {
+                if (isEnemyUp[i] != 0)
+                {
+                    //Enemy X position in tile, to get tile mario is in instead of on the right
+                    var enemyXPos = (enemyPos[i * 4] + (METATILE_SIZE / 2)) / METATILE_SIZE;
+
+                    //Enemy Y position in tile, to get tile mario is in instead of under
+                    var enemyYPos = (enemyPos[(i * 4) + 1] - METATILE_SIZE) / METATILE_SIZE;
+
+                    //Mario X position in tile, to get tile mario is in instead of on the right
+                    var xPos = (ushort)(ReadSingle(Player.MarioPositionX) + (METATILE_SIZE / 2)) / METATILE_SIZE;
+
+                    //Mario Y position in tile, to get tile mario is in instead of under
+                    var yPos = (GetPositionY() - METATILE_SIZE) / METATILE_SIZE;
+
+                    var enemyXDist = enemyXPos - xPos;
+
+                    var enemyYDist = enemyYPos - yPos;
+
+                    //Is the sprite distance between the bounds that Mario can see?
+                    if (enemyXDist <= x_dist && enemyYDist <= y_dist && enemyXDist >= -x_dist && enemyYDist >= -y_dist)
+                    {
+                        result[enemyYDist + y_dist, enemyXDist + x_dist] = true;
+                    }
+                }
+            }
+
             return result;
         }
 
