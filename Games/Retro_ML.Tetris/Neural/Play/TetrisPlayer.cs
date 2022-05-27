@@ -13,147 +13,32 @@ using SharpNeat.NeuralNets.Double.ActivationFunctions;
 
 namespace Retro_ML.Tetris.Neural.Play
 {
-    public class TetrisPlayer : INeuralPlayer
+    public class TetrisPlayer : SharpNeatPlayer
     {
-        private readonly Semaphore syncSemaphore;
-        private readonly EmulatorManager emulatorManager;
-        private readonly IEmulatorAdapter emulator;
-        private readonly ApplicationConfig applicationConfig;
+        private readonly ApplicationConfig appConfig;
 
-        private MetaNeatGenome<double> metaGenome;
-        private IBlackBox<double>? blackBox;
-        private string? state;
-
-        private IDataFetcher dataFetcher;
-        private InputSetter inputSetter;
-        private OutputGetter outputGetter;
-
-        private bool shouldStop;
-
-        public bool IsPlaying { get; private set; }
-
-        public TetrisPlayer(EmulatorManager emulatorManager, ApplicationConfig appConfig)
+        public TetrisPlayer(EmulatorManager emulatorManager, ApplicationConfig appConfig):base(emulatorManager, appConfig)
         {
-            metaGenome = new MetaNeatGenome<double>(
-                    inputNodeCount: appConfig.NeuralConfig.GetInputCount(),
-                    outputNodeCount: appConfig.NeuralConfig.GetOutputCount(),
-                    isAcyclic: true,
-                    activationFn: new LeakyReLU());
-            this.emulatorManager = emulatorManager;
-            emulatorManager.Init(false);
-            emulator = emulatorManager.WaitOne();
-            syncSemaphore = new Semaphore(1, 1);
-            applicationConfig = appConfig;
-
-            dataFetcher = emulator.GetDataFetcher();
-            inputSetter = emulator.GetInputSetter();
-            outputGetter = emulator.GetOutputGetter();
+           this.appConfig = appConfig;
         }
 
-        public void StartPlaying()
+        protected override void DoSaveState(string saveState, IBlackBox<double> blackBox)
         {
-            if (IsPlaying)
+            emulator.LoadState(saveState);
+            WaitThenStart();
+            emulator.NextFrame();
+            dataFetcher.NextState();
+
+            Score score = new(scoreFactors.Select(s => s.Clone()));
+
+            while (!shouldStop && !score.ShouldStop)
             {
-                throw new InvalidOperationException("Already playing");
-            }
-            if (blackBox == null)
-            {
-                throw new InvalidOperationException("A genome wasn't loaded before playing");
-            }
-            if (state == null)
-            {
-                throw new InvalidOperationException("A save state wasn't loaded before playing");
-            }
-            IsPlaying = true;
-            shouldStop = false;
-
-            new Thread(Play).Start();
-        }
-
-        public void StopPlaying()
-        {
-            shouldStop = true;
-            syncSemaphore.WaitOne();
-            syncSemaphore.Release();
-        }
-
-        public bool LoadGenome(string path)
-        {
-            if (!VerifyGenome(path))
-            {
-                Exceptions.QueueException(new Exception("Could not load genome. It uses a different Neural Configuration."));
-                return false;
-            }
-
-            bool shouldRestart = IsPlaying;
-            StopPlaying();
-
-            var loader = NeatGenomeLoaderFactory.CreateLoaderDouble(metaGenome);
-
-            NeatGenomeDecoderAcyclic decoder = new();
-            blackBox = decoder.Decode(loader.Load(path));
-
-            if (shouldRestart) StartPlaying();
-            return true;
-        }
-
-        private bool VerifyGenome(string path)
-        {
-            string[] inputOutput = File.ReadLines(path).Where(l => !l.Trim().StartsWith("#") && !string.IsNullOrEmpty(l.Trim())).First().Trim().Split(null);
-            int input = int.Parse(inputOutput[0]);
-            int output = int.Parse(inputOutput[1]);
-
-            return input == metaGenome.InputNodeCount && output == metaGenome.OutputNodeCount;
-        }
-
-        public void LoadState(string path)
-        {
-            bool shouldRestart = IsPlaying;
-            StopPlaying();
-
-            state = Path.GetFullPath(path);
-            if (shouldRestart) StartPlaying();
-        }
-
-        /// <summary>
-        /// Play loop
-        /// </summary>
-        private void Play()
-        {
-            try
-            {
-                IsPlaying = true;
-                syncSemaphore.WaitOne();
-                UpdateNetwork();
-                while (!shouldStop)
-                {
-                    emulator.LoadState(state!);
-                    WaitThenStart();
-                    emulator.NextFrame();
-
-                    dataFetcher.NextState();
-
-                    Score score = new(new List<IScoreFactor>() { });
-
-                    while (!shouldStop && !score.ShouldStop)
-                    {
-                        DoFrame();
-                        score.Update(dataFetcher);
-                    }
-                }
-                syncSemaphore.Release();
-                IsPlaying = false;
-            }
-            catch (Exception ex)
-            {
-                Exceptions.QueueException(new Exception($"An exception occured during play. Was the emulator window closed?\n{ex.Message}\n{ex.StackTrace}"));
+                DoFrame(blackBox);
+                score.Update(dataFetcher);
             }
         }
 
-        /// <summary>
-        /// Executes one frame of play mode
-        /// </summary>
-        private void DoFrame()
+        protected override void DoFrame(IBlackBox<double> blackBox)
         {
             blackBox!.ResetState();
             inputSetter.SetInputs(blackBox.InputVector);
@@ -167,23 +52,6 @@ namespace Retro_ML.Tetris.Neural.Play
             emulator.NetworkUpdated(SharpNeatUtils.VectorToArray(blackBox.InputVector), SharpNeatUtils.VectorToArray(blackBox.OutputVector));
         }
 
-        public void Dispose()
-        {
-            emulatorManager.FreeOne(emulator);
-
-            emulatorManager.Clean();
-        }
-
-        /// <summary>
-        /// Sends the network changed event.
-        /// </summary>
-        private void UpdateNetwork()
-        {
-            int[] outputMap = new int[blackBox!.OutputCount];
-            Array.Copy(blackBox.OutputVector.GetField<int[]>("_map"), outputMap, blackBox.OutputCount);
-            emulator.NetworkChanged(SharpNeatUtils.GetConnectionLayers(blackBox), outputMap);
-        }
-
         private void WaitThenStart()
         {
             for (int i = Random.Shared.Next(120); i > 0; i--)
@@ -191,7 +59,7 @@ namespace Retro_ML.Tetris.Neural.Play
                 emulator!.NextFrame();
             }
 
-            var input = applicationConfig.GetConsolePlugin().GetInput();
+            var input = appConfig.GetConsolePlugin().GetInput();
             input.FromString("S");
             emulator!.SendInput(input);
 
