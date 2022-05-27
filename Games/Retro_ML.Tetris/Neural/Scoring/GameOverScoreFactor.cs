@@ -54,7 +54,7 @@ namespace Retro_ML.Tetris.Neural.Scoring
 
         public IScoreFactor Clone()
         {
-            return new GameOverScoreFactor() { ScoreMultiplier = ScoreMultiplier };
+            return new GameOverScoreFactor() { ScoreMultiplier = ScoreMultiplier, ExtraFields = ExtraFields };
         }
     }
 }

@@ -109,7 +109,7 @@ namespace Retro_ML.Tetris.Neural.Train
 
             emulator!.SendInput(outputGetter!.GetControllerInput(phenome.OutputVector));
             emulator!.NextFrame();
-            emulator!.NextFrame();
+            emulator!.NextFrame(); // called twice on purpose to reset the AI's inputs every time
         }
 
         private void WaitThenStart()

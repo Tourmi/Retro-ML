@@ -47,7 +47,7 @@ namespace Retro_ML.Tetris.Neural.Play
             emulator.SendInput(outputGetter.GetControllerInput(blackBox.OutputVector));
 
             emulator.NextFrame();
-            emulator.NextFrame();
+            emulator.NextFrame(); //called twice on purpose to reset the AI's inputs
             dataFetcher.NextFrame();
             emulator.NetworkUpdated(SharpNeatUtils.VectorToArray(blackBox.InputVector), SharpNeatUtils.VectorToArray(blackBox.OutputVector));
         }
