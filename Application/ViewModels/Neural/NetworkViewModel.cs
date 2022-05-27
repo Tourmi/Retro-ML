@@ -35,9 +35,9 @@ namespace Retro_ML.Application.ViewModels.Neural
                 else if (value >= 1) currColor = targetColor;
                 else if (value < 0)
                 {
-                    byte r = (byte)(BaseColor.R + (NegativeColor.R - BaseColor.R) * value);
-                    byte g = (byte)(BaseColor.G + (NegativeColor.G - BaseColor.G) * value);
-                    byte b = (byte)(BaseColor.B + (NegativeColor.B - BaseColor.B) * value);
+                    byte r = (byte)(BaseColor.R + (NegativeColor.R - BaseColor.R) * value * -1);
+                    byte g = (byte)(BaseColor.G + (NegativeColor.G - BaseColor.G) * value * -1);
+                    byte b = (byte)(BaseColor.B + (NegativeColor.B - BaseColor.B) * value * -1);
 
                     currColor = Color.FromRgb(r, g, b);
                 }
@@ -341,7 +341,7 @@ namespace Retro_ML.Application.ViewModels.Neural
                     double prevValue = nodeGroup.Nodes[i].Value;
                     double value = states[i + startIndex];
                     if (nodeGroup.IsOutput) value = value > IInput.INPUT_THRESHOLD ? 1 : 0;
-                    if (prevValue != value && !(prevValue <= 0 && value <= 0) && !(prevValue >= 1 && value >= 1))
+                    if (prevValue != value)
                     {
                         nodeGroup.Nodes[i] = new Node(value, nodeGroup.TargetColor);
                     }
