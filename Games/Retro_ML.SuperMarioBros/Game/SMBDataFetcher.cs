@@ -22,6 +22,8 @@ namespace Retro_ML.SuperMarioBros.Game
 
         private readonly byte[] currentTiles;
 
+        private ushort currX;
+
         private InternalClock internalClock;
 
         public SMBDataFetcher(IEmulatorAdapter emulator, NeuralConfig neuralConfig, SMBPluginConfig pluginConfig)
@@ -40,7 +42,6 @@ namespace Retro_ML.SuperMarioBros.Game
         {
             frameCache.Clear();
             internalClock.NextFrame();
-            InitFrameCache();
         }
 
         /// <summary>
@@ -53,18 +54,22 @@ namespace Retro_ML.SuperMarioBros.Game
             tileCache.Clear();
 
             internalClock.Reset();
+
+            currX = 0;
         }
 
-        public ushort GetPositionX() => (ushort)(ReadSingle(Player.MarioPositionX) + (ReadSingle(GameState.CurrentScreen)*0x100));
+        public ushort GetPositionX() => (ushort)(ReadSingle(Player.MarioPositionX) + (ReadSingle(GameState.CurrentScreen) * 0x100));
         public byte GetPositionY() => ReadSingle(Player.MarioPositionY);
         public byte[] IsEnemyPresent() => Read(Sprite.IsEnemyUpPresent);
         public byte[] GetEnemyPosition() => Read(Sprite.EnemyPositions);
+        public ushort IsPowerUpPresent() => ReadSingle(Sprite.IsPowerUpPresent);
+        public byte[] GetPowerUpPosition() => Read(Sprite.PowerUpPositions);
         public bool IsOnGround() => ToUnsignedInteger(Read(Player.MarioActionState)) == 0;
         public bool IsInWater() => ToUnsignedInteger(Read(Player.IsSwimming)) == 0;
         //Tochange
         public bool CanAct() => ToUnsignedInteger(Read(Player.MarioState)) != 8;
-        public bool IsDead() => ToUnsignedInteger(Read(Player.MarioState)) == 11;
-        public bool WonLevel() => ToUnsignedInteger(Read(Player.MarioActionState)) == 3;
+        public bool IsDead() => ToUnsignedInteger(Read(Player.MarioActionState)) == 0x0B || ReadSingle(GameState.IsFalling) == 0x01;
+        public bool WonLevel() => ToUnsignedInteger(Read(Player.MarioState)) == 0x04 || ToUnsignedInteger(Read(Player.MarioState)) == 0x05 || ToUnsignedInteger(Read(GameState.WonCondition)) == 0x02;
         public bool IsAtMaxSpeed() => ToUnsignedInteger(Read(Player.MarioMaxVelocity)) == 0x28;
         public bool[,] GetInternalClockState() => internalClock.GetStates();
         public bool IsWaterLevel() => ToUnsignedInteger(Read(GameState.LevelType)) == 01;
@@ -73,6 +78,8 @@ namespace Retro_ML.SuperMarioBros.Game
         public int GetScore() => (int)ToUnsignedInteger(Read(GameState.Score));
         public byte GetPowerUp() => ReadSingle(Player.MarioPowerupState);
         public bool IsFlashing() => ToUnsignedInteger(Read(Player.MarioState)) == 10;
+        //Good tiles : 194 coins - 192 ? block with coins - 193 ? block with powerup - 93 block with many coins
+        public int[] GoodTile = new int[] { 192, 193, 194, 93 };
 
         public bool[,] GetWalkableTilesAroundPosition(int x_dist, int y_dist)
         {
@@ -107,14 +114,14 @@ namespace Retro_ML.SuperMarioBros.Game
                     //Enemy X position in tile, to get tile mario is in instead of on the right
                     var enemyXPos = (enemyPos[i * 4] + (METATILE_SIZE / 2)) / METATILE_SIZE;
 
-                    //Enemy Y position in tile, to get tile mario is in instead of under
-                    var enemyYPos = (enemyPos[(i * 4) + 1] - METATILE_SIZE) / METATILE_SIZE;
+                    //Enemy Y position in tile, to get tile mario is in instead of under : 2 * METATILE_SIZE to adjust position
+                    var enemyYPos = (enemyPos[(i * 4) + 1] - (2 * METATILE_SIZE)) / METATILE_SIZE;
 
                     //Mario X position in tile, to get tile mario is in instead of on the right
-                    var xPos = (ushort)(ReadSingle(Player.MarioPositionX) + (METATILE_SIZE / 2)) / METATILE_SIZE;
+                    var xPos = (ushort)(ReadSingle(Player.MarioScreenPositionX) + (METATILE_SIZE / 2)) / METATILE_SIZE;
 
                     //Mario Y position in tile, to get tile mario is in instead of under
-                    var yPos = (GetPositionY() - METATILE_SIZE) / METATILE_SIZE;
+                    var yPos = (ushort)(ReadSingle(Player.MarioScreenPositionY) - METATILE_SIZE) / METATILE_SIZE;
 
                     var enemyXDist = enemyXPos - xPos;
 
@@ -134,6 +141,50 @@ namespace Retro_ML.SuperMarioBros.Game
         public bool[,] GetGoodTilesAroundPosition(int x_dist, int y_dist)
         {
             bool[,] result = new bool[y_dist * 2 + 1, x_dist * 2 + 1];
+
+            var tiles = GetNearbyTiles(x_dist, y_dist);
+
+            //Find good Tiles
+            for (int i = 0; i < tiles.GetLength(0); i++)
+            {
+                for (int j = 0; j < tiles.GetLength(1); j++)
+                {
+                    if (GoodTile.Contains(tiles[i, j]))
+                    {
+                        result[i, j] = true;
+                    }
+                }
+            }
+
+            //Find powerups
+            bool isPowerUp = IsPowerUpPresent() == 0x2E;
+
+            byte[] powerUpPos = GetPowerUpPosition();
+
+            if (isPowerUp)
+            {
+                //powerUp X position in tile, to get tile mario is in instead of on the right
+                var powerUpXPos = (powerUpPos[0] + (METATILE_SIZE / 2)) / METATILE_SIZE;
+
+                //powerUp Y position in tile, to get tile mario is in instead of under : 2 * METATILE_SIZE to adjust position
+                var powerUpYPos = (powerUpPos[1] - (2 * METATILE_SIZE)) / METATILE_SIZE;
+
+                //Mario X position in tile, to get tile mario is in instead of on the right
+                var xPos = (ushort)(ReadSingle(Player.MarioScreenPositionX) + (METATILE_SIZE / 2)) / METATILE_SIZE;
+
+                //Mario Y position in tile, to get tile mario is in instead of under
+                var yPos = (ushort)(ReadSingle(Player.MarioScreenPositionY) - METATILE_SIZE) / METATILE_SIZE;
+
+                var powerUpXDist = powerUpXPos - xPos;
+
+                var powerUpYDist = powerUpYPos - yPos;
+
+                //Is the sprite distance between the bounds that Mario can see?
+                if (powerUpXDist <= x_dist && powerUpYDist <= y_dist && powerUpXDist >= -x_dist && powerUpYDist >= -y_dist)
+                {
+                    result[powerUpYDist + y_dist, powerUpXDist + x_dist] = true;
+                }
+            }
 
             return result;
         }
@@ -260,22 +311,17 @@ namespace Retro_ML.SuperMarioBros.Game
 
             if (addressData.CacheType == AddressData.CacheTypes.TilesCache)
             {
+                var newX = GetPositionX();
+                //Refresh every 6 tiles
+                if (newX - currX >= (16*6))
+                {
                 tileCache.Clear();
-
+                currX = newX;
+                }
                 cacheToUse = tileCache;
             }
 
             return cacheToUse;
-        }
-
-        private void InitFrameCache()
-        {
-            (AddressData, bool)[] toRead = new (AddressData, bool)[]
-           {
-
-           };
-
-            _ = Read(toRead);
         }
 
         private static uint ToUnsignedInteger(byte[] bytes)

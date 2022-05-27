@@ -16,7 +16,7 @@
                 TilesCache
             }
 
-            public AddressData(uint address, uint length, CacheTypes cacheTypes = CacheTypes.TilesCache, uint highByteLocation = 0)
+            public AddressData(uint address, uint length, CacheTypes cacheTypes = CacheTypes.Frame, uint highByteLocation = 0)
             {
                 Address = address;
                 Length = length;
@@ -49,11 +49,11 @@
             /// <summary>
             /// Level
             /// </summary>
-            public static readonly AddressData Level = new(0x0760, 1);
+            public static readonly AddressData Level = new(0x0760, 1, AddressData.CacheTypes.Level);
             /// <summary>
             /// Current Mario score
             /// </summary>
-            public static readonly AddressData World = new(0x075F, 1);
+            public static readonly AddressData World = new(0x075F, 1, AddressData.CacheTypes.Level);
             /// <summary>
             /// Current game Timer (0100 0000 0000)
             /// </summary>
@@ -66,7 +66,7 @@
             /// 03 - Underground
             /// 04 - Castle
             /// </summary>
-            public static readonly AddressData LevelType = new(0x0773, 1);
+            public static readonly AddressData LevelType = new(0x0773, 1, AddressData.CacheTypes.Level);
             /// <summary>
             /// Screen Number. Increment by 1 for every 255 pixel traveled on the right by mario.
             /// </summary>
@@ -82,7 +82,15 @@
             /// <summary>
             /// Curently loaded tiles
             /// </summary>
-            public static readonly AddressData Tiles = new(0x0500, 0x1A0);
+            public static readonly AddressData Tiles = new(0x0500, 0x1A0, AddressData.CacheTypes.TilesCache);
+            /// <summary>
+            /// == 2 if level won via axe
+            /// </summary>
+            public static readonly AddressData WonCondition = new(0x770, 1);
+            /// <summary>
+            /// Boolean, true if falling to death
+            /// </summary>
+            public static readonly AddressData IsFalling = new(0x712, 1);
         }
 
         public static class Player
@@ -218,23 +226,15 @@
             /// </summary>
             public static readonly AddressData EnemyPositions = new(0x04B0, 20);
             /// <summary>
-            /// Vertical position of Enemy in the screen, in pixels. There can be 5 enemy max in the screen at a time.
-            /// </summary>
-            public static readonly AddressData EnemyScreenPositionY = new(0x00CF, 5);
-            /// <summary>
             /// Is there a powerup on the screen?
             /// 0x00 - No
             /// 0x2E - Yes
             /// </summary>
             public static readonly AddressData IsPowerUpPresent = new(0x001B, 1);
             /// <summary>
-            /// Horizontal position of Powerup in the screen, in pixels. There can be only one powerup on screen at a time.
+            /// Powerup hitboxes (4 bytes, x1,y1 x2,y2)
             /// </summary>
-            public static readonly AddressData PowerupScreenPositionX = new(0x008C, 1);
-            /// <summary>
-            /// Vertical position of Powerup in the screen, in pixels. There can be only one powerup on screen at a time.
-            /// </summary>
-            public static readonly AddressData PowerupScreenPositionY = new(0x00D4, 1);
+            public static readonly AddressData PowerUpPositions = new(0x04C4, 4);
         }
     }
 }

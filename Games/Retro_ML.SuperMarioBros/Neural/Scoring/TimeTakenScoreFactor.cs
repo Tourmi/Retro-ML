@@ -6,7 +6,7 @@ namespace Retro_ML.SuperMarioBrosNeural.Scoring
 {
     internal class TimeTakenScoreFactor : IScoreFactor
     {
-        public const int MAX_TRAINING_FRAMES = 120 * 60;
+        public const string MAXIMUM_LEVEL_TIME = "Maximum Level Time";
 
         private bool shouldStop = false;
         private double currScore;
@@ -14,7 +14,10 @@ namespace Retro_ML.SuperMarioBrosNeural.Scoring
 
         public TimeTakenScoreFactor()
         {
-            ExtraFields = Array.Empty<ExtraField>();
+            ExtraFields = new ExtraField[]
+            {
+                new(MAXIMUM_LEVEL_TIME, 240)
+            };
         }
 
         public bool ShouldStop => shouldStop;
@@ -32,31 +35,23 @@ namespace Retro_ML.SuperMarioBrosNeural.Scoring
 
         public void Update(IDataFetcher dataFetcher)
         {
-            Update((SMBDataFetcher)dataFetcher);
-        }
-
-        private void Update(SMBDataFetcher dataFetcher)
-        {
-            if (levelFrames >= MAX_TRAINING_FRAMES)
+            levelFrames++;
+            currScore += ScoreMultiplier / 60.0;
+            if (levelFrames >= ExtraField.GetValue(ExtraFields, MAXIMUM_LEVEL_TIME) * 60)
             {
                 shouldStop = true;
             }
-            levelFrames++;
         }
 
         public void LevelDone()
         {
-            if (shouldStop)
-            {
-                currScore += ScoreMultiplier;
-            }
             shouldStop = false;
             levelFrames = 0;
         }
 
         public IScoreFactor Clone()
         {
-            return new TimeTakenScoreFactor() { IsDisabled = IsDisabled, ScoreMultiplier = ScoreMultiplier };
+            return new TimeTakenScoreFactor() { IsDisabled = IsDisabled, ScoreMultiplier = ScoreMultiplier, ExtraFields = ExtraFields };
         }
     }
 }

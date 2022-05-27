@@ -18,8 +18,6 @@ namespace Retro_ML.SuperMarioBros.Neural.Scoring
         private bool shouldStop = false;
         private int moved = -2;
 
-        private uint levelUID;
-
         private double currScore = 0;
 
         public StopMovingScoreFactor()
