@@ -31,9 +31,13 @@
         public static class Room
         {
             /// <summary>
-            /// Stores the layout of tiles for 2 screens (0x400 bytes each)
+            /// Stores the layout of tiles for the first screen. The last 2 rows (0x20 bytes) are useless
             /// </summary>
-            public static readonly AddressData ScreenTiles = new(0x6000, 0x800);
+            public static readonly AddressData ScreenTiles1 = new(0x6000, 0x400);
+            /// <summary>
+            /// Stores the layout of tiles for the second screen. The last 2 rows (0x20 bytes) are useless
+            /// </summary>
+            public static readonly AddressData ScreenTiles2 = new(0x6400, 0x400);
             /// <summary>
             /// X position of camera scroll
             /// </summary>
