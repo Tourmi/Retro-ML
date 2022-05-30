@@ -62,24 +62,41 @@ namespace Retro_ML.SuperMarioBros.Game
         public byte GetPositionY() => ReadSingle(Player.MarioPositionY);
         public byte[] IsEnemyPresent() => Read(Sprite.IsEnemyUpPresent);
         public byte[] GetEnemyPosition() => Read(Sprite.EnemyPositions);
+        public byte[] GetEnemies() => Read(Sprite.EnemyType);
         public ushort IsPowerUpPresent() => ReadSingle(Sprite.IsPowerUpPresent);
         public byte[] GetPowerUpPosition() => Read(Sprite.PowerUpPositions);
-        public bool IsOnGround() => ToUnsignedInteger(Read(Player.MarioActionState)) == 0;
-        public bool IsInWater() => ToUnsignedInteger(Read(Player.IsSwimming)) == 0;
-        //Tochange
-        public bool CanAct() => ToUnsignedInteger(Read(Player.MarioState)) != 8;
-        public bool IsDead() => ToUnsignedInteger(Read(Player.MarioActionState)) == 0x0B || ReadSingle(GameState.IsFalling) == 0x01;
-        public bool WonLevel() => ToUnsignedInteger(Read(Player.MarioState)) == 0x04 || ToUnsignedInteger(Read(Player.MarioState)) == 0x05 || ToUnsignedInteger(Read(GameState.WonCondition)) == 0x02;
-        public bool IsAtMaxSpeed() => ToUnsignedInteger(Read(Player.MarioMaxVelocity)) == 0x28;
+        public bool IsOnGround() => ReadSingle(Player.MarioActionState) == 0;
+        public bool IsInWater() => ReadSingle(Player.IsSwimming) == 0;
+        public bool CanAct() => ReadSingle(Player.MarioState) == 0x8;
+        public bool IsDead() => ReadSingle(Player.MarioActionState) == 0x0B || ReadSingle(GameState.IsFalling) == 0x01;
+        public bool WonLevel() => ReadSingle(Player.MarioState) == 0x04 || ReadSingle(Player.MarioState) == 0x05 || ReadSingle(GameState.WonCondition) == 0x02;
+        public bool IsAtMaxSpeed() => ReadSingle(Player.MarioMaxVelocity) == 0x28;
         public bool[,] GetInternalClockState() => internalClock.GetStates();
-        public bool IsWaterLevel() => ToUnsignedInteger(Read(GameState.LevelType)) == 01;
+        public bool IsWaterLevel() => ReadSingle(GameState.LevelType) == 0x1;
         public int GetCoins() => (int)ToUnsignedInteger(Read(GameState.Coins));
         public int GetLives() => (int)ToUnsignedInteger(Read(GameState.Lives));
         public int GetScore() => (int)ToUnsignedInteger(Read(GameState.Score));
         public byte GetPowerUp() => ReadSingle(Player.MarioPowerupState);
-        public bool IsFlashing() => ToUnsignedInteger(Read(Player.MarioState)) == 10;
+        public bool IsFlashing() => ReadSingle(Player.MarioState) == 0xA;
         //Good tiles : 194 coins - 192 ? block with coins - 193 ? block with powerup - 93 block with many coins
-        public int[] GoodTile = new int[] { 192, 193, 194, 93 };
+        public int[] GoodTile = new int[] { 0xC0, 0xC1, 0xC2, 0x5D };
+
+        /* Good sprite :
+         * 0x24/0x25 - Static lift
+         * 0x26/0x27 - Vertical going lift 
+         * 0x28 - Horizontal going lift 
+         * 0x29 - Static lift (Will Fall if Player stays on it for too long
+         * 0x2A - Horizontal forward moving lift with strange hitbox
+         * 0x2B/0x2C - Halves of double lift (like 1.2)
+         * 0x2E - PowerUp Object
+         * 0x2F - Vine Object
+         * 0x30 - Flagpole Flag Object
+         * 0x31 - StarFlag Object
+         * 0x32 - Jump spring Object
+         * 0x34 - Warpzone
+         * 0x35 - Retainer Object
+        */
+        public int[] GoodSprite = new int[] { 0x24, 0x25, 0x26, 0x27, 0x28, 0x29, 0x2A, 0x2B, 0x2C, 0x2E, 0x2F, 0x30, 0x31, 0x32, 0x34, 0x35 };
 
         public bool[,] GetWalkableTilesAroundPosition(int x_dist, int y_dist)
         {
@@ -214,7 +231,7 @@ namespace Retro_ML.SuperMarioBros.Game
                     var page = ((xPos + x) / PAGE_WIDTH) % 2;
 
                     //Get tile X pos
-                    var xInPage = (xPos + x) % PAGE_WIDTH;
+                    var xInPage = Math.Max((xPos + x) % PAGE_WIDTH, 0);
 
                     var index = (page * PAGE_SIZE) + yInPage + xInPage;
 
