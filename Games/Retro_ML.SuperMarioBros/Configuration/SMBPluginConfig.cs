@@ -73,11 +73,11 @@ namespace Retro_ML.SuperMarioBros.Configuration
         /// <summary>
         /// For inputs that use vision rays, the maximum distance the ray can detect, in tiles.
         /// </summary>
-        public int RayLength { get; set; } = 4;
+        public int RayLength { get; set; } = 8;
         /// <summary>
         /// The amount of directions to throw rays towards. Should always be a power of 2 bigger or equal to 4.
         /// </summary>
-        public int RayCount { get; set; } = 16;
+        public int RayCount { get; set; } = 32;
 
         /// <summary>
         /// The amount of inputs for the internal clock.
@@ -116,12 +116,12 @@ namespace Retro_ML.SuperMarioBros.Configuration
         {
             ScoreFactors = new List<IScoreFactor>()
             {
-                new DiedScoreFactor() { IsDisabled=false, ScoreMultiplier=-5 },
-                new WonLevelScoreFactor() { IsDisabled=false, ScoreMultiplier=100 },
+                new DiedScoreFactor() { IsDisabled=false, ScoreMultiplier=-50 },
+                new WonLevelScoreFactor() { IsDisabled=false, ScoreMultiplier=10000 },
                 new DistanceScoreFactor() { IsDisabled=false, ScoreMultiplier=1 },
-                new StopMovingScoreFactor() { IsDisabled=false, ScoreMultiplier=-5 },
-                new CoinsScoreFactor() { IsDisabled=true, ScoreMultiplier=1 },
-                new PowerUpScoreFactor() { IsDisabled=true, ScoreMultiplier=4 },
+                new StopMovingScoreFactor() { IsDisabled=false, ScoreMultiplier=-10 },
+                new CoinsScoreFactor() { IsDisabled=true, ScoreMultiplier=5 },
+                new PowerUpScoreFactor() { IsDisabled=true, ScoreMultiplier=10 },
             };
         }
 

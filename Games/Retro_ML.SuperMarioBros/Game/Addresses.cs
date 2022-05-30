@@ -87,10 +87,6 @@
             /// == 2 if level won via axe
             /// </summary>
             public static readonly AddressData WonCondition = new(0x770, 1);
-            /// <summary>
-            /// Boolean, true if falling to death
-            /// </summary>
-            public static readonly AddressData IsFalling = new(0x712, 1);
         }
 
         public static class Player
@@ -157,6 +153,10 @@
             ///>2 - fiery
             /// </summary>
             public static readonly AddressData MarioPowerupState = new(0x0756, 1);
+            /// <summary>
+            /// Boolean, true if falling to death
+            /// </summary>
+            public static readonly AddressData IsFalling = new(0x712, 1);
         }
 
         public static class Sprite
