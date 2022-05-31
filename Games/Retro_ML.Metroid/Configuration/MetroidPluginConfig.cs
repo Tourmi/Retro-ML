@@ -14,9 +14,9 @@ namespace Retro_ML.Metroid.Configuration
         public FieldInfo[] Fields => new FieldInfo[]
         {
             new BoolFieldInfo(nameof(UseGrid), "Use Vision Grid"),
-            new IntegerFieldInfo(nameof(GridDistanceX), "Vision Grid Horizontal Distance", 1, 10, 1),
-            new IntegerFieldInfo(nameof (GridDistanceY), "Vision Grid Vertical Distance", 1, 10, 1),
-            new IntegerFieldInfo(nameof(RayDistance), "Vision Ray Distance", 1, 32, 1),
+            new IntegerFieldInfo(nameof(GridDistanceX), "Vision Grid Horizontal Distance", 1, 8, 1),
+            new IntegerFieldInfo(nameof (GridDistanceY), "Vision Grid Vertical Distance", 1, 8, 1),
+            new IntegerFieldInfo(nameof(RayDistance), "Vision Ray Distance", 1, 8, 1),
             new IntegerChoiceFieldInfo(nameof(Raycount), "Raycast count", new int[] { 4, 8, 16, 32, 64 }),
             new IntegerFieldInfo(nameof(InternalClockTickLength), "Internal Clock Tick Length (Frames)", 1, 3600, 1),
             new IntegerChoiceFieldInfo(nameof(InternalClockLength), "Internal Clock Length", new int[] {1,2,3,4,5,6,7,8,16 }),
@@ -122,11 +122,12 @@ namespace Retro_ML.Metroid.Configuration
         public void InitNeuralConfig(NeuralConfig neuralConfig)
         {
             int enabledIndex = 0;
-            if (neuralConfig.EnabledStates.Length != 10 + 8)
+            if (neuralConfig.EnabledStates.Length != 11 + 8)
             {
                 neuralConfig.EnabledStates = new bool[]
                 {
                     true, //tiles
+                    true, //dangers
                     true, //health
                     true, //missiles
                     true, //x speed
@@ -148,7 +149,24 @@ namespace Retro_ML.Metroid.Configuration
                 };
             }
             neuralConfig.InputNodes.Clear();
-            neuralConfig.InputNodes.Add(new InputNode("Walkable Tiles", neuralConfig.EnabledStates[enabledIndex++], (dataFetcher) => ((MetroidDataFetcher)dataFetcher).GetWalkableTilesAroundPosition(GridDistanceX, GridDistanceY), GridDistanceX * 2 + 1, GridDistanceY * 2 + 1));
+            if (UseGrid)
+            {
+                neuralConfig.InputNodes.Add(new InputNode("Solid Tiles",
+                    neuralConfig.EnabledStates[enabledIndex++],
+                    (dataFetcher) => ((MetroidDataFetcher)dataFetcher).GetSolidTilesAroundPosition(GridDistanceX, GridDistanceY), GridDistanceX * 2 + 1, GridDistanceY * 2 + 1));
+                neuralConfig.InputNodes.Add(new InputNode("Dangers",
+                    neuralConfig.EnabledStates[enabledIndex++],
+                    (dataFetcher) => ((MetroidDataFetcher)dataFetcher).GetDangerousTilesAroundPosition(GridDistanceX, GridDistanceY), GridDistanceX * 2 + 1, GridDistanceY * 2 + 1));
+            }
+            else
+            {
+                neuralConfig.InputNodes.Add(new InputNode("Solid Tiles",
+                    neuralConfig.EnabledStates[enabledIndex++],
+                    (dataFetcher) => Raycast.GetRayDistances(((MetroidDataFetcher)dataFetcher).GetSolidTilesAroundPosition(GridDistanceX, GridDistanceY), RayDistance, Raycount), Raycount / 4, 4));
+                neuralConfig.InputNodes.Add(new InputNode("Dangers",
+                    neuralConfig.EnabledStates[enabledIndex++],
+                    (dataFetcher) => Raycast.GetRayDistances(((MetroidDataFetcher)dataFetcher).GetDangerousTilesAroundPosition(GridDistanceX, GridDistanceY), RayDistance, Raycount), Raycount / 4, 4));
+            }
             neuralConfig.InputNodes.Add(new InputNode("Health", neuralConfig.EnabledStates[enabledIndex++], (dataFetcher) => ((MetroidDataFetcher)dataFetcher).GetSamusHealthRatio()));
             neuralConfig.InputNodes.Add(new InputNode("Missiles", neuralConfig.EnabledStates[enabledIndex++], (dataFetcher) => ((MetroidDataFetcher)dataFetcher).GetCurrentMissiles()));
             neuralConfig.InputNodes.Add(new InputNode("X Speed", neuralConfig.EnabledStates[enabledIndex++], (dataFetcher) => ((MetroidDataFetcher)dataFetcher).GetSamusHorizontalSpeed()));

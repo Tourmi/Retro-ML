@@ -2,6 +2,7 @@
 using Retro_ML.Emulator;
 using Retro_ML.Game;
 using Retro_ML.Metroid.Configuration;
+using Retro_ML.Metroid.Game.Data;
 using Retro_ML.Utils;
 using static Retro_ML.Metroid.Game.Addresses;
 
@@ -72,6 +73,7 @@ namespace Retro_ML.Metroid.Game
         public ushort GetDeathCount() => (ushort)ReadULong(Progress.Deaths);
         public byte GetSamusXPosition() => ReadSingle(Samus.XPosition);
         public byte GetSamusYPosition() => ReadSingle(Samus.YPosition);
+        public (int xPos, int yPos) GetSamusScreensPosition() => GetScreensPosition(GetSamusXPosition() / META_TILE_SIZE, GetSamusYPosition() / META_TILE_SIZE, IsInFirstScreen());
         public bool IsSamusLookingRight() => ReadSingle(Samus.LookingDirection) == 0;
         public bool IsSamusInLava() => ReadSingle(Samus.InLava) == 1;
         public bool IsMetroidOnSamusHead() => ReadSingle(Samus.HasMetroidOnHead) == 1;
@@ -90,7 +92,31 @@ namespace Retro_ML.Metroid.Game
         public double GetSamusVerticalSpeed() => (((sbyte)ReadSingle(Samus.VerticalSpeed)) * 0x100 + ReadSingle(Samus.VerticalFractionalSpeed)) / (double)MAXIMUM_VERTICAL_SPEED;
         public double GetSamusHorizontalSpeed() => (((sbyte)ReadSingle(Samus.HorizontalSpeed)) * 0x100 + ReadSingle(Samus.HorizontalFractionalSpeed)) / (double)MAXIMUM_HORIZONTAL_SPEED;
 
-        public bool[,] GetWalkableTilesAroundPosition(int xDist, int yDist)
+        public bool[,] GetDangerousTilesAroundPosition(int xDist, int yDist)
+        {
+            var result = new bool[yDist * 2 + 1, xDist * 2 + 1];
+
+            var enemies = GetEnemies();
+
+            (var samusX, var samusY) = GetSamusScreensPosition();
+
+            foreach (var enemy in enemies)
+            {
+                (var xPos, var yPos) = GetScreensPosition(enemy.XPos / META_TILE_SIZE, enemy.YPos / META_TILE_SIZE, enemy.IsInFirstScreen);
+
+                xPos -= samusX;
+                yPos -= samusY;
+
+                if (xPos >= -xDist && xPos <= xDist && yPos >= -yDist && yPos <= yDist)
+                {
+                    result[yPos + yDist, xPos + xDist] = true;
+                }
+            }
+
+            return result;
+        }
+
+        public bool[,] GetSolidTilesAroundPosition(int xDist, int yDist)
         {
             var result = new bool[yDist * 2 + 1, xDist * 2 + 1];
             var tiles = GetTiles(xDist, yDist);
@@ -111,20 +137,7 @@ namespace Retro_ML.Metroid.Game
             var result = new byte[yDist * 2 + 1, xDist * 2 + 1];
             var roomsTiles = GetLoadedRoomsTiles();
 
-            var xPos = GetSamusXPosition() / META_TILE_SIZE;
-            var yPos = GetSamusYPosition() / META_TILE_SIZE;
-
-            sbyte xScroll = (sbyte)ReadSingle(Room.ScrollX);
-            sbyte yScroll = (sbyte)ReadSingle(Room.ScrollY);
-            //If the camera is more than halfway scrolled (negative values)
-            if (xScroll < 0)
-            {
-                xPos += CORRECTED_ROOM_WIDTH;
-            }
-            if (yScroll < 0)
-            {
-                yPos += CORRECTED_ROOM_HEIGHT;
-            }
+            (var xPos, var yPos) = GetSamusScreensPosition();
 
             for (int y = -yDist; y <= yDist; y++)
             {
@@ -158,14 +171,16 @@ namespace Retro_ML.Metroid.Game
         {
             var tiles = Read(Room.Tiles);
             //Exclude the final 2 rows of tiles.
-            var firstScreen = QuarterArray(MathUtils.To2DArray(tiles[0x0..0x4C0], ROOM_HEIGHT, ROOM_WIDTH));
-            var secondScreen = QuarterArray(MathUtils.To2DArray(tiles[0x400..0x7C0], ROOM_HEIGHT, ROOM_WIDTH));
+            var firstScreen = tiles[0x0..0x4C0].To2DArray(ROOM_HEIGHT, ROOM_WIDTH).QuarterArray();
+            var secondScreen = tiles[0x400..0x7C0].To2DArray(ROOM_HEIGHT, ROOM_WIDTH).QuarterArray();
 
-            if (AreScreensReversed())
+            sbyte xScroll = (sbyte)ReadSingle(Room.ScrollX);
+            sbyte yScroll = (sbyte)ReadSingle(Room.ScrollY);
+
+            //Whether or not we need swap the first and second screens.
+            if ((xScroll < 0 || yScroll < 0) ^ !IsInFirstScreen())
             {
-                var temp = firstScreen;
-                firstScreen = secondScreen;
-                secondScreen = temp;
+                (secondScreen, firstScreen) = (firstScreen, secondScreen);
             }
 
             if (IsHorizontalRoom())
@@ -200,44 +215,41 @@ namespace Retro_ML.Metroid.Game
             }
         }
 
-        private bool AreScreensReversed()
+        private IEnumerable<Enemy> GetEnemies()
         {
-            sbyte xScroll = (sbyte)ReadSingle(Room.ScrollX);
-            sbyte yScroll = (sbyte)ReadSingle(Room.ScrollY);
+            var baseByteGroups = ReadMultiple(Enemies.BaseSingleEnemy, Enemies.BaseSingleEnemy, Enemies.AllBaseEnemies).ToArray();
+            var extraByteGroups = ReadMultiple(Enemies.ExtraSingleEnemy, Enemies.ExtraSingleEnemy, Enemies.AllExtraEnemies).ToArray();
 
-            bool screensReversed = false;
-
-            //If the camera is more than halfway scrolled (negative values)
-            if (xScroll < 0 || yScroll < 0)
+            for (int i = 0; i < baseByteGroups.Length; i++)
             {
-                screensReversed = !screensReversed;
-            }
-            if (!IsInFirstScreen())
-            {
-                screensReversed = !screensReversed;
-            }
+                Enemy enemy = new(baseByteGroups[i], extraByteGroups[i]);
 
-            return screensReversed;
+                if (enemy.IsAlive())
+                {
+                    yield return enemy;
+                }
+            }
         }
 
         /// <summary>
-        /// Removes every other byte and every other row from the array, making it 4x smaller
+        /// Returns the position of the values given within the currently loaded screens.
         /// </summary>
-        /// <param name="array"></param>
-        /// <returns></returns>
-        private byte[,] QuarterArray(byte[,] array)
+        private (int xPos, int yPos) GetScreensPosition(int x, int y, bool isInFirstScreen)
         {
-            var result = new byte[array.GetLength(0) / 2, array.GetLength(1) / 2];
+            (var xPos, var yPos) = (x, y);
 
-            for (int i = 0; i < array.GetLength(0); i += 2)
+            sbyte xScroll = (sbyte)ReadSingle(Room.ScrollX);
+            sbyte yScroll = (sbyte)ReadSingle(Room.ScrollY);
+            //If the camera is more than halfway scrolled (negative values) XOR the screen does not match Samus' screen
+            if ((xScroll < 0 || yScroll < 0) ^ (isInFirstScreen != IsInFirstScreen()))
             {
-                for (int j = 0; j < array.GetLength(1); j += 2)
-                {
-                    result[i / 2, j / 2] = array[i, j];
-                }
+                if (IsHorizontalRoom())
+                    xPos += CORRECTED_ROOM_WIDTH;
+                else
+                    yPos += CORRECTED_ROOM_HEIGHT;
             }
 
-            return result;
+            return (xPos, yPos);
         }
 
         /// <summary>

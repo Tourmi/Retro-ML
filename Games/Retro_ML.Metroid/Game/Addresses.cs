@@ -115,9 +115,17 @@
             /// </summary>
             public static readonly AddressData AllBaseEnemies = new(0x400, 0x100);
             /// <summary>
+            /// Extra data for all the enemies
+            /// </summary>
+            public static readonly AddressData AllExtraEnemies = new(0x6AF4, 0x100);
+            /// <summary>
             /// Base data for a single enemy
             /// </summary>
-            public static readonly AddressData SingleEnemy = new(0x400, 0x10);
+            public static readonly AddressData BaseSingleEnemy = new(0x400, 0x10);
+            /// <summary>
+            /// Extra data for a single enemy
+            /// </summary>
+            public static readonly AddressData ExtraSingleEnemy = new(0x6AF4, 0x10);
             /// <summary>
             /// Enemy Y position within room
             /// </summary>
@@ -130,6 +138,18 @@
             /// Enemy's current hitpoints
             /// </summary>
             public static readonly AddressData EnemyHitpoints = new(0x40B);
+            /// <summary>
+            /// <br>Current status of the enemy</br>
+            /// <c>
+            /// 0x00 : Not in use
+            /// 0x04 : Frozen
+            /// </c>
+            /// </summary>
+            public static readonly AddressData Status = new(0x6AF4);
+            /// <summary>
+            /// Current name table of the enemy (The screen it is currently on)
+            /// </summary>
+            public static readonly AddressData NameTable = new(0x6AFB);
         }
 
         public static class Samus

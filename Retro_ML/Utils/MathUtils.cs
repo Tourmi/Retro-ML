@@ -34,7 +34,7 @@
         /// <param name="height"></param>
         /// <param name="width"></param>
         /// <returns></returns>
-        public static T[,] To2DArray<T>(T[] input, int height, int width)
+        public static T[,] To2DArray<T>(this T[] input, int height, int width)
         {
             T[,] output = new T[height, width];
             for (int i = 0; i < height; i++)
@@ -45,6 +45,26 @@
                 }
             }
             return output;
+        }
+
+        /// <summary>
+        /// Removes every other byte and every other row from the array, making it 4x smaller
+        /// </summary>
+        /// <param name="array"></param>
+        /// <returns></returns>
+        public static byte[,] QuarterArray(this byte[,] array)
+        {
+            var result = new byte[array.GetLength(0) / 2, array.GetLength(1) / 2];
+
+            for (int i = 0; i < array.GetLength(0); i += 2)
+            {
+                for (int j = 0; j < array.GetLength(1); j += 2)
+                {
+                    result[i / 2, j / 2] = array[i, j];
+                }
+            }
+
+            return result;
         }
 
         /// <summary>
