@@ -579,6 +579,22 @@ namespace Retro_ML.Application.ViewModels
             string appConfigJson = File.ReadAllText(DefaultPaths.APP_CONFIG);
             ApplicationConfig = ApplicationConfig.Deserialize(appConfigJson);
 
+            LoadApplicationConfig();
+
+            SetSaveStates(ApplicationConfig.SaveStates);
+
+            //Tab Game
+            LoadGamePluginConfig();
+
+            //Tab Objectives
+            LoadObjectives();
+
+            //Tab Neural
+            PopulateNeuralConfig();
+        }
+
+        public void LoadApplicationConfig()
+        {
             if (ApplicationConfig == null) { return; }
 
             RomPath = ApplicationConfig.RomPath;
@@ -591,17 +607,6 @@ namespace Retro_ML.Application.ViewModels
             {
                 StopConditions.Add(new(ApplicationConfig.StopConditions[i]));
             }
-
-            SetSaveStates(ApplicationConfig.SaveStates);
-
-            //Tab Game
-            LoadGamePluginConfig();
-
-            //Tab Objectives
-            LoadObjectives();
-
-            //Tab Neural
-            PopulateNeuralConfig();
         }
 
         public void LoadGamePluginConfig()
@@ -717,6 +722,28 @@ namespace Retro_ML.Application.ViewModels
             ApplicationConfig.GamePluginConfig!.InitNeuralConfig(ApplicationConfig.NeuralConfig);
 
             PopulateNeuralConfig();
+        }
+
+        public async void LoadGameConfig()
+        {
+            OpenFileDialog fileDialog = new();
+            fileDialog.Filters.Add(new FileDialogFilter() { Name = "Game Plugin Config", Extensions = { DefaultPaths.GAME_PLUGIN_CONFIG_EXTENSION } });
+            fileDialog.AllowMultiple = false;
+            fileDialog.Directory = Path.GetFullPath(".");
+
+            string[]? paths = await fileDialog.ShowAsync(ViewLocator.GetMainWindow());
+            if (paths == null) return;
+
+            string gamePluginConfig = await File.ReadAllTextAsync(paths.First());
+
+            ApplicationConfig!.GamePluginConfig!.Deserialize(gamePluginConfig);
+            
+            //Tab Game
+            LoadGamePluginConfig();
+
+            //Tab Objectives
+            LoadObjectives();
+
         }
 
         private void PopulateNeuralConfig()

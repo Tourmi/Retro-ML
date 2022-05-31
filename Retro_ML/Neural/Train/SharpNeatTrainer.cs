@@ -83,11 +83,14 @@ namespace Retro_ML.Neural.Train
                 throw new InvalidOperationException("An experiment is already ongoing.");
             }
 
-            trainingDirectory = DateTime.Now.ToString("yyyyMMdd-HHmmss") + "/";
+            trainingDirectory = applicationConfig.GamePluginName + "-" + DateTime.Now.ToString("yyyyMMdd-HHmmss") + "/";
             Directory.CreateDirectory(trainingDirectory + "/" + DefaultPaths.GENOME_DIR);
 
             string neuralConfig = applicationConfig.NeuralConfig.Serialize();
             File.WriteAllText(Path.Combine(trainingDirectory, DefaultPaths.NEURAL_CONFIG_NAME), neuralConfig);
+
+            string gamePluginConfig = applicationConfig.GamePluginConfig!.Serialize();
+            File.WriteAllText(Path.Combine(trainingDirectory, applicationConfig.GamePluginName + DefaultPaths.GAME_PLUGIN_CONFIG_NAME), gamePluginConfig);
 
             currentExperiment = experimentFactory.CreateExperiment(JsonUtils.LoadUtf8(configPath).RootElement);
             currentExperiment.ActivationFnName = nameof(LeakyReLU);
