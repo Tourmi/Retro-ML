@@ -90,7 +90,7 @@ namespace Retro_ML.Neural.Train
             File.WriteAllText(Path.Combine(trainingDirectory, DefaultPaths.NEURAL_CONFIG_NAME), neuralConfig);
 
             string gamePluginConfig = applicationConfig.GamePluginConfig!.Serialize();
-            File.WriteAllText(Path.Combine(trainingDirectory, DefaultPaths.GAME_PLUGIN_CONFIG_NAME), gamePluginConfig);
+            File.WriteAllText(Path.Combine(trainingDirectory, applicationConfig.GamePluginName + DefaultPaths.GAME_PLUGIN_CONFIG_NAME), gamePluginConfig);
 
             currentExperiment = experimentFactory.CreateExperiment(JsonUtils.LoadUtf8(configPath).RootElement);
             currentExperiment.ActivationFnName = nameof(LeakyReLU);
