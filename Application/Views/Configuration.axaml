@@ -38,13 +38,20 @@
 					</StackPanel>
 				</TabItem>
 				<TabItem Header="{Binding GamePluginName}" Classes="configTabControl">
-					<ItemsControl Items="{Binding GamePluginConfigFields}">
-						<ItemsControl.ItemsPanel>
-							<ItemsPanelTemplate>
-								<StackPanel Classes="tabContent"/>
-							</ItemsPanelTemplate>
-						</ItemsControl.ItemsPanel>
-					</ItemsControl>
+					<StackPanel Classes="tabContent">
+						<TextBlock Classes="h1" Text="WARNING" FontSize="24" Foreground="Red" TextWrapping="Wrap"/>
+						<TextBlock Classes="h1" Foreground="Red" TextWrapping="Wrap">
+							Changing these values might make previous training populations invalid with the new settings
+						</TextBlock>
+						<Button Content="Load game plugin configuration" Classes="configButton" Command="{Binding LoadGameConfig}"/>
+						<ItemsControl Items="{Binding GamePluginConfigFields}">
+							<ItemsControl.ItemsPanel>
+								<ItemsPanelTemplate>
+									<StackPanel Classes="tabContent" Spacing="10"/>
+								</ItemsPanelTemplate>
+							</ItemsControl.ItemsPanel>
+						</ItemsControl>
+					</StackPanel>
 				</TabItem>
 				<TabItem Header="Training" Classes="configTabControl">
 					<StackPanel Classes="tabContent">
@@ -88,7 +95,7 @@
 						</ItemsControl.ItemsPanel>
 					</ItemsControl>
 				</TabItem>
-				
+
 				<TabItem Header="Neural" Classes="configTabControl">
 					<StackPanel Classes="tabContent">
 						<TextBlock Classes="h1" Text="WARNING" FontSize="24" Foreground="Red" TextWrapping="Wrap"/>
@@ -96,7 +103,7 @@
 							Changing these values will make previous training populations invalid with the new settings
 						</TextBlock>
 						<Button Content="Load neural configuration" Classes="configButton" Command="{Binding LoadNeuralConfig}"/>
-						
+
 						<ItemsControl Items="{Binding NeuralConfigs}">
 							<ItemsControl.ItemsPanel>
 								<ItemsPanelTemplate>

@@ -17,6 +17,8 @@
         public const string APP_CONFIG = "config/appConfig.json";
         public const string NEURAL_CONFIG_EXTENSION = "ncfg";
         public const string NEURAL_CONFIG_NAME = $"neuralConfig.{NEURAL_CONFIG_EXTENSION}";
+        public const string GAME_PLUGIN_CONFIG_EXTENSION = "pcfg";
+        public const string GAME_PLUGIN_CONFIG_NAME = $"gamePluginConfig.{GAME_PLUGIN_CONFIG_EXTENSION}";
 
         public const string PLUGINS_DIR = "plugins/";
 
