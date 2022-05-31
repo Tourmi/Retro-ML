@@ -25,5 +25,37 @@
         }
         public static double ApproximateSquareRoot(this double v) => Math.Pow(10, Math.Log10(v) / 2);
         public static double ApproximateSquareRoot(this int v) => Math.Pow(10, Math.Log10(v) / 2);
+
+        /// <summary>
+        /// Turns the given array into a 2D array.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="input"></param>
+        /// <param name="height"></param>
+        /// <param name="width"></param>
+        /// <returns></returns>
+        public static T[,] To2DArray<T>(T[] input, int height, int width)
+        {
+            T[,] output = new T[height, width];
+            for (int i = 0; i < height; i++)
+            {
+                for (int j = 0; j < width; j++)
+                {
+                    output[i, j] = input[i * width + j];
+                }
+            }
+            return output;
+        }
+
+        /// <summary>
+        /// Modulo that always returns a positive value.
+        /// </summary>
+        /// <param name="v"></param>
+        /// <param name="mod"></param>
+        /// <returns></returns>
+        public static int PosModulo(this int v, int mod)
+        {
+            return ((v % mod) + mod) % mod;
+        }
     }
 }

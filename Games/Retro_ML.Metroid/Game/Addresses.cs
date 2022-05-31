@@ -31,21 +31,22 @@
         public static class Room
         {
             /// <summary>
-            /// Stores the layout of tiles for the first screen. The last 2 rows (0x20 bytes) are useless
+            /// The currently loaded tiles, split into two rooms of 0x400 tiles.
+            /// The final 2 rows of tiles appear to be useless
             /// </summary>
-            public static readonly AddressData ScreenTiles1 = new(0x6000, 0x400);
-            /// <summary>
-            /// Stores the layout of tiles for the second screen. The last 2 rows (0x20 bytes) are useless
-            /// </summary>
-            public static readonly AddressData ScreenTiles2 = new(0x6400, 0x400);
+            public static readonly AddressData Tiles = new(0x6000, 0x800);
             /// <summary>
             /// X position of camera scroll
             /// </summary>
-            public static readonly AddressData ScrollX = new(0xFC);
+            public static readonly AddressData ScrollX = new(0xFD);
             /// <summary>
             /// Y position of camera scroll
             /// </summary>
-            public static readonly AddressData ScrollY = new(0xFD);
+            public static readonly AddressData ScrollY = new(0xFC);
+            /// <summary>
+            /// Bit 0000_X000 is set for a vertical room, unset for a horizontal room
+            /// </summary>
+            public static readonly AddressData HorizontalOrVertical = new(0xFA);
         }
 
         public static class Gamestate

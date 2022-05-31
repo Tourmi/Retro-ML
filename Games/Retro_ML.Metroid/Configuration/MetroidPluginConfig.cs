@@ -122,10 +122,11 @@ namespace Retro_ML.Metroid.Configuration
         public void InitNeuralConfig(NeuralConfig neuralConfig)
         {
             int enabledIndex = 0;
-            if (neuralConfig.EnabledStates.Length != 9 + 8)
+            if (neuralConfig.EnabledStates.Length != 10 + 8)
             {
                 neuralConfig.EnabledStates = new bool[]
                 {
+                    true, //tiles
                     true, //health
                     true, //missiles
                     true, //x speed
@@ -147,6 +148,7 @@ namespace Retro_ML.Metroid.Configuration
                 };
             }
             neuralConfig.InputNodes.Clear();
+            neuralConfig.InputNodes.Add(new InputNode("Walkable Tiles", neuralConfig.EnabledStates[enabledIndex++], (dataFetcher) => ((MetroidDataFetcher)dataFetcher).GetWalkableTilesAroundPosition(GridDistanceX, GridDistanceY), GridDistanceX * 2 + 1, GridDistanceY * 2 + 1));
             neuralConfig.InputNodes.Add(new InputNode("Health", neuralConfig.EnabledStates[enabledIndex++], (dataFetcher) => ((MetroidDataFetcher)dataFetcher).GetSamusHealthRatio()));
             neuralConfig.InputNodes.Add(new InputNode("Missiles", neuralConfig.EnabledStates[enabledIndex++], (dataFetcher) => ((MetroidDataFetcher)dataFetcher).GetCurrentMissiles()));
             neuralConfig.InputNodes.Add(new InputNode("X Speed", neuralConfig.EnabledStates[enabledIndex++], (dataFetcher) => ((MetroidDataFetcher)dataFetcher).GetSamusHorizontalSpeed()));
