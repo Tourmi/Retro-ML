@@ -70,6 +70,11 @@ namespace Retro_ML.Tetris.Configuration
                 {
                     IsDisabled = false,
                     ScoreMultiplier = -2
+                },
+                new ColumnHeightScoreFactor()
+                {
+                    IsDisabled = false,
+                    ScoreMultiplier = -1
                 }
             };
         }
