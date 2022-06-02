@@ -14,7 +14,7 @@ namespace Retro_ML.Tetris.Configuration
         public FieldInfo[] Fields => new FieldInfo[]
         {
              new IntegerFieldInfo(nameof(VisibleRows), "Visible Rows", 4, 17, 1),
-             new IntegerFieldInfo(nameof(NbAttempts), "Number of Attempts", 1, 5, 1),
+             new IntegerFieldInfo(nameof(NbAttempts), "Number of Attempts", 1, 50, 1),
              new BoolFieldInfo(nameof(UseNormalizedHeights), "Use Normalized Heights")
         };
 

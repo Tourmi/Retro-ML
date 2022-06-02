@@ -11,12 +11,13 @@ namespace Retro_ML.Tetris.Neural.Scoring
 {
     internal class ColumnHeightScoreFactor : IScoreFactor
     {
-        internal const string HEIGHT_DIFFERENCE = "Height Difference";
+        internal const string HEIGHT_DIFFERENCE = "Height difference with median";
 
         private bool shouldStop = false;
         private double currScore;
         private bool inited;
         private int prevDiff;
+        private int prevMedian;
         private int[] prevColumnHeights;
 
         public ColumnHeightScoreFactor()
@@ -24,7 +25,7 @@ namespace Retro_ML.Tetris.Neural.Scoring
             prevColumnHeights = new int[10];
             ExtraFields = new ExtraField[]
             {
-                new(HEIGHT_DIFFERENCE, 6)
+                new(HEIGHT_DIFFERENCE, 5)
             };
         }
 
@@ -58,11 +59,13 @@ namespace Retro_ML.Tetris.Neural.Scoring
             if (!inited)
             {
                 prevColumnHeights = dataFetcher.GetColumnHeights();
-                prevDiff = prevColumnHeights.Max() - prevColumnHeights.Min();
+                prevMedian = prevColumnHeights.OrderBy(i => i).ToArray()[4];
+                prevDiff = prevColumnHeights.Max() - prevMedian;
             }
 
             var currColumnHeights = dataFetcher.GetColumnHeights();
-            var currDiff = currColumnHeights.Max() - currColumnHeights.Min();
+            var currMedian = currColumnHeights.OrderBy(i => i).ToArray()[4];
+            var currDiff = currColumnHeights.Max() - currMedian;
 
             if (currDiff > prevDiff && currDiff >= ExtraField.GetValue(ExtraFields, HEIGHT_DIFFERENCE))
             {
@@ -70,7 +73,8 @@ namespace Retro_ML.Tetris.Neural.Scoring
             }
 
             prevColumnHeights = dataFetcher.GetColumnHeights();
-            prevDiff = prevColumnHeights.Max() - prevColumnHeights.Min();
+            prevMedian = prevColumnHeights.OrderBy(i => i).ToArray()[4];
+            prevDiff = prevColumnHeights.Max() - prevMedian;
         }
 
         public IScoreFactor Clone()
