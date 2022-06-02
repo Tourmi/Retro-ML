@@ -113,5 +113,13 @@ namespace Retro_ML_TEST.Game.Tetris
             Assert.AreEqual(240, sf.GetFinalScore());
         }
 
+        [Test]
+        public void ColumnHeightScoreFactor()
+        {
+            var sf = new ColumnHeightScoreFactor() { ScoreMultiplier = -1 }.Clone();
+            Assert.IsAssignableFrom<ColumnHeightScoreFactor>(sf);
+            Assert.AreEqual(0, sf.GetFinalScore());
+        }
+
     }
 }
