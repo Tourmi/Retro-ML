@@ -11,6 +11,33 @@ namespace Retro_ML.Metroid.Configuration
 {
     internal class MetroidPluginConfig : IGamePluginConfig
     {
+        private static readonly bool[] DEFAULT_ENABLED_STATES = new bool[]
+        {
+            true, //tiles
+            true, //dangers
+            true, //goodies
+            true, //health
+            true, //missiles
+            true, //x speed
+            true, //y speed
+            true, //look direction
+            true, //in morph ball
+            true, //invincible
+            true, //on elevator
+            true, //using missiles
+            false, //clock
+            true, //bias
+
+            true, //a
+            true, //b
+            true, //left
+            true, //right
+            true, //up
+            true, //down
+            false, //start
+            true //select
+        };
+
         public FieldInfo[] Fields => new FieldInfo[]
         {
             new BoolFieldInfo(nameof(UseGrid), "Use Vision Grid"),
@@ -121,32 +148,11 @@ namespace Retro_ML.Metroid.Configuration
 
         public void InitNeuralConfig(NeuralConfig neuralConfig)
         {
-            int enabledIndex = 0;
-            if (neuralConfig.EnabledStates.Length != 11 + 8)
-            {
-                neuralConfig.EnabledStates = new bool[]
-                {
-                    true, //tiles
-                    true, //dangers
-                    true, //health
-                    true, //missiles
-                    true, //x speed
-                    true, //y speed
-                    true, //invincible
-                    true, //on elevator
-                    true, //using missiles
-                    false, //clock
-                    true, //bias
 
-                    true, //a
-                    true, //b
-                    true, //left
-                    true, //right
-                    true, //up
-                    true, //down
-                    false, //start
-                    true //select
-                };
+            int enabledIndex = 0;
+            if (neuralConfig.EnabledStates.Length != DEFAULT_ENABLED_STATES.Length)
+            {
+                neuralConfig.EnabledStates = DEFAULT_ENABLED_STATES;
             }
             neuralConfig.InputNodes.Clear();
             if (UseGrid)
@@ -157,6 +163,9 @@ namespace Retro_ML.Metroid.Configuration
                 neuralConfig.InputNodes.Add(new InputNode("Dangers",
                     neuralConfig.EnabledStates[enabledIndex++],
                     (dataFetcher) => ((MetroidDataFetcher)dataFetcher).GetDangerousTilesAroundPosition(GridDistanceX, GridDistanceY), GridDistanceX * 2 + 1, GridDistanceY * 2 + 1));
+                neuralConfig.InputNodes.Add(new InputNode("Goodies",
+                    neuralConfig.EnabledStates[enabledIndex++],
+                    (dataFetcher) => ((MetroidDataFetcher)dataFetcher).GetGoodTilesAroundPosition(GridDistanceX, GridDistanceY), GridDistanceX * 2 + 1, GridDistanceY * 2 + 1));
             }
             else
             {
@@ -166,11 +175,16 @@ namespace Retro_ML.Metroid.Configuration
                 neuralConfig.InputNodes.Add(new InputNode("Dangers",
                     neuralConfig.EnabledStates[enabledIndex++],
                     (dataFetcher) => Raycast.GetRayDistances(((MetroidDataFetcher)dataFetcher).GetDangerousTilesAroundPosition(GridDistanceX, GridDistanceY), RayDistance, Raycount), Raycount / 4, 4));
+                neuralConfig.InputNodes.Add(new InputNode("Goodies",
+                    neuralConfig.EnabledStates[enabledIndex++],
+                    (dataFetcher) => Raycast.GetRayDistances(((MetroidDataFetcher)dataFetcher).GetGoodTilesAroundPosition(GridDistanceX, GridDistanceY), RayDistance, Raycount), Raycount / 4, 4));
             }
             neuralConfig.InputNodes.Add(new InputNode("Health", neuralConfig.EnabledStates[enabledIndex++], (dataFetcher) => ((MetroidDataFetcher)dataFetcher).GetSamusHealthRatio()));
             neuralConfig.InputNodes.Add(new InputNode("Missiles", neuralConfig.EnabledStates[enabledIndex++], (dataFetcher) => ((MetroidDataFetcher)dataFetcher).GetCurrentMissiles()));
             neuralConfig.InputNodes.Add(new InputNode("X Speed", neuralConfig.EnabledStates[enabledIndex++], (dataFetcher) => ((MetroidDataFetcher)dataFetcher).GetSamusHorizontalSpeed()));
             neuralConfig.InputNodes.Add(new InputNode("Y Speed", neuralConfig.EnabledStates[enabledIndex++], (dataFetcher) => ((MetroidDataFetcher)dataFetcher).GetSamusVerticalSpeed()));
+            neuralConfig.InputNodes.Add(new InputNode("Look Direction", neuralConfig.EnabledStates[enabledIndex++], (dataFetcher) => ((MetroidDataFetcher)dataFetcher).SamusLookDirection()));
+            neuralConfig.InputNodes.Add(new InputNode("In Morph Ball", neuralConfig.EnabledStates[enabledIndex++], (dataFetcher) => ((MetroidDataFetcher)dataFetcher).IsSamusInMorphBall()));
             neuralConfig.InputNodes.Add(new InputNode("Invincible", neuralConfig.EnabledStates[enabledIndex++], (dataFetcher) => ((MetroidDataFetcher)dataFetcher).SamusInvincibilityTimer()));
             neuralConfig.InputNodes.Add(new InputNode("On Elevator", neuralConfig.EnabledStates[enabledIndex++], (dataFetcher) => ((MetroidDataFetcher)dataFetcher).IsSamusOnElevator()));
             neuralConfig.InputNodes.Add(new InputNode("Using Missiles", neuralConfig.EnabledStates[enabledIndex++], (dataFetcher) => ((MetroidDataFetcher)dataFetcher).IsSamusUsingMissiles()));

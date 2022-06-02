@@ -53,8 +53,10 @@
         {
             /// <summary>
             /// <br>Current game mode                   </br>
-            /// <br>3: playing                          </br>
-            /// <br>5: paused                           </br>
+            /// <code>
+            /// 3: playing                          
+            /// 5: paused
+            /// </code>
             /// <br>TODO : Figure out values for dying  </br>
             /// </summary>
             public static readonly AddressData Mode = new(0x1E);
@@ -67,19 +69,23 @@
             /// </summary>
             public static readonly AddressData MapX = new(0x50);
             /// <summary>
-            /// <br>0x10 : Brinstar</br>
-            /// <br>0x11 : Norfair</br>
-            /// <br>0x12 : Kraid</br>
-            /// <br>0x13 : Tourian</br>
-            /// <br>0x14 : Ridley</br>
+            /// <code>
+            /// 0x10 : Brinstar
+            /// 0x11 : Norfair
+            /// 0x12 : Kraid
+            /// 0x13 : Tourian
+            /// 0x14 : Ridley
+            /// </code>
             /// </summary>
             public static readonly AddressData CurrentLevel = new(0x74);
             /// <summary>
-            /// <br>0 = not in a door                                         </br>
-            /// <br>1 = in a right-side door                                  </br>
-            /// <br>2 = in a left-side door                                   </br>
-            /// <br>3 = scrolling up to center a door before room transition  </br>
-            /// <br>4 = scrolling down to center a door before room transition</br>
+            /// <code>
+            /// 0 = not in a door                                         
+            /// 1 = in a right-side door                                  
+            /// 2 = in a left-side door                                   
+            /// 3 = scrolling up to center a door before room transition  
+            /// 4 = scrolling down to center a door before room transition
+            /// </code>
             /// </summary>
             public static readonly AddressData InADoor = new(0x56);
         }
@@ -108,52 +114,80 @@
             public static readonly AddressData Deaths = new(0x6881, 2);
         }
 
-        public static class Enemies
+        public static class Sprites
         {
             /// <summary>
-            /// Base data for all the enemies.
+            /// Base data for all the sprites.
             /// </summary>
-            public static readonly AddressData AllBaseEnemies = new(0x400, 0x100);
+            public static readonly AddressData AllBaseSprites = new(0x400, 0x100);
             /// <summary>
-            /// Extra data for all the enemies
+            /// Extra data for all the sprites
             /// </summary>
-            public static readonly AddressData AllExtraEnemies = new(0x6AF4, 0x100);
+            public static readonly AddressData AllExtraSprites = new(0x6AF4, 0x100);
             /// <summary>
-            /// Base data for a single enemy
+            /// Base data for a single sprite
             /// </summary>
-            public static readonly AddressData BaseSingleEnemy = new(0x400, 0x10);
+            public static readonly AddressData BaseSingleSprite = new(0x400, 0x10);
             /// <summary>
-            /// Extra data for a single enemy
+            /// Extra data for a single sprite
             /// </summary>
-            public static readonly AddressData ExtraSingleEnemy = new(0x6AF4, 0x10);
+            public static readonly AddressData ExtraSingleSprite = new(0x6AF4, 0x10);
             /// <summary>
-            /// Enemy Y position within room
+            /// Sprite Y position within room
             /// </summary>
-            public static readonly AddressData EnemyPosY = new(0x400);
+            public static readonly AddressData PosY = new(0x400);
             /// <summary>
-            /// Enemy X position within room
+            /// Sprite X position within room
             /// </summary>
-            public static readonly AddressData EnemyPosX = new(0x401);
+            public static readonly AddressData PosX = new(0x401);
             /// <summary>
-            /// Enemy's current hitpoints
+            /// Sprite's current hitpoints
             /// </summary>
-            public static readonly AddressData EnemyHitpoints = new(0x40B);
+            public static readonly AddressData Hitpoints = new(0x40B);
+            /// <summary>
+            /// Timer used by pickups before despawning
+            /// </summary>
+            public static readonly AddressData DespawnTimer = new(0x40D);
             /// <summary>
             /// <br>Current status of the enemy</br>
-            /// <c>
+            /// <code>
             /// 0x00 : Not in use
             /// 0x04 : Frozen
-            /// </c>
+            /// </code>
             /// </summary>
             public static readonly AddressData Status = new(0x6AF4);
             /// <summary>
             /// Current name table of the enemy (The screen it is currently on)
             /// </summary>
             public static readonly AddressData NameTable = new(0x6AFB);
+
+            /// <summary>
+            /// The projectiles from a Skree explosion, 4 bytes each.
+            /// <code>
+            /// byte 0 : Despawn timer
+            /// byte 1 : Y Position
+            /// byte 2 : X Position
+            /// byte 3 : Current screen (0 or 1)
+            /// </code>
+            /// </summary>
+            public static readonly AddressData SkreeProjectiles = new(0xA0, 0x10);
         }
 
         public static class Samus
         {
+            /// <summary>
+            /// Current status of Samus : 
+            /// <code>
+            /// 0x00 : Normal
+            /// 0x01 : Moving
+            /// 0x02 : Jumping
+            /// 0x03 : Morph Ball
+            /// 0x04 : Aiming Up
+            /// 0x05 : ???
+            /// 0x06 : Jumping while aiming up
+            /// </code>
+            /// </summary>
+            public static readonly AddressData Status = new(0x300);
             /// <summary>
             /// <br>Samus' current health</br>
             /// <br>Stored as 0xCDA.B, where ABCD are decimal digits</br>

@@ -74,7 +74,8 @@ namespace Retro_ML.Metroid.Game
         public byte GetSamusXPosition() => ReadSingle(Samus.XPosition);
         public byte GetSamusYPosition() => ReadSingle(Samus.YPosition);
         public (int xPos, int yPos) GetSamusScreensPosition() => GetScreensPosition(GetSamusXPosition() / META_TILE_SIZE, GetSamusYPosition() / META_TILE_SIZE, IsInFirstScreen());
-        public bool IsSamusLookingRight() => ReadSingle(Samus.LookingDirection) == 0;
+        public double SamusLookDirection() => (ReadSingle(Samus.LookingDirection) * -2.0) + 1;
+        public bool IsSamusInMorphBall() => ReadSingle(Samus.Status) == 0x3;
         public bool IsSamusInLava() => ReadSingle(Samus.InLava) == 1;
         public bool IsMetroidOnSamusHead() => ReadSingle(Samus.HasMetroidOnHead) == 1;
         public bool IsSamusOnElevator() => ReadSingle(Samus.IsOnElevator) == 1;
@@ -96,22 +97,17 @@ namespace Retro_ML.Metroid.Game
         {
             var result = new bool[yDist * 2 + 1, xDist * 2 + 1];
 
-            var enemies = GetEnemies();
+            SetEnemyTiles(result);
+            SetSkreeProjectiles(result);
 
-            (var samusX, var samusY) = GetSamusScreensPosition();
+            return result;
+        }
 
-            foreach (var enemy in enemies)
-            {
-                (var xPos, var yPos) = GetScreensPosition(enemy.XPos / META_TILE_SIZE, enemy.YPos / META_TILE_SIZE, enemy.IsInFirstScreen);
+        public bool[,] GetGoodTilesAroundPosition(int xDist, int yDist)
+        {
+            var result = new bool[yDist * 2 + 1, xDist * 2 + 1];
 
-                xPos -= samusX;
-                yPos -= samusY;
-
-                if (xPos >= -xDist && xPos <= xDist && yPos >= -yDist && yPos <= yDist)
-                {
-                    result[yPos + yDist, xPos + xDist] = true;
-                }
-            }
+            SetPickupTiles(result);
 
             return result;
         }
@@ -130,6 +126,76 @@ namespace Retro_ML.Metroid.Game
             }
 
             return result;
+        }
+
+        private void SetEnemyTiles(bool[,] tiles)
+        {
+            int xDist = (tiles.GetLength(1) - 1) / 2;
+            int yDist = (tiles.GetLength(0) - 1) / 2;
+
+            var enemies = GetEnemies();
+
+            (var samusX, var samusY) = GetSamusScreensPosition();
+
+            foreach (var enemy in enemies)
+            {
+                (var xPos, var yPos) = GetScreensPosition(enemy.XPos / META_TILE_SIZE, enemy.YPos / META_TILE_SIZE, enemy.IsInFirstScreen);
+
+                xPos -= samusX;
+                yPos -= samusY;
+
+                if (xPos >= -xDist && xPos <= xDist && yPos >= -yDist && yPos <= yDist)
+                {
+                    tiles[yPos + yDist, xPos + xDist] = true;
+                }
+            }
+        }
+
+        private void SetSkreeProjectiles(bool[,] tiles)
+        {
+            int xDist = (tiles.GetLength(1) - 1) / 2;
+            int yDist = (tiles.GetLength(0) - 1) / 2;
+
+            var projectiles = SkreeProjectile.FromBytes(Read(Sprites.SkreeProjectiles));
+
+            (var samusX, var samusY) = GetSamusScreensPosition();
+
+            foreach (var projectile in projectiles)
+            {
+                if (!projectile.IsActive()) continue;
+
+                (var xPos, var yPos) = GetScreensPosition(projectile.XPos / META_TILE_SIZE, projectile.YPos / META_TILE_SIZE, projectile.IsInFirstScreen);
+
+                xPos -= samusX;
+                yPos -= samusY;
+
+                if (xPos >= -xDist && xPos <= xDist && yPos >= -yDist && yPos <= yDist)
+                {
+                    tiles[yPos + yDist, xPos + xDist] = true;
+                }
+            }
+        }
+
+        private void SetPickupTiles(bool[,] tiles)
+        {
+            int xDist = (tiles.GetLength(1) - 1) / 2;
+            int yDist = (tiles.GetLength(0) - 1) / 2;
+            var pickups = GetPickups();
+
+            (var samusX, var samusY) = GetSamusScreensPosition();
+
+            foreach (var enemy in pickups)
+            {
+                (var xPos, var yPos) = GetScreensPosition(enemy.XPos / META_TILE_SIZE, enemy.YPos / META_TILE_SIZE, enemy.IsInFirstScreen);
+
+                xPos -= samusX;
+                yPos -= samusY;
+
+                if (xPos >= -xDist && xPos <= xDist && yPos >= -yDist && yPos <= yDist)
+                {
+                    tiles[yPos + yDist, xPos + xDist] = true;
+                }
+            }
         }
 
         private byte[,] GetTiles(int xDist, int yDist)
@@ -215,18 +281,35 @@ namespace Retro_ML.Metroid.Game
             }
         }
 
-        private IEnumerable<Enemy> GetEnemies()
+        private IEnumerable<Sprite> GetEnemies()
         {
-            var baseByteGroups = ReadMultiple(Enemies.BaseSingleEnemy, Enemies.BaseSingleEnemy, Enemies.AllBaseEnemies).ToArray();
-            var extraByteGroups = ReadMultiple(Enemies.ExtraSingleEnemy, Enemies.ExtraSingleEnemy, Enemies.AllExtraEnemies).ToArray();
+            var baseByteGroups = ReadMultiple(Sprites.BaseSingleSprite, Sprites.BaseSingleSprite, Sprites.AllBaseSprites).ToArray();
+            var extraByteGroups = ReadMultiple(Sprites.ExtraSingleSprite, Sprites.ExtraSingleSprite, Sprites.AllExtraSprites).ToArray();
 
             for (int i = 0; i < baseByteGroups.Length; i++)
             {
-                Enemy enemy = new(baseByteGroups[i], extraByteGroups[i]);
+                Sprite enemy = new(baseByteGroups[i], extraByteGroups[i]);
 
                 if (enemy.IsAlive())
                 {
                     yield return enemy;
+                }
+            }
+        }
+
+        private IEnumerable<Sprite> GetPickups()
+        {
+            var baseByteGroups = ReadMultiple(Sprites.BaseSingleSprite, Sprites.BaseSingleSprite, Sprites.AllBaseSprites).ToArray();
+            var extraByteGroups = ReadMultiple(Sprites.ExtraSingleSprite, Sprites.ExtraSingleSprite, Sprites.AllExtraSprites).ToArray();
+
+
+            for (int i = 0; i < baseByteGroups.Length; i++)
+            {
+                Sprite sprite = new(baseByteGroups[i], extraByteGroups[i]);
+
+                if (sprite.IsPickup())
+                {
+                    yield return sprite;
                 }
             }
         }
