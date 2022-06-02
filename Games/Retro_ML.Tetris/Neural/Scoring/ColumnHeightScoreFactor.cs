@@ -72,9 +72,9 @@ namespace Retro_ML.Tetris.Neural.Scoring
                 currScore += ScoreMultiplier;
             }
 
-            prevColumnHeights = dataFetcher.GetColumnHeights();
-            prevMedian = prevColumnHeights.OrderBy(i => i).ToArray()[4];
-            prevDiff = prevColumnHeights.Max() - prevMedian;
+            prevColumnHeights = currColumnHeights;
+            prevMedian = currMedian;
+            prevDiff = currDiff;
         }
 
         public IScoreFactor Clone()
