@@ -97,8 +97,8 @@ namespace Retro_ML.Metroid.Game
         {
             var result = new bool[yDist * 2 + 1, xDist * 2 + 1];
 
-            SetEnemyTiles(result);
-            SetSkreeProjectiles(result);
+            FetchEnemies(result);
+            FetchSkreeProjectiles(result);
 
             return result;
         }
@@ -107,7 +107,8 @@ namespace Retro_ML.Metroid.Game
         {
             var result = new bool[yDist * 2 + 1, xDist * 2 + 1];
 
-            SetPickupTiles(result);
+            FetchPickups(result);
+            FetchPowerUps(result);
 
             return result;
         }
@@ -128,7 +129,7 @@ namespace Retro_ML.Metroid.Game
             return result;
         }
 
-        private void SetEnemyTiles(bool[,] tiles)
+        private void FetchEnemies(bool[,] tiles)
         {
             int xDist = (tiles.GetLength(1) - 1) / 2;
             int yDist = (tiles.GetLength(0) - 1) / 2;
@@ -151,7 +152,7 @@ namespace Retro_ML.Metroid.Game
             }
         }
 
-        private void SetSkreeProjectiles(bool[,] tiles)
+        private void FetchSkreeProjectiles(bool[,] tiles)
         {
             int xDist = (tiles.GetLength(1) - 1) / 2;
             int yDist = (tiles.GetLength(0) - 1) / 2;
@@ -176,7 +177,7 @@ namespace Retro_ML.Metroid.Game
             }
         }
 
-        private void SetPickupTiles(bool[,] tiles)
+        private void FetchPickups(bool[,] tiles)
         {
             int xDist = (tiles.GetLength(1) - 1) / 2;
             int yDist = (tiles.GetLength(0) - 1) / 2;
@@ -187,6 +188,33 @@ namespace Retro_ML.Metroid.Game
             foreach (var enemy in pickups)
             {
                 (var xPos, var yPos) = GetScreensPosition(enemy.XPos / META_TILE_SIZE, enemy.YPos / META_TILE_SIZE, enemy.IsInFirstScreen);
+
+                xPos -= samusX;
+                yPos -= samusY;
+
+                if (xPos >= -xDist && xPos <= xDist && yPos >= -yDist && yPos <= yDist)
+                {
+                    tiles[yPos + yDist, xPos + xDist] = true;
+                }
+            }
+        }
+
+        private void FetchPowerUps(bool[,] tiles)
+        {
+            int xDist = (tiles.GetLength(1) - 1) / 2;
+            int yDist = (tiles.GetLength(0) - 1) / 2;
+
+            (var samusX, var samusY) = GetSamusScreensPosition();
+
+            var addresses = new AddressData[] { Powerups.Powerup1, Powerups.Powerup2 };
+
+            for (int i = 0; i < addresses.Length; i++)
+            {
+                byte[] powerup = Read(addresses[i]);
+
+                if (powerup[0] == 0x00 || powerup[0] == 0xFF) continue;
+
+                (var xPos, var yPos) = GetScreensPosition(powerup[2] / META_TILE_SIZE, powerup[1] / META_TILE_SIZE, powerup[3] == 0);
 
                 xPos -= samusX;
                 yPos -= samusY;
@@ -301,7 +329,6 @@ namespace Retro_ML.Metroid.Game
         {
             var baseByteGroups = ReadMultiple(Sprites.BaseSingleSprite, Sprites.BaseSingleSprite, Sprites.AllBaseSprites).ToArray();
             var extraByteGroups = ReadMultiple(Sprites.ExtraSingleSprite, Sprites.ExtraSingleSprite, Sprites.AllExtraSprites).ToArray();
-
 
             for (int i = 0; i < baseByteGroups.Length; i++)
             {

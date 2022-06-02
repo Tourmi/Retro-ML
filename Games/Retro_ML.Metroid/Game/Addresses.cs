@@ -97,7 +97,17 @@
             /// </summary>
             public static readonly AddressData EnergyTanks = new(0x6877);
             /// <summary>
-            /// Equipment so far (each bit refers to a specific upgrade)
+            /// Equipment so far
+            /// <code>
+            /// bit 0: Bombs
+            /// bit 1: High Jump
+            /// bit 2: Long Beam
+            /// bit 3: Screw Attack
+            /// bit 4: Maru Mari(Morph Ball)
+            /// bit 5: Varia Suit
+            /// bit 6: Wave Beam
+            /// bit 7: Ice Beam
+            /// </code>
             /// </summary>
             public static readonly AddressData Equipment = new(0x6878);
             /// <summary>
@@ -285,6 +295,30 @@
             /// Elevator X position within room
             /// </summary>
             public static readonly AddressData XPosition = new(0x32E);
+        }
+
+        public static class Powerups
+        {
+            /// <summary>
+            /// Bytes for powerup 1
+            /// <code>
+            /// byte 0 : Power up type
+            /// byte 1 : Y Position
+            /// byte 2 : X Position
+            /// byte 3 : Current screen
+            /// </code>
+            /// </summary>
+            public static readonly AddressData Powerup1 = new(0x748, 4);
+            /// <summary>
+            /// Bytes for powerup 2
+            /// <code>
+            /// byte 0 : Power up type
+            /// byte 1 : Y Position
+            /// byte 2 : X Position
+            /// byte 3 : Current screen
+            /// </code>
+            /// </summary>
+            public static readonly AddressData Powerup2 = new(0x748, 4);
         }
     }
 }
