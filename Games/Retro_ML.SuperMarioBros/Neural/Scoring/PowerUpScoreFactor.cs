@@ -8,7 +8,6 @@ namespace Retro_ML.SuperMarioBros.Neural.Scoring
     {
         private const string MUSHROOM_MULT = "Mushroom Mult";
         private const string FLOWER_MULT = "Flower Mult";
-        private const string CAPE_MULT = "Cape Mult";
 
         private double currScore;
         private byte prevPowerUp;
@@ -19,7 +18,6 @@ namespace Retro_ML.SuperMarioBros.Neural.Scoring
             ExtraFields = new ExtraField[]
             {
                 new ExtraField(MUSHROOM_MULT, 1.0),
-                new ExtraField(CAPE_MULT, 2.0),
                 new ExtraField(FLOWER_MULT, 2.0),
             };
         }
@@ -51,18 +49,14 @@ namespace Retro_ML.SuperMarioBros.Neural.Scoring
                 inited = true;
             }
 
-            if (currPowerUp != 0)
+            if (currPowerUp > prevPowerUp)
             {
-                if (prevPowerUp < currPowerUp && prevPowerUp <= 1)
+                currScore += ScoreMultiplier * currPowerUp switch
                 {
-                    currScore += ScoreMultiplier * currPowerUp switch
-                    {
-                        1 => ExtraField.GetValue(ExtraFields, MUSHROOM_MULT),
-                        2 => ExtraField.GetValue(ExtraFields, CAPE_MULT),
-                        3 => ExtraField.GetValue(ExtraFields, FLOWER_MULT),
-                        _ => 1.0
-                    };
-                }
+                    1 => ExtraField.GetValue(ExtraFields, MUSHROOM_MULT),
+                    2 => ExtraField.GetValue(ExtraFields, FLOWER_MULT),
+                    _ => 1.0
+                };
             }
 
             prevPowerUp = currPowerUp;
