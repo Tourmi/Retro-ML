@@ -116,7 +116,7 @@ namespace Retro_ML.Metroid.Configuration
         /// <summary>
         /// Skips this amount of frames for every neural network updates.
         /// </summary>
-        public int FrameSkip { get; set; } = 0;
+        public int FrameSkip { get; set; } = 1;
 
         public List<IScoreFactor> ScoreFactors { get; set; }
 

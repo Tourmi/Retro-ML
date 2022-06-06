@@ -34,7 +34,7 @@
             /// The currently loaded tiles, split into two rooms of 0x400 tiles.
             /// The final 2 rows of tiles appear to be useless
             /// </summary>
-            public static readonly AddressData Tiles = new(0x6000, 0x800);
+            public static readonly AddressData Tiles = new(0x6000, 0x800, AddressData.CacheDurations.Room);
             /// <summary>
             /// X position of camera scroll
             /// </summary>

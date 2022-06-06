@@ -33,6 +33,10 @@ namespace Retro_ML.Metroid.Game
         private readonly MetroidPluginConfig pluginConfig;
 
         private InternalClock internalClock;
+        private byte previousScrollX;
+        private byte previousScrollY;
+        private int delayRoomCacheClearTimer;
+        private bool wasSamusInDoor;
 
         public MetroidDataFetcher(IEmulatorAdapter emulator, NeuralConfig neuralConfig, MetroidPluginConfig pluginConfig)
         {
@@ -40,6 +44,8 @@ namespace Retro_ML.Metroid.Game
             frameCache = new();
             roomCache = new();
             this.pluginConfig = pluginConfig;
+            previousScrollX = 0;
+            previousScrollY = 0;
             internalClock = new InternalClock(pluginConfig.InternalClockTickLength, pluginConfig.InternalClockLength);
         }
 
@@ -52,6 +58,7 @@ namespace Retro_ML.Metroid.Game
             internalClock.NextFrame();
 
             InitFrameCache();
+            VerifyRoomCache();
         }
 
         /// <summary>
@@ -80,6 +87,7 @@ namespace Retro_ML.Metroid.Game
         public bool IsMetroidOnSamusHead() => ReadSingle(Samus.HasMetroidOnHead) == 1;
         public bool IsSamusOnElevator() => ReadSingle(Samus.IsOnElevator) == 1;
         public bool IsSamusUsingMissiles() => ReadSingle(Samus.UsingMissiles) == 1;
+        public bool IsSamusInDoor() => ReadSingle(Gamestate.InADoor) != 0;
         public double SamusInvincibilityTimer() => ReadSingle(Samus.InvincibleTimer) / (double)INVINCIBILITY_TIMER_LENGTH;
         public double GetCurrentMissiles() => ReadSingle(Progress.Missiles) / Math.Max(1.0, ReadSingle(Progress.MissileCapacity));
 
@@ -436,13 +444,7 @@ namespace Retro_ML.Metroid.Game
         /// <returns></returns>
         private IEnumerable<byte[]> ReadMultiple(AddressData addressData, AddressData offset, AddressData total)
         {
-            uint count = total.Length / offset.Length;
-            var results = new byte[count][];
-            var toRead = new List<AddressData>();
-            for (int i = 0; i < results.Length; i++)
-            {
-                toRead.Add(new AddressData((uint)(addressData.Address + i * offset.Length), addressData.Length, addressData.CacheDuration));
-            }
+            var toRead = GetAddressesToRead(addressData, offset, total);
             var result = Read(toRead.ToArray());
             var bytesPerItem = addressData.Length;
             for (long i = 0; i < result.Length; i += bytesPerItem)
@@ -450,6 +452,22 @@ namespace Retro_ML.Metroid.Game
                 var bytes = new byte[bytesPerItem];
                 Array.Copy(result, i, bytes, 0, bytesPerItem);
                 yield return bytes;
+            }
+        }
+
+        /// <summary>
+        /// Returns the addresses to read when reading from a Table
+        /// </summary>
+        /// <param name="addressData"></param>
+        /// <param name="offset"></param>
+        /// <param name="total"></param>
+        /// <returns></returns>
+        private IEnumerable<AddressData> GetAddressesToRead(AddressData addressData, AddressData offset, AddressData total)
+        {
+            uint count = total.Length / offset.Length;
+            for (int i = 0; i < count; i++)
+            {
+                yield return new AddressData((uint)(addressData.Address + i * offset.Length), addressData.Length, addressData.CacheDuration);
             }
         }
 
@@ -522,9 +540,69 @@ namespace Retro_ML.Metroid.Game
         {
             List<AddressData> toRead = new()
             {
+                Samus.Health,
+                Progress.EnergyTanks,
+                Progress.Deaths,
+                Samus.XPosition,
+                Samus.YPosition,
+                Samus.LookingDirection,
+                Samus.Status,
+                Samus.InLava,
+                Samus.HasMetroidOnHead,
+                Samus.IsOnElevator,
+                Samus.UsingMissiles,
+                Gamestate.InADoor,
+                Samus.InvincibleTimer,
+                Progress.Missiles,
+                Progress.MissileCapacity,
+                Samus.CurrentScreen,
+                Room.HorizontalOrVertical,
+                Room.ScrollX,
+                Room.ScrollY,
+                Gamestate.MapX,
+                Gamestate.MapY,
+                Samus.VerticalSpeed,
+                Samus.VerticalFractionalSpeed,
+                Samus.HorizontalSpeed,
+                Samus.HorizontalFractionalSpeed,
+                Sprites.SkreeProjectiles,
+                Powerups.Powerup1,
+                Powerups.Powerup2,
             };
 
+            toRead.AddRange(GetAddressesToRead(Sprites.BaseSingleSprite, Sprites.BaseSingleSprite, Sprites.AllBaseSprites));
+
             _ = Read(toRead.ToArray());
+        }
+
+        private void VerifyRoomCache()
+        {
+            delayRoomCacheClearTimer--;
+            if (delayRoomCacheClearTimer == 0)
+            {
+                roomCache.Clear();
+            }
+
+            byte scrollX = (byte)(GetScrollX() - 1);
+            byte scrollY = (byte)(GetScrollY() - 1);
+
+            var scrollDiff = Math.Max(Math.Abs(previousScrollX - scrollX), Math.Abs(previousScrollY - scrollY));
+
+            if (scrollDiff > 128)
+            {
+                delayRoomCacheClearTimer = Math.Max(delayRoomCacheClearTimer, 3);
+            }
+
+            bool isInDoor = IsSamusInDoor();
+            if (!isInDoor && wasSamusInDoor)
+            {
+                delayRoomCacheClearTimer = Math.Max(delayRoomCacheClearTimer, 20);
+            }
+
+            wasSamusInDoor = isInDoor;
+            previousScrollX = scrollX;
+            previousScrollY = scrollY;
+
         }
 
         private static IEnumerable<AddressData> GetCalculatedAddresses(uint totalLength, uint offset, params AddressData[] baseAddresses)
