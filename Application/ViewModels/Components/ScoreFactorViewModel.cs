@@ -1,6 +1,12 @@
 ﻿using ReactiveUI;
 using Retro_ML.Neural.Scoring;
 using System.Collections.ObjectModel;
+using Retro_ML.Configuration.FieldInformation;
+using Retro_ML.Configuration;
+using Retro_ML.Application.ViewModels.Components.FieldInfo;
+using System.IO;
+using System.Linq;
+using System.Runtime.Serialization;
 
 namespace Retro_ML.Application.ViewModels.Components
 {
@@ -16,6 +22,13 @@ namespace Retro_ML.Application.ViewModels.Components
             isEnabled = !scoreFactor.IsDisabled;
             multiplier = scoreFactor.ScoreMultiplier;
             ExtraFields = new ObservableCollection<ExtraField>(scoreFactor.ExtraFields);
+
+            FieldInfos = new ObservableCollection<ViewModelBase>();
+
+            foreach (var fieldInfo in scoreFactor.Fields)
+            {
+                FieldInfos.Add(FieldInfoViewModel.GetFieldInfoViewModel(fieldInfo, scoreFactor[fieldInfo.Name]));
+            }
         }
 
         public string Name { get; }
@@ -32,6 +45,8 @@ namespace Retro_ML.Application.ViewModels.Components
             get => multiplier;
             set => this.RaiseAndSetIfChanged(ref multiplier, value);
         }
+
+        public ObservableCollection<ViewModelBase> FieldInfos { get; set; }
 
         public ObservableCollection<ExtraField> ExtraFields { get; set; }
     }

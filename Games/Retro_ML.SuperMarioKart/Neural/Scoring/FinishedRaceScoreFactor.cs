@@ -1,4 +1,5 @@
-﻿using Retro_ML.Game;
+﻿using Retro_ML.Configuration.FieldInformation;
+using Retro_ML.Game;
 using Retro_ML.Neural.Scoring;
 using Retro_ML.SuperMarioKart.Game;
 
@@ -22,6 +23,11 @@ namespace Retro_ML.SuperMarioKart.Neural.Scoring
         public double ScoreMultiplier { get; set; }
         public ExtraField[] ExtraFields { get; set; }
 
+        public FieldInfo[] Fields => new FieldInfo[]
+        {
+             new DoubleFieldInfo(nameof(RankingMult), "Ranking multiplier", double.MinValue, double.MaxValue, 0.25),
+        };
+
         public FinishedRaceScoreFactor()
         {
             ExtraFields = new ExtraField[]
@@ -29,6 +35,28 @@ namespace Retro_ML.SuperMarioKart.Neural.Scoring
                 new ExtraField(FINAL_RANKING, 0.5)
             };
         }
+
+        public object this[string fieldName]
+        {
+            get
+            {
+                return fieldName switch
+                {
+                    nameof(RankingMult) => RankingMult,
+                    _ => 0,
+                };
+            }
+            set
+            {
+                switch (fieldName)
+                {
+                    case nameof(RankingMult): RankingMult = (double)value; break;
+                }
+            }
+        }
+
+
+        public double RankingMult { get; set; } = 0.5;       
 
         public double GetFinalScore() => currScore;
 

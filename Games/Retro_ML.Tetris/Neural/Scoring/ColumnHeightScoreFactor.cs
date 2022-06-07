@@ -1,6 +1,7 @@
 ﻿using Retro_ML.Game;
 using Retro_ML.Neural.Scoring;
 using Retro_ML.Tetris.Game;
+using Retro_ML.Configuration.FieldInformation;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -20,6 +21,11 @@ namespace Retro_ML.Tetris.Neural.Scoring
         private int prevMedian;
         private int[] prevColumnHeights;
 
+        public FieldInfo[] Fields => new FieldInfo[]
+        {
+             new IntegerFieldInfo(nameof(HeightDifference), "Height difference with median", 1, 17, 1)
+        };
+
         public ColumnHeightScoreFactor()
         {
             prevColumnHeights = new int[10];
@@ -28,6 +34,27 @@ namespace Retro_ML.Tetris.Neural.Scoring
                 new(HEIGHT_DIFFERENCE, 5)
             };
         }
+
+        public object this[string fieldName]
+        {
+            get
+            {
+                return fieldName switch
+                {
+                    nameof(HeightDifference) => HeightDifference,
+                    _ => 0,
+                };
+            }
+            set
+            {
+                switch (fieldName)
+                {
+                    case nameof(HeightDifference): HeightDifference = (int)value; break;
+                }
+            }
+        }
+
+        public int HeightDifference { get; set; } = 5;
 
         public string Name => "Column Height";
 
@@ -66,8 +93,8 @@ namespace Retro_ML.Tetris.Neural.Scoring
             var currColumnHeights = dataFetcher.GetColumnHeights();
             var currMedian = currColumnHeights.OrderBy(i => i).ToArray()[4];
             var currDiff = currColumnHeights.Max() - currMedian;
-
-            if (currDiff > prevDiff && currDiff >= ExtraField.GetValue(ExtraFields, HEIGHT_DIFFERENCE))
+            
+            if (currDiff > prevDiff && currDiff >= HeightDifference)
             {
                 currScore += ScoreMultiplier;
             }

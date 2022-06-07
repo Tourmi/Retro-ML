@@ -1,6 +1,7 @@
 ﻿using Retro_ML.Game;
 using Retro_ML.Neural.Scoring;
 using Retro_ML.Tetris.Game;
+using Retro_ML.Configuration.FieldInformation;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,6 +18,11 @@ namespace Retro_ML.Tetris.Neural.Scoring
         private double currScore;
         private int nbHoles;
 
+        public FieldInfo[] Fields => new FieldInfo[]
+        {
+             new IntegerFieldInfo(nameof(NumberOfHoles), "Number of holes permitted", 0, 50, 1),
+        };
+
         public HoleScoreFactor()
         {
             ExtraFields = new ExtraField[]
@@ -25,7 +31,29 @@ namespace Retro_ML.Tetris.Neural.Scoring
             };
         }
 
+        public object this[string fieldName]
+        {
+            get
+            {
+                return fieldName switch
+                {
+                    nameof(NumberOfHoles) => NumberOfHoles,
+                    _ => 0,
+                };
+            }
+            set
+            {
+                switch (fieldName)
+                {
+                    case nameof(NumberOfHoles): NumberOfHoles = (int)value; break;
+                }
+            }
+        }
+
+        public int NumberOfHoles { get; set; } = 5;
+
         public bool ShouldStop => shouldStop;
+
         public double ScoreMultiplier { get; set; }
 
         public string Name => "Number of holes";
@@ -47,7 +75,7 @@ namespace Retro_ML.Tetris.Neural.Scoring
         {
             nbHoles = dataFetcher.GetNumberOfHoles();
 
-            if (nbHoles >= ExtraField.GetValue(ExtraFields, NUMBER_OF_HOLES))
+            if (nbHoles > NumberOfHoles)
             {
                 shouldStop = true;
             }

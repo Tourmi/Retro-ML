@@ -3,14 +3,14 @@ using Retro_ML.Configuration.FieldInformation;
 
 namespace Retro_ML.Application.ViewModels.Components.FieldInfo
 {
-    internal class IntegerViewModel : FieldInfoViewModel
+    internal class DoubleViewModel : FieldInfoViewModel
     {
-        public IntegerFieldInfo FieldInfo { get; }
+        public DoubleFieldInfo FieldInfo { get; }
         public string FieldName => FieldInfo.Name;
         public string DisplayName => FieldInfo.ReadableName;
 
-        private int value;
-        public int Value
+        private double value;
+        public double Value
         {
             get => value;
             set
@@ -18,18 +18,19 @@ namespace Retro_ML.Application.ViewModels.Components.FieldInfo
                 this.RaiseAndSetIfChanged(ref this.value, value);
             }
         }
-        public int MinimumValue => FieldInfo.MinimumValue;
-        public int MaximumValue => FieldInfo.MaximumValue;
-        public int Increment => FieldInfo.Increment;
+
+        public double MinimumValue => FieldInfo.MinimumValue;
+        public double MaximumValue => FieldInfo.MaximumValue;
+        public double Increment => FieldInfo.Increment;
         public bool HasIncrement => FieldInfo.Increment > 0;
 
-        public IntegerViewModel()
+        public DoubleViewModel()
         {
-            FieldInfo = new IntegerFieldInfo("TestField", "Test Field", 5, 25, 5);
+            FieldInfo = new DoubleFieldInfo("TestField", "Test Field", 5.05, 25.05, 0.05);
             Value = 15;
         }
 
-        public IntegerViewModel(IntegerFieldInfo fieldInfo, int value)
+        public DoubleViewModel(DoubleFieldInfo fieldInfo, double value)
         {
             FieldInfo = fieldInfo;
             Value = value;

@@ -1,5 +1,6 @@
 ﻿using Retro_ML.Game;
 using Retro_ML.Neural.Scoring;
+using Retro_ML.Configuration.FieldInformation;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,6 +17,11 @@ namespace Retro_ML.Tetris.Neural.Scoring
         private double currScore;
         private int levelFrames = 0;
 
+        public FieldInfo[] Fields => new FieldInfo[]
+        {
+             new IntegerFieldInfo(nameof(MaximumLevelTime), "Maximum Level Time", 1, int.MaxValue, 1)
+        };
+
         public TimeTakenScoreFactor()
         {
             ExtraFields = new ExtraField[]
@@ -23,6 +29,27 @@ namespace Retro_ML.Tetris.Neural.Scoring
                 new(MAXIMUM_LEVEL_TIME, 600)
             };
         }
+
+        public object this[string fieldName]
+        {
+            get
+            {
+                return fieldName switch
+                {
+                    nameof(MaximumLevelTime) => MaximumLevelTime,
+                    _ => 0,
+                };
+            }
+            set
+            {
+                switch (fieldName)
+                {
+                    case nameof(MaximumLevelTime): MaximumLevelTime = (int)value; break;
+                }
+            }
+        }
+
+        public int MaximumLevelTime { get; set; } = 600;
 
         public bool ShouldStop => shouldStop;
         public double ScoreMultiplier { get; set; }
@@ -41,7 +68,7 @@ namespace Retro_ML.Tetris.Neural.Scoring
         {
             levelFrames++;
             currScore += ScoreMultiplier / 60.0;
-            if (levelFrames >= ExtraField.GetValue(ExtraFields, MAXIMUM_LEVEL_TIME) * 60)
+            if (levelFrames >= MaximumLevelTime * 60)
             {
                 shouldStop = true;
             }

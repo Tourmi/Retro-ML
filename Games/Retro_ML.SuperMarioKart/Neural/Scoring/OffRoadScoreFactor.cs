@@ -1,4 +1,5 @@
-﻿using Retro_ML.Game;
+﻿using Retro_ML.Configuration.FieldInformation;
+using Retro_ML.Game;
 using Retro_ML.Neural.Scoring;
 using Retro_ML.SuperMarioKart.Game;
 
@@ -23,6 +24,11 @@ namespace Retro_ML.SuperMarioKart.Neural.Scoring
         public double ScoreMultiplier { get; set; }
         public ExtraField[] ExtraFields { get; set; }
 
+        public FieldInfo[] Fields => new FieldInfo[]
+        {
+             new IntegerFieldInfo(nameof(StopAfter), "Stop after", 1, int.MaxValue, 1)
+        };
+
         public OffRoadScoreFactor()
         {
             ExtraFields = new ExtraField[]
@@ -30,6 +36,27 @@ namespace Retro_ML.SuperMarioKart.Neural.Scoring
                 new ExtraField(STOP_AFTER, 5)
             };
         }
+
+        public object this[string fieldName]
+        {
+            get
+            {
+                return fieldName switch
+                {
+                    nameof(StopAfter) => StopAfter,
+                    _ => 0,
+                };
+            }
+            set
+            {
+                switch (fieldName)
+                {
+                    case nameof(StopAfter): StopAfter = (int)value; break;
+                }
+            }
+        }
+
+        public int StopAfter { get; set; } = 5;
 
         public double GetFinalScore() => currScore;
 

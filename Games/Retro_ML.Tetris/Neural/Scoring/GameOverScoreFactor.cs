@@ -1,6 +1,7 @@
 ﻿using Retro_ML.Game;
 using Retro_ML.Neural.Scoring;
 using Retro_ML.Tetris.Game;
+using Retro_ML.Configuration.FieldInformation;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,9 +15,30 @@ namespace Retro_ML.Tetris.Neural.Scoring
         private bool shouldStop = false;
         private double currScore;
 
+        public FieldInfo[] Fields => new FieldInfo[]
+        {
+        };
+
         public GameOverScoreFactor()
         {
             ExtraFields = Array.Empty<ExtraField>();
+        }
+
+        public object this[string fieldName]
+        {
+            get
+            {
+                return fieldName switch
+                {
+                    _ => 0,
+                };
+            }
+            set
+            {
+                switch (fieldName)
+                {
+                }
+            }
         }
 
         public string Name => "Game Over";

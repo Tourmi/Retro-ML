@@ -1,4 +1,5 @@
-﻿using Retro_ML.Game;
+﻿using Retro_ML.Configuration.FieldInformation;
+using Retro_ML.Game;
 using Retro_ML.Neural.Scoring;
 using Retro_ML.SuperMarioKart.Game;
 
@@ -12,9 +13,30 @@ namespace Retro_ML.SuperMarioKart.Neural.Scoring
         private int currCheckpoint = 0;
         private int previousCheckpoint = 0;
 
+        public FieldInfo[] Fields => new FieldInfo[]
+        {
+        };
+
         public CheckpointReachedScoreFactor()
         {
             ExtraFields = Array.Empty<ExtraField>();
+        }
+
+        public object this[string fieldName]
+        {
+            get
+            {
+                return fieldName switch
+                {
+                    _ => 0,
+                };
+            }
+            set
+            {
+                switch (fieldName)
+                {
+                }
+            }
         }
 
         public bool ShouldStop => false;

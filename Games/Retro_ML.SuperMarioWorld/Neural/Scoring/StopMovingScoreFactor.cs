@@ -1,4 +1,5 @@
-﻿using Retro_ML.Game;
+﻿using Retro_ML.Configuration.FieldInformation;
+using Retro_ML.Game;
 using Retro_ML.Neural.Scoring;
 using Retro_ML.SuperMarioWorld.Game;
 
@@ -22,9 +23,30 @@ namespace Retro_ML.SuperMarioWorld.Neural.Scoring
 
         private double currScore = 0;
 
+        public FieldInfo[] Fields => new FieldInfo[]
+        {
+        };
+
         public StopMovingScoreFactor()
         {
             ExtraFields = Array.Empty<ExtraField>();
+        }
+
+        public object this[string fieldName]
+        {
+            get
+            {
+                return fieldName switch
+                {
+                    _ => 0,
+                };
+            }
+            set
+            {
+                switch (fieldName)
+                {
+                }
+            }
         }
 
         public bool ShouldStop => shouldStop;

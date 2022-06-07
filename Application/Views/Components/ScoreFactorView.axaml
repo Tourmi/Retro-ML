@@ -12,26 +12,18 @@
 	
 	<StackPanel Spacing="10">
 		<TextBlock Classes="h1" Text="{Binding Name}"/>
-		<StackPanel Margin="5" Orientation="Horizontal" VerticalAlignment="Center" Spacing="10">
+		<StackPanel Margin="5,0,0,0" Orientation="Horizontal" VerticalAlignment="Center" Spacing="10">
 			<TextBlock Text="{Binding EnabledString}" VerticalAlignment="Center"/>
 			<CheckBox IsEnabled="{Binding CanBeDisabled}" IsChecked="{Binding IsChecked}" VerticalAlignment="Center"/>
 			<TextBlock Text="{Binding MultiplierString}" VerticalAlignment="Center"/>
 			<NumericUpDown Value="{Binding Multiplier}" ShowButtonSpinner="False"/>
 		</StackPanel>
-		<ItemsControl Items="{Binding ExtraFields}">
+		<ItemsControl Items="{Binding FieldInfos}">
 			<ItemsControl.ItemsPanel>
 				<ItemsPanelTemplate>
-					<StackPanel Spacing="0"/>
+					<StackPanel Margin="10,0,0,0" Orientation="Vertical" VerticalAlignment="Center"  />
 				</ItemsPanelTemplate>
 			</ItemsControl.ItemsPanel>
-			<ItemsControl.ItemTemplate>
-				<DataTemplate>
-					<StackPanel Margin="20,0" Orientation="Horizontal" VerticalAlignment="Center" Spacing="10">
-						<TextBlock Text="{Binding Name}" VerticalAlignment="Center" Width="120"/>
-						<NumericUpDown Value="{Binding Value}" ShowButtonSpinner="False"/>
-					</StackPanel>
-				</DataTemplate>
-			</ItemsControl.ItemTemplate>
 		</ItemsControl>
 	</StackPanel>
 </UserControl>

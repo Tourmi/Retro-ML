@@ -507,19 +507,19 @@ namespace Retro_ML.Application.ViewModels
             ApplicationConfig.SaveStates = _saveStates;
 
             //Tab Objectives
-            var scoreFactors = ApplicationConfig.GamePluginConfig!.ScoreFactors;
-            for (int i = 0; i < Objectives.Count; i++)
-            {
-                scoreFactors[i].ScoreMultiplier = Objectives[i].Multiplier;
-                if (scoreFactors[i].CanBeDisabled)
-                {
-                    scoreFactors[i].IsDisabled = !Objectives[i].IsChecked;
-                }
-                for (int j = 0; j < scoreFactors[i].ExtraFields.Count(); j++)
-                {
-                    scoreFactors[i].ExtraFields[j].Value = Objectives[i].ExtraFields[j].Value;
-                }
-            }
+            //var scoreFactors = ApplicationConfig.GamePluginConfig!.ScoreFactors;
+            //for (int i = 0; i < Objectives.Count; i++)
+            //{
+            //    scoreFactors[i].ScoreMultiplier = Objectives[i].Multiplier;
+            //    if (scoreFactors[i].CanBeDisabled)
+            //    {
+            //        scoreFactors[i].IsDisabled = !Objectives[i].IsChecked;
+            //    }
+            //    for (int j = 0; j < scoreFactors[i].Fields.Length; j++)
+            //    {
+            //        scoreFactors[i].Fields[j] = Objectives[i].Fields[j].Value;
+            //    }
+            //}
 
             //Tab Game
             SaveGamePluginConfig();
@@ -619,18 +619,7 @@ namespace Retro_ML.Application.ViewModels
 
             foreach (var fieldInfo in pluginConfig.Fields)
             {
-                switch (fieldInfo)
-                {
-                    case BoolFieldInfo fi:
-                        GamePluginConfigFields.Add(new BoolViewModel(fi, (bool)pluginConfig[fi.Name]));
-                        break;
-                    case IntegerChoiceFieldInfo fi:
-                        GamePluginConfigFields.Add(new IntegerChoiceViewModel(fi, (int)pluginConfig[fi.Name]));
-                        break;
-                    case IntegerFieldInfo fi:
-                        GamePluginConfigFields.Add(new IntegerViewModel(fi, (int)pluginConfig[fi.Name]));
-                        break;
-                }
+                GamePluginConfigFields.Add(FieldInfoViewModel.GetFieldInfoViewModel(fieldInfo, pluginConfig[fieldInfo.Name]));
             }
         }
 
@@ -737,7 +726,7 @@ namespace Retro_ML.Application.ViewModels
             string gamePluginConfig = await File.ReadAllTextAsync(paths.First());
 
             ApplicationConfig!.GamePluginConfig!.Deserialize(gamePluginConfig);
-            
+
             //Tab Game
             LoadGamePluginConfig();
 

@@ -3,7 +3,7 @@ using Retro_ML.Configuration.FieldInformation;
 
 namespace Retro_ML.Application.ViewModels.Components.FieldInfo
 {
-    internal class IntegerChoiceViewModel : ViewModelBase
+    internal class IntegerChoiceViewModel : FieldInfoViewModel
     {
         public IntegerChoiceFieldInfo FieldInfo { get; }
         public string FieldName => FieldInfo.Name;

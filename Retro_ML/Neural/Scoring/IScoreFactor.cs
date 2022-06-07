@@ -1,5 +1,6 @@
 ﻿using Newtonsoft.Json;
 using Retro_ML.Game;
+using Retro_ML.Configuration.FieldInformation;
 
 namespace Retro_ML.Neural.Scoring
 {
@@ -50,7 +51,20 @@ namespace Retro_ML.Neural.Scoring
         /// <summary>
         /// Name of any extra field this score factor has.
         /// </summary>
+        [Obsolete("ExtraFields is deprecated")]
         ExtraField[] ExtraFields { get; set; }
+
+        /// <summary>
+        /// The available fields for this score factor.
+        /// </summary>
+        [JsonIgnore]
+        FieldInfo[] Fields { get; }
+        /// <summary>
+        /// Returns or sets the value of the given field
+        /// </summary>
+        /// <param name="fieldName"></param>
+        /// <returns></returns>
+        object this[string fieldName] { get; set; }
 
         /// <summary>
         /// Clones this score factor into a new instance.

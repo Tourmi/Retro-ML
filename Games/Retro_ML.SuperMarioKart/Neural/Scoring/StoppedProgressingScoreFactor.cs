@@ -1,4 +1,5 @@
-﻿using Retro_ML.Game;
+﻿using Retro_ML.Configuration.FieldInformation;
+using Retro_ML.Game;
 using Retro_ML.Neural.Scoring;
 using Retro_ML.SuperMarioKart.Game;
 
@@ -16,6 +17,11 @@ namespace Retro_ML.SuperMarioKart.Neural.Scoring
         private int currCheckpoint = 0;
         private int previousCheckpoint = 0;
 
+        public FieldInfo[] Fields => new FieldInfo[]
+        {
+             new IntegerFieldInfo(nameof(MaxTimeWithoutProgress), "Max time w/o progress", 1, int.MaxValue, 1)
+        };
+
         public StoppedProgressingScoreFactor()
         {
             ExtraFields = new ExtraField[]
@@ -23,6 +29,27 @@ namespace Retro_ML.SuperMarioKart.Neural.Scoring
                 new ExtraField(MAX_TIME_WITHOUT_PROGRESS, 4)
             };
         }
+
+        public object this[string fieldName]
+        {
+            get
+            {
+                return fieldName switch
+                {
+                    nameof(MaxTimeWithoutProgress) => MaxTimeWithoutProgress,
+                    _ => 0,
+                };
+            }
+            set
+            {
+                switch (fieldName)
+                {
+                    case nameof(MaxTimeWithoutProgress): MaxTimeWithoutProgress = (int)value; break;
+                }
+            }
+        }
+
+        public int MaxTimeWithoutProgress { get; set; } = 4;
 
         public bool ShouldStop => shouldStop;
         public double ScoreMultiplier { get; set; }
