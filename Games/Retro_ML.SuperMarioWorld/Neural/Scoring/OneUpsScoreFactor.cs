@@ -12,9 +12,7 @@ namespace Retro_ML.SuperMarioWorld.Neural.Scoring
         private int currOneUps;
         private double score;
 
-        public FieldInfo[] Fields => new FieldInfo[]
-        {
-        };
+        public FieldInfo[] Fields => Array.Empty<FieldInfo>();
 
         public OneUpsScoreFactor()
         {

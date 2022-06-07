@@ -28,7 +28,7 @@ namespace Retro_ML.SuperMarioKart.Neural.Scoring
 
         public FieldInfo[] Fields => new FieldInfo[]
         {
-             new IntegerFieldInfo(nameof(StopAfterXCollisions), "Maximum collisions", 1, int.MaxValue, 1),
+             new IntegerFieldInfo(nameof(StopAfterXCollisions), "Maximum collisions", 0, int.MaxValue, 1),
         };
 
         public CollisionScoreFactor()

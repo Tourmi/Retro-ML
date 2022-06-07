@@ -15,9 +15,7 @@ namespace Retro_ML.Tetris.Neural.Scoring
         private bool shouldStop = false;
         private double currScore;
 
-        public FieldInfo[] Fields => new FieldInfo[]
-        {
-        };
+        public FieldInfo[] Fields => Array.Empty<FieldInfo>();
 
         public GameOverScoreFactor()
         {

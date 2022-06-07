@@ -10,9 +10,7 @@ namespace Retro_ML.SuperMarioWorld.Neural.Scoring
         private bool shouldStop = false;
         private double currScore;
 
-        public FieldInfo[] Fields => new FieldInfo[]
-        {
-        };
+        public FieldInfo[] Fields => Array.Empty<FieldInfo>();
 
         public DiedScoreFactor()
         {

@@ -23,9 +23,7 @@ namespace Retro_ML.SuperMarioWorld.Neural.Scoring
 
         private double currScore = 0;
 
-        public FieldInfo[] Fields => new FieldInfo[]
-        {
-        };
+        public FieldInfo[] Fields => Array.Empty<FieldInfo>();
 
         public StopMovingScoreFactor()
         {
