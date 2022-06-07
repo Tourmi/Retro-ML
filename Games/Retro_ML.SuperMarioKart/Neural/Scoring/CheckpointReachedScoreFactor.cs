@@ -13,9 +13,7 @@ namespace Retro_ML.SuperMarioKart.Neural.Scoring
         private int currCheckpoint = 0;
         private int previousCheckpoint = 0;
 
-        public FieldInfo[] Fields => new FieldInfo[]
-        {
-        };
+        public FieldInfo[] Fields => Array.Empty<FieldInfo>();
 
         public CheckpointReachedScoreFactor()
         {

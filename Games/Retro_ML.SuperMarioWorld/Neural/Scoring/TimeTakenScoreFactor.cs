@@ -13,9 +13,7 @@ namespace Retro_ML.SuperMarioWorld.Neural.Scoring
         private double currScore;
         private int levelFrames = 0;
 
-        public FieldInfo[] Fields => new FieldInfo[]
-        {
-        };
+        public FieldInfo[] Fields => Array.Empty<FieldInfo>();
 
         public TimeTakenScoreFactor()
         {

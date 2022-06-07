@@ -28,7 +28,7 @@ namespace Retro_ML.SuperMarioKart.Neural.Scoring
 
         public FieldInfo[] Fields => new FieldInfo[]
         {
-             new IntegerFieldInfo(nameof(StopAfterXFalls), "Stop after X falls", 1, int.MaxValue, 1),
+             new IntegerFieldInfo(nameof(StopAfterXFalls), "Stop after X falls", 0, int.MaxValue, 1),
         };
 
         public LakituScoreFactor()

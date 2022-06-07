@@ -11,9 +11,7 @@ namespace Retro_ML.SuperMarioWorld.Neural.Scoring
         private int currCoins;
         private double score;
 
-        public FieldInfo[] Fields => new FieldInfo[]
-        {
-        };
+        public FieldInfo[] Fields => Array.Empty<FieldInfo>();
 
         public CoinsScoreFactor()
         {

@@ -23,7 +23,7 @@ namespace Retro_ML.Tetris.Neural.Scoring
 
         public FieldInfo[] Fields => new FieldInfo[]
         {
-             new IntegerFieldInfo(nameof(HeightDifference), "Height difference with median", 1, 17, 1)
+             new IntegerFieldInfo(nameof(HeightDifference), "Maximum height difference from median", 1, 17, 1)
         };
 
         public ColumnHeightScoreFactor()

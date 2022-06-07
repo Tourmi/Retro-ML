@@ -507,19 +507,6 @@ namespace Retro_ML.Application.ViewModels
             ApplicationConfig.SaveStates = _saveStates;
 
             //Tab Objectives
-            //var scoreFactors = ApplicationConfig.GamePluginConfig!.ScoreFactors;
-            //for (int i = 0; i < Objectives.Count; i++)
-            //{
-            //    scoreFactors[i].ScoreMultiplier = Objectives[i].Multiplier;
-            //    if (scoreFactors[i].CanBeDisabled)
-            //    {
-            //        scoreFactors[i].IsDisabled = !Objectives[i].IsChecked;
-            //    }
-            //    for (int j = 0; j < scoreFactors[i].Fields.Length; j++)
-            //    {
-            //        scoreFactors[i].Fields[j] = Objectives[i].Fields[j].Value;
-            //    }
-            //}
 
             //Tab Game
             SaveGamePluginConfig();
