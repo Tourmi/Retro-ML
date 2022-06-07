@@ -57,7 +57,7 @@ namespace Retro_ML_TEST.Game.SuperMarioKart
         [Test]
         public void CoinsScoreFactorTest()
         {
-            var sf = new CoinsScoreFactor() { ScoreMultiplier = 0.5, ExtraFields = new ExtraField[] { new ExtraField(CoinsScoreFactor.LOSING_COINS_MULT, -0.3) } }.Clone();
+            var sf = new CoinsScoreFactor() { ScoreMultiplier = 0.5, LosingCoinsMult = -0.3 }.Clone();
             Assert.IsAssignableFrom<CoinsScoreFactor>(sf);
             emu!.SetMemory(Addresses.Race.Coins.Address, 20);
             df!.NextFrame();
@@ -88,7 +88,7 @@ namespace Retro_ML_TEST.Game.SuperMarioKart
         [Test]
         public void CollisionScoreFactorTest()
         {
-            var sf = new CollisionScoreFactor() { ScoreMultiplier = -0.2, ExtraFields = new ExtraField[] { new ExtraField(CollisionScoreFactor.STOP_AFTER_X_COLLISIONS, 10) } }.Clone();
+            var sf = (CollisionScoreFactor)new CollisionScoreFactor() { ScoreMultiplier = -0.2, StopAfterXCollisions = 10 }.Clone();
             Assert.IsAssignableFrom<CollisionScoreFactor>(sf);
             df!.NextFrame();
             sf.Update(df);
@@ -113,7 +113,7 @@ namespace Retro_ML_TEST.Game.SuperMarioKart
             sf.LevelDone();
             Assert.AreEqual(-0.2 * 10, sf.GetFinalScore(), 0.00001);
 
-            sf.ExtraFields = new ExtraField[] { new ExtraField(CollisionScoreFactor.STOP_AFTER_X_COLLISIONS, 15) };
+            sf.StopAfterXCollisions = 15;
             df!.NextFrame();
             sf.Update(df);
 
@@ -137,7 +137,7 @@ namespace Retro_ML_TEST.Game.SuperMarioKart
             sf.LevelDone();
             Assert.AreEqual(-0.2 * (10 + 15), sf.GetFinalScore(), 0.00001);
 
-            sf.ExtraFields = new ExtraField[] { new ExtraField(CollisionScoreFactor.STOP_AFTER_X_COLLISIONS, 0) };
+            sf.StopAfterXCollisions = 0;
             df!.NextFrame();
             sf.Update(df);
 
@@ -165,7 +165,7 @@ namespace Retro_ML_TEST.Game.SuperMarioKart
         [Test]
         public void FinishedRaceScoreFactorTest()
         {
-            var sf = new FinishedRaceScoreFactor() { ScoreMultiplier = 105, ExtraFields = new ExtraField[] { new ExtraField(FinishedRaceScoreFactor.FINAL_RANKING, 0.4) } }.Clone();
+            var sf = new FinishedRaceScoreFactor() { ScoreMultiplier = 105, RankingMult = 0.4 }.Clone();
             Assert.IsAssignableFrom<FinishedRaceScoreFactor>(sf);
             emu!.SetMemory(Addresses.Racers.CurrentLap.Address, 128 + 4);
             df!.NextFrame();
@@ -192,7 +192,7 @@ namespace Retro_ML_TEST.Game.SuperMarioKart
         [Test]
         public void LakituScoreFactorTest()
         {
-            var sf = new LakituScoreFactor() { ScoreMultiplier = -11, ExtraFields = new ExtraField[] { new ExtraField(LakituScoreFactor.STOP_AFTER_X_FALLS, 10) } }.Clone();
+            var sf = (LakituScoreFactor)new LakituScoreFactor() { ScoreMultiplier = -11, StopAfterXFalls = 10 }.Clone();
             Assert.IsAssignableFrom<LakituScoreFactor>(sf);
             df!.NextFrame();
             sf.Update(df);
@@ -214,7 +214,7 @@ namespace Retro_ML_TEST.Game.SuperMarioKart
             sf.LevelDone();
             Assert.AreEqual(-11 * 10, sf.GetFinalScore(), 0.00001);
 
-            sf.ExtraFields = new ExtraField[] { new ExtraField(LakituScoreFactor.STOP_AFTER_X_FALLS, 0) };
+            sf.StopAfterXFalls = 0;
 
             df.NextFrame();
             sf.Update(df);
@@ -239,7 +239,7 @@ namespace Retro_ML_TEST.Game.SuperMarioKart
         [Test]
         public void OffRoadScoreFactorTest()
         {
-            var sf = new OffRoadScoreFactor() { ScoreMultiplier = -7, ExtraFields = new ExtraField[] { new ExtraField(OffRoadScoreFactor.STOP_AFTER, 1) } }.Clone();
+            var sf = new OffRoadScoreFactor() { ScoreMultiplier = -7, StopAfter = 1 }.Clone();
             Assert.IsAssignableFrom<OffRoadScoreFactor>(sf);
             df!.NextFrame();
             sf.Update(df);
@@ -276,7 +276,7 @@ namespace Retro_ML_TEST.Game.SuperMarioKart
         [Test]
         public void StoppedProgressingScoreFactorTest()
         {
-            var sf = new StoppedProgressingScoreFactor() { ScoreMultiplier = -14, ExtraFields = new ExtraField[] { new ExtraField(StoppedProgressingScoreFactor.MAX_TIME_WITHOUT_PROGRESS, 2) } }.Clone();
+            var sf = new StoppedProgressingScoreFactor() { ScoreMultiplier = -14, MaxTimeWithoutProgress = 2 }.Clone();
             Assert.IsAssignableFrom<StoppedProgressingScoreFactor>(sf);
             emu!.SetMemory(Addresses.Race.CheckpointCount.Address, 20);
             emu!.SetMemory(Addresses.Racers.CurrentCheckpointNumber.Address, 0);
@@ -320,7 +320,7 @@ namespace Retro_ML_TEST.Game.SuperMarioKart
         [Test]
         public void TimeTakenScoreFactorTest()
         {
-            var sf = new TimeTakenScoreFactor() { ScoreMultiplier = -9, ExtraFields = new ExtraField[] { new ExtraField(TimeTakenScoreFactor.MAXIMUM_RACE_TIME, 101) } }.Clone();
+            var sf = new TimeTakenScoreFactor() { ScoreMultiplier = -9, MaximumRaceTime = 101 }.Clone();
             Assert.IsAssignableFrom<TimeTakenScoreFactor>(sf);
 
             for (int i = 0; i < 60.0 * 101 - 1; i++)
