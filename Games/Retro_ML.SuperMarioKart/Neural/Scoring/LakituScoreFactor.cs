@@ -88,9 +88,7 @@ namespace Retro_ML.SuperMarioKart.Neural.Scoring
                     currScore += ScoreMultiplier;
                     fellCount++;
 
-                    double stopAfter = StopAfterXFalls;
-
-                    if (stopAfter >= 1 && fellCount >= stopAfter)
+                    if (StopAfterXFalls > 0 && fellCount >= StopAfterXFalls)
                     {
                         shouldStop = true;
                     }
