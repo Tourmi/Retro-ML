@@ -19,7 +19,7 @@ namespace Retro_ML.Tetris.Neural.Scoring
 
         public FieldInfo[] Fields => new FieldInfo[]
         {
-             new IntegerFieldInfo(nameof(MaximumLevelTime), "Maximum Level Time", 1, int.MaxValue, 1)
+             new DoubleFieldInfo(nameof(MaximumLevelTime), "Maximum Level Time", 1.0, double.MaxValue, 0.5)
         };
 
         public TimeTakenScoreFactor()
@@ -82,7 +82,7 @@ namespace Retro_ML.Tetris.Neural.Scoring
 
         public IScoreFactor Clone()
         {
-            return new TimeTakenScoreFactor() { IsDisabled = IsDisabled, ScoreMultiplier = ScoreMultiplier, ExtraFields = ExtraFields };
+            return new TimeTakenScoreFactor() { IsDisabled = IsDisabled, ScoreMultiplier = ScoreMultiplier, ExtraFields = ExtraFields, MaximumLevelTime = MaximumLevelTime };
         }
     }
 }

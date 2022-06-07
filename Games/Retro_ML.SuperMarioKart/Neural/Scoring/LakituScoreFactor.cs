@@ -88,7 +88,7 @@ namespace Retro_ML.SuperMarioKart.Neural.Scoring
                     currScore += ScoreMultiplier;
                     fellCount++;
 
-                    double stopAfter = ExtraField.GetValue(ExtraFields, STOP_AFTER_X_FALLS);
+                    double stopAfter = StopAfterXFalls;
 
                     if (stopAfter >= 1 && fellCount >= stopAfter)
                     {
@@ -98,6 +98,6 @@ namespace Retro_ML.SuperMarioKart.Neural.Scoring
             }
         }
 
-        public IScoreFactor Clone() => new LakituScoreFactor() { ScoreMultiplier = ScoreMultiplier, IsDisabled = IsDisabled, ExtraFields = ExtraFields };
+        public IScoreFactor Clone() => new LakituScoreFactor() { ScoreMultiplier = ScoreMultiplier, IsDisabled = IsDisabled, ExtraFields = ExtraFields, StopAfterXFalls = StopAfterXFalls };
     }
 }

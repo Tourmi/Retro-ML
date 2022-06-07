@@ -151,7 +151,11 @@ namespace Retro_ML.SuperMarioWorld.Neural.Scoring
             {
                 IsDisabled = IsDisabled,
                 ScoreMultiplier = ScoreMultiplier,
-                ExtraFields = ExtraFields
+                ExtraFields = ExtraFields,
+                EastDistance = EastDistance,
+                WestDistance = WestDistance,
+                DownDistance = DownDistance,
+                UpDistance = UpDistance
             };
         }
     }

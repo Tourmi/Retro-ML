@@ -87,6 +87,6 @@ namespace Retro_ML.SuperMarioKart.Neural.Scoring
             }
         }
 
-        public IScoreFactor Clone() => new CoinsScoreFactor() { ScoreMultiplier = ScoreMultiplier, ExtraFields = ExtraFields, IsDisabled = IsDisabled };
+        public IScoreFactor Clone() => new CoinsScoreFactor() { ScoreMultiplier = ScoreMultiplier, ExtraFields = ExtraFields, IsDisabled = IsDisabled, LosingCoinsMult = LosingCoinsMult };
     }
 }

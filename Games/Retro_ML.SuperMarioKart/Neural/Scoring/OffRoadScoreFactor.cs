@@ -26,7 +26,7 @@ namespace Retro_ML.SuperMarioKart.Neural.Scoring
 
         public FieldInfo[] Fields => new FieldInfo[]
         {
-             new IntegerFieldInfo(nameof(StopAfter), "Stop after", 1, int.MaxValue, 1)
+             new DoubleFieldInfo(nameof(StopAfter), "Stop after", 0, double.MaxValue, 0.5)
         };
 
         public OffRoadScoreFactor()
@@ -79,7 +79,7 @@ namespace Retro_ML.SuperMarioKart.Neural.Scoring
                 framesOffroad = 0;
             }
 
-            if (framesOffroad >= ExtraField.GetValue(ExtraFields, STOP_AFTER) * 60.0)
+            if (framesOffroad >= StopAfter * 60.0)
             {
                 shouldStop = true;
             }
@@ -87,7 +87,7 @@ namespace Retro_ML.SuperMarioKart.Neural.Scoring
 
         public IScoreFactor Clone()
         {
-            return new OffRoadScoreFactor() { IsDisabled = IsDisabled, ScoreMultiplier = ScoreMultiplier, ExtraFields = ExtraFields };
+            return new OffRoadScoreFactor() { IsDisabled = IsDisabled, ScoreMultiplier = ScoreMultiplier, ExtraFields = ExtraFields, StopAfter = StopAfter };
         }
     }
 }

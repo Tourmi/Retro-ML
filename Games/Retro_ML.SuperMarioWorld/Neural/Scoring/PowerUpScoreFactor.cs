@@ -107,7 +107,15 @@ namespace Retro_ML.SuperMarioWorld.Neural.Scoring
 
         public IScoreFactor Clone()
         {
-            return new PowerUpScoreFactor() { IsDisabled = IsDisabled, ScoreMultiplier = ScoreMultiplier, ExtraFields = ExtraFields };
+            return new PowerUpScoreFactor()
+            {
+                IsDisabled = IsDisabled,
+                ScoreMultiplier = ScoreMultiplier,
+                ExtraFields = ExtraFields,
+                MushroomMult = MushroomMult,
+                CapeMult = CapeMult,
+                FlowerMult = FlowerMult
+            };
         }
     }
 }

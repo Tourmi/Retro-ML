@@ -126,6 +126,13 @@ namespace Retro_ML.SuperMarioWorld.Neural.Scoring
 
         public double GetFinalScore() => currScore;
 
-        public IScoreFactor Clone() => new SpeedScoreFactor() { IsDisabled = IsDisabled, ScoreMultiplier = ScoreMultiplier, ExtraFields = ExtraFields };
+        public IScoreFactor Clone() => new SpeedScoreFactor()
+        {
+            IsDisabled = IsDisabled,
+            ScoreMultiplier = ScoreMultiplier,
+            ExtraFields = ExtraFields,
+            HorizontalMult = HorizontalMult,
+            VerticalMult = VerticalMult
+        };
     }
 }

@@ -74,7 +74,7 @@ namespace Retro_ML.SuperMarioKart.Neural.Scoring
                 double rankingMultiplier = 0;
                 if (df.IsRace())
                 {
-                    rankingMultiplier = (8 - df.GetRanking()) * ExtraField.GetValue(ExtraFields, FINAL_RANKING);
+                    rankingMultiplier = (8 - df.GetRanking()) * RankingMult;
                 }
                 currScore += ScoreMultiplier * (1 + rankingMultiplier);
             }
@@ -82,7 +82,7 @@ namespace Retro_ML.SuperMarioKart.Neural.Scoring
 
         public IScoreFactor Clone()
         {
-            return new FinishedRaceScoreFactor() { ScoreMultiplier = ScoreMultiplier, ExtraFields = ExtraFields };
+            return new FinishedRaceScoreFactor() { ScoreMultiplier = ScoreMultiplier, ExtraFields = ExtraFields, RankingMult = RankingMult };
         }
     }
 }

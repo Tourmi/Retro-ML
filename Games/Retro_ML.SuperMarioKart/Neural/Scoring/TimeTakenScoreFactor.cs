@@ -14,7 +14,7 @@ namespace Retro_ML.SuperMarioKart.Neural.Scoring
 
         public FieldInfo[] Fields => new FieldInfo[]
         {
-             new IntegerFieldInfo(nameof(MaximumRaceTime), "Maximum Race Time", 1, int.MaxValue, 1)
+             new DoubleFieldInfo(nameof(MaximumRaceTime), "Maximum Race Time", 30.0, double.MaxValue, 1.0)
         };
 
         public TimeTakenScoreFactor()
@@ -63,7 +63,7 @@ namespace Retro_ML.SuperMarioKart.Neural.Scoring
         {
             levelFrames++;
             currScore += ScoreMultiplier / 60.0;
-            if (levelFrames >= ExtraField.GetValue(ExtraFields, MAXIMUM_RACE_TIME) * 60)
+            if (levelFrames >= MaximumRaceTime * 60)
             {
                 shouldStop = true;
             }
@@ -77,7 +77,7 @@ namespace Retro_ML.SuperMarioKart.Neural.Scoring
 
         public IScoreFactor Clone()
         {
-            return new TimeTakenScoreFactor() { IsDisabled = IsDisabled, ScoreMultiplier = ScoreMultiplier, ExtraFields = ExtraFields };
+            return new TimeTakenScoreFactor() { IsDisabled = IsDisabled, ScoreMultiplier = ScoreMultiplier, ExtraFields = ExtraFields, MaximumRaceTime = MaximumRaceTime };
         }
     }
 }

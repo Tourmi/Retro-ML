@@ -15,8 +15,8 @@ namespace Retro_ML.SuperMarioWorld.Neural.Scoring
 
         public FieldInfo[] Fields => new FieldInfo[]
         {
-             new DoubleFieldInfo(nameof(GoalMult), "Goal Multiplier", 0, double.MaxValue, 0.25),
-             new DoubleFieldInfo(nameof(KeyMult), "Key Multiplier", 0, double.MaxValue, 0.25),
+             new DoubleFieldInfo(nameof(GoalMult), "Goal Multiplier", double.MinValue, double.MaxValue, 0.25),
+             new DoubleFieldInfo(nameof(KeyMult), "Key Multiplier", double.MinValue, double.MaxValue, 0.25),
         };
 
         public WonLevelScoreFactor()
@@ -75,7 +75,7 @@ namespace Retro_ML.SuperMarioWorld.Neural.Scoring
             if (dataFetcher.WonLevel())
             {
                 shouldStop = true;
-                currScore += ScoreMultiplier * (dataFetcher.WonViaGoal() ? ExtraField.GetValue(ExtraFields, GOAL_MULT) : ExtraField.GetValue(ExtraFields, KEY_MULT));
+                currScore += ScoreMultiplier * (dataFetcher.WonViaGoal() ? GoalMult : KeyMult);
                 return;
             }
         }
@@ -87,7 +87,13 @@ namespace Retro_ML.SuperMarioWorld.Neural.Scoring
 
         public IScoreFactor Clone()
         {
-            return new WonLevelScoreFactor() { ScoreMultiplier = ScoreMultiplier, ExtraFields = ExtraFields };
+            return new WonLevelScoreFactor()
+            {
+                ScoreMultiplier = ScoreMultiplier,
+                ExtraFields = ExtraFields,
+                GoalMult = GoalMult,
+                KeyMult = KeyMult
+            };
         }
     }
 }

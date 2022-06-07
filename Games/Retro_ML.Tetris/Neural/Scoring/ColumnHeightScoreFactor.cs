@@ -93,7 +93,7 @@ namespace Retro_ML.Tetris.Neural.Scoring
             var currColumnHeights = dataFetcher.GetColumnHeights();
             var currMedian = currColumnHeights.OrderBy(i => i).ToArray()[4];
             var currDiff = currColumnHeights.Max() - currMedian;
-            
+
             if (currDiff > prevDiff && currDiff >= HeightDifference)
             {
                 currScore += ScoreMultiplier;
@@ -106,7 +106,7 @@ namespace Retro_ML.Tetris.Neural.Scoring
 
         public IScoreFactor Clone()
         {
-            return new ColumnHeightScoreFactor() { IsDisabled = IsDisabled, ScoreMultiplier = ScoreMultiplier, ExtraFields = ExtraFields };
+            return new ColumnHeightScoreFactor() { IsDisabled = IsDisabled, ScoreMultiplier = ScoreMultiplier, ExtraFields = ExtraFields, HeightDifference = HeightDifference };
         }
     }
 }

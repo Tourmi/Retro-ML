@@ -131,7 +131,16 @@ namespace Retro_ML.Tetris.Neural.Scoring
 
         public IScoreFactor Clone()
         {
-            return new LineClearedScoreFactor() { IsDisabled = IsDisabled, ScoreMultiplier = ScoreMultiplier, ExtraFields = ExtraFields };
+            return new LineClearedScoreFactor()
+            {
+                IsDisabled = IsDisabled,
+                ScoreMultiplier = ScoreMultiplier,
+                ExtraFields = ExtraFields,
+                SingleScoreMult = SingleScoreMult,
+                DoubleScoreMult = DoubleScoreMult,
+                TripleScoreMult = TripleScoreMult,
+                TetrisScoreMult = TetrisScoreMult 
+            };
         }
     }
 }

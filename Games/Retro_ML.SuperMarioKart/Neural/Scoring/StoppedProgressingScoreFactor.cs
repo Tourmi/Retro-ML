@@ -19,7 +19,7 @@ namespace Retro_ML.SuperMarioKart.Neural.Scoring
 
         public FieldInfo[] Fields => new FieldInfo[]
         {
-             new IntegerFieldInfo(nameof(MaxTimeWithoutProgress), "Max time w/o progress", 1, int.MaxValue, 1)
+             new DoubleFieldInfo(nameof(MaxTimeWithoutProgress), "Max time w/o progress", 1.0, double.MaxValue, 0.5)
         };
 
         public StoppedProgressingScoreFactor()
@@ -87,7 +87,7 @@ namespace Retro_ML.SuperMarioKart.Neural.Scoring
                 framesWithoutCheckpoint++;
             }
 
-            if (framesWithoutCheckpoint >= ExtraField.GetValue(ExtraFields, MAX_TIME_WITHOUT_PROGRESS) * 60)
+            if (framesWithoutCheckpoint >= MaxTimeWithoutProgress * 60)
             {
                 currScore += ScoreMultiplier;
                 shouldStop = true;
@@ -102,7 +102,7 @@ namespace Retro_ML.SuperMarioKart.Neural.Scoring
 
         public IScoreFactor Clone()
         {
-            return new StoppedProgressingScoreFactor() { IsDisabled = IsDisabled, ScoreMultiplier = ScoreMultiplier, ExtraFields = ExtraFields };
+            return new StoppedProgressingScoreFactor() { IsDisabled = IsDisabled, ScoreMultiplier = ScoreMultiplier, ExtraFields = ExtraFields, MaxTimeWithoutProgress = MaxTimeWithoutProgress };
         }
     }
 }
