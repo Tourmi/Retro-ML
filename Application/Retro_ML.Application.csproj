@@ -48,6 +48,9 @@
 	  <Compile Update="Views\Components\FieldInfo\BoolView.axaml.cs">
 	    <DependentUpon>BoolView.axaml</DependentUpon>
 	  </Compile>
+	  <Compile Update="Views\Components\FieldInfo\DoubleView.axaml.cs">
+	    <DependentUpon>DoubleView.axaml</DependentUpon>
+	  </Compile>
 	  <Compile Update="Views\Components\ScoreFactorView.axaml.cs">
 	    <DependentUpon>ScoreFactorView.axaml</DependentUpon>
 	  </Compile>

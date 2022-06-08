@@ -3,7 +3,7 @@ using Retro_ML.Configuration.FieldInformation;
 
 namespace Retro_ML.Application.ViewModels.Components.FieldInfo
 {
-    internal class BoolViewModel : ViewModelBase
+    internal class BoolViewModel : FieldInfoViewModel
     {
         public BoolFieldInfo FieldInfo { get; }
         public string FieldName => FieldInfo.Name;

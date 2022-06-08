@@ -1,4 +1,5 @@
-﻿using Retro_ML.Game;
+﻿using Retro_ML.Configuration.FieldInformation;
+using Retro_ML.Game;
 using Retro_ML.Neural.Scoring;
 
 namespace Retro_ML.SuperMarioKart.Neural.Scoring
@@ -11,6 +12,11 @@ namespace Retro_ML.SuperMarioKart.Neural.Scoring
         private double currScore;
         private int levelFrames = 0;
 
+        public FieldInfo[] Fields => new FieldInfo[]
+        {
+             new DoubleFieldInfo(nameof(MaximumRaceTime), "Maximum Race Time", 30.0, double.MaxValue, 1.0)
+        };
+
         public TimeTakenScoreFactor()
         {
             ExtraFields = new ExtraField[]
@@ -18,6 +24,27 @@ namespace Retro_ML.SuperMarioKart.Neural.Scoring
                 new(MAXIMUM_RACE_TIME, 240)
             };
         }
+
+        public object this[string fieldName]
+        {
+            get
+            {
+                return fieldName switch
+                {
+                    nameof(MaximumRaceTime) => MaximumRaceTime,
+                    _ => 0,
+                };
+            }
+            set
+            {
+                switch (fieldName)
+                {
+                    case nameof(MaximumRaceTime): MaximumRaceTime = (int)value; break;
+                }
+            }
+        }
+
+        public int MaximumRaceTime { get; set; } = 240;
 
         public bool ShouldStop => shouldStop;
         public double ScoreMultiplier { get; set; }
@@ -36,7 +63,7 @@ namespace Retro_ML.SuperMarioKart.Neural.Scoring
         {
             levelFrames++;
             currScore += ScoreMultiplier / 60.0;
-            if (levelFrames >= ExtraField.GetValue(ExtraFields, MAXIMUM_RACE_TIME) * 60)
+            if (levelFrames >= MaximumRaceTime * 60)
             {
                 shouldStop = true;
             }
@@ -50,7 +77,7 @@ namespace Retro_ML.SuperMarioKart.Neural.Scoring
 
         public IScoreFactor Clone()
         {
-            return new TimeTakenScoreFactor() { IsDisabled = IsDisabled, ScoreMultiplier = ScoreMultiplier, ExtraFields = ExtraFields };
+            return new TimeTakenScoreFactor() { IsDisabled = IsDisabled, ScoreMultiplier = ScoreMultiplier, ExtraFields = ExtraFields, MaximumRaceTime = MaximumRaceTime };
         }
     }
 }

@@ -1,4 +1,5 @@
-﻿using Retro_ML.Game;
+﻿using Retro_ML.Configuration.FieldInformation;
+using Retro_ML.Game;
 using Retro_ML.Neural.Scoring;
 using Retro_ML.SuperMarioKart.Game;
 
@@ -25,6 +26,11 @@ namespace Retro_ML.SuperMarioKart.Neural.Scoring
         public double ScoreMultiplier { get; set; }
         public ExtraField[] ExtraFields { get; set; }
 
+        public FieldInfo[] Fields => new FieldInfo[]
+        {
+             new IntegerFieldInfo(nameof(StopAfterXFalls), "Stop after X falls", 0, int.MaxValue, 1),
+        };
+
         public LakituScoreFactor()
         {
             ExtraFields = new ExtraField[]
@@ -32,6 +38,27 @@ namespace Retro_ML.SuperMarioKart.Neural.Scoring
                 new ExtraField(STOP_AFTER_X_FALLS, 1)
             };
         }
+
+        public object this[string fieldName]
+        {
+            get
+            {
+                return fieldName switch
+                {
+                    nameof(StopAfterXFalls) => StopAfterXFalls,
+                    _ => 0,
+                };
+            }
+            set
+            {
+                switch (fieldName)
+                {
+                    case nameof(StopAfterXFalls): StopAfterXFalls = (int)value; break;
+                }
+            }
+        }
+
+        public int StopAfterXFalls { get; set; } = 1;
 
         public double GetFinalScore() => currScore;
 
@@ -61,9 +88,7 @@ namespace Retro_ML.SuperMarioKart.Neural.Scoring
                     currScore += ScoreMultiplier;
                     fellCount++;
 
-                    double stopAfter = ExtraField.GetValue(ExtraFields, STOP_AFTER_X_FALLS);
-
-                    if (stopAfter >= 1 && fellCount >= stopAfter)
+                    if (StopAfterXFalls > 0 && fellCount >= StopAfterXFalls)
                     {
                         shouldStop = true;
                     }
@@ -71,6 +96,6 @@ namespace Retro_ML.SuperMarioKart.Neural.Scoring
             }
         }
 
-        public IScoreFactor Clone() => new LakituScoreFactor() { ScoreMultiplier = ScoreMultiplier, IsDisabled = IsDisabled, ExtraFields = ExtraFields };
+        public IScoreFactor Clone() => new LakituScoreFactor() { ScoreMultiplier = ScoreMultiplier, IsDisabled = IsDisabled, ExtraFields = ExtraFields, StopAfterXFalls = StopAfterXFalls };
     }
 }

@@ -1,5 +1,6 @@
 ﻿using Retro_ML.Game;
 using Retro_ML.Neural.Scoring;
+using Retro_ML.Configuration.FieldInformation;
 using Retro_ML.Tetris.Game;
 using System;
 using System.Collections.Generic;
@@ -23,6 +24,14 @@ namespace Retro_ML.Tetris.Neural.Scoring
         private uint prevTriple;
         private uint prevTetris;
 
+        public FieldInfo[] Fields => new FieldInfo[]
+        {
+             new DoubleFieldInfo(nameof(SingleScoreMult), "Single Multiplier", double.MinValue, double.MaxValue, 0.25),
+             new DoubleFieldInfo(nameof(DoubleScoreMult), "Double Multiplier", double.MinValue, double.MaxValue, 0.25),
+             new DoubleFieldInfo(nameof(TripleScoreMult), "Triple Multiplier", double.MinValue, double.MaxValue, 0.25),
+             new DoubleFieldInfo(nameof(TetrisScoreMult), "Tetris Multiplier", double.MinValue, double.MaxValue, 0.25)
+        };
+
         public LineClearedScoreFactor()
         {
             ExtraFields = new ExtraField[]
@@ -33,6 +42,36 @@ namespace Retro_ML.Tetris.Neural.Scoring
                 new ExtraField(TETRIS_MULT, 16.0)
           };
         }
+
+        public object this[string fieldName]
+        {
+            get
+            {
+                return fieldName switch
+                {
+                    nameof(SingleScoreMult) => SingleScoreMult,
+                    nameof(DoubleScoreMult) => DoubleScoreMult,
+                    nameof(TripleScoreMult) => TripleScoreMult,
+                    nameof(TetrisScoreMult) => TetrisScoreMult,
+                    _ => 0,
+                };
+            }
+            set
+            {
+                switch (fieldName)
+                {
+                    case nameof(SingleScoreMult): SingleScoreMult = (double)value; break;
+                    case nameof(DoubleScoreMult): DoubleScoreMult = (double)value; break;
+                    case nameof(TripleScoreMult): TripleScoreMult = (double)value; break;
+                    case nameof(TetrisScoreMult): TetrisScoreMult = (double)value; break;
+                }
+            }
+        }
+
+        public double SingleScoreMult { get; set; } = 1.0;
+        public double DoubleScoreMult { get; set; } = 2.0;
+        public double TripleScoreMult { get; set; } = 4.0;
+        public double TetrisScoreMult { get; set; } = 16.0;
 
         public bool ShouldStop => false;
         public double ScoreMultiplier { get; set; }
@@ -66,25 +105,25 @@ namespace Retro_ML.Tetris.Neural.Scoring
             if (dataFetcher.GetTetrises() > prevTetris)
             {
                 prevTetris = dataFetcher.GetTetrises();
-                currScore += ScoreMultiplier * ExtraField.GetValue(ExtraFields, TETRIS_MULT);
+                currScore += ScoreMultiplier * TetrisScoreMult;
             }
 
             if (dataFetcher.GetTriples() > prevTriple)
             {
                 prevTriple = dataFetcher.GetTriples();
-                currScore += ScoreMultiplier * ExtraField.GetValue(ExtraFields, TRIPLE_MULT);
+                currScore += ScoreMultiplier * TripleScoreMult;
             }
 
             if (dataFetcher.GetDoubles() > prevDouble)
             {
                 prevDouble = dataFetcher.GetDoubles();
-                currScore += ScoreMultiplier * ExtraField.GetValue(ExtraFields, DOUBLE_MULT);
+                currScore += ScoreMultiplier * DoubleScoreMult;
             }
 
             if (dataFetcher.GetSingles() > prevSingle)
             {
                 prevSingle = dataFetcher.GetSingles();
-                currScore += ScoreMultiplier * ExtraField.GetValue(ExtraFields, SINGLE_MULT);
+                currScore += ScoreMultiplier * SingleScoreMult;
             }
         }
 
@@ -92,7 +131,16 @@ namespace Retro_ML.Tetris.Neural.Scoring
 
         public IScoreFactor Clone()
         {
-            return new LineClearedScoreFactor() { IsDisabled = IsDisabled, ScoreMultiplier = ScoreMultiplier, ExtraFields = ExtraFields };
+            return new LineClearedScoreFactor()
+            {
+                IsDisabled = IsDisabled,
+                ScoreMultiplier = ScoreMultiplier,
+                ExtraFields = ExtraFields,
+                SingleScoreMult = SingleScoreMult,
+                DoubleScoreMult = DoubleScoreMult,
+                TripleScoreMult = TripleScoreMult,
+                TetrisScoreMult = TetrisScoreMult 
+            };
         }
     }
 }

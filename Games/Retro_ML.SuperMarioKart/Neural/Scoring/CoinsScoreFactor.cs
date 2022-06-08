@@ -1,4 +1,5 @@
-﻿using Retro_ML.Game;
+﻿using Retro_ML.Configuration.FieldInformation;
+using Retro_ML.Game;
 using Retro_ML.Neural.Scoring;
 using Retro_ML.SuperMarioKart.Game;
 
@@ -23,6 +24,11 @@ namespace Retro_ML.SuperMarioKart.Neural.Scoring
         public double ScoreMultiplier { get; set; }
         public ExtraField[] ExtraFields { get; set; }
 
+        public FieldInfo[] Fields => new FieldInfo[]
+        {
+             new DoubleFieldInfo(nameof(LosingCoinsMult), "Losing coins multiplier", double.MinValue, double.MaxValue, 0.25),
+        };
+
         public CoinsScoreFactor()
         {
             ExtraFields = new ExtraField[]
@@ -30,6 +36,27 @@ namespace Retro_ML.SuperMarioKart.Neural.Scoring
                 new ExtraField(LOSING_COINS_MULT, -0.5)
             };
         }
+
+        public object this[string fieldName]
+        {
+            get
+            {
+                return fieldName switch
+                {
+                    nameof(LosingCoinsMult) => LosingCoinsMult,
+                    _ => 0,
+                };
+            }
+            set
+            {
+                switch (fieldName)
+                {
+                    case nameof(LosingCoinsMult): LosingCoinsMult = (double)value; break;
+                }
+            }
+        }
+
+        public double LosingCoinsMult { get; set; } = -0.5;
 
         public double GetFinalScore() => currScore;
 
@@ -55,11 +82,11 @@ namespace Retro_ML.SuperMarioKart.Neural.Scoring
             }
             else if (newCoins < currCoins)
             {
-                currScore += (currCoins - newCoins) * ScoreMultiplier * ExtraField.GetValue(ExtraFields, LOSING_COINS_MULT);
+                currScore += (currCoins - newCoins) * ScoreMultiplier * LosingCoinsMult;
                 currCoins = newCoins;
             }
         }
 
-        public IScoreFactor Clone() => new CoinsScoreFactor() { ScoreMultiplier = ScoreMultiplier, ExtraFields = ExtraFields, IsDisabled = IsDisabled };
+        public IScoreFactor Clone() => new CoinsScoreFactor() { ScoreMultiplier = ScoreMultiplier, ExtraFields = ExtraFields, IsDisabled = IsDisabled, LosingCoinsMult = LosingCoinsMult };
     }
 }

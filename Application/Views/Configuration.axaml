@@ -80,7 +80,7 @@
 					<ItemsControl Items="{Binding Objectives}" >
 						<ItemsControl.ItemsPanel>
 							<ItemsPanelTemplate>
-								<StackPanel Classes="tabContent"/>
+								<StackPanel Spacing="20" Classes="tabContent"/>
 							</ItemsPanelTemplate>
 						</ItemsControl.ItemsPanel>
 					</ItemsControl>
