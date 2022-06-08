@@ -279,8 +279,10 @@ namespace Retro_ML.SuperMarioBros.Game
             //For hammers
             for (int i = 0; i < 9; i++)
             {
-                if (isHammerUp[i] == 0) continue;
+                if (isHammerUp[i] != 0)
+                {
                     DrawSpriteTiles(x_dist, y_dist, result, i, true);
+                }
             }
 
             return result;
