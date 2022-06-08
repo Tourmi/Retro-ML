@@ -256,16 +256,6 @@
             /// </summary>
             public static readonly AddressData PowerUpPositions = new(0x04C4, 4);
             /// <summary>
-            /// Firebar positions
-            /// Each firebars are represented with 6 fireballs (4 bytes each)
-            /// 5 sprites x 6 fireballs x 4 addresses eachs
-            /// </summary>
-            public static readonly AddressData FirebarPositions = new(0x0230, 120);
-            /// <summary>
-            /// Firebar spinstate low (5 sprite x 1 byte each)
-            /// </summary>
-            public static readonly AddressData FirebarSpinStateLow = new(0x0058, 5);
-            /// <summary>
             /// Firebar spinstate high(5 sprite x 1 byte each)
             /// </summary>
             public static readonly AddressData FirebarSpinStateHigh = new(0x00A0, 5);

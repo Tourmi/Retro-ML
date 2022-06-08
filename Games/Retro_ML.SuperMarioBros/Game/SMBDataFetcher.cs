@@ -104,7 +104,7 @@ namespace Retro_ML.SuperMarioBros.Game
                 spritePos = GetHammerHitbox();
             }
 
-            var spriteXPosMin = ((spritePos[spriteNum * 4] + (METATILE_SIZE / 2)) / METATILE_SIZE;
+            var spriteXPosMin = (spritePos[spriteNum * 4] + (METATILE_SIZE / 2)) / METATILE_SIZE;
             var spriteYPosMin = (spritePos[(spriteNum * 4) + 1] - (2 * METATILE_SIZE)) / METATILE_SIZE;
             var spriteXPosMax = (spritePos[(spriteNum * 4) + 2] + (METATILE_SIZE / 2)) / METATILE_SIZE;
             var spriteYPosMax = (spritePos[(spriteNum * 4) + 3] - (2 * METATILE_SIZE)) / METATILE_SIZE;
