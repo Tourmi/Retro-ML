@@ -30,7 +30,7 @@
             public uint HighByteAddress;
         }
 
-        public static class GameState
+        public static class GameAddresses
         {
             /// <summary>
             /// Number of lives available
@@ -89,7 +89,7 @@
             public static readonly AddressData WonCondition = new(0x770, 1);
         }
 
-        public static class Player
+        public static class PlayerAddresses
         {
             /// <summary>
             /// Mario's state. Useful to know if he's in an incapacitated state in which he cannot act
@@ -159,7 +159,7 @@
             public static readonly AddressData IsFalling = new(0x712, 1);
         }
 
-        public static class Sprite
+        public static class SpriteAddresses
         {
             /// <summary>
             /// Enemy type when enemy is present
@@ -188,10 +188,8 @@
             /// 0x16 - Fireworks
             /// 0x17 - BulletBill Frenzy
             /// 0x18 - Stop Frenzy
-            /// 0x19 - ?
-            /// 0x20/0x21/0x22 - Firebar
-            /// 0x21 - Long Firebar(castle) AND sets previous enemy slot to 0x20 or else only half of the line shows
-            /// 0x23 - ?
+            /// 0x1B/0x1C/0x1D/0x1E - Firebar
+            /// 0x1F - Long Firebar (castle) AND sets previous enemy slot to 0x20 or else only half of the line shows
             /// 0x24/0x25 - Static lift
             /// 0x26/0x27 - Vertical going lift
             /// 0x28 - Horizontal going lift

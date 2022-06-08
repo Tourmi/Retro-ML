@@ -58,49 +58,77 @@ namespace Retro_ML.SuperMarioBros.Game
             currX = 0;
         }
 
-        public ushort GetPositionX() => (ushort)(ReadSingle(Player.MarioPositionX) + (ReadSingle(GameState.CurrentScreen) * 0x100));
-        public byte GetPositionY() => ReadSingle(Player.MarioPositionY);
-        public byte[] IsSpritePresent() => Read(Sprite.IsEnemyUpPresent);
-        public byte[] GetSpritePosition() => Read(Sprite.EnemyPositions);
-        public byte[] GetSprites() => Read(Sprite.EnemyType);
-        public ushort IsPowerUpPresent() => ReadSingle(Sprite.IsPowerUpPresent);
-        public byte[] GetPowerUpPosition() => Read(Sprite.PowerUpPositions);
-        public bool IsOnGround() => ReadSingle(Player.MarioActionState) == 0;
-        public bool IsInWater() => ReadSingle(Player.IsSwimming) == 0;
-        public bool CanAct() => ReadSingle(Player.MarioActionState) == 0x8;
-        public bool IsDead() => ReadSingle(Player.MarioActionState) == 0x0B || ReadSingle(Player.IsFalling) == 0x01;
-        public bool WonLevel() => ReadSingle(Player.MarioActionState) == 0x04 || ReadSingle(Player.MarioActionState) == 0x05 || ReadSingle(GameState.WonCondition) == 0x02 || ReadSingle(Player.MarioState) == 0x03;
-        public bool IsAtMaxSpeed() => ReadSingle(Player.MarioMaxVelocity) == 0x28;
+        public ushort GetPositionX() => (ushort)(ReadSingle(PlayerAddresses.MarioPositionX) + (ReadSingle(GameAddresses.CurrentScreen) * 0x100));
+        public byte GetPositionY() => ReadSingle(PlayerAddresses.MarioPositionY);
+        public byte[] IsSpritePresent() => Read(SpriteAddresses.IsEnemyUpPresent);
+        public byte[] GetSpritePosition() => Read(SpriteAddresses.EnemyPositions);
+        public byte[] GetSprites() => Read(SpriteAddresses.EnemyType);
+        public ushort IsPowerUpPresent() => ReadSingle(SpriteAddresses.IsPowerUpPresent);
+        public byte[] GetPowerUpPosition() => Read(SpriteAddresses.PowerUpPositions);
+        public bool IsOnGround() => ReadSingle(PlayerAddresses.MarioActionState) == 0;
+        public bool IsInWater() => ReadSingle(PlayerAddresses.IsSwimming) == 0;
+        public bool CanAct() => ReadSingle(PlayerAddresses.MarioActionState) == 0x8;
+        public bool IsDead() => ReadSingle(PlayerAddresses.MarioActionState) == 0x0B || ReadSingle(PlayerAddresses.IsFalling) == 0x01;
+        public bool WonLevel() => ReadSingle(PlayerAddresses.MarioActionState) == 0x04 || ReadSingle(PlayerAddresses.MarioActionState) == 0x05 || ReadSingle(GameAddresses.WonCondition) == 0x02 || ReadSingle(PlayerAddresses.MarioState) == 0x03;
+        public bool IsAtMaxSpeed() => ReadSingle(PlayerAddresses.MarioMaxVelocity) == 0x28;
         public bool[,] GetInternalClockState() => internalClock.GetStates();
-        public bool IsWaterLevel() => ReadSingle(GameState.LevelType) == 0x1;
-        public int GetCoins() => (int)ToUnsignedInteger(Read(GameState.Coins));
-        public int GetLives() => (int)ToUnsignedInteger(Read(GameState.Lives));
-        public int GetScore() => (int)ToUnsignedInteger(Read(GameState.Score));
-        public byte GetPowerUp() => ReadSingle(Player.MarioPowerupState);
-        public bool IsFlashing() => ReadSingle(Player.MarioState) == 0xA;
-        //Good tiles : 194 coins - 192 ? block with coins - 193 ? block with powerup - 93 block with many coins
-        public int[] GoodTile = new int[] { 0xC0, 0xC1, 0xC2, 0x5D };
+        public bool IsWaterLevel() => ReadSingle(GameAddresses.LevelType) == 0x1;
+        public int GetCoins() => (int)ToUnsignedInteger(Read(GameAddresses.Coins));
+        public int GetLives() => (int)ToUnsignedInteger(Read(GameAddresses.Lives));
+        public int GetScore() => (int)ToUnsignedInteger(Read(GameAddresses.Score));
+        public byte GetPowerUp() => ReadSingle(PlayerAddresses.MarioPowerupState);
+        public bool IsFlashing() => ReadSingle(PlayerAddresses.MarioState) == 0xA;
 
-        /* Walkable sprite :
-         * 0x24/0x25 - Static lift
-         * 0x26/0x27 - Vertical going lift 
-         * 0x28 - Horizontal going lift 
-         * 0x29 - Static lift (Will Fall if Player stays on it for too long
-         * 0x2A - Horizontal forward moving lift with strange hitbox
-         * 0x2B/0x2C - Halves of double lift (like 1.2)
-        */
-        public int[] WalkableSprite = new int[] { 0x24, 0x25, 0x26, 0x27, 0x28, 0x29, 0x2A, 0x2B, 0x2C};
+        /// <summary>
+        /// Draw the sprites tiles based on the sprite number and position, depending on its hitbox.
+        /// </summary>
+        /// <param name="x_dist"></param>
+        /// <param name="y_dist"></param>
+        /// <param name="tilesArray"></param>
+        /// <param name="spriteNum"></param>
+        private void DrawSpriteTiles(int x_dist, int y_dist, bool[,] tilesArray, int spriteNum)
+        {
+            byte[] spritePos = GetSpritePosition();
 
-        /* Good Sprite
-         * 0x2E - PowerUp Object
-         * 0x2F - Vine Object
-         * 0x30 - Flagpole Flag Object
-         * 0x31 - StarFlag Object
-         * 0x32 - Jump spring Object
-         * 0x34 - Warpzone
-         * 0x35 - Retainer Object
-         */
-        public int[] GoodSprite = new int[] { 0x2E, 0x2F, 0x30, 0x31, 0x32, 0x34, 0x35 };
+            //Sprite min X position in tile, to get tile mario is in instead of on the right
+            var goodSpriteXPosMin = (spritePos[spriteNum * 4] + (METATILE_SIZE / 2)) / METATILE_SIZE;
+
+            //Sprite min Y position in tile, to get tile mario is in instead of under : 2 * METATILE_SIZE to adjust position
+            var goodSpriteYPosMin = (spritePos[(spriteNum * 4) + 1] - (2 * METATILE_SIZE)) / METATILE_SIZE;
+
+            //Sprite max X position in tile, to get tile mario is in instead of on the right
+            var goodSpriteXPosMax = (spritePos[(spriteNum * 4) + 2] + (METATILE_SIZE / 2)) / METATILE_SIZE;
+
+            //Sprite max Y position in tile, to get tile mario is in instead of under : 2 * METATILE_SIZE to adjust position
+            var goodSpriteYPosMax = (spritePos[(spriteNum * 4) + 3] - (2 * METATILE_SIZE)) / METATILE_SIZE;
+
+            //Mario X position in tile, to get tile mario is in instead of on the right
+            var xPos = (ushort)(ReadSingle(PlayerAddresses.MarioScreenPositionX) + (METATILE_SIZE / 2)) / METATILE_SIZE;
+
+            //Mario Y position in tile, to get tile mario is in instead of under
+            var yPos = (ushort)(ReadSingle(PlayerAddresses.MarioScreenPositionY) - METATILE_SIZE) / METATILE_SIZE;
+
+            var goodSpriteXDistMin = goodSpriteXPosMin - xPos;
+
+            var goodSpriteYDistMin = goodSpriteYPosMin - yPos;
+
+            var goodSpriteXDistMax = goodSpriteXPosMax - xPos;
+
+            var goodSpriteYDistMax = goodSpriteYPosMax - yPos;
+
+            //Draw the sprite if the sprite distance is between the bounds that Mario can see
+            for (int ySpriteDist = goodSpriteYDistMin; ySpriteDist <= goodSpriteYDistMax; ySpriteDist++)
+            {
+                for (int xSpriteDist = goodSpriteXDistMin; xSpriteDist <= goodSpriteXDistMax; xSpriteDist++)
+                {
+                    //Is the sprite distance between the bounds that Mario can see?
+                    if (xSpriteDist <= x_dist && ySpriteDist <= y_dist && xSpriteDist >= -x_dist && ySpriteDist >= -y_dist)
+                    {
+                        tilesArray[ySpriteDist + y_dist, xSpriteDist + x_dist] = true;
+                    }
+                }
+            }
+        }
 
         public bool[,] GetWalkableTilesAroundPosition(int x_dist, int y_dist)
         {
@@ -116,56 +144,17 @@ namespace Retro_ML.SuperMarioBros.Game
                 }
             }
 
-            //Find good sprites
+            //Find good sprites and draw them
             byte[] isSpriteUp = IsSpritePresent();
-
-            byte[] spritePos = GetSpritePosition();
 
             byte[] spriteType = GetSprites();
 
             for (int i = 0; i < 5; i++)
             {
                 //To get lift sprite
-                if (isSpriteUp[i] != 0 && WalkableSprite.Contains(spriteType[i]))
+                if (isSpriteUp[i] != 0 && Data.Sprite.WalkableSprite.Contains(spriteType[i]))
                 {
-                    //Sprite min X position in tile, to get tile mario is in instead of on the right
-                    var goodSpriteXPosMin = (spritePos[i * 4] + (METATILE_SIZE / 2)) / METATILE_SIZE;
-
-                    //Sprite min Y position in tile, to get tile mario is in instead of under : 2 * METATILE_SIZE to adjust position
-                    var goodSpriteYPosMin = (spritePos[(i * 4) + 1] - (2 * METATILE_SIZE)) / METATILE_SIZE;
-
-                    //Sprite max X position in tile, to get tile mario is in instead of on the right
-                    var goodSpriteXPosMax = (spritePos[(i * 4) + 2] + (METATILE_SIZE / 2)) / METATILE_SIZE;
-
-                    //Sprite max Y position in tile, to get tile mario is in instead of under : 2 * METATILE_SIZE to adjust position
-                    var goodSpriteYPosMax = (spritePos[(i * 4) + 3] - (2 * METATILE_SIZE)) / METATILE_SIZE;
-
-                    //Mario X position in tile, to get tile mario is in instead of on the right
-                    var xPos = (ushort)(ReadSingle(Player.MarioScreenPositionX) + (METATILE_SIZE / 2)) / METATILE_SIZE;
-
-                    //Mario Y position in tile, to get tile mario is in instead of under
-                    var yPos = (ushort)(ReadSingle(Player.MarioScreenPositionY) - METATILE_SIZE) / METATILE_SIZE;
-
-                    var goodSpriteXDistMin = goodSpriteXPosMin - xPos;
-
-                    var goodSpriteYDistMin = goodSpriteYPosMin - yPos;
-
-                    var goodSpriteXDistMax = goodSpriteXPosMax - xPos;
-
-                    var goodSpriteYDistMax = goodSpriteYPosMax - yPos;
-
-                    //Draw the sprite if the sprite distance is between the bounds that Mario can see
-                    for (int ySpriteDist = goodSpriteYDistMin; ySpriteDist <= goodSpriteYDistMax; ySpriteDist++)
-                    {
-                        for (int xSpriteDist = goodSpriteXDistMin; xSpriteDist <= goodSpriteXDistMax; xSpriteDist++)
-                        {
-                            //Is the sprite distance between the bounds that Mario can see?
-                            if (xSpriteDist <= x_dist && ySpriteDist <= y_dist && xSpriteDist >= -x_dist && ySpriteDist >= -y_dist)
-                            {
-                                result[ySpriteDist + y_dist, xSpriteDist + x_dist] = true;
-                            }
-                        }
-                    }
+                    DrawSpriteTiles(x_dist, y_dist, result, i);
                 }
             }
 
@@ -179,53 +168,14 @@ namespace Retro_ML.SuperMarioBros.Game
             //To know how many sprites are present on the map / which memory slot to check for their position
             byte[] isSpriteUp = IsSpritePresent();
 
-            byte[] spritePos = GetSpritePosition();
-
             byte[] spriteType = GetSprites();
 
             for (int i = 0; i < 5; i++)
             {
                 //Sprite is enemy therefore is dangerous
-                if (isSpriteUp[i] != 0 && !WalkableSprite.Contains(spriteType[i]) && !GoodSprite.Contains(spriteType[i]))
+                if (isSpriteUp[i] != 0 && !Data.Sprite.WalkableSprite.Contains(spriteType[i]) && !Data.Sprite.GoodSprite.Contains(spriteType[i]))
                 {
-                    //Sprite min X position in tile, to get tile mario is in instead of on the right
-                    var enemySpriteXPosMin = (spritePos[i * 4] + (METATILE_SIZE / 2)) / METATILE_SIZE;
-
-                    //Sprite min Y position in tile, to get tile mario is in instead of under : 2 * METATILE_SIZE to adjust position
-                    var enemySpriteYPosMin = (spritePos[(i * 4) + 1] - (2 * METATILE_SIZE)) / METATILE_SIZE;
-
-                    //Sprite max X position in tile, to get tile mario is in instead of on the right
-                    var enemySpriteXPosMax = (spritePos[(i * 4) + 2] + (METATILE_SIZE / 2)) / METATILE_SIZE;
-
-                    //Sprite max Y position in tile, to get tile mario is in instead of under : 2 * METATILE_SIZE to adjust position
-                    var enemySpriteYPosMax = (spritePos[(i * 4) + 3] - (2 * METATILE_SIZE)) / METATILE_SIZE;
-
-                    //Mario X position in tile, to get tile mario is in instead of on the right
-                    var xPos = (ushort)(ReadSingle(Player.MarioScreenPositionX) + (METATILE_SIZE / 2)) / METATILE_SIZE;
-
-                    //Mario Y position in tile, to get tile mario is in instead of under
-                    var yPos = (ushort)(ReadSingle(Player.MarioScreenPositionY) - METATILE_SIZE) / METATILE_SIZE;
-
-                    var enemySpriteXDistMin = enemySpriteXPosMin - xPos;
-
-                    var enemySpriteYDistMin = enemySpriteYPosMin - yPos;
-
-                    var enemySpriteXDistMax = enemySpriteXPosMax - xPos;
-
-                    var enemySpriteYDistMax = enemySpriteYPosMax - yPos;
-
-                    //Draw the sprite if the sprite distance is between the bounds that Mario can see
-                    for (int ySpriteDist = enemySpriteYDistMin; ySpriteDist <= enemySpriteYDistMax; ySpriteDist++)
-                    {
-                        for (int xSpriteDist = enemySpriteXDistMin; xSpriteDist <= enemySpriteXDistMax; xSpriteDist++)
-                        {
-                            //Is the sprite distance between the bounds that Mario can see?
-                            if (xSpriteDist <= x_dist && ySpriteDist <= y_dist && xSpriteDist >= -x_dist && ySpriteDist >= -y_dist)
-                            {
-                                result[ySpriteDist + y_dist, xSpriteDist + x_dist] = true;
-                            }
-                        }
-                    }
+                    DrawSpriteTiles(x_dist, y_dist, result, i);
                 }
             }
 
@@ -243,7 +193,7 @@ namespace Retro_ML.SuperMarioBros.Game
             {
                 for (int j = 0; j < tiles.GetLength(1); j++)
                 {
-                    if (GoodTile.Contains(tiles[i, j]))
+                    if (Data.Tiles.GoodTile.Contains(tiles[i, j]))
                     {
                         result[i, j] = true;
                     }
@@ -264,10 +214,10 @@ namespace Retro_ML.SuperMarioBros.Game
                 var powerUpYPos = (powerUpPos[1] - (2 * METATILE_SIZE)) / METATILE_SIZE;
 
                 //Mario X position in tile, to get tile mario is in instead of on the right
-                var xPos = (ushort)(ReadSingle(Player.MarioScreenPositionX) + (METATILE_SIZE / 2)) / METATILE_SIZE;
+                var xPos = (ushort)(ReadSingle(PlayerAddresses.MarioScreenPositionX) + (METATILE_SIZE / 2)) / METATILE_SIZE;
 
                 //Mario Y position in tile, to get tile mario is in instead of under
-                var yPos = (ushort)(ReadSingle(Player.MarioScreenPositionY) - METATILE_SIZE) / METATILE_SIZE;
+                var yPos = (ushort)(ReadSingle(PlayerAddresses.MarioScreenPositionY) - METATILE_SIZE) / METATILE_SIZE;
 
                 var powerUpXDist = powerUpXPos - xPos;
 
@@ -280,56 +230,17 @@ namespace Retro_ML.SuperMarioBros.Game
                 }
             }
 
-            //Find good sprites
+            //To know how many sprites are present on the map / which memory slot to check for their position
             byte[] isSpriteUp = IsSpritePresent();
-
-            byte[] spritePos = GetSpritePosition();
 
             byte[] spriteType = GetSprites();
 
             for (int i = 0; i < 5; i++)
             {
                 //To get goodies sprite
-                if (isSpriteUp[i] != 0 && GoodSprite.Contains(spriteType[i]))
+                if (isSpriteUp[i] != 0 && Data.Sprite.GoodSprite.Contains(spriteType[i]))
                 {
-                    //Sprite min X position in tile, to get tile mario is in instead of on the right
-                    var goodSpriteXPosMin = (spritePos[i * 4] + (METATILE_SIZE / 2)) / METATILE_SIZE;
-
-                    //Sprite min Y position in tile, to get tile mario is in instead of under : 2 * METATILE_SIZE to adjust position
-                    var goodSpriteYPosMin = (spritePos[(i * 4) + 1] - (2 * METATILE_SIZE)) / METATILE_SIZE;
-
-                    //Sprite max X position in tile, to get tile mario is in instead of on the right
-                    var goodSpriteXPosMax = (spritePos[(i * 4) + 2] + (METATILE_SIZE / 2)) / METATILE_SIZE;
-
-                    //Sprite max Y position in tile, to get tile mario is in instead of under : 2 * METATILE_SIZE to adjust position
-                    var goodSpriteYPosMax = (spritePos[(i * 4) + 3] - (2 * METATILE_SIZE)) / METATILE_SIZE;
-
-                    //Mario X position in tile, to get tile mario is in instead of on the right
-                    var xPos = (ushort)(ReadSingle(Player.MarioScreenPositionX) + (METATILE_SIZE / 2)) / METATILE_SIZE;
-
-                    //Mario Y position in tile, to get tile mario is in instead of under
-                    var yPos = (ushort)(ReadSingle(Player.MarioScreenPositionY) - METATILE_SIZE) / METATILE_SIZE;
-
-                    var goodSpriteXDistMin = goodSpriteXPosMin - xPos;
-
-                    var goodSpriteYDistMin = goodSpriteYPosMin - yPos;
-
-                    var goodSpriteXDistMax = goodSpriteXPosMax - xPos;
-
-                    var goodSpriteYDistMax = goodSpriteYPosMax - yPos;
-
-                    //Draw the sprite if the sprite distance is between the bounds that Mario can see
-                    for (int ySpriteDist = goodSpriteYDistMin; ySpriteDist <= goodSpriteYDistMax; ySpriteDist++)
-                    {
-                        for (int xSpriteDist = goodSpriteXDistMin; xSpriteDist <= goodSpriteXDistMax; xSpriteDist++)
-                        {
-                            //Is the sprite distance between the bounds that Mario can see?
-                            if (xSpriteDist <= x_dist && ySpriteDist <= y_dist && xSpriteDist >= -x_dist && ySpriteDist >= -y_dist)
-                            {
-                                result[ySpriteDist + y_dist, xSpriteDist + x_dist] = true;
-                            }
-                        }
-                    }
+                    DrawSpriteTiles(x_dist, y_dist, result, i);
                 }
             }
 
@@ -341,7 +252,7 @@ namespace Retro_ML.SuperMarioBros.Game
         private byte[,] GetNearbyTiles(int x_dist, int y_dist)
         {
             //Tile array representing current loaded tiles for 2 pages
-            var tileArray = Read(GameState.Tiles);
+            var tileArray = Read(GameAddresses.Tiles);
 
             //Mario X position in tile, to get tile mario is in instead of on the right
             var xPos = (GetPositionX() + (METATILE_SIZE / 2)) / METATILE_SIZE;
@@ -459,8 +370,8 @@ namespace Retro_ML.SuperMarioBros.Game
             if (addressData.CacheType == AddressData.CacheTypes.TilesCache)
             {
                 var newX = GetPositionX();
-                //Refresh every 6 tiles
-                if (newX - currX >= (16*6))
+                //Refresh every 8 tiles
+                if (newX - currX >= (16*8))
                 {
                 tileCache.Clear();
                 currX = newX;
