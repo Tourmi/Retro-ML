@@ -56,7 +56,7 @@ namespace Retro_ML.SuperMarioKart.Neural.Scoring
             }
         }
 
-        public int StopAfter { get; set; } = 5;
+        public double StopAfter { get; set; } = 5;
 
         public double GetFinalScore() => currScore;
 

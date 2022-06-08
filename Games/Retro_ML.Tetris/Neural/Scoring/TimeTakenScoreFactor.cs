@@ -49,7 +49,7 @@ namespace Retro_ML.Tetris.Neural.Scoring
             }
         }
 
-        public int MaximumLevelTime { get; set; } = 600;
+        public double MaximumLevelTime { get; set; } = 600;
 
         public bool ShouldStop => shouldStop;
         public double ScoreMultiplier { get; set; }

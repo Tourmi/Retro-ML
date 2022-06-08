@@ -44,7 +44,7 @@ namespace Retro_ML.SuperMarioKart.Neural.Scoring
             }
         }
 
-        public int MaximumRaceTime { get; set; } = 240;
+        public double MaximumRaceTime { get; set; } = 240;
 
         public bool ShouldStop => shouldStop;
         public double ScoreMultiplier { get; set; }
