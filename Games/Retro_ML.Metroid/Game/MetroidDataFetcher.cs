@@ -3,6 +3,7 @@ using Retro_ML.Emulator;
 using Retro_ML.Game;
 using Retro_ML.Metroid.Configuration;
 using Retro_ML.Metroid.Game.Data;
+using Retro_ML.Metroid.Game.Navigation;
 using Retro_ML.Utils;
 using static Retro_ML.Metroid.Game.Addresses;
 
@@ -38,6 +39,7 @@ namespace Retro_ML.Metroid.Game
         private int delayRoomCacheClearTimer;
         private bool wasSamusInDoor;
         private (byte x, byte y) currentMapPosition;
+        private Navigator navigator;
 
         public MetroidDataFetcher(IEmulatorAdapter emulator, NeuralConfig neuralConfig, MetroidPluginConfig pluginConfig)
         {
@@ -47,6 +49,7 @@ namespace Retro_ML.Metroid.Game
             this.pluginConfig = pluginConfig;
             previousScrollX = 0;
             previousScrollY = 0;
+            navigator = new Navigator();
             currentMapPosition = (0, 0);
             internalClock = new InternalClock(pluginConfig.InternalClockTickLength, pluginConfig.InternalClockLength);
         }
@@ -72,6 +75,8 @@ namespace Retro_ML.Metroid.Game
             frameCache.Clear();
             roomCache.Clear();
 
+            navigator = new Navigator();
+
             internalClock.Reset();
             delayRoomCacheClearTimer = 5;
         }
@@ -93,6 +98,17 @@ namespace Retro_ML.Metroid.Game
         public bool IsSamusUsingMissiles() => ReadSingle(Samus.UsingMissiles) == 1;
         public bool IsSamusInDoor() => ReadSingle(Gamestate.InADoor) != 0;
         public bool IsSamusInFirstScreen() => ReadSingle(Samus.CurrentScreen) == 0;
+
+        public bool HasBombs() => (ReadSingle(Progress.Equipment) & 0b0000_0001) != 0;
+        public bool HasHighJump() => (ReadSingle(Progress.Equipment) & 0b0000_0010) != 0;
+        public bool HasLongBeam() => (ReadSingle(Progress.Equipment) & 0b0000_0100) != 0;
+        public bool HasScrewAttack() => (ReadSingle(Progress.Equipment) & 0b0000_1000) != 0;
+        public bool HasMorphBall() => (ReadSingle(Progress.Equipment) & 0b0001_0000) != 0;
+        public bool HasVariaSuit() => (ReadSingle(Progress.Equipment) & 0b0010_0000) != 0;
+        public bool HasWaveBeam() => (ReadSingle(Progress.Equipment) & 0b0100_0000) != 0;
+        public bool HasIceBeam() => (ReadSingle(Progress.Equipment) & 0b1000_0000) != 0;
+        public bool HasMissiles() => ReadSingle(Progress.MissileCapacity) > 0;
+
         public double SamusInvincibilityTimer() => ReadSingle(Samus.InvincibleTimer) / (double)INVINCIBILITY_TIMER_LENGTH;
         public double GetCurrentMissiles() => ReadSingle(Progress.Missiles) / Math.Max(1.0, ReadSingle(Progress.MissileCapacity));
         public double GetSamusVerticalSpeed() => (((sbyte)ReadSingle(Samus.VerticalSpeed)) * 0x100 + ReadSingle(Samus.VerticalFractionalSpeed)) / (double)MAXIMUM_VERTICAL_SPEED;
@@ -117,6 +133,46 @@ namespace Retro_ML.Metroid.Game
             _ => (0, 0)
         };
 
+        /// <summary>
+        /// Returns a 3x3 array containing the acquisition status of progression items.
+        /// <code>
+        /// 0,0 : Bombs
+        /// 0,1 : High Jump
+        /// 0,2 : Long Beam
+        /// 1,0 : Screw Attack
+        /// 1,1 : Morph Ball
+        /// 1,2 : Varia Suit
+        /// 2,0 : Wave Beam
+        /// 2,1 : Ice Beam
+        /// 2,2 : Missiles
+        /// </code>
+        /// </summary>
+        /// <returns></returns>
+        public bool[,] GetEquipment()
+        {
+            return new bool[,] {
+                { HasBombs(), HasHighJump(), HasLongBeam() },
+                { HasScrewAttack(), HasMorphBall(), HasVariaSuit() },
+                { HasWaveBeam(), HasIceBeam(), HasMissiles() }
+            };
+        }
+
+        /// <summary>
+        /// Returns a 2x2 array representing the direction to go in, and the objective
+        /// <code>
+        /// 0,0 : x direction
+        /// 0,1 : y direction
+        /// 1,0 : obtain the powerup
+        /// 1,1 : kill the enemy in the room
+        /// </code>
+        /// </summary>
+        /// <returns></returns>
+        public double[,] GetNavigationDirection()
+        {
+            var (xDirr, yDirr, objective) = navigator.GetDirectionToGo(currentMapPosition.x, currentMapPosition.y, this);
+
+            return new double[,] { { xDirr, yDirr }, { objective == Objectives.Obtain ? 1 : 0, objective == Objectives.Kill ? 1 : 0 } };
+        }
 
         public bool[,] GetDangerousTilesAroundPosition(int xDist, int yDist)
         {
@@ -126,6 +182,54 @@ namespace Retro_ML.Metroid.Game
             FetchSkreeProjectiles(result);
 
             return result;
+        }
+
+        /// <summary>
+        /// Returns the direction to the nearest goodie, prioritizing powerups
+        /// </summary>
+        public double[,] GetDirectionToNearestGoodTile()
+        {
+            (int x, int y) = (0, 0);
+            double minSquaredDist = double.PositiveInfinity;
+
+            var pickups = GetPickups();
+            var powerups = GetPowerups();
+            (var samusX, var samusY) = GetSamusScreensPosition();
+
+            foreach (var powerup in powerups)
+            {
+                (var xPos, var yPos) = GetScreensPosition(powerup[2] / META_TILE_SIZE, powerup[1] / META_TILE_SIZE, powerup[3] == 0);
+                xPos -= samusX;
+                yPos -= samusY;
+
+                double currDist = MathUtils.Squared(xPos) + MathUtils.Squared(yPos);
+                if (currDist <= minSquaredDist)
+                {
+                    minSquaredDist = currDist;
+                    (x, y) = (xPos, yPos);
+                }
+            }
+
+            if (minSquaredDist == double.PositiveInfinity)
+            {
+                foreach (var pickup in pickups)
+                {
+                    (var xPos, var yPos) = GetScreensPosition(pickup.XPos / META_TILE_SIZE, pickup.YPos / META_TILE_SIZE, pickup.IsInFirstScreen);
+                    xPos -= samusX;
+                    yPos -= samusY;
+
+                    double currDist = MathUtils.Squared(xPos) + MathUtils.Squared(yPos);
+                    if (currDist <= minSquaredDist)
+                    {
+                        minSquaredDist = currDist;
+                        (x, y) = (xPos, yPos);
+                    }
+                }
+            }
+
+            double dist = Math.Max(1, MathUtils.ApproximateSquareRoot(minSquaredDist));
+
+            return new double[,] { { x / dist, y / dist } };
         }
 
         public bool[,] GetGoodTilesAroundPosition(int xDist, int yDist)
@@ -177,6 +281,26 @@ namespace Retro_ML.Metroid.Game
             }
         }
 
+        /// <summary>
+        /// Returns all alive enemies
+        /// </summary>
+        /// <returns></returns>
+        public IEnumerable<Sprite> GetEnemies()
+        {
+            var baseByteGroups = ReadMultiple(Sprites.BaseSingleSprite, Sprites.BaseSingleSprite, Sprites.AllBaseSprites).ToArray();
+            var extraByteGroups = ReadMultiple(Sprites.ExtraSingleSprite, Sprites.ExtraSingleSprite, Sprites.AllExtraSprites).ToArray();
+
+            for (int i = 0; i < baseByteGroups.Length; i++)
+            {
+                Sprite enemy = new(baseByteGroups[i], extraByteGroups[i]);
+
+                if (enemy.IsAlive())
+                {
+                    yield return enemy;
+                }
+            }
+        }
+
         private void FetchSkreeProjectiles(bool[,] tiles)
         {
             int xDist = (tiles.GetLength(1) - 1) / 2;
@@ -224,21 +348,33 @@ namespace Retro_ML.Metroid.Game
             }
         }
 
+        private IEnumerable<Sprite> GetPickups()
+        {
+            var baseByteGroups = ReadMultiple(Sprites.BaseSingleSprite, Sprites.BaseSingleSprite, Sprites.AllBaseSprites).ToArray();
+            var extraByteGroups = ReadMultiple(Sprites.ExtraSingleSprite, Sprites.ExtraSingleSprite, Sprites.AllExtraSprites).ToArray();
+
+            for (int i = 0; i < baseByteGroups.Length; i++)
+            {
+                Sprite sprite = new(baseByteGroups[i], extraByteGroups[i]);
+
+                if (sprite.IsPickup())
+                {
+                    yield return sprite;
+                }
+            }
+        }
+
         private void FetchPowerUps(bool[,] tiles)
         {
             int xDist = (tiles.GetLength(1) - 1) / 2;
             int yDist = (tiles.GetLength(0) - 1) / 2;
 
             (var samusX, var samusY) = GetSamusScreensPosition();
+            var powerups = GetPowerups().ToArray();
 
-            var addresses = new AddressData[] { Powerups.Powerup1, Powerups.Powerup2 };
-
-            for (int i = 0; i < addresses.Length; i++)
+            for (int i = 0; i < powerups.Length; i++)
             {
-                byte[] powerup = Read(addresses[i]);
-
-                if (powerup[0] == 0x00 || powerup[0] == 0xFF) continue;
-
+                var powerup = powerups[i];
                 (var xPos, var yPos) = GetScreensPosition(powerup[2] / META_TILE_SIZE, powerup[1] / META_TILE_SIZE, powerup[3] == 0);
 
                 xPos -= samusX;
@@ -248,6 +384,31 @@ namespace Retro_ML.Metroid.Game
                 {
                     tiles[yPos + yDist, xPos + xDist] = true;
                 }
+            }
+        }
+
+        /// <summary>
+        /// Returns all active powerups
+        /// Bytes for powerup
+        /// <code>
+        /// byte 0 : Power up type
+        /// byte 1 : Y Position
+        /// byte 2 : X Position
+        /// byte 3 : Current screen
+        /// </code>
+        /// </summary>
+        /// <returns></returns>
+        public IEnumerable<byte[]> GetPowerups()
+        {
+            var addresses = new AddressData[] { Powerups.Powerup1, Powerups.Powerup2 };
+
+            for (int i = 0; i < addresses.Length; i++)
+            {
+                byte[] powerup = Read(addresses[i]);
+
+                if (powerup[0] == 0x00 || powerup[0] == 0xFF) continue;
+
+                yield return powerup;
             }
         }
 
@@ -327,38 +488,6 @@ namespace Retro_ML.Metroid.Game
                 }
 
                 return result;
-            }
-        }
-
-        private IEnumerable<Sprite> GetEnemies()
-        {
-            var baseByteGroups = ReadMultiple(Sprites.BaseSingleSprite, Sprites.BaseSingleSprite, Sprites.AllBaseSprites).ToArray();
-            var extraByteGroups = ReadMultiple(Sprites.ExtraSingleSprite, Sprites.ExtraSingleSprite, Sprites.AllExtraSprites).ToArray();
-
-            for (int i = 0; i < baseByteGroups.Length; i++)
-            {
-                Sprite enemy = new(baseByteGroups[i], extraByteGroups[i]);
-
-                if (enemy.IsAlive())
-                {
-                    yield return enemy;
-                }
-            }
-        }
-
-        private IEnumerable<Sprite> GetPickups()
-        {
-            var baseByteGroups = ReadMultiple(Sprites.BaseSingleSprite, Sprites.BaseSingleSprite, Sprites.AllBaseSprites).ToArray();
-            var extraByteGroups = ReadMultiple(Sprites.ExtraSingleSprite, Sprites.ExtraSingleSprite, Sprites.AllExtraSprites).ToArray();
-
-            for (int i = 0; i < baseByteGroups.Length; i++)
-            {
-                Sprite sprite = new(baseByteGroups[i], extraByteGroups[i]);
-
-                if (sprite.IsPickup())
-                {
-                    yield return sprite;
-                }
             }
         }
 

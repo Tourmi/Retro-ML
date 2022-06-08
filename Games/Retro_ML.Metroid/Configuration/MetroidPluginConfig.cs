@@ -25,6 +25,8 @@ namespace Retro_ML.Metroid.Configuration
             true, //invincible
             true, //on elevator
             true, //using missiles
+            true, //equipment
+            true, //navigation
             false, //clock
             true, //bias
 
@@ -41,6 +43,7 @@ namespace Retro_ML.Metroid.Configuration
         public FieldInfo[] Fields => new FieldInfo[]
         {
             new BoolFieldInfo(nameof(UseGrid), "Use Vision Grid"),
+            new BoolFieldInfo(nameof(UseDirectionToGoodie), "Use Direction to goodie"),
             new IntegerFieldInfo(nameof(GridDistanceX), "Vision Grid Horizontal Distance", 1, 8, 1),
             new IntegerFieldInfo(nameof (GridDistanceY), "Vision Grid Vertical Distance", 1, 8, 1),
             new IntegerFieldInfo(nameof(RayDistance), "Vision Ray Distance", 1, 8, 1),
@@ -57,6 +60,7 @@ namespace Retro_ML.Metroid.Configuration
                 return fieldName switch
                 {
                     nameof(UseGrid) => UseGrid,
+                    nameof(UseDirectionToGoodie) => UseDirectionToGoodie,
                     nameof(GridDistanceX) => GridDistanceX,
                     nameof(GridDistanceY) => GridDistanceY,
                     nameof(RayDistance) => RayDistance,
@@ -72,6 +76,7 @@ namespace Retro_ML.Metroid.Configuration
                 switch (fieldName)
                 {
                     case nameof(UseGrid): UseGrid = (bool)value; break;
+                    case nameof(UseDirectionToGoodie): UseDirectionToGoodie = (bool)value; break;
                     case nameof(GridDistanceX): GridDistanceX = (int)value; break;
                     case nameof(GridDistanceY): GridDistanceY = (int)value; break;
                     case nameof(RayDistance): RayDistance = (int)value; break;
@@ -87,6 +92,10 @@ namespace Retro_ML.Metroid.Configuration
         /// Whether or not to use a grid for multiple inputs.
         /// </summary>
         public bool UseGrid { get; set; } = false;
+        /// <summary>
+        /// Whether or not to simply use the x,y direction from the nearest goodie, instead of rays or a grid
+        /// </summary>
+        public bool UseDirectionToGoodie { get; set; } = true;
         /// <summary>
         /// For any inputs that use a grid, the x distance it should be.
         /// </summary>
@@ -163,9 +172,6 @@ namespace Retro_ML.Metroid.Configuration
                 neuralConfig.InputNodes.Add(new InputNode("Dangers",
                     neuralConfig.EnabledStates[enabledIndex++],
                     (dataFetcher) => ((MetroidDataFetcher)dataFetcher).GetDangerousTilesAroundPosition(GridDistanceX, GridDistanceY), GridDistanceX * 2 + 1, GridDistanceY * 2 + 1));
-                neuralConfig.InputNodes.Add(new InputNode("Goodies",
-                    neuralConfig.EnabledStates[enabledIndex++],
-                    (dataFetcher) => ((MetroidDataFetcher)dataFetcher).GetGoodTilesAroundPosition(GridDistanceX, GridDistanceY), GridDistanceX * 2 + 1, GridDistanceY * 2 + 1));
             }
             else
             {
@@ -175,6 +181,21 @@ namespace Retro_ML.Metroid.Configuration
                 neuralConfig.InputNodes.Add(new InputNode("Dangers",
                     neuralConfig.EnabledStates[enabledIndex++],
                     (dataFetcher) => Raycast.GetRayDistances(((MetroidDataFetcher)dataFetcher).GetDangerousTilesAroundPosition(GridDistanceX, GridDistanceY), RayDistance, Raycount), Raycount / 4, 4));
+            }
+            if (UseDirectionToGoodie)
+            {
+                neuralConfig.InputNodes.Add(new InputNode("Goodies",
+                    neuralConfig.EnabledStates[enabledIndex++],
+                    (dataFetcher) => ((MetroidDataFetcher)dataFetcher).GetDirectionToNearestGoodTile(), 2, 1));
+            }
+            else if (UseGrid)
+            {
+                neuralConfig.InputNodes.Add(new InputNode("Goodies",
+                    neuralConfig.EnabledStates[enabledIndex++],
+                    (dataFetcher) => ((MetroidDataFetcher)dataFetcher).GetGoodTilesAroundPosition(GridDistanceX, GridDistanceY), GridDistanceX * 2 + 1, GridDistanceY * 2 + 1));
+            }
+            else
+            {
                 neuralConfig.InputNodes.Add(new InputNode("Goodies",
                     neuralConfig.EnabledStates[enabledIndex++],
                     (dataFetcher) => Raycast.GetRayDistances(((MetroidDataFetcher)dataFetcher).GetGoodTilesAroundPosition(GridDistanceX, GridDistanceY), RayDistance, Raycount), Raycount / 4, 4));
@@ -188,6 +209,8 @@ namespace Retro_ML.Metroid.Configuration
             neuralConfig.InputNodes.Add(new InputNode("Invincible", neuralConfig.EnabledStates[enabledIndex++], (dataFetcher) => ((MetroidDataFetcher)dataFetcher).SamusInvincibilityTimer()));
             neuralConfig.InputNodes.Add(new InputNode("On Elevator", neuralConfig.EnabledStates[enabledIndex++], (dataFetcher) => ((MetroidDataFetcher)dataFetcher).IsSamusOnElevator()));
             neuralConfig.InputNodes.Add(new InputNode("Using Missiles", neuralConfig.EnabledStates[enabledIndex++], (dataFetcher) => ((MetroidDataFetcher)dataFetcher).IsSamusUsingMissiles()));
+            neuralConfig.InputNodes.Add(new InputNode("Equipment", neuralConfig.EnabledStates[enabledIndex++], (dataFetcher) => ((MetroidDataFetcher)dataFetcher).GetEquipment(), 3, 3));
+            neuralConfig.InputNodes.Add(new InputNode("Navigation", neuralConfig.EnabledStates[enabledIndex++], (dataFetcher) => ((MetroidDataFetcher)dataFetcher).GetNavigationDirection(), 2, 2));
             neuralConfig.InputNodes.Add(new InputNode("Internal Clock", neuralConfig.EnabledStates[enabledIndex++], (dataFetcher) => ((MetroidDataFetcher)dataFetcher).GetInternalClockState(), Math.Min(8, InternalClockLength), Math.Max(1, InternalClockLength / 8)));
             neuralConfig.InputNodes.Add(new InputNode("Bias", neuralConfig.EnabledStates[enabledIndex++], (dataFetcher) => true));
 
