@@ -49,7 +49,7 @@ namespace Retro_ML.SuperMarioKart.Neural.Scoring
             }
         }
 
-        public int MaxTimeWithoutProgress { get; set; } = 4;
+        public double MaxTimeWithoutProgress { get; set; } = 4;
 
         public bool ShouldStop => shouldStop;
         public double ScoreMultiplier { get; set; }
