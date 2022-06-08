@@ -162,7 +162,7 @@
         public static class SpriteAddresses
         {
             /// <summary>
-            /// Enemy type when enemy is present
+            /// Sprite type when sprite is present
             /// 0x00 - Green Koopa
             /// 0x01 - Red Koopa
             /// 0x02 - Buzzy beetle
@@ -212,17 +212,39 @@
             /// 0x3B - 2 Koopa Troopa.
             /// 0x3C - 3 Koopa Troopa.
             /// </summary>
-            public static readonly AddressData EnemyType = new(0x0016, 5);
+            public static readonly AddressData SpriteType = new(0x0016, 5);
             /// <summary>
-            /// Is there enemies drawn? (max 5)
+            /// Is there sprite drawn? (max 5)
             /// 0 - No
             /// 1 - Yes
             /// </summary>
-            public static readonly AddressData IsEnemyUpPresent = new(0x000F, 5);
+            public static readonly AddressData IsSpritePresent = new(0x000F, 5);
             /// <summary>
-            /// Enemy hitboxes (5x4 bytes, x1,y1 x2,y2)
+            /// Is there hammer present? (max 9)
+            /// 0 - No
+            /// 1 - Yes
             /// </summary>
-            public static readonly AddressData EnemyPositions = new(0x04B0, 20);
+            public static readonly AddressData IsHammerPresent = new(0x002A, 9);
+            /// <summary>
+            /// Sprite hitboxes (5x4 bytes, x1,y1 x2,y2)
+            /// </summary>
+            public static readonly AddressData SpriteHitbox = new(0x04B0, 20);
+            /// <summary>
+            /// Hammer hitboxes (5x4 bytes, x1,y1 x2,y2)
+            /// </summary>
+            public static readonly AddressData HammerHitbox = new(0x04D0, 36);
+            /// <summary>
+            /// Sprite X position on screen
+            /// </summary>
+            public static readonly AddressData SpritePositionX = new(0x0087, 5);
+            /// <summary>
+            /// Sprite Y position on screen
+            /// </summary>
+            public static readonly AddressData SpritePositionY = new(0x00CF, 5);
+            /// <summary>
+            /// Sprite scren position
+            /// </summary>
+            public static readonly AddressData SpriteScreenPosition = new(0x006E, 5);
             /// <summary>
             /// Is there a powerup on the screen?
             /// 0x00 - No
@@ -233,6 +255,20 @@
             /// Powerup hitboxes (4 bytes, x1,y1 x2,y2)
             /// </summary>
             public static readonly AddressData PowerUpPositions = new(0x04C4, 4);
+            /// <summary>
+            /// Firebar positions
+            /// Each firebars are represented with 6 fireballs (4 bytes each)
+            /// 5 sprites x 6 fireballs x 4 addresses eachs
+            /// </summary>
+            public static readonly AddressData FirebarPositions = new(0x0230, 120);
+            /// <summary>
+            /// Firebar spinstate low (5 sprite x 1 byte each)
+            /// </summary>
+            public static readonly AddressData FirebarSpinStateLow = new(0x0058, 5);
+            /// <summary>
+            /// Firebar spinstate high(5 sprite x 1 byte each)
+            /// </summary>
+            public static readonly AddressData FirebarSpinStateHigh = new(0x00A0, 5);
         }
     }
 }
