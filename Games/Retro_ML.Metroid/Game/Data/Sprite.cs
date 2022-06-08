@@ -25,7 +25,7 @@ namespace Retro_ML.Metroid.Game.Data
 
         public bool IsAlive()
         {
-            return Health > 0 && Status != 0x00;
+            return Status != 0x00 && Health > 0;
         }
 
         public bool IsPickup()

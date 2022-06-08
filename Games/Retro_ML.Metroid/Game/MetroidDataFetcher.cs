@@ -37,6 +37,7 @@ namespace Retro_ML.Metroid.Game
         private byte previousScrollY;
         private int delayRoomCacheClearTimer;
         private bool wasSamusInDoor;
+        private (byte x, byte y) currentMapPosition;
 
         public MetroidDataFetcher(IEmulatorAdapter emulator, NeuralConfig neuralConfig, MetroidPluginConfig pluginConfig)
         {
@@ -46,6 +47,7 @@ namespace Retro_ML.Metroid.Game
             this.pluginConfig = pluginConfig;
             previousScrollX = 0;
             previousScrollY = 0;
+            currentMapPosition = (0, 0);
             internalClock = new InternalClock(pluginConfig.InternalClockTickLength, pluginConfig.InternalClockLength);
         }
 
@@ -59,6 +61,7 @@ namespace Retro_ML.Metroid.Game
 
             InitFrameCache();
             VerifyRoomCache();
+            UpdateRealMapPosition();
         }
 
         /// <summary>
@@ -70,6 +73,7 @@ namespace Retro_ML.Metroid.Game
             roomCache.Clear();
 
             internalClock.Reset();
+            delayRoomCacheClearTimer = 5;
         }
 
         public bool[,] GetInternalClockState() => internalClock.GetStates();
@@ -80,7 +84,7 @@ namespace Retro_ML.Metroid.Game
         public ushort GetDeathCount() => (ushort)ReadULong(Progress.Deaths);
         public byte GetSamusXPosition() => ReadSingle(Samus.XPosition);
         public byte GetSamusYPosition() => ReadSingle(Samus.YPosition);
-        public (int xPos, int yPos) GetSamusScreensPosition() => GetScreensPosition(GetSamusXPosition() / META_TILE_SIZE, GetSamusYPosition() / META_TILE_SIZE, IsInFirstScreen());
+        public (int xPos, int yPos) GetSamusScreensPosition() => GetScreensPosition(GetSamusXPosition() / META_TILE_SIZE, GetSamusYPosition() / META_TILE_SIZE, IsSamusInFirstScreen());
         public double SamusLookDirection() => (ReadSingle(Samus.LookingDirection) * -2.0) + 1;
         public bool IsSamusInMorphBall() => ReadSingle(Samus.Status) == 0x3;
         public bool IsSamusInLava() => ReadSingle(Samus.InLava) == 1;
@@ -88,18 +92,31 @@ namespace Retro_ML.Metroid.Game
         public bool IsSamusOnElevator() => ReadSingle(Samus.IsOnElevator) == 1;
         public bool IsSamusUsingMissiles() => ReadSingle(Samus.UsingMissiles) == 1;
         public bool IsSamusInDoor() => ReadSingle(Gamestate.InADoor) != 0;
+        public bool IsSamusInFirstScreen() => ReadSingle(Samus.CurrentScreen) == 0;
         public double SamusInvincibilityTimer() => ReadSingle(Samus.InvincibleTimer) / (double)INVINCIBILITY_TIMER_LENGTH;
         public double GetCurrentMissiles() => ReadSingle(Progress.Missiles) / Math.Max(1.0, ReadSingle(Progress.MissileCapacity));
-
-        public bool IsInFirstScreen() => ReadSingle(Samus.CurrentScreen) == 0;
-        public bool IsHorizontalRoom() => (ReadSingle(Room.HorizontalOrVertical) & 0b0000_1000) == 0;
-        public byte GetScrollX() => ReadSingle(Room.ScrollX);
-        public byte GetScrollY() => ReadSingle(Room.ScrollY);
-        public byte GetMapX() => ReadSingle(Gamestate.MapX);
-        public byte GetMapY() => ReadSingle(Gamestate.MapY);
-
         public double GetSamusVerticalSpeed() => (((sbyte)ReadSingle(Samus.VerticalSpeed)) * 0x100 + ReadSingle(Samus.VerticalFractionalSpeed)) / (double)MAXIMUM_VERTICAL_SPEED;
         public double GetSamusHorizontalSpeed() => (((sbyte)ReadSingle(Samus.HorizontalSpeed)) * 0x100 + ReadSingle(Samus.HorizontalFractionalSpeed)) / (double)MAXIMUM_HORIZONTAL_SPEED;
+
+        public bool IsHorizontalRoom() => (ReadSingle(Room.HorizontalOrVertical) & 0b0000_1000) == 0;
+        public bool IsOnNameTable3() => (ReadSingle(Room.PPUCTL0) & 0b0000_0011) != 0;
+        public bool DoorOnNameTable0(bool leftSide) => (ReadSingle(Room.DoorOnNameTable0) & (leftSide ? 1 : 2)) != 0;
+        public bool DoorOnNameTable3(bool leftSide) => (ReadSingle(Room.DoorOnNameTable3) & (leftSide ? 1 : 2)) != 0;
+        public bool IsRoomBeingLoadedValid() => ReadSingle(Room.RoomIndexBeingLoaded) != 0xFF;
+        public byte GetScrollX() => ReadSingle(Room.ScrollX);
+        public byte GetScrollY() => ReadSingle(Room.ScrollY);
+        public (byte x, byte y) GetMapPosition() => (ReadSingle(Gamestate.MapX), ReadSingle(Gamestate.MapY));
+        public (byte x, byte y) GetRealMapPosition() => currentMapPosition;
+
+        public (int x, int y) GetLastScrollDirection() => ReadSingle(Gamestate.LastScrollDirection) switch
+        {
+            0 => (0, -1),
+            1 => (0, 1),
+            2 => (-1, 0),
+            3 => (1, 0),
+            _ => (0, 0)
+        };
+
 
         public bool[,] GetDangerousTilesAroundPosition(int xDist, int yDist)
         {
@@ -276,11 +293,7 @@ namespace Retro_ML.Metroid.Game
             var firstScreen = tiles[0x0..0x4C0].To2DArray(ROOM_HEIGHT, ROOM_WIDTH).QuarterArray();
             var secondScreen = tiles[0x400..0x7C0].To2DArray(ROOM_HEIGHT, ROOM_WIDTH).QuarterArray();
 
-            sbyte xScroll = (sbyte)ReadSingle(Room.ScrollX);
-            sbyte yScroll = (sbyte)ReadSingle(Room.ScrollY);
-
-            //Whether or not we need swap the first and second screens.
-            if ((xScroll < 0 || yScroll < 0) ^ !IsInFirstScreen())
+            if (IsOnNameTable3())
             {
                 (secondScreen, firstScreen) = (firstScreen, secondScreen);
             }
@@ -356,10 +369,7 @@ namespace Retro_ML.Metroid.Game
         {
             (var xPos, var yPos) = (x, y);
 
-            sbyte xScroll = (sbyte)ReadSingle(Room.ScrollX);
-            sbyte yScroll = (sbyte)ReadSingle(Room.ScrollY);
-            //If the camera is more than halfway scrolled (negative values) XOR the screen does not match Samus' screen
-            if ((xScroll < 0 || yScroll < 0) ^ (isInFirstScreen != IsInFirstScreen()))
+            if (IsInSecondLoadedScreen(isInFirstScreen))
             {
                 if (IsHorizontalRoom())
                     xPos += CORRECTED_ROOM_WIDTH;
@@ -371,11 +381,20 @@ namespace Retro_ML.Metroid.Game
         }
 
         /// <summary>
+        /// Returns whether or not the given position with its screen number is in the first or second screen of tiles.
+        /// </summary>
+        private bool IsInSecondLoadedScreen(bool isInScreen0)
+        {
+            return isInScreen0 == IsOnNameTable3();
+        }
+
+        /// <summary>
         /// Reads a single byte from the emulator's memory
         /// </summary>
         /// <param name="addressData"></param>
         /// <returns></returns>
         private byte ReadSingle(AddressData addressData) => Read(addressData)[0];
+
         /// <summary>
         /// Reads up to 8 bytes from the address, assuming little endian.
         /// </summary>
@@ -456,7 +475,7 @@ namespace Retro_ML.Metroid.Game
         }
 
         /// <summary>
-        /// Returns the addresses to read when reading from a Table
+        /// Returns the addresses to read when reading from a RAM Table
         /// </summary>
         /// <param name="addressData"></param>
         /// <param name="offset"></param>
@@ -523,18 +542,12 @@ namespace Retro_ML.Metroid.Game
         /// </summary>
         /// <param name="addressData"></param>
         /// <returns></returns>
-        private Dictionary<uint, byte[]> GetCacheToUse(AddressData addressData)
+        private Dictionary<uint, byte[]> GetCacheToUse(AddressData addressData) => addressData.CacheDuration switch
         {
-            switch (addressData.CacheDuration)
-            {
-                case AddressData.CacheDurations.Frame:
-                    return frameCache;
-                case AddressData.CacheDurations.Room:
-                    return roomCache;
-                default:
-                    return frameCache;
-            }
-        }
+            AddressData.CacheDurations.Frame => frameCache,
+            AddressData.CacheDurations.Room => roomCache,
+            _ => frameCache,
+        };
 
         private void InitFrameCache()
         {
@@ -583,26 +596,71 @@ namespace Retro_ML.Metroid.Game
                 roomCache.Clear();
             }
 
-            byte scrollX = (byte)(GetScrollX() - 1);
-            byte scrollY = (byte)(GetScrollY() - 1);
+            byte scrollX = GetScrollX();
+            byte scrollY = GetScrollY();
 
-            var scrollDiff = Math.Max(Math.Abs(previousScrollX - scrollX), Math.Abs(previousScrollY - scrollY));
+            var scrollDiff = MathUtils.MaximumAbsoluteDifference(previousScrollX, previousScrollY, scrollX, scrollY);
 
             if (scrollDiff > 128)
             {
-                delayRoomCacheClearTimer = Math.Max(delayRoomCacheClearTimer, 3);
+                delayRoomCacheClearTimer = Math.Max(delayRoomCacheClearTimer, 5);
             }
 
             bool isInDoor = IsSamusInDoor();
             if (!isInDoor && wasSamusInDoor)
             {
-                delayRoomCacheClearTimer = Math.Max(delayRoomCacheClearTimer, 20);
+                delayRoomCacheClearTimer = Math.Max(delayRoomCacheClearTimer, 10);
             }
 
             wasSamusInDoor = isInDoor;
             previousScrollX = scrollX;
             previousScrollY = scrollY;
+        }
 
+        /// <summary>
+        /// Updates Samus' real map position, based the current state
+        /// </summary>
+        private void UpdateRealMapPosition()
+        {
+            if (IsSamusInDoor()) return;
+
+            var mapPos = GetMapPosition();
+            var (scrollXDirr, scrollYDirr) = GetLastScrollDirection();
+            bool samusInSecondScreen = IsInSecondLoadedScreen(IsSamusInFirstScreen());
+            bool shouldntFixPosition = false;
+
+            if (GetScrollX() == 0 && scrollXDirr > 0)
+            {
+                shouldntFixPosition |= true;
+            }
+
+            if (IsHorizontalRoom())
+            {
+                if (IsOnNameTable3())
+                {
+                    shouldntFixPosition |= DoorOnNameTable3(scrollXDirr < 0) || DoorOnNameTable3(scrollXDirr > 0);
+                }
+                else
+                {
+                    shouldntFixPosition |= DoorOnNameTable0(scrollXDirr < 0) || DoorOnNameTable0(scrollXDirr > 0);
+                }
+            }
+
+            if (GetScrollY() == 0 && scrollYDirr > 0)
+            {
+                shouldntFixPosition |= true;
+            }
+
+            if (!shouldntFixPosition)
+            {
+                if (samusInSecondScreen && (scrollXDirr < 0 || scrollYDirr < 0) ||
+                    !samusInSecondScreen && (scrollXDirr > 0 || scrollYDirr > 0))
+                {
+                    mapPos = ((byte)(mapPos.x - scrollXDirr), (byte)(mapPos.y - scrollYDirr));
+                }
+            }
+
+            currentMapPosition = mapPos;
         }
 
         private static IEnumerable<AddressData> GetCalculatedAddresses(uint totalLength, uint offset, params AddressData[] baseAddresses)

@@ -31,7 +31,7 @@
         public static class Room
         {
             /// <summary>
-            /// The currently loaded tiles, split into two rooms of 0x400 tiles.
+            /// The currently loaded tiles, split into two pages of 0x400 tiles.
             /// The final 2 rows of tiles appear to be useless
             /// </summary>
             public static readonly AddressData Tiles = new(0x6000, 0x800, AddressData.CacheDurations.Room);
@@ -43,6 +43,28 @@
             /// Y position of camera scroll
             /// </summary>
             public static readonly AddressData ScrollY = new(0xFC);
+            /// <summary>
+            /// Not zero when a door is on the nametable 0
+            /// </summary>
+            public static readonly AddressData DoorOnNameTable0 = new(0x6D);
+            /// <summary>
+            /// Not zero when a door is on the nametable 3
+            /// </summary>
+            public static readonly AddressData DoorOnNameTable3 = new(0x6C);
+            /// <summary>
+            /// The index of the room currently being loaded.
+            /// <code>
+            /// FF : Invalid room
+            /// </code>
+            /// </summary>
+            public static readonly AddressData RoomIndexBeingLoaded = new(0x5A);
+            /// <summary>
+            /// Byte that was written to PPU register. 
+            /// <code>
+            /// 0000_00xx : name table
+            /// </code>
+            /// </summary>
+            public static readonly AddressData PPUCTL0 = new(0xFF);
             /// <summary>
             /// Bit 0000_X000 is set for a vertical room, unset for a horizontal room
             /// </summary>
@@ -88,6 +110,16 @@
             /// </code>
             /// </summary>
             public static readonly AddressData InADoor = new(0x56);
+            /// <summary>
+            /// Last scroll direction of camera
+            /// <code>
+            /// 0 : up
+            /// 1 : down
+            /// 2 : left
+            /// 3 : right
+            /// </code>
+            /// </summary>
+            public static readonly AddressData LastScrollDirection = new(0x49);
         }
 
         public static class Progress
@@ -318,7 +350,7 @@
             /// byte 3 : Current screen
             /// </code>
             /// </summary>
-            public static readonly AddressData Powerup2 = new(0x748, 4);
+            public static readonly AddressData Powerup2 = new(0x750, 4);
         }
     }
 }
