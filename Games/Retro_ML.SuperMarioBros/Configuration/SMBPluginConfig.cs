@@ -117,11 +117,11 @@ namespace Retro_ML.SuperMarioBros.Configuration
             ScoreFactors = new List<IScoreFactor>()
             {
                 new DiedScoreFactor() { IsDisabled=false, ScoreMultiplier=-5 },
-                new WonLevelScoreFactor() { IsDisabled=false, ScoreMultiplier=100 },
+                new WonLevelScoreFactor() { IsDisabled=false, ScoreMultiplier=1000 },
                 new DistanceScoreFactor() { IsDisabled=false, ScoreMultiplier=1 },
                 new StopMovingScoreFactor() { IsDisabled=false, ScoreMultiplier=-5 },
                 new CoinsScoreFactor() { IsDisabled=true, ScoreMultiplier=1 },
-                new PowerUpScoreFactor() { IsDisabled=true, ScoreMultiplier=4 },
+                new PowerUpScoreFactor() { IsDisabled=true, ScoreMultiplier=10 },
             };
         }
 
@@ -170,7 +170,7 @@ namespace Retro_ML.SuperMarioBros.Configuration
 
             neuralConfig.InputNodes.Add(new InputNode("On Ground", neuralConfig.EnabledStates[enabledIndex++], (dataFetcher) => ((SMBDataFetcher)dataFetcher).IsOnGround()));
             neuralConfig.InputNodes.Add(new InputNode("Water Level", neuralConfig.EnabledStates[enabledIndex++], (dataFetcher) => ((SMBDataFetcher)dataFetcher).IsWaterLevel()));
-            neuralConfig.InputNodes.Add(new InputNode("Max Speed", neuralConfig.EnabledStates[enabledIndex++], (dataFetcher) => ((SMBDataFetcher)dataFetcher).IsAtMaxSpeed()));
+            neuralConfig.InputNodes.Add(new InputNode("Is Running", neuralConfig.EnabledStates[enabledIndex++], (dataFetcher) => ((SMBDataFetcher)dataFetcher).IsRunning()));
             neuralConfig.InputNodes.Add(new InputNode("Internal Clock", neuralConfig.EnabledStates[enabledIndex++], (dataFetcher) => ((SMBDataFetcher)dataFetcher).GetInternalClockState(), Math.Min(8, InternalClockLength), Math.Max(1, InternalClockLength / 8)));
             neuralConfig.InputNodes.Add(new InputNode("Bias", neuralConfig.EnabledStates[enabledIndex++], (dataFetcher) => true));
 

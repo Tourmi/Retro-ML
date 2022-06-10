@@ -44,7 +44,7 @@ namespace Retro_ML.SuperMarioBros.Neural.Scoring
             if (dataFetcher.WonLevel())
             {
                 shouldStop = true;
-                currScore += ScoreMultiplier * 100;
+                currScore += ScoreMultiplier;
                 return;
             }
         }

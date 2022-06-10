@@ -157,6 +157,13 @@
             /// Boolean, true if falling to death
             /// </summary>
             public static readonly AddressData IsFalling = new(0x712, 1);
+            /// <summary>
+            /// Walk Animation
+            /// 0xE4 - is running
+            /// 0x30 - skidding
+            /// 98 - normal
+            /// </summary>
+            public static readonly AddressData MarioWalkAnimation = new(0x702, 1);
         }
 
         public static class SpriteAddresses
