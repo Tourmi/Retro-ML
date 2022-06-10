@@ -40,29 +40,18 @@ Training AIs to beat Super Mario Bros levels automatically.
   * A negative amount of points is recommended to discourage the AI from idling, moving back and forth, and looping forever.
 * **Time taken**
   * Gives points when the AI takes way too long to complete a level. Recommended to set to a negative value and leave enabled in case AIs decide to take way too much time on a level.
-* **Speed**
-  * Gives points based on the speed of the AI. 
-  * The formula is `(Maximum Tiles distance / Seconds taken) * Multiplier * Direction Multiplier`
-  * Horizontal and vertical multipliers
-    * Additional multipliers for the direction of the AI. 
 * **Won level**
   * The amount of points to attribute if the AI wins a level. Ideally, this should be a high value to encourage actually finishing levels.
-  * Goal and Key multipliers
-    * Set one of these to 0 or a negative value if you want to prioritize finishing a level with a key, or through the regular level ending.
 * **Coins**
   * The amount of points to give the AI per coin collected.
-* **Yoshi Coins**
-  * The amount of points to give the AI per Yoshi Coin collected
-* **1-ups**
-  * The amount of points to give the AI per 1-up collected from any source.
 * **High Score**
   * The amount of points to give the AI for its in-game high-score.
   * The formula is `(In-game High Score / 1000) * Multiplier`
   * So a high-score of 55200 with a multiplier of 2 will give a total amount of points of 110.4 to the AI.
 * **Power Up**
   * Points given whenever the AI collects a power up it didn't have yet.
-  * Mushroom, Cape, Flower multipliers
-    * Additional multiplier for the type of power-up collected. If the global multiplier is 4, and the cape multiplier is 2, then the AI is awarded 8 points for collecting a Cape.
+  * Mushroom, Flower multipliers, Star and 1-up
+    * Additional multiplier for the type of power-up collected. If the global multiplier is 4, and the star multiplier is 2, then the AI is awarded 8 points for collecting a star.
 * **Taken Damage**
   * Points applied whenever an AI takes damage, not counting dying. 
 
@@ -75,23 +64,14 @@ Training AIs to beat Super Mario Bros levels automatically.
   * Water : The water tiles around the AI. `(VDH * 2 + 1) * (VDV * 2 + 1)` total nodes.
   * On ground : Whether or not the AI is touching the ground.
   * In water : Whether or not the AI is in water
-  * Raising : Whether or not the AI is raising, both out of a jump as well as while swimming.
-  * Sinking : Whether or not the AI is falling, both out of a jump as well as while swimming.
-  * Can jump out of water : Whether or not the AI will get out of the water by jumping.
-  * Carrying : Whether or not the AI is carrying something.
-  * Can Climb : ?Not guaranteed to always be right. Whether or not the AI can climb at the moment.
   * Max Speed : Whether or not the AI has reached maximum speed.
-  * Message box : Whether or not there currently is a message box open.
   * Internal clock : Timed bias value. Alternates between on and off every couple frames.
   * Bias : Bias value. Always on.
 * **Output Nodes**
   * The output nodes represent each button on an SNES controller.
-  * `A` : Spin jump.
-  * `B` : Jump
-  * `X` : Run
-  * `Y` : Run
+  * `A` : Jump
+  * `B` : Run or throw fireballs
   * `Left` and `Right` : Move left and right.
-  * `Up` : Allows jumping out of water, as well as actions like throwing a shell up, or climbing.
-  * `Down` : Allows crouching (Mario's hitbox doesn't change if he crouches when small, despite there being an animation for it.)
-  * `Left Shoulder` and `Right Shoulder` : Moves the camera if the button is held while not pressing the D-Pad
+  * `Up` : Allows climbing on vines.
+  * `Down` : Allows crouching if mario is in Big state. Also allows Mario to go down pipes or in water levels.
   * `Start` and `Select` : Useless

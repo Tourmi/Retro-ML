@@ -76,7 +76,7 @@ namespace Retro_ML.SuperMarioBros.Game
         public bool CanAct() => ReadSingle(PlayerAddresses.MarioActionState) == 0x8;
         public bool IsDead() => ReadSingle(PlayerAddresses.MarioActionState) == 0x0B || ReadSingle(PlayerAddresses.IsFalling) == 0x01;
         public bool WonLevel() => ReadSingle(PlayerAddresses.MarioActionState) == 0x04 || ReadSingle(PlayerAddresses.MarioActionState) == 0x05 || ReadSingle(GameAddresses.WonCondition) == 0x02 || ReadSingle(PlayerAddresses.MarioState) == 0x03;
-        public bool IsAtMaxSpeed() => ReadSingle(PlayerAddresses.MarioMaxVelocity) == 0x28;
+        public bool IsAtMaxSpeed() => IsInWater() ? ReadSingle(PlayerAddresses.MarioMaxVelocity) == 0x18 : ReadSingle(PlayerAddresses.MarioMaxVelocity) == 0x28;
         public bool IsRunning() => ReadSingle(PlayerAddresses.MarioWalkAnimation) == 0xE4;
         public bool[,] GetInternalClockState() => internalClock.GetStates();
         public bool IsWaterLevel() => ReadSingle(GameAddresses.LevelType) == 0x1;
