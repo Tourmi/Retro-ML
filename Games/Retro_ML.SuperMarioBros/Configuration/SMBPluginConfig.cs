@@ -120,8 +120,8 @@ namespace Retro_ML.SuperMarioBros.Configuration
                 new WonLevelScoreFactor() { IsDisabled=false, ScoreMultiplier=1000 },
                 new DistanceScoreFactor() { IsDisabled=false, ScoreMultiplier=1 },
                 new StopMovingScoreFactor() { IsDisabled=false, ScoreMultiplier=-5 },
-                new CoinsScoreFactor() { IsDisabled=true, ScoreMultiplier=1 },
-                new PowerUpScoreFactor() { IsDisabled=true, ScoreMultiplier=10 },
+                new CoinsScoreFactor() { IsDisabled=false, ScoreMultiplier=1 },
+                new PowerUpScoreFactor() { IsDisabled=false, ScoreMultiplier=10 },
             };
         }
 
