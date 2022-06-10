@@ -18,7 +18,6 @@ namespace Retro_ML.SuperMarioBros.Neural.Scoring
         private uint minXPosition = 0;
         private uint maxXPosition = 0;
         private bool inited = false;
-        private uint levelUID;
 
         public FieldInfo[] Fields => new FieldInfo[]
         {

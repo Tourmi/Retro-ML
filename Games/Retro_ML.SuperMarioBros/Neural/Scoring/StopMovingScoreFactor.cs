@@ -11,11 +11,7 @@ namespace Retro_ML.SuperMarioBros.Neural.Scoring
         private const int MAX_IMMOBILE_FRAMES_IF_ALREADY_MOVED = 4 * 60;
 
         private int immobileFrames = 0;
-
-        private uint minXPosition = uint.MaxValue;
         private uint maxXPosition = 0;
-        private uint minYPosition = uint.MaxValue;
-        private uint maxYPosition = 0;
         private bool shouldStop = false;
         private int moved = -2;
 
@@ -66,15 +62,8 @@ namespace Retro_ML.SuperMarioBros.Neural.Scoring
         private void Update(SMBDataFetcher dataFetcher)
         {
             uint newPosX = dataFetcher.GetPositionX();
-            uint newPosY = dataFetcher.GetPositionY();
 
-                minXPosition = uint.MaxValue;
-                maxXPosition = 0;
-                minYPosition = uint.MaxValue;
-                maxYPosition = 0;
-                immobileFrames = 0;
-
-            if (dataFetcher.CanAct() && newPosX <= maxXPosition && newPosX >= minXPosition && newPosY <= maxYPosition && newPosY >= minYPosition)
+            if (dataFetcher.CanAct() && newPosX <= maxXPosition)
             {
                 immobileFrames++;
                 if (immobileFrames >= MAX_IMMOBILE_FRAMES && moved < 1 || immobileFrames >= MAX_IMMOBILE_FRAMES_IF_ALREADY_MOVED)
@@ -90,21 +79,13 @@ namespace Retro_ML.SuperMarioBros.Neural.Scoring
             }
 
             maxXPosition = Math.Max(newPosX, maxXPosition);
-            minXPosition = Math.Min(newPosX, minXPosition);
-            maxYPosition = Math.Max(newPosY, maxYPosition);
-            minYPosition = Math.Min(newPosY, minYPosition);
         }
 
         public void LevelDone()
         {
             shouldStop = false;
             moved = -2;
-
-            minXPosition = uint.MaxValue;
             maxXPosition = 0;
-            minYPosition = uint.MaxValue;
-            maxYPosition = 0;
-
             immobileFrames = 0;
         }
 

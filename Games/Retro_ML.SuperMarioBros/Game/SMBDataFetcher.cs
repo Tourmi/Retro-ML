@@ -79,12 +79,10 @@ namespace Retro_ML.SuperMarioBros.Game
         public bool IsDead() => ReadSingle(PlayerAddresses.MarioActionState) == 0x0B || ReadSingle(PlayerAddresses.IsFalling) == 0x01;
         public bool WonLevel() => ReadSingle(PlayerAddresses.MarioActionState) == 0x04 || ReadSingle(PlayerAddresses.MarioActionState) == 0x05 || ReadSingle(GameAddresses.WonCondition) == 0x02 || ReadSingle(PlayerAddresses.MarioState) == 0x03;
         public bool IsAtMaxSpeed() => IsInWater() ? ReadSingle(PlayerAddresses.MarioMaxVelocity) == 0x18 : ReadSingle(PlayerAddresses.MarioMaxVelocity) == 0x28;
-        public bool IsRunning() => ReadSingle(PlayerAddresses.MarioWalkAnimation) == 0xE4;
         public bool[,] GetInternalClockState() => internalClock.GetStates();
         public bool IsWaterLevel() => ReadSingle(GameAddresses.LevelType) == 0x1;
         public int GetCoins() => (int)ToUnsignedInteger(Read(GameAddresses.Coins));
         public int GetLives() => (int)ToUnsignedInteger(Read(GameAddresses.Lives));
-        //public int GetScore() => (int)ToUnsignedInteger(Read(GameAddresses.Score));
         public byte GetPowerUp() => ReadSingle(PlayerAddresses.MarioPowerupState);
         public bool IsFlashing() => ReadSingle(PlayerAddresses.MarioState) == 0xA;
 
@@ -412,7 +410,6 @@ namespace Retro_ML.SuperMarioBros.Game
                 (PlayerAddresses.MarioPositionX, false),
                 (PlayerAddresses.MarioPositionY, false),
                 (PlayerAddresses.MarioScreenPositionX, false),
-                (PlayerAddresses.MarioScreenPositionY, false),
                 (PlayerAddresses.MarioActionState, false),
                 (PlayerAddresses.IsSwimming, false),
                 (PlayerAddresses.IsFalling, false),
