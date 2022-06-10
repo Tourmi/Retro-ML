@@ -230,7 +230,7 @@
             /// </summary>
             public static readonly AddressData SpriteHitbox = new(0x04B0, 20);
             /// <summary>
-            /// Hammer hitboxes (5x4 bytes, x1,y1 x2,y2)
+            /// Hammer hitboxes (9x4 bytes, x1,y1 x2,y2)
             /// </summary>
             public static readonly AddressData HammerHitbox = new(0x04D0, 36);
             /// <summary>
@@ -254,11 +254,11 @@
             /// <summary>
             /// Powerup hitboxes (4 bytes, x1,y1 x2,y2)
             /// </summary>
-            public static readonly AddressData PowerUpPositions = new(0x04C4, 4);
+            public static readonly AddressData PowerUpHitbox = new(0x04C4, 4);
             /// <summary>
             /// Firebar spinstate high(5 sprite x 1 byte each)
             /// </summary>
-            public static readonly AddressData FirebarSpinStateHigh = new(0x00A0, 5);
+            public static readonly AddressData FirebarSpinAngle = new(0x00A0, 5);
         }
     }
 }

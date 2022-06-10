@@ -31,11 +31,15 @@
         /// 0x1B/0x1C/0x1D/0x1E - Firebar
         /// 0x1F - Long Firebar (castle) AND sets previous enemy slot to 0x20 or else only half of the line shows
         /// </summary>
-        public static readonly int[] FireBarSprite = new int[] { 0x1B, 0x1C, 0x1D, 0x1E};
+        public static readonly int[] FireBarSprite = new int[] { 0x1B, 0x1C, 0x1D, 0x1E };
         /// <summary>
         /// LongFirebar sprite :
         /// 0x1F - Long Firebar (castle) AND sets previous enemy slot to 0x20 or else only half of the line shows
         /// </summary>
         public static readonly int[] LongFireBarSprite = new int[] { 0x1F };
+        /// <summary>
+        /// Powerup sprite :
+        /// </summary>
+        public static readonly int PowerupSprite = 0x2E;
     }
 }
