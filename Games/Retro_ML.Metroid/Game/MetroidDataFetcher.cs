@@ -108,6 +108,9 @@ namespace Retro_ML.Metroid.Game
         public bool HasWaveBeam() => (ReadSingle(Progress.Equipment) & 0b0100_0000) != 0;
         public bool HasIceBeam() => (ReadSingle(Progress.Equipment) & 0b1000_0000) != 0;
         public bool HasMissiles() => ReadSingle(Progress.MissileCapacity) > 0;
+        public bool KilledKraid() => false; //TODO : Detect whether or not kraid was killed
+        public bool KilledRidley() => false; //TODO : detect whether or not ridley was killed
+        public bool KilledMotherBrain() => false; //TODO : detect whether or not mother brain was killed (maybe use timer?)
 
         public double SamusInvincibilityTimer() => ReadSingle(Samus.InvincibleTimer) / (double)INVINCIBILITY_TIMER_LENGTH;
         public double GetCurrentMissiles() => ReadSingle(Progress.Missiles) / Math.Max(1.0, ReadSingle(Progress.MissileCapacity));
@@ -251,7 +254,7 @@ namespace Retro_ML.Metroid.Game
             {
                 for (int j = 0; j < tiles.GetLength(1); j++)
                 {
-                    result[i, j] = tiles[i, j] != 0xFF;
+                    result[i, j] = tiles[i, j] != 0xFF; //check ID for bushes
                 }
             }
 
@@ -543,11 +546,13 @@ namespace Retro_ML.Metroid.Game
         /// <summary>
         /// <br>Reads up to 8 bytes from the address, assuming byte-wise little endian, and interprets all nybbles as decimal digits.</br>
         /// <br>Examples:</br>
-        /// <code><br>0x3412 -> 1234  </br>
-        /// <br>0x90   -> 90    </br>
-        /// <br>0x0180 -> 8001  </br>
-        /// <br>0x4    -> 4     </br>
-        /// <br>0xA    -> 10    </br></code>
+        /// <code>
+        /// 0x563412 -> 123456
+        /// 0x90     -> 90    
+        /// 0x0180   -> 8001  
+        /// 0x4      -> 4     
+        /// 0xA      -> 10    
+        /// </code>
         /// </summary>
         /// <param name="addressData"></param>
         /// <returns></returns>
@@ -719,6 +724,7 @@ namespace Retro_ML.Metroid.Game
 
         private void VerifyRoomCache()
         {
+            //Weird bug going from Bomb room going to the right, need to fix
             delayRoomCacheClearTimer--;
             if (delayRoomCacheClearTimer == 0)
             {

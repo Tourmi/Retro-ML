@@ -39,7 +39,7 @@
         /// </summary>
         public (int x, int y) GetDirection(int currX, int currY)
         {
-            for (int i = 0; i < PathPoints.Length - 1; i++)
+            for (int i = PathPoints.Length - 2; i >= 0; i--)
             {
                 if (!PathPoints[i].IsOnPathLine(PathPoints[i + 1], currX, currY)) continue;
 
