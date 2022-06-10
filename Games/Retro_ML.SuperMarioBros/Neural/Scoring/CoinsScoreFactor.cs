@@ -1,6 +1,7 @@
 ﻿using Retro_ML.Game;
 using Retro_ML.Neural.Scoring;
 using Retro_ML.SuperMarioBros.Game;
+using Retro_ML.Configuration.FieldInformation;
 
 namespace Retro_ML.SuperMarioBros.Neural.Scoring
 {
@@ -10,11 +11,29 @@ namespace Retro_ML.SuperMarioBros.Neural.Scoring
         private int currCoins;
         private double score;
 
+        public FieldInfo[] Fields => Array.Empty<FieldInfo>();
+
         public CoinsScoreFactor()
         {
             ExtraFields = Array.Empty<ExtraField>();
         }
 
+        public object this[string fieldName]
+        {
+            get
+            {
+                return fieldName switch
+                {
+                    _ => 0,
+                };
+            }
+            set
+            {
+                switch (fieldName)
+                {
+                }
+            }
+        }
         public string Name => "Coins";
 
         public bool CanBeDisabled => true;

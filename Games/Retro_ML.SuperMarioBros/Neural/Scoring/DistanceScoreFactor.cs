@@ -1,6 +1,7 @@
 ﻿using Retro_ML.Game;
 using Retro_ML.Neural.Scoring;
 using Retro_ML.SuperMarioBros.Game;
+using Retro_ML.Configuration.FieldInformation;
 
 namespace Retro_ML.SuperMarioBros.Neural.Scoring
 {
@@ -17,7 +18,20 @@ namespace Retro_ML.SuperMarioBros.Neural.Scoring
         private uint minXPosition = 0;
         private uint maxXPosition = 0;
         private bool inited = false;
+        private uint levelUID;
 
+        public FieldInfo[] Fields => new FieldInfo[]
+        {
+             new DoubleFieldInfo(nameof(EastDistance), "East Mult", double.MinValue, double.MaxValue, 0.25),
+             new DoubleFieldInfo(nameof(WestDistance), "West Mult", double.MinValue, double.MaxValue, 0.25),
+             new DoubleFieldInfo(nameof(UpDistance), "Up Mult", double.MinValue, double.MaxValue, 0.25),
+             new DoubleFieldInfo(nameof(DownDistance), "Down Mult", double.MinValue, double.MaxValue, 0.25)
+        };
+
+        public double EastDistance { get; set; } = 1.0;
+        public double WestDistance { get; set; } = 0.0;
+        public double UpDistance { get; set; } = 0.5;
+        public double DownDistance { get; set; } = 0.25;
         public DistanceScoreFactor()
         {
             ExtraFields = new ExtraField[]
@@ -27,6 +41,31 @@ namespace Retro_ML.SuperMarioBros.Neural.Scoring
                 new ExtraField(UP_DISTANCE, 0.5),
                 new ExtraField(DOWN_DISTANCE, 0.25)
             };
+        }
+
+        public object this[string fieldName]
+        {
+            get
+            {
+                return fieldName switch
+                {
+                    nameof(EastDistance) => EastDistance,
+                    nameof(WestDistance) => WestDistance,
+                    nameof(UpDistance) => UpDistance,
+                    nameof(DownDistance) => DownDistance,
+                    _ => 0,
+                };
+            }
+            set
+            {
+                switch (fieldName)
+                {
+                    case nameof(EastDistance): EastDistance = (double)value; break;
+                    case nameof(WestDistance): WestDistance = (double)value; break;
+                    case nameof(UpDistance): UpDistance = (double)value; break;
+                    case nameof(DownDistance): DownDistance = (double)value; break;
+                }
+            }
         }
 
         public bool ShouldStop => false;

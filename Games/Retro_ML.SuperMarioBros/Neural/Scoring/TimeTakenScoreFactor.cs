@@ -1,6 +1,6 @@
 ﻿using Retro_ML.Game;
 using Retro_ML.Neural.Scoring;
-using Retro_ML.SuperMarioBros.Game;
+using Retro_ML.Configuration.FieldInformation;
 
 namespace Retro_ML.SuperMarioBrosNeural.Scoring
 {
@@ -18,6 +18,23 @@ namespace Retro_ML.SuperMarioBrosNeural.Scoring
             {
                 new(MAXIMUM_LEVEL_TIME, 240)
             };
+        }
+        public FieldInfo[] Fields => Array.Empty<FieldInfo>();
+        public object this[string fieldName]
+        {
+            get
+            {
+                return fieldName switch
+                {
+                    _ => 0,
+                };
+            }
+            set
+            {
+                switch (fieldName)
+                {
+                }
+            }
         }
 
         public bool ShouldStop => shouldStop;

@@ -1,24 +1,37 @@
 ﻿using Retro_ML.Game;
 using Retro_ML.Neural.Scoring;
 using Retro_ML.SuperMarioBros.Game;
+using Retro_ML.Configuration.FieldInformation;
 
 namespace Retro_ML.SuperMarioBros.Neural.Scoring
 {
     internal class WonLevelScoreFactor : IScoreFactor
     {
-        private const string GOAL_MULT = "Goal Mult";
-        private const string KEY_MULT = "Key Mult";
-
         private bool shouldStop = false;
         private double currScore;
 
+        public FieldInfo[] Fields => Array.Empty<FieldInfo>();
+
         public WonLevelScoreFactor()
         {
-            ExtraFields = new ExtraField[]
+            ExtraFields = Array.Empty<ExtraField>();
+        }
+
+        public object this[string fieldName]
+        {
+            get
             {
-                new ExtraField(GOAL_MULT, 1.0),
-                new ExtraField(KEY_MULT, 1.0),
-            };
+                return fieldName switch
+                {
+                    _ => 0,
+                };
+            }
+            set
+            {
+                switch (fieldName)
+                {
+                }
+            }
         }
 
         public bool ShouldStop => shouldStop;

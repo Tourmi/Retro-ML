@@ -1,6 +1,7 @@
 ﻿using Retro_ML.Game;
 using Retro_ML.Neural.Scoring;
 using Retro_ML.SuperMarioBros.Game;
+using Retro_ML.Configuration.FieldInformation;
 
 namespace Retro_ML.SuperMarioBros.Neural.Scoring
 {
@@ -9,9 +10,28 @@ namespace Retro_ML.SuperMarioBros.Neural.Scoring
         private bool shouldStop = false;
         private double currScore;
 
+        public FieldInfo[] Fields => Array.Empty<FieldInfo>();
+
         public DiedScoreFactor()
         {
             ExtraFields = Array.Empty<ExtraField>();
+        }
+
+        public object this[string fieldName]
+        {
+            get
+            {
+                return fieldName switch
+                {
+                    _ => 0,
+                };
+            }
+            set
+            {
+                switch (fieldName)
+                {
+                }
+            }
         }
 
         public bool ShouldStop => shouldStop;
