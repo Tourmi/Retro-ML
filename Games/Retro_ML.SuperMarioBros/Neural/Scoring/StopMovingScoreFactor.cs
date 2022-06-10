@@ -19,8 +19,6 @@ namespace Retro_ML.SuperMarioBros.Neural.Scoring
         private bool shouldStop = false;
         private int moved = -2;
 
-        private uint levelUID;
-
         private double currScore = 0;
 
         public FieldInfo[] Fields => Array.Empty<FieldInfo>();
@@ -46,6 +44,7 @@ namespace Retro_ML.SuperMarioBros.Neural.Scoring
                 }
             }
         }
+
         public bool ShouldStop => shouldStop;
         public double ScoreMultiplier { get; set; }
 
@@ -68,6 +67,12 @@ namespace Retro_ML.SuperMarioBros.Neural.Scoring
         {
             uint newPosX = dataFetcher.GetPositionX();
             uint newPosY = dataFetcher.GetPositionY();
+
+                minXPosition = uint.MaxValue;
+                maxXPosition = 0;
+                minYPosition = uint.MaxValue;
+                maxYPosition = 0;
+                immobileFrames = 0;
 
             if (dataFetcher.CanAct() && newPosX <= maxXPosition && newPosX >= minXPosition && newPosY <= maxYPosition && newPosY >= minYPosition)
             {

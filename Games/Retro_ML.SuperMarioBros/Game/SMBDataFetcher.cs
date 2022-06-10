@@ -39,6 +39,7 @@ namespace Retro_ML.SuperMarioBros.Game
         {
             frameCache.Clear();
             internalClock.NextFrame();
+            InitFrameCache();
         }
 
         /// <summary>
@@ -55,11 +56,12 @@ namespace Retro_ML.SuperMarioBros.Game
             currScreen = 0;
         }
 
+        public byte[] GetTileArray() => Read(GameAddresses.Tiles);
         public ushort GetCurrentScreen() => ReadSingle(GameAddresses.CurrentScreen);
         public ushort GetPositionX() => (ushort)(ReadSingle(PlayerAddresses.MarioPositionX) + (GetCurrentScreen() * 0x100));
+        public byte GetPositionY() => ReadSingle(PlayerAddresses.MarioPositionY);
         public ushort GetMarioScreenPositionX() => ReadSingle(PlayerAddresses.MarioScreenPositionX);
         public ushort GetMarioScreenPositionY() => ReadSingle(PlayerAddresses.MarioScreenPositionY);
-        public byte GetPositionY() => ReadSingle(PlayerAddresses.MarioPositionY);
         public byte[] IsSpritePresent() => Read(SpriteAddresses.IsSpritePresent);
         public byte[] GetSpriteHitbox() => Read(SpriteAddresses.SpriteHitbox);
         public byte[] GetSpritePositionX() => Read(SpriteAddresses.SpritePositionX);
@@ -82,7 +84,7 @@ namespace Retro_ML.SuperMarioBros.Game
         public bool IsWaterLevel() => ReadSingle(GameAddresses.LevelType) == 0x1;
         public int GetCoins() => (int)ToUnsignedInteger(Read(GameAddresses.Coins));
         public int GetLives() => (int)ToUnsignedInteger(Read(GameAddresses.Lives));
-        public int GetScore() => (int)ToUnsignedInteger(Read(GameAddresses.Score));
+        //public int GetScore() => (int)ToUnsignedInteger(Read(GameAddresses.Score));
         public byte GetPowerUp() => ReadSingle(PlayerAddresses.MarioPowerupState);
         public bool IsFlashing() => ReadSingle(PlayerAddresses.MarioState) == 0xA;
 
@@ -273,7 +275,7 @@ namespace Retro_ML.SuperMarioBros.Game
             byte[,] result = new byte[y_dist * 2 + 1, x_dist * 2 + 1];
 
             //Tile array representing current loaded tiles for 2 pages
-            var tileArray = Read(GameAddresses.Tiles);
+            var tileArray = GetTileArray();
 
             //Mario X and Y position in tile, to get right tile mario is in
             var xPos = (GetPositionX() + (METATILE_SIZE / 2)) / METATILE_SIZE;
@@ -396,6 +398,42 @@ namespace Retro_ML.SuperMarioBros.Game
             }
 
             return cacheToUse;
+        }
+
+        private void InitFrameCache()
+        {
+            (AddressData, bool)[] toRead = new (AddressData, bool)[]
+            {
+                (GameAddresses.CurrentScreen, false),
+                (GameAddresses.LevelType, false),
+                (GameAddresses.Coins, false),
+                (GameAddresses.Lives, false),
+                (GameAddresses.WonCondition, false),
+                (PlayerAddresses.MarioPositionX, false),
+                (PlayerAddresses.MarioPositionY, false),
+                (PlayerAddresses.MarioScreenPositionX, false),
+                (PlayerAddresses.MarioScreenPositionY, false),
+                (PlayerAddresses.MarioActionState, false),
+                (PlayerAddresses.IsSwimming, false),
+                (PlayerAddresses.IsFalling, false),
+                (PlayerAddresses.MarioMaxVelocity, false),
+                //(PlayerAddresses.MarioWalkAnimation, false),
+                (PlayerAddresses.MarioState, false),
+                (PlayerAddresses.MarioPowerupState, false),
+                (SpriteAddresses.IsSpritePresent, false),
+                (SpriteAddresses.SpriteHitbox, false),
+                (SpriteAddresses.SpritePositionX, false),
+                (SpriteAddresses.SpritePositionY, false),
+                (SpriteAddresses.SpriteScreenPosition, false),
+                (SpriteAddresses.FirebarSpinAngle, false),
+                (SpriteAddresses.SpriteType, false),
+                (SpriteAddresses.IsHammerPresent, false),
+                (SpriteAddresses.HammerHitbox, false),
+                (SpriteAddresses.IsPowerUpPresent, false),
+                (SpriteAddresses.PowerUpHitbox, false),
+            };
+
+            _ = Read(toRead);
         }
 
         private static uint ToUnsignedInteger(byte[] bytes)
