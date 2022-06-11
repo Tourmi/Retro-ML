@@ -73,7 +73,7 @@ namespace Retro_ML.SuperMarioBros.Game
         public byte[] GetHammerHitbox() => Read(SpriteAddresses.HammerHitbox);
         public ushort IsPowerUpPresent() => ReadSingle(SpriteAddresses.IsPowerUpPresent);
         public byte[] GetPowerUpHitbox() => Read(SpriteAddresses.PowerUpHitbox);
-        public bool IsOnGround() => ReadSingle(PlayerAddresses.MarioActionState) == 0;
+        public bool IsOnGround() => ReadSingle(PlayerAddresses.MarioState) == 0x1;
         public bool IsInWater() => ReadSingle(PlayerAddresses.IsSwimming) == 0;
         public bool CanAct() => ReadSingle(PlayerAddresses.MarioActionState) == 0x8;
         public bool IsDead() => ReadSingle(PlayerAddresses.MarioActionState) == 0x0B || ReadSingle(PlayerAddresses.IsFalling) == 0x01;
