@@ -24,17 +24,6 @@
 
 	<ItemGroup>
 		<AvaloniaResource Include="Assets\**" />
-		<AvaloniaXaml Remove="ViewModels\Configuration\**" />
-		<AvaloniaXaml Remove="Views\Configuration\**" />
-		<Compile Remove="ViewModels\Configuration\**" />
-		<Compile Remove="Views\Configuration\**" />
-		<EmbeddedResource Remove="ViewModels\Configuration\**" />
-		<EmbeddedResource Remove="Views\Configuration\**" />
-		<None Remove="ViewModels\Configuration\**" />
-		<None Remove="Views\Configuration\**" />
-		<ROMs Remove="ViewModels\Configuration\**" />
-		<ROMs Remove="Views\Configuration\**" />
-		<None Remove=".gitignore" />
 	</ItemGroup>
 	<ItemGroup>
 		<PackageReference Include="Avalonia" Version="0.10.11" />
