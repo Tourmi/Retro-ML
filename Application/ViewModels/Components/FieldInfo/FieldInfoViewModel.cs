@@ -1,14 +1,14 @@
 ﻿using Retro_ML.Configuration.FieldInformation;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Retro_ML.Application.ViewModels.Components.FieldInfo
 {
     internal abstract class FieldInfoViewModel : ViewModelBase
     {
+        public abstract object GetValue();
+        public abstract string FieldName { get; }
+        public abstract string DisplayName { get; }
+
         public static FieldInfoViewModel GetFieldInfoViewModel(Configuration.FieldInformation.FieldInfo fieldInfo, object value)
         {
             return fieldInfo switch

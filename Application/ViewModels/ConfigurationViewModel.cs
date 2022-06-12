@@ -4,7 +4,6 @@ using Retro_ML.Application.Models;
 using Retro_ML.Application.ViewModels.Components;
 using Retro_ML.Application.ViewModels.Components.FieldInfo;
 using Retro_ML.Configuration;
-using Retro_ML.Configuration.FieldInformation;
 using Retro_ML.Utils;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -50,7 +49,7 @@ namespace Retro_ML.Application.ViewModels
         public ObservableCollection<string> GamePlugins { get; set; }
         public ObservableCollection<string> DispMethodList { get; set; }
 
-        public ObservableCollection<ViewModelBase> GamePluginConfigFields { get; }
+        public ObservableCollection<FieldInfoViewModel> GamePluginConfigFields { get; }
 
         private string _romPath;
         [DataMember]
@@ -368,7 +367,7 @@ namespace Retro_ML.Application.ViewModels
         #region Constructor
         public ConfigurationViewModel()
         {
-            GamePluginConfigFields = new ObservableCollection<ViewModelBase>();
+            GamePluginConfigFields = new ObservableCollection<FieldInfoViewModel>();
 
             GamePlugins = new ObservableCollection<string>();
             PluginUtils.LoadPlugins();
@@ -506,9 +505,7 @@ namespace Retro_ML.Application.ViewModels
             }
             ApplicationConfig.SaveStates = _saveStates;
 
-            //Tab Objectives
-
-            //Tab Game
+            //Tab Game && Objectives
             SaveGamePluginConfig();
 
             //Tab Neural
@@ -627,17 +624,18 @@ namespace Retro_ML.Application.ViewModels
 
             foreach (var field in GamePluginConfigFields)
             {
-                switch (field)
+                pluginConfig[field.FieldName] = field.GetValue();
+            }
+
+            var scoreFactors = ApplicationConfig.GamePluginConfig.ScoreFactors;
+            for (int i = 0; i < scoreFactors.Count; i++)
+            {
+                if (scoreFactors[i].CanBeDisabled) scoreFactors[i].IsDisabled = !Objectives[i].IsChecked;
+                scoreFactors[i].ScoreMultiplier = Objectives[i].Multiplier;
+
+                foreach (var field in Objectives[i].FieldInfos)
                 {
-                    case BoolViewModel vm:
-                        pluginConfig[vm.FieldName] = vm.IsChecked;
-                        break;
-                    case IntegerChoiceViewModel vm:
-                        pluginConfig[vm.FieldName] = vm.Value;
-                        break;
-                    case IntegerViewModel vm:
-                        pluginConfig[vm.FieldName] = vm.Value;
-                        break;
+                    scoreFactors[i][field.FieldName] = field.GetValue();
                 }
             }
 

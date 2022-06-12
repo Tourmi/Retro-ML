@@ -24,7 +24,6 @@
 
 	<ItemGroup>
 		<AvaloniaResource Include="Assets\**" />
-		<None Remove=".gitignore" />
 	</ItemGroup>
 	<ItemGroup>
 		<PackageReference Include="Avalonia" Version="0.10.11" />
@@ -89,10 +88,6 @@
 	</ItemGroup>
 	<ItemGroup>
 	  <ProjectReference Include="..\Retro_ML\Retro_ML.csproj" />
-	</ItemGroup>
-	<ItemGroup>
-	  <Folder Include="ViewModels\Configuration\" />
-	  <Folder Include="Views\Configuration\" />
 	</ItemGroup>
 	<ItemGroup>
 	  <None Include="..\.editorconfig" Link=".editorconfig" />

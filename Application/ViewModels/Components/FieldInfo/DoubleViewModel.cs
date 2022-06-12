@@ -6,8 +6,8 @@ namespace Retro_ML.Application.ViewModels.Components.FieldInfo
     internal class DoubleViewModel : FieldInfoViewModel
     {
         public DoubleFieldInfo FieldInfo { get; }
-        public string FieldName => FieldInfo.Name;
-        public string DisplayName => FieldInfo.ReadableName;
+        public override string FieldName => FieldInfo.Name;
+        public override string DisplayName => FieldInfo.ReadableName;
 
         private double value;
         public double Value
@@ -36,5 +36,6 @@ namespace Retro_ML.Application.ViewModels.Components.FieldInfo
             Value = value;
         }
 
+        public override object GetValue() => value;
     }
 }
