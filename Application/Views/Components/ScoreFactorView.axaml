@@ -13,9 +13,9 @@
 	<StackPanel Spacing="10">
 		<TextBlock Classes="h1" Text="{Binding Name}"/>
 		<StackPanel Margin="5,0,0,0" Orientation="Horizontal" VerticalAlignment="Center" Spacing="10">
-			<TextBlock Text="{Binding EnabledString}" VerticalAlignment="Center"/>
+			<TextBlock Text="Enabled:" VerticalAlignment="Center"/>
 			<CheckBox IsEnabled="{Binding CanBeDisabled}" IsChecked="{Binding IsChecked}" VerticalAlignment="Center"/>
-			<TextBlock Text="{Binding MultiplierString}" VerticalAlignment="Center"/>
+			<TextBlock Text="Multiplier:" VerticalAlignment="Center"/>
 			<NumericUpDown Value="{Binding Multiplier}" ShowButtonSpinner="False"/>
 		</StackPanel>
 		<ItemsControl Items="{Binding FieldInfos}">

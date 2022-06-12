@@ -24,6 +24,16 @@
 
 	<ItemGroup>
 		<AvaloniaResource Include="Assets\**" />
+		<AvaloniaXaml Remove="ViewModels\Configuration\**" />
+		<AvaloniaXaml Remove="Views\Configuration\**" />
+		<Compile Remove="ViewModels\Configuration\**" />
+		<Compile Remove="Views\Configuration\**" />
+		<EmbeddedResource Remove="ViewModels\Configuration\**" />
+		<EmbeddedResource Remove="Views\Configuration\**" />
+		<None Remove="ViewModels\Configuration\**" />
+		<None Remove="Views\Configuration\**" />
+		<ROMs Remove="ViewModels\Configuration\**" />
+		<ROMs Remove="Views\Configuration\**" />
 		<None Remove=".gitignore" />
 	</ItemGroup>
 	<ItemGroup>
@@ -89,10 +99,6 @@
 	</ItemGroup>
 	<ItemGroup>
 	  <ProjectReference Include="..\Retro_ML\Retro_ML.csproj" />
-	</ItemGroup>
-	<ItemGroup>
-	  <Folder Include="ViewModels\Configuration\" />
-	  <Folder Include="Views\Configuration\" />
 	</ItemGroup>
 	<ItemGroup>
 	  <None Include="..\.editorconfig" Link=".editorconfig" />

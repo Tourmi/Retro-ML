@@ -6,8 +6,8 @@ namespace Retro_ML.Application.ViewModels.Components.FieldInfo
     internal class IntegerViewModel : FieldInfoViewModel
     {
         public IntegerFieldInfo FieldInfo { get; }
-        public string FieldName => FieldInfo.Name;
-        public string DisplayName => FieldInfo.ReadableName;
+        public override string FieldName => FieldInfo.Name;
+        public override string DisplayName => FieldInfo.ReadableName;
 
         private int value;
         public int Value
@@ -35,5 +35,6 @@ namespace Retro_ML.Application.ViewModels.Components.FieldInfo
             Value = value;
         }
 
+        public override object GetValue() => value;
     }
 }
