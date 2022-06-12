@@ -120,6 +120,15 @@
             /// </code>
             /// </summary>
             public static readonly AddressData LastScrollDirection = new(0x49);
+
+            /// <summary>
+            /// Set for the pause after a boss was killed
+            /// </summary>
+            public static readonly AddressData BossPause = new(0x108);
+            /// <summary>
+            /// Set for the pause after an item was collected
+            /// </summary>
+            public static readonly AddressData ItemPause = new(0x109);
         }
 
         public static class Progress

@@ -1,7 +1,8 @@
-﻿using Retro_ML.Game;
+﻿using Retro_ML.Configuration.FieldInformation;
+using Retro_ML.Game;
 using Retro_ML.Neural.Scoring;
 
-namespace Retro_ML.SuperMarioKart.Neural.Scoring
+namespace Retro_ML.Metroid.Neural.Scoring
 {
     internal class TimeTakenScoreFactor : IScoreFactor
     {
@@ -11,13 +12,37 @@ namespace Retro_ML.SuperMarioKart.Neural.Scoring
         private double currScore;
         private int levelFrames = 0;
 
+        public FieldInfo[] Fields => new FieldInfo[]
+        {
+             new DoubleFieldInfo(nameof(MaximumTrainingTime), "Maximum Training Time", 30.0, double.MaxValue, 1.0)
+        };
+
         public TimeTakenScoreFactor()
         {
-            ExtraFields = new ExtraField[]
-            {
-                new(MAXIMUM_TRAINING_TIME, 300)
-            };
+            ExtraFields = Array.Empty<ExtraField>();
         }
+
+        public object this[string fieldName]
+        {
+            get => fieldName switch
+            {
+                nameof(MaximumTrainingTime) => MaximumTrainingTime,
+                _ => 0,
+            };
+
+            set
+            {
+                switch (fieldName)
+                {
+                    case nameof(MaximumTrainingTime): MaximumTrainingTime = (double)value; break;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Time in seconds before stopping the current save state
+        /// </summary>
+        public double MaximumTrainingTime { get; set; } = 300;
 
         public bool ShouldStop => shouldStop;
         public double ScoreMultiplier { get; set; }
@@ -36,7 +61,7 @@ namespace Retro_ML.SuperMarioKart.Neural.Scoring
         {
             levelFrames++;
             currScore += ScoreMultiplier / 60.0;
-            if (levelFrames >= ExtraField.GetValue(ExtraFields, MAXIMUM_TRAINING_TIME) * 60)
+            if (levelFrames >= MaximumTrainingTime * 60)
             {
                 shouldStop = true;
             }
@@ -50,7 +75,12 @@ namespace Retro_ML.SuperMarioKart.Neural.Scoring
 
         public IScoreFactor Clone()
         {
-            return new TimeTakenScoreFactor() { IsDisabled = IsDisabled, ScoreMultiplier = ScoreMultiplier, ExtraFields = ExtraFields };
+            return new TimeTakenScoreFactor()
+            {
+                IsDisabled = IsDisabled,
+                ScoreMultiplier = ScoreMultiplier,
+                MaximumTrainingTime = MaximumTrainingTime
+            };
         }
     }
 }

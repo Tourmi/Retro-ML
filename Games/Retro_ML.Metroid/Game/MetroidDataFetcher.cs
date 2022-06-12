@@ -98,6 +98,7 @@ namespace Retro_ML.Metroid.Game
         public bool IsSamusUsingMissiles() => ReadSingle(Samus.UsingMissiles) == 1;
         public bool IsSamusInDoor() => ReadSingle(Gamestate.InADoor) != 0;
         public bool IsSamusInFirstScreen() => ReadSingle(Samus.CurrentScreen) == 0;
+        public bool IsSamusFrozenAfterObjective() => ReadSingle(Gamestate.BossPause) != 0 || ReadSingle(Gamestate.ItemPause) != 0;
 
         public bool HasBombs() => (ReadSingle(Progress.Equipment) & 0b0000_0001) != 0;
         public bool HasHighJump() => (ReadSingle(Progress.Equipment) & 0b0000_0010) != 0;
@@ -135,6 +136,14 @@ namespace Retro_ML.Metroid.Game
             3 => (1, 0),
             _ => (0, 0)
         };
+
+        public bool CanSamusAct()
+        {
+            if (IsSamusInDoor()) return false;
+            if (IsSamusFrozenAfterObjective()) return false;
+
+            return true;
+        }
 
         /// <summary>
         /// Returns a 3x3 array containing the acquisition status of progression items.

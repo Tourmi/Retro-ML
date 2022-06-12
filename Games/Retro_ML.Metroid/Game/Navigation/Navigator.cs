@@ -113,7 +113,7 @@
                 new PathPoint(10, 11),
                 new PathPoint(2, 11, Objectives.Kill)),
             new Path(new string[] { Requirement.KILLED_MOTHER_BRAIN },
-                new PathPoint(2,11),
+                new PathPoint(2, 11),
                 new PathPoint(1, 2, Objectives.Reach)) //1,2 is actually an invalid coordinate, but it tells the AI it should take the elevator
         };
 
@@ -129,6 +129,7 @@
             var path = GetFirstValidPath(x, y, df);
             if (!path.HasValue) return (0, 0, Objectives.None);
 
+            //if at the end of the path, return the objective and no direction
             if (path.Value.IsPathComplete(x, y))
             {
                 return (0, 0, path.Value.FinalObjective);
