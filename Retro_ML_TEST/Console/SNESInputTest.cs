@@ -1,7 +1,7 @@
 ﻿using NUnit.Framework;
 using Retro_ML.SNES;
 
-namespace Retro_ML_TEST.Game
+namespace Retro_ML_TEST.Console
 {
     [TestFixture]
     internal class SNESInputTest

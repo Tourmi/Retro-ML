@@ -19,6 +19,7 @@ namespace Retro_ML.SuperMarioBros.Game
         private readonly IEmulatorAdapter emulator;
         private readonly Dictionary<uint, byte[]> frameCache;
         private readonly Dictionary<uint, byte[]> tileCache;
+        private readonly Dictionary<uint, byte[]> levelCache;
 
         private ushort currScreen;
 
@@ -29,6 +30,7 @@ namespace Retro_ML.SuperMarioBros.Game
             this.emulator = emulator;
             frameCache = new();
             tileCache = new();
+            levelCache = new();
             internalClock = new InternalClock(pluginConfig.InternalClockTickLength, pluginConfig.InternalClockLength);
         }
 
@@ -51,6 +53,8 @@ namespace Retro_ML.SuperMarioBros.Game
 
             tileCache.Clear();
 
+            levelCache.Clear();
+
             internalClock.Reset();
 
             currScreen = 0;
@@ -58,8 +62,8 @@ namespace Retro_ML.SuperMarioBros.Game
 
         public byte[] GetTileArray() => Read(GameAddresses.Tiles);
         public ushort GetCurrentScreen() => ReadSingle(GameAddresses.CurrentScreen);
-        public ushort GetPositionX() => (ushort)(ReadSingle(PlayerAddresses.MarioPositionX) + (GetCurrentScreen() * 0x100));
-        public byte GetPositionY() => ReadSingle(PlayerAddresses.MarioPositionY);
+        public ushort GetMarioPositionX() => (ushort)(ReadSingle(PlayerAddresses.MarioPositionX) + (GetCurrentScreen() * 0x100));
+        public byte GetMarioPositionY() => ReadSingle(PlayerAddresses.MarioPositionY);
         public ushort GetMarioScreenPositionX() => ReadSingle(PlayerAddresses.MarioScreenPositionX);
         public ushort GetMarioScreenPositionY() => ReadSingle(PlayerAddresses.MarioScreenPositionY);
         public byte[] IsSpritePresent() => Read(SpriteAddresses.IsSpritePresent);
@@ -73,18 +77,18 @@ namespace Retro_ML.SuperMarioBros.Game
         public byte[] GetHammerHitbox() => Read(SpriteAddresses.HammerHitbox);
         public ushort IsPowerUpPresent() => ReadSingle(SpriteAddresses.IsPowerUpPresent);
         public byte[] GetPowerUpHitbox() => Read(SpriteAddresses.PowerUpHitbox);
-        public bool IsOnGround() => ReadSingle(PlayerAddresses.MarioState) == 0x1;
-        public bool IsInWater() => ReadSingle(PlayerAddresses.IsSwimming) == 0;
-        public bool CanAct() => ReadSingle(PlayerAddresses.MarioActionState) == 0x8;
-        public bool IsDead() => ReadSingle(PlayerAddresses.MarioActionState) == 0x0B || ReadSingle(PlayerAddresses.IsFalling) == 0x01;
-        public bool WonLevel() => ReadSingle(PlayerAddresses.MarioActionState) == 0x04 || ReadSingle(PlayerAddresses.MarioActionState) == 0x05 || ReadSingle(GameAddresses.WonCondition) == 0x02 || ReadSingle(PlayerAddresses.MarioState) == 0x03;
+        public bool IsOnGround() => ReadSingle(PlayerAddresses.MarioFloatState) == 0x00;
+        public bool IsInWater() => ReadSingle(PlayerAddresses.IsSwimming) == 0x00;
+        public bool CanAct() => ReadSingle(PlayerAddresses.MarioActionState) == 0x08;
+        public bool IsDead() => ReadSingle(PlayerAddresses.MarioActionState) == 0x0B || ReadSingle(PlayerAddresses.IsFallingToDeath) == 0x01;
+        public bool WonLevel() => ReadSingle(PlayerAddresses.MarioActionState) == 0x04 || ReadSingle(PlayerAddresses.MarioActionState) == 0x05 || ReadSingle(GameAddresses.WonCondition) == 0x02 || ReadSingle(PlayerAddresses.MarioFloatState) == 0x03;
         public bool IsAtMaxSpeed() => IsInWater() ? ReadSingle(PlayerAddresses.MarioMaxVelocity) == 0x18 : ReadSingle(PlayerAddresses.MarioMaxVelocity) == 0x28;
         public bool[,] GetInternalClockState() => internalClock.GetStates();
-        public bool IsWaterLevel() => ReadSingle(GameAddresses.LevelType) == 0x1;
+        public bool IsWaterLevel() => ReadSingle(GameAddresses.LevelType) == 0x01;
         public int GetCoins() => (int)ToUnsignedInteger(Read(GameAddresses.Coins));
         public int GetLives() => (int)ToUnsignedInteger(Read(GameAddresses.Lives));
         public byte GetPowerUp() => ReadSingle(PlayerAddresses.MarioPowerupState);
-        public bool IsFlashing() => ReadSingle(PlayerAddresses.MarioState) == 0xA;
+        public bool IsFlashing() => ReadSingle(PlayerAddresses.MarioActionState) == 0x0A;
 
         /// <summary>
         /// Draw the sprites tiles based on the sprite number and position, depending on its hitbox and offset to Mario.
@@ -157,7 +161,7 @@ namespace Retro_ML.SuperMarioBros.Game
                 (firebarYPosMin, firebarYPosMax) = (firebarYPosMax, firebarYPosMin);
 
             //Mario X position in tile, to get tile mario is in instead of on the right
-            var xPos = (GetPositionX() + (METATILE_SIZE / 2)) / METATILE_SIZE;
+            var xPos = (GetMarioPositionX() + (METATILE_SIZE / 2)) / METATILE_SIZE;
 
             //Mario Y position in tile, to get tile mario is in instead of under
             var yPos = (GetMarioScreenPositionY() - METATILE_SIZE) / METATILE_SIZE;
@@ -276,8 +280,8 @@ namespace Retro_ML.SuperMarioBros.Game
             var tileArray = GetTileArray();
 
             //Mario X and Y position in tile, to get right tile mario is in
-            var xPos = (GetPositionX() + (METATILE_SIZE / 2)) / METATILE_SIZE;
-            var yPos = (GetPositionY() - METATILE_SIZE) / METATILE_SIZE;
+            var xPos = (GetMarioPositionX() + (METATILE_SIZE / 2)) / METATILE_SIZE;
+            var yPos = (GetMarioPositionY() - METATILE_SIZE) / METATILE_SIZE;
 
             for (int y = -y_dist; y <= y_dist; y++)
             {
@@ -395,6 +399,11 @@ namespace Retro_ML.SuperMarioBros.Game
                 cacheToUse = tileCache;
             }
 
+            if (addressData.CacheType == AddressData.CacheTypes.Level)
+            {
+                cacheToUse = levelCache;
+            }
+
             return cacheToUse;
         }
 
@@ -403,7 +412,6 @@ namespace Retro_ML.SuperMarioBros.Game
             (AddressData, bool)[] toRead = new (AddressData, bool)[]
             {
                 (GameAddresses.CurrentScreen, false),
-                (GameAddresses.LevelType, false),
                 (GameAddresses.Coins, false),
                 (GameAddresses.Lives, false),
                 (GameAddresses.WonCondition, false),
@@ -412,10 +420,9 @@ namespace Retro_ML.SuperMarioBros.Game
                 (PlayerAddresses.MarioScreenPositionX, false),
                 (PlayerAddresses.MarioActionState, false),
                 (PlayerAddresses.IsSwimming, false),
-                (PlayerAddresses.IsFalling, false),
+                (PlayerAddresses.IsFallingToDeath, false),
                 (PlayerAddresses.MarioMaxVelocity, false),
-                //(PlayerAddresses.MarioWalkAnimation, false),
-                (PlayerAddresses.MarioState, false),
+                (PlayerAddresses.MarioFloatState, false),
                 (PlayerAddresses.MarioPowerupState, false),
                 (SpriteAddresses.IsSpritePresent, false),
                 (SpriteAddresses.SpriteHitbox, false),

@@ -2,7 +2,7 @@
 using Retro_ML.Neural.Scoring;
 using Retro_ML.Configuration.FieldInformation;
 
-namespace Retro_ML.SuperMarioBrosNeural.Scoring
+namespace Retro_ML.SuperMarioBros.Neural.Scoring
 {
     internal class TimeTakenScoreFactor : IScoreFactor
     {

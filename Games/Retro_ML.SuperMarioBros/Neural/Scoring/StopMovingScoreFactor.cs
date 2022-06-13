@@ -61,7 +61,7 @@ namespace Retro_ML.SuperMarioBros.Neural.Scoring
 
         private void Update(SMBDataFetcher dataFetcher)
         {
-            uint newPosX = dataFetcher.GetPositionX();
+            uint newPosX = dataFetcher.GetMarioPositionX();
 
             if (dataFetcher.CanAct() && newPosX <= maxXPosition)
             {

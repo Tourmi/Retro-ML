@@ -10,7 +10,6 @@ namespace Retro_ML.SuperMarioBros.Neural.Scoring
         private const string MUSHROOM_MULT = "Mushroom Mult";
         private const string FLOWER_MULT = "Flower Mult";
         private const string STAR_MULT = "Star Mult";
-        private const string ONEUP_MULT = "OneUp Mult";
 
         private double currScore;
         private byte prevPowerUp;
@@ -21,7 +20,6 @@ namespace Retro_ML.SuperMarioBros.Neural.Scoring
              new DoubleFieldInfo(nameof(MushroomMult), "Mushroom Mult", double.MinValue, double.MaxValue, 0.25),
              new DoubleFieldInfo(nameof(FlowerMult), "Flower Mult", double.MinValue, double.MaxValue, 0.25),
              new DoubleFieldInfo(nameof(StarMult), "Star Mult", double.MinValue, double.MaxValue, 0.25),
-             new DoubleFieldInfo(nameof(OneUpMult), "OneUp Mult", double.MinValue, double.MaxValue, 0.25),
         };
 
         public PowerUpScoreFactor()
@@ -31,7 +29,6 @@ namespace Retro_ML.SuperMarioBros.Neural.Scoring
                 new ExtraField(MUSHROOM_MULT, 1.0),
                 new ExtraField(FLOWER_MULT, 2.0),
                 new ExtraField(STAR_MULT, 3.0),
-                new ExtraField(ONEUP_MULT, 4.0),
             };
         }
 
@@ -43,8 +40,7 @@ namespace Retro_ML.SuperMarioBros.Neural.Scoring
                 {
                     nameof(MushroomMult) => MushroomMult,
                     nameof(FlowerMult) => FlowerMult,
-                    nameof(StarMult) => FlowerMult,
-                    nameof(OneUpMult) => FlowerMult,
+                    nameof(StarMult) => StarMult,
                     _ => 0,
                 };
             }
@@ -54,8 +50,7 @@ namespace Retro_ML.SuperMarioBros.Neural.Scoring
                 {
                     case nameof(MushroomMult): MushroomMult = (double)value; break;
                     case nameof(FlowerMult): FlowerMult = (double)value; break;
-                    case nameof(StarMult): FlowerMult = (double)value; break;
-                    case nameof(OneUpMult): FlowerMult = (double)value; break;
+                    case nameof(StarMult): StarMult = (double)value; break;
                 }
             }
         }
@@ -63,7 +58,6 @@ namespace Retro_ML.SuperMarioBros.Neural.Scoring
         public double MushroomMult { get; set; } = 1.0;
         public double FlowerMult { get; set; } = 2.0;
         public double StarMult { get; set; } = 3.0;
-        public double OneUpMult { get; set; } = 4.0;
 
         public bool ShouldStop => false;
         public double ScoreMultiplier { get; set; }
@@ -99,7 +93,6 @@ namespace Retro_ML.SuperMarioBros.Neural.Scoring
                     1 => ExtraField.GetValue(ExtraFields, MUSHROOM_MULT),
                     2 => ExtraField.GetValue(ExtraFields, FLOWER_MULT),
                     3 => ExtraField.GetValue(ExtraFields, STAR_MULT),
-                    4 => ExtraField.GetValue(ExtraFields, ONEUP_MULT),
                     _ => 1.0
                 };
             }

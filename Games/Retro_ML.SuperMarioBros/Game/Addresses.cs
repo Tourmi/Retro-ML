@@ -115,7 +115,7 @@
             /// 0x02 - Airborn by walking of a ledge
             /// 0x03 - Sliding down flagpole
             /// </summary>
-            public static readonly AddressData MarioState = new(0x001D, 1);
+            public static readonly AddressData MarioFloatState = new(0x001D, 1);
             /// <summary>
             /// Horizontal position of the Mario, in pixels. Value will fluctuate between 0 and 255 and reset for every new Screen? 
             /// To get the real horizontal position through the entire level, multiply CurrentScreen*255(0x100) + PlayerPositionX
@@ -154,9 +154,10 @@
             /// </summary>
             public static readonly AddressData MarioPowerupState = new(0x0756, 1);
             /// <summary>
-            /// Boolean, true if falling to death
+            /// Is Mario falling to death flag
+            /// 1 if falling to death
             /// </summary>
-            public static readonly AddressData IsFalling = new(0x712, 1);
+            public static readonly AddressData IsFallingToDeath = new(0x712, 1);
             /// <summary>
             /// Walk Animation
             /// 0xE4 - is running
