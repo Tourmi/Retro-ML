@@ -19,7 +19,7 @@ namespace Retro_ML.SuperMarioBros.Game
         private readonly IEmulatorAdapter emulator;
         private readonly Dictionary<uint, byte[]> frameCache;
         private readonly Dictionary<uint, byte[]> tileCache;
-        private InternalClock internalClock;
+        private readonly InternalClock internalClock;
 
         private ushort currScreen;
 
