@@ -137,13 +137,7 @@ namespace Retro_ML.Metroid.Game
             _ => (0, 0)
         };
 
-        public bool CanSamusAct()
-        {
-            if (IsSamusInDoor()) return false;
-            if (IsSamusFrozenAfterObjective()) return false;
-
-            return true;
-        }
+        public bool CanSamusAct() => !IsSamusInDoor() && !IsSamusFrozenAfterObjective();
 
         /// <summary>
         /// Returns a 3x3 array containing the acquisition status of progression items.
@@ -263,7 +257,7 @@ namespace Retro_ML.Metroid.Game
             {
                 for (int j = 0; j < tiles.GetLength(1); j++)
                 {
-                    result[i, j] = tiles[i, j] != 0xFF; //check ID for bushes
+                    result[i, j] = tiles[i, j] != 0xFF; //TODO : check ID for bushes
                 }
             }
 
@@ -471,63 +465,36 @@ namespace Retro_ML.Metroid.Game
                 (secondScreen, firstScreen) = (firstScreen, secondScreen);
             }
 
-            if (IsHorizontalRoom())
+            (int horizontalCorrection, int verticalCorrection) = IsHorizontalRoom() ? (CORRECTED_ROOM_WIDTH, 0) : (0, CORRECTED_ROOM_HEIGHT);
+
+            var result = new byte[CORRECTED_ROOM_HEIGHT + verticalCorrection, CORRECTED_ROOM_WIDTH + horizontalCorrection];
+
+            for (int i = 0; i < CORRECTED_ROOM_HEIGHT; i++)
             {
-                var result = new byte[CORRECTED_ROOM_HEIGHT, CORRECTED_ROOM_WIDTH * 2];
-
-                for (int i = 0; i < CORRECTED_ROOM_HEIGHT; i++)
+                for (int j = 0; j < CORRECTED_ROOM_WIDTH; j++)
                 {
-                    for (int j = 0; j < CORRECTED_ROOM_WIDTH; j++)
-                    {
-                        result[i, j] = firstScreen[i, j];
-                        result[i, j + CORRECTED_ROOM_WIDTH] = secondScreen[i, j];
-                    }
+                    result[i, j] = firstScreen[i, j];
+                    result[i + verticalCorrection, j + horizontalCorrection] = secondScreen[i, j];
                 }
-
-                return result;
             }
-            else
-            {
-                var result = new byte[CORRECTED_ROOM_HEIGHT * 2, CORRECTED_ROOM_WIDTH];
 
-                for (int i = 0; i < CORRECTED_ROOM_HEIGHT; i++)
-                {
-                    for (int j = 0; j < CORRECTED_ROOM_WIDTH; j++)
-                    {
-                        result[i, j] = firstScreen[i, j];
-                        result[i + CORRECTED_ROOM_HEIGHT, j] = secondScreen[i, j];
-                    }
-                }
-
-                return result;
-            }
+            return result;
         }
 
         /// <summary>
         /// Returns the position of the values given within the currently loaded screens.
         /// </summary>
-        private (int xPos, int yPos) GetScreensPosition(int x, int y, bool isInFirstScreen)
+        private (int xPos, int yPos) GetScreensPosition(int x, int y, bool isInFirstScreen) => (IsInSecondLoadedScreen(isInFirstScreen), IsHorizontalRoom()) switch
         {
-            (var xPos, var yPos) = (x, y);
-
-            if (IsInSecondLoadedScreen(isInFirstScreen))
-            {
-                if (IsHorizontalRoom())
-                    xPos += CORRECTED_ROOM_WIDTH;
-                else
-                    yPos += CORRECTED_ROOM_HEIGHT;
-            }
-
-            return (xPos, yPos);
-        }
+            (true, true) => (x + CORRECTED_ROOM_WIDTH, y),
+            (true, false) => (x, y + CORRECTED_ROOM_HEIGHT),
+            _ => (x, y)
+        };
 
         /// <summary>
         /// Returns whether or not the given position with its screen number is in the first or second screen of tiles.
         /// </summary>
-        private bool IsInSecondLoadedScreen(bool isInScreen0)
-        {
-            return isInScreen0 == IsOnNameTable3();
-        }
+        private bool IsInSecondLoadedScreen(bool isInScreen0) => isInScreen0 == IsOnNameTable3();
 
         /// <summary>
         /// Reads a single byte from the emulator's memory
@@ -624,7 +591,7 @@ namespace Retro_ML.Metroid.Game
         /// <param name="offset"></param>
         /// <param name="total"></param>
         /// <returns></returns>
-        private IEnumerable<AddressData> GetAddressesToRead(AddressData addressData, AddressData offset, AddressData total)
+        private static IEnumerable<AddressData> GetAddressesToRead(AddressData addressData, AddressData offset, AddressData total)
         {
             uint count = total.Length / offset.Length;
             for (int i = 0; i < count; i++)
