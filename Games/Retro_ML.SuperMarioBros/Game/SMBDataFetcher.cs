@@ -19,10 +19,9 @@ namespace Retro_ML.SuperMarioBros.Game
         private readonly IEmulatorAdapter emulator;
         private readonly Dictionary<uint, byte[]> frameCache;
         private readonly Dictionary<uint, byte[]> tileCache;
+        private InternalClock internalClock;
 
         private ushort currScreen;
-
-        private InternalClock internalClock;
 
         public SMBDataFetcher(IEmulatorAdapter emulator, NeuralConfig neuralConfig, SMBPluginConfig pluginConfig)
         {
@@ -48,11 +47,8 @@ namespace Retro_ML.SuperMarioBros.Game
         public void NextState()
         {
             frameCache.Clear();
-
             tileCache.Clear();
-
             internalClock.Reset();
-
             currScreen = 0;
         }
 
@@ -87,6 +83,149 @@ namespace Retro_ML.SuperMarioBros.Game
         public bool IsFlashing() => ReadSingle(PlayerAddresses.MarioActionState) == 0x0A;
 
         /// <summary>
+        /// Get walkable solid tiles around a position 
+        /// </summary>
+        public bool[,] GetWalkableTilesAroundPosition(int x_dist, int y_dist)
+        {
+            bool[,] result = new bool[y_dist * 2 + 1, x_dist * 2 + 1];
+
+            var tiles = GetNearbyTiles(x_dist, y_dist);
+
+            for (int i = 0; i < tiles.GetLength(0); i++)
+            {
+                for (int j = 0; j < tiles.GetLength(1); j++)
+                {
+                    result[i, j] = tiles[i, j] != 0;
+                }
+            }
+
+            //Find good sprites and draw them
+            byte[] isSpriteUp = IsSpritePresent();
+            byte[] spriteType = GetSprites();
+
+            for (int i = 0; i < 5; i++)
+            {
+                //To get lift sprite
+                if (isSpriteUp[i] != 0 && Data.Sprite.WalkableSprite.Contains(spriteType[i]))
+                    DrawSpriteTiles(x_dist, y_dist, result, i, GetSpriteHitbox());
+            }
+
+            return result;
+        }
+
+        /// <summary>
+        /// Get dangerous tiles around a position
+        /// can be ennemies, dangerous sprites like birebars and hammers
+        /// </summary>
+        public bool[,] GetDangerousTilesAroundPosition(int x_dist, int y_dist)
+        {
+            bool[,] result = new bool[y_dist * 2 + 1, x_dist * 2 + 1];
+
+            //To know how many sprites are present on the map / which type they are / which memory slot to check for their position
+            byte[] isSpriteUp = IsSpritePresent();
+            byte[] spriteType = GetSprites();
+            byte[] isHammerUp = IsHammerPresent();
+
+            //For ennemies and firebar
+            for (int i = 0; i < 5; i++)
+            {
+                if (isSpriteUp[i] == 0)
+                    continue;
+                //Sprite is firebar
+                if (Data.Sprite.FireBarSprite.Contains(spriteType[i])) 
+                    DrawFirebarTiles(x_dist, y_dist, result, i);
+                //Sprite is long firebar
+                else if (Data.Sprite.LongFireBarSprite.Contains(spriteType[i])) 
+                    DrawFirebarTiles(x_dist, y_dist, result, i, true);
+                //Sprite is enemy
+                else if (!Data.Sprite.WalkableSprite.Contains(spriteType[i]) && !Data.Sprite.GoodSprite.Contains(spriteType[i])) 
+                    DrawSpriteTiles(x_dist, y_dist, result, i, GetSpriteHitbox());
+            }
+
+            //For hammers
+            for (int i = 0; i < 9; i++)
+            {
+                if (isHammerUp[i] != 0)
+                    DrawSpriteTiles(x_dist, y_dist, result, i, GetHammerHitbox());
+            }
+
+            return result;
+        }
+
+        /// <summary>
+        /// Get good tiles around a position
+        /// can be coins, powerups and beneficial sprites like lifts
+        /// </summary>
+        public bool[,] GetGoodTilesAroundPosition(int x_dist, int y_dist)
+        {
+            bool[,] result = new bool[y_dist * 2 + 1, x_dist * 2 + 1];
+
+            var tiles = GetNearbyTiles(x_dist, y_dist);
+
+            //Find good Tiles
+            for (int i = 0; i < tiles.GetLength(0); i++)
+            {
+                for (int j = 0; j < tiles.GetLength(1); j++)
+                {
+                    if (Data.Tiles.GoodTile.Contains(tiles[i, j]))
+                        result[i, j] = true;
+                }
+            }
+            //Draw powerups
+            var isPowerUp = IsPowerUpPresent();
+
+            if (isPowerUp == Data.Sprite.PowerupSprite)
+                DrawSpriteTiles(x_dist, y_dist, result, 0, GetPowerUpHitbox());
+
+            //Draw good sprites like flag, trampoline, etc
+            byte[] isSpriteUp = IsSpritePresent();
+            byte[] spriteType = GetSprites();
+
+            for (int i = 0; i < 5; i++)
+            {
+                if (isSpriteUp[i] != 0 && Data.Sprite.GoodSprite.Contains(spriteType[i]))
+                    DrawSpriteTiles(x_dist, y_dist, result, i, GetSpriteHitbox());
+            }
+
+            return result;
+        }
+
+        /// <summary>
+        /// Get all tiles around a position
+        /// </summary>
+        private byte[,] GetNearbyTiles(int x_dist, int y_dist)
+        {
+            byte[,] result = new byte[y_dist * 2 + 1, x_dist * 2 + 1];
+
+            //Tile array representing current loaded tiles for 2 pages
+            var tileArray = GetTileArray();
+
+            //Mario X and Y position in tile, to get right tile mario is in
+            var xPos = (GetMarioPositionX() + (METATILE_SIZE / 2)) / METATILE_SIZE;
+            var yPos = (GetMarioPositionY() - METATILE_SIZE) / METATILE_SIZE;
+
+            for (int y = -y_dist; y <= y_dist; y++)
+            {
+                //Get valid Y pos for tile
+                var yInPage = Math.Min(Math.Max(0, y + yPos), PAGE_HEIGHT - 1) * PAGE_WIDTH;
+
+                for (int x = -x_dist; x <= x_dist; x++)
+                {
+                    var page = ((xPos + x) / PAGE_WIDTH) % 2;
+
+                    //Get tile X pos
+                    var xInPage = Math.Max((xPos + x) % PAGE_WIDTH, 0);
+
+                    var index = (page * PAGE_SIZE) + yInPage + xInPage;
+
+                    result[y + y_dist, x + x_dist] = tileArray[index];
+                }
+            }
+
+            return result;
+        }
+
+        /// <summary>
         /// Draw the sprites tiles based on the sprite number and position, depending on its hitbox and offset to Mario.
         /// </summary>
         /// <param name="x_dist"></param>
@@ -114,11 +253,16 @@ namespace Retro_ML.SuperMarioBros.Game
 
             //Draw the sprite if the sprite distance is between the bounds that Mario can see
             for (int ySpriteDist = spriteYDistMin; ySpriteDist <= spriteYDistMax; ySpriteDist++)
+            {
                 for (int xSpriteDist = spriteXDistMin; xSpriteDist <= spriteXDistMax; xSpriteDist++)
+                {
                     //Is the sprite distance between the bounds that Mario can see?
                     if (xSpriteDist <= x_dist && ySpriteDist <= y_dist && xSpriteDist >= -x_dist && ySpriteDist >= -y_dist)
                         tilesArray[ySpriteDist + y_dist, xSpriteDist + x_dist] = true;
+                }
+            }
         }
+
         /// <summary>
         /// Draw the firebar based on the sprite number and position, depending on its offset to mario.
         /// </summary>
@@ -169,135 +313,14 @@ namespace Retro_ML.SuperMarioBros.Game
 
             //Draw the sprite if the sprite distance is between the bounds that Mario can see
             for (int yFirebarDist = (int)firebarYDistMin; yFirebarDist <= firebarYDistMax; yFirebarDist++)
+            {
                 for (int xFirebarDist = (int)firebarXDistMin; xFirebarDist <= firebarXDistMax; xFirebarDist++)
+                {
                     //Is the sprite distance between the bounds that Mario can see?
                     if (xFirebarDist <= x_dist && yFirebarDist <= y_dist && xFirebarDist >= -x_dist && yFirebarDist >= -y_dist)
                         tilesArray[yFirebarDist + y_dist, xFirebarDist + x_dist] = true;
-        }
-        /// <summary>
-        /// Get walkable solid tiles around a position 
-        /// </summary>
-        public bool[,] GetWalkableTilesAroundPosition(int x_dist, int y_dist)
-        {
-            bool[,] result = new bool[y_dist * 2 + 1, x_dist * 2 + 1];
-
-            var tiles = GetNearbyTiles(x_dist, y_dist);
-
-            for (int i = 0; i < tiles.GetLength(0); i++)
-                for (int j = 0; j < tiles.GetLength(1); j++)
-                    result[i, j] = tiles[i, j] != 0;
-
-            //Find good sprites and draw them
-            byte[] isSpriteUp = IsSpritePresent();
-            byte[] spriteType = GetSprites();
-
-            for (int i = 0; i < 5; i++)
-                //To get lift sprite
-                if (isSpriteUp[i] != 0 && Data.Sprite.WalkableSprite.Contains(spriteType[i]))
-                    DrawSpriteTiles(x_dist, y_dist, result, i, GetSpriteHitbox());
-
-            return result;
-        }
-        /// <summary>
-        /// Get dangerous tiles around a position
-        /// can be ennemies, dangerous sprites like birebars and hammers
-        /// </summary>
-        public bool[,] GetDangerousTilesAroundPosition(int x_dist, int y_dist)
-        {
-            bool[,] result = new bool[y_dist * 2 + 1, x_dist * 2 + 1];
-
-            //To know how many sprites are present on the map / which type they are / which memory slot to check for their position
-            byte[] isSpriteUp = IsSpritePresent();
-            byte[] spriteType = GetSprites();
-            byte[] isHammerUp = IsHammerPresent();
-
-            //For ennemies and firebar
-            for (int i = 0; i < 5; i++)
-            {
-                if (isSpriteUp[i] == 0)
-                    continue;
-                //Sprite is firebar
-                if (Data.Sprite.FireBarSprite.Contains(spriteType[i])) DrawFirebarTiles(x_dist, y_dist, result, i);
-                //Sprite is long firebar
-                if (Data.Sprite.LongFireBarSprite.Contains(spriteType[i]))
-                    DrawFirebarTiles(x_dist, y_dist, result, i, true);
-                //Sprite is enemy
-                if (!Data.Sprite.WalkableSprite.Contains(spriteType[i]) && !Data.Sprite.GoodSprite.Contains(spriteType[i]) && !Data.Sprite.FireBarSprite.Contains(spriteType[i]))
-                    DrawSpriteTiles(x_dist, y_dist, result, i, GetSpriteHitbox());
-            }
-
-            //For hammers
-            for (int i = 0; i < 9; i++)
-                if (isHammerUp[i] != 0)
-                    DrawSpriteTiles(x_dist, y_dist, result, i, GetHammerHitbox());
-
-            return result;
-        }
-        /// <summary>
-        /// Get good tiles around a position
-        /// can be coins, powerups and beneficial sprites like lifts
-        /// </summary>
-        public bool[,] GetGoodTilesAroundPosition(int x_dist, int y_dist)
-        {
-            bool[,] result = new bool[y_dist * 2 + 1, x_dist * 2 + 1];
-
-            var tiles = GetNearbyTiles(x_dist, y_dist);
-
-            //Find good Tiles
-            for (int i = 0; i < tiles.GetLength(0); i++)
-                for (int j = 0; j < tiles.GetLength(1); j++)
-                    if (Data.Tiles.GoodTile.Contains(tiles[i, j]))
-                        result[i, j] = true;
-
-            //Draw powerups
-            var isPowerUp = IsPowerUpPresent();
-
-            if (isPowerUp == Data.Sprite.PowerupSprite)
-                DrawSpriteTiles(x_dist, y_dist, result, 0, GetPowerUpHitbox());
-
-            //Draw good sprites like flag, trampoline, etc
-            byte[] isSpriteUp = IsSpritePresent();
-            byte[] spriteType = GetSprites();
-
-            for (int i = 0; i < 5; i++)
-                if (isSpriteUp[i] != 0 && Data.Sprite.GoodSprite.Contains(spriteType[i]))
-                    DrawSpriteTiles(x_dist, y_dist, result, i, GetSpriteHitbox());
-
-            return result;
-        }
-        /// <summary>
-        /// Get all tiles around a position
-        /// </summary>
-        private byte[,] GetNearbyTiles(int x_dist, int y_dist)
-        {
-            byte[,] result = new byte[y_dist * 2 + 1, x_dist * 2 + 1];
-
-            //Tile array representing current loaded tiles for 2 pages
-            var tileArray = GetTileArray();
-
-            //Mario X and Y position in tile, to get right tile mario is in
-            var xPos = (GetMarioPositionX() + (METATILE_SIZE / 2)) / METATILE_SIZE;
-            var yPos = (GetMarioPositionY() - METATILE_SIZE) / METATILE_SIZE;
-
-            for (int y = -y_dist; y <= y_dist; y++)
-            {
-                //Get valid Y pos for tile
-                var yInPage = Math.Min(Math.Max(0, y + yPos), PAGE_HEIGHT - 1) * PAGE_WIDTH;
-
-                for (int x = -x_dist; x <= x_dist; x++)
-                {
-                    var page = ((xPos + x) / PAGE_WIDTH) % 2;
-
-                    //Get tile X pos
-                    var xInPage = Math.Max((xPos + x) % PAGE_WIDTH, 0);
-
-                    var index = (page * PAGE_SIZE) + yInPage + xInPage;
-
-                    result[y + y_dist, x + x_dist] = tileArray[index];
                 }
             }
-
-            return result;
         }
 
         /// <summary>

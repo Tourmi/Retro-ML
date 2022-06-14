@@ -50,7 +50,7 @@ namespace Retro_ML_TEST.Game.SuperMarioBros
         [Test]
         public void GetCurrentScreen()
         {
-            Assert.AreEqual(0, dataFetcher!.GetMarioPositionX());
+            Assert.AreEqual(0, dataFetcher!.GetCurrentScreen());
             mockEmulatorAdapter!.SetMemory(Addresses.GameAddresses.CurrentScreen.Address, 0x02);
             dataFetcher.NextFrame();
             Assert.AreEqual(0x02, dataFetcher!.GetCurrentScreen());

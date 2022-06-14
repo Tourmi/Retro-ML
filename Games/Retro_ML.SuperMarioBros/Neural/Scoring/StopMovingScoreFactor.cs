@@ -7,9 +7,6 @@ namespace Retro_ML.SuperMarioBros.Neural.Scoring
 {
     internal class StopMovingScoreFactor : IScoreFactor
     {
-        private const string MAX_IMMOBILE_FRAMES = "Max immobile frames";
-        private const string MAX_IMMOBILE_FRAMES_IF_ALREADY_MOVED = "Max immobiles frames when moved";
-
         private int immobileFrames = 0;
         private uint maxXPosition = 0;
         private bool shouldStop = false;
