@@ -4,6 +4,7 @@ using Retro_ML.SuperMarioBros.Configuration;
 using Retro_ML.SuperMarioBros.Game;
 using Retro_ML.SuperMarioBros.Neural.Scoring;
 using Retro_ML_TEST.Emulator;
+using System;
 
 namespace Retro_ML_TEST.Game.SuperMarioBros
 {
@@ -19,45 +20,6 @@ namespace Retro_ML_TEST.Game.SuperMarioBros
             emu = new MockEmulatorAdapter();
             df = new SMBDataFetcher(emu, new NeuralConfig(), new SMBPluginConfig());
         }
-
-        //[Test]
-        //public void Score()
-        //{
-        //    Score score = new(new IScoreFactor[] { new DiedScoreFactor() { ScoreMultiplier = -20 }, new WonLevelScoreFactor() { ScoreMultiplier = 30 } });
-        //    score.Update(df!);
-        //    Assert.IsFalse(score.ShouldStop);
-        //    Assert.AreEqual(1, score.GetFinalScore());
-        //    emu!.SetMemory(Addresses.Player.PlayerAnimationState.Address, 0x09);
-        //    emu!.SetMemory(Addresses.Level.KeyholeTimer.Address, 0x30);
-        //    df!.NextFrame();
-        //    score.Update(df);
-        //    Assert.IsTrue(score.ShouldStop);
-        //    score.LevelDone();
-        //    Assert.AreEqual(11, score.GetFinalScore());
-
-        //    emu!.SetMemory(Addresses.Player.PlayerAnimationState.Address, 0x00);
-        //    emu!.SetMemory(Addresses.Level.KeyholeTimer.Address, 0);
-        //    df.NextState();
-        //    score.Update(df);
-        //    Assert.IsFalse(score.ShouldStop);
-        //    emu!.SetMemory(Addresses.Level.EndLevelTimer.Address, 0xFF);
-        //    df.NextFrame();
-        //    score.Update(df);
-        //    Assert.IsTrue(score.ShouldStop);
-        //    score.LevelDone();
-        //    Assert.AreEqual(41, score.GetFinalScore());
-
-        //    score = new(new IScoreFactor[] { new DiedScoreFactor() { ScoreMultiplier = -0.5 } });
-        //    emu.SetMemory(Addresses.Player.PlayerAnimationState.Address, 0x09);
-        //    df.NextFrame();
-        //    score.Update(df);
-        //    score.LevelDone();
-        //    Assert.AreEqual(1 / 1.5, score.GetFinalScore());
-        //    score.Update(df);
-        //    score.LevelDone();
-        //    Assert.AreEqual(1 / 2.0, score.GetFinalScore());
-
-        //}
 
         [Test]
         public void CoinsScoreFactor()
@@ -109,32 +71,34 @@ namespace Retro_ML_TEST.Game.SuperMarioBros
             df!.NextFrame();
             sf.Update(df);
             sf.LevelDone();
-            Assert.AreEqual(5 / 16 * 10, sf.GetFinalScore());
+            double expectedScore = (5.0 / 16.0) * 10;
+            Assert.AreEqual(expectedScore, sf.GetFinalScore());
 
-            emu!.SetMemory(Addresses.PlayerAddresses.MarioPositionX.Address, 0x00);
-            emu!.SetMemory(Addresses.GameAddresses.CurrentScreen.Address, 0x00);
+            emu!.SetMemory(Addresses.PlayerAddresses.MarioPositionY.Address, 0x00);
             df.NextState();
             sf.Update(df);
-            emu!.SetMemory(Addresses.PlayerAddresses.MarioPositionX.Address, 0x20);
+            emu!.SetMemory(Addresses.PlayerAddresses.MarioPositionY.Address, 0x20);
             emu!.SetMemory(Addresses.GameAddresses.CurrentScreen.Address, 0x00);
             df.NextFrame();
             sf.Update(df);
             sf.LevelDone();
-            Assert.AreEqual((2 + 0.5 + 0x40) * 10, sf.GetFinalScore());
+            double expectedScore2 = ((32.0 * 0.25 / 16.0) * 10) + expectedScore;
+            Assert.AreEqual(expectedScore2, sf.GetFinalScore());
 
             emu!.SetMemory(Addresses.PlayerAddresses.MarioPositionX.Address, 0x00);
-            emu!.SetMemory(Addresses.GameAddresses.CurrentScreen.Address, 0x01);
+            emu!.SetMemory(Addresses.GameAddresses.CurrentScreen.Address, 0x00);
             emu!.SetMemory(Addresses.PlayerAddresses.MarioFloatState.Address, 0x01);
+            emu!.SetMemory(Addresses.PlayerAddresses.IsSwimming.Address, 0x01);
             df.NextState();
             sf.Update(df);
             emu!.SetMemory(Addresses.PlayerAddresses.MarioPositionX.Address, 0x20);
             df.NextFrame();
             sf.Update(df);
             sf.LevelDone();
-            Assert.AreEqual((2 + 0.5 + 0x40) * 10, sf.GetFinalScore(), "The distance traveled in the air should not have counted.");
+            Assert.AreEqual(expectedScore2, sf.GetFinalScore(), "The distance traveled in the air should not have counted.");
 
             emu!.SetMemory(Addresses.PlayerAddresses.MarioPositionX.Address, 0x00);
-            emu!.SetMemory(Addresses.GameAddresses.CurrentScreen.Address, 0x01);
+            emu!.SetMemory(Addresses.GameAddresses.CurrentScreen.Address, 0x00);
             emu!.SetMemory(Addresses.PlayerAddresses.MarioFloatState.Address, 0x00);
             emu!.SetMemory(Addresses.PlayerAddresses.IsSwimming.Address, 0x00);
             df.NextState();
@@ -143,7 +107,8 @@ namespace Retro_ML_TEST.Game.SuperMarioBros
             df.NextFrame();
             sf.Update(df);
             sf.LevelDone();
-            Assert.AreEqual((4 + 0.5 + 0x40) * 10, sf.GetFinalScore(), "The distance traveled in the water should have counted.");
+            double expectedScore3 = ((32.0 / 16.0) * 10) + expectedScore2;
+            Assert.AreEqual(expectedScore3, sf.GetFinalScore(), "The distance traveled in the water should have counted.");
         }
 
         [Test]
@@ -172,6 +137,7 @@ namespace Retro_ML_TEST.Game.SuperMarioBros
             StopMovingScoreFactor sf = new() { ScoreMultiplier = -30 };
             emu!.SetMemory(Addresses.PlayerAddresses.MarioPositionX.Address, 0xAA);
             emu!.SetMemory(Addresses.GameAddresses.CurrentScreen.Address, 0x01);
+            emu!.SetMemory(Addresses.PlayerAddresses.MarioActionState.Address, 0x08);
             sf.Update(df!);
             for (int i = 0; i < 1000 && !sf.ShouldStop; i++)
             {
@@ -206,8 +172,8 @@ namespace Retro_ML_TEST.Game.SuperMarioBros
         [Test]
         public void TimeTakenScoreFactor()
         {
-            TimeTakenScoreFactor sf = new() { ScoreMultiplier = -100 };
-            for (int i = 0; i < Retro_ML.SuperMarioWorld.Neural.Scoring.TimeTakenScoreFactor.MAX_TRAINING_FRAMES; i++)
+            TimeTakenScoreFactor sf = new() { ScoreMultiplier = -1.0 };
+            for (int i = 0; i < (240 * 60) - 1; i++)
             {
                 sf.Update(df!);
                 Assert.IsFalse(sf.ShouldStop, "The score factor shouldn't have stopped yet");
@@ -215,9 +181,10 @@ namespace Retro_ML_TEST.Game.SuperMarioBros
             sf.Update(df!);
             Assert.IsTrue(sf.ShouldStop);
             sf.LevelDone();
-            Assert.AreEqual(-100, sf.GetFinalScore());
+            double expectedScore = 240.0 * -1.0;
+            Assert.AreEqual(expectedScore, sf.GetFinalScore(), 0.00001);
 
-            for (int i = 0; i < Retro_ML.SuperMarioWorld.Neural.Scoring.TimeTakenScoreFactor.MAX_TRAINING_FRAMES; i++)
+            for (int i = 0; i < (240 * 60) - 1; i++)
             {
                 sf.Update(df!);
                 Assert.IsFalse(sf.ShouldStop, "The score factor shouldn't have stopped yet");
@@ -225,7 +192,8 @@ namespace Retro_ML_TEST.Game.SuperMarioBros
             sf.Update(df!);
             Assert.IsTrue(sf.ShouldStop);
             sf.LevelDone();
-            Assert.AreEqual(-200, sf.GetFinalScore());
+            double expectedScore2 = expectedScore * 2.0;
+            Assert.AreEqual(expectedScore2, sf.GetFinalScore(), 0.00001);
         }
 
         [Test]
