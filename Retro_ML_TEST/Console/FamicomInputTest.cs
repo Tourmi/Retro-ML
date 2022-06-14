@@ -4,7 +4,7 @@ using Retro_ML.Famicom;
 namespace Retro_ML_TEST.Console
 {
     [TestFixture]
-    internal class SNESFamicomTest
+    internal class FamicomInputTest
     {
         [Test]
         public void Constructor()

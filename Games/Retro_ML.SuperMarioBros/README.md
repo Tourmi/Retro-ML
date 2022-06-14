@@ -48,9 +48,6 @@ Training AIs to beat Super Mario Bros levels automatically.
   * Points given whenever the AI collects a power up it didn't have yet.
   * Mushroom, Flower multipliers, Stars and 1-up
     * Additional multiplier for the type of power-up collected. If the global multiplier is 4, and the star multiplier is 2, then the AI is awarded 8 points for collecting a star.
-* **Taken Damage**
-  * Points applied whenever an AI takes damage, not counting dying. 
-
 ### Neural Configuration
 
 * **Input nodes**

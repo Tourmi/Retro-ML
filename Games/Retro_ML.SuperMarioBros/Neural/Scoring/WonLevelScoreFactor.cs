@@ -19,19 +19,8 @@ namespace Retro_ML.SuperMarioBros.Neural.Scoring
 
         public object this[string fieldName]
         {
-            get
-            {
-                return fieldName switch
-                {
-                    _ => 0,
-                };
-            }
-            set
-            {
-                switch (fieldName)
-                {
-                }
-            }
+            get => 0;
+            set { }
         }
 
         public bool ShouldStop => shouldStop;
@@ -58,7 +47,6 @@ namespace Retro_ML.SuperMarioBros.Neural.Scoring
             {
                 shouldStop = true;
                 currScore += ScoreMultiplier;
-                return;
             }
         }
 
@@ -69,7 +57,7 @@ namespace Retro_ML.SuperMarioBros.Neural.Scoring
 
         public IScoreFactor Clone()
         {
-            return new WonLevelScoreFactor() { ScoreMultiplier = ScoreMultiplier, ExtraFields = ExtraFields };
+            return new WonLevelScoreFactor() { ScoreMultiplier = ScoreMultiplier };
         }
     }
 }

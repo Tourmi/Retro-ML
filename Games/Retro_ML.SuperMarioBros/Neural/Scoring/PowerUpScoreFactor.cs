@@ -24,12 +24,7 @@ namespace Retro_ML.SuperMarioBros.Neural.Scoring
 
         public PowerUpScoreFactor()
         {
-            ExtraFields = new ExtraField[]
-            {
-                new ExtraField(MUSHROOM_MULT, 1.0),
-                new ExtraField(FLOWER_MULT, 2.0),
-                new ExtraField(STAR_MULT, 3.0),
-            };
+            ExtraFields = Array.Empty<ExtraField>();
         }
 
         public object this[string fieldName]
@@ -90,9 +85,9 @@ namespace Retro_ML.SuperMarioBros.Neural.Scoring
             {
                 currScore += ScoreMultiplier * currPowerUp switch
                 {
-                    1 => ExtraField.GetValue(ExtraFields, MUSHROOM_MULT),
-                    2 => ExtraField.GetValue(ExtraFields, FLOWER_MULT),
-                    3 => ExtraField.GetValue(ExtraFields, STAR_MULT),
+                    1 => MushroomMult,
+                    2 => FlowerMult,
+                    3 => StarMult,
                     _ => 1.0
                 };
             }
@@ -104,7 +99,13 @@ namespace Retro_ML.SuperMarioBros.Neural.Scoring
 
         public IScoreFactor Clone()
         {
-            return new PowerUpScoreFactor() { IsDisabled = IsDisabled, ScoreMultiplier = ScoreMultiplier, ExtraFields = ExtraFields };
+            return new PowerUpScoreFactor() { 
+                IsDisabled = IsDisabled, 
+                ScoreMultiplier = ScoreMultiplier, 
+                MushroomMult = MushroomMult,
+                FlowerMult = FlowerMult,
+                StarMult = StarMult 
+            };
         }
     }
 }

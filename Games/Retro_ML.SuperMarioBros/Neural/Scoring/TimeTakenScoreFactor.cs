@@ -14,10 +14,7 @@ namespace Retro_ML.SuperMarioBros.Neural.Scoring
 
         public TimeTakenScoreFactor()
         {
-            ExtraFields = new ExtraField[]
-            {
-                new(MAXIMUM_LEVEL_TIME, 240)
-            };
+            ExtraFields = Array.Empty<ExtraField>();
         }
         public FieldInfo[] Fields => Array.Empty<FieldInfo>();
         public object this[string fieldName]
@@ -68,7 +65,7 @@ namespace Retro_ML.SuperMarioBros.Neural.Scoring
 
         public IScoreFactor Clone()
         {
-            return new TimeTakenScoreFactor() { IsDisabled = IsDisabled, ScoreMultiplier = ScoreMultiplier, ExtraFields = ExtraFields };
+            return new TimeTakenScoreFactor() { IsDisabled = IsDisabled, ScoreMultiplier = ScoreMultiplier };
         }
     }
 }
