@@ -98,7 +98,8 @@ internal class MetroidDataFetcher : IDataFetcher
     public bool IsSamusUsingMissiles() => ReadSingle(Samus.UsingMissiles) == 1;
     public bool IsSamusInDoor() => ReadSingle(Gamestate.InADoor) != 0;
     public bool IsSamusInFirstScreen() => ReadSingle(Samus.CurrentScreen) == 0;
-    public bool IsSamusFrozenAfterObjective() => ReadSingle(Gamestate.BossPause) != 0 || ReadSingle(Gamestate.ItemPause) != 0;
+    public bool IsSamusFrozen() => ReadSingle(Gamestate.FreezeTimer) != 0;
+    public bool IsBossPresent() => ReadSingle(Gamestate.IsMiniBossPresent) != 0;
 
     public bool HasBombs() => (ReadSingle(Progress.Equipment) & 0b0000_0001) != 0;
     public bool HasHighJump() => (ReadSingle(Progress.Equipment) & 0b0000_0010) != 0;
@@ -137,7 +138,7 @@ internal class MetroidDataFetcher : IDataFetcher
         _ => (0, 0)
     };
 
-    public bool CanSamusAct() => !IsSamusInDoor() && !IsSamusFrozenAfterObjective();
+    public bool CanSamusAct() => (IsSamusInDoor(), IsSamusFrozen()) == (false, false);
 
     /// <summary>
     /// Returns a 3x3 array containing the acquisition status of progression items.

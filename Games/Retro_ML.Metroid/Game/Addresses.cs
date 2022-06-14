@@ -120,15 +120,14 @@ internal static class Addresses
         /// </code>
         /// </summary>
         public static readonly AddressData LastScrollDirection = new(0x49);
-
         /// <summary>
-        /// Set for the pause after a boss was killed
+        /// Set when the game is frozen, such as during the intro, when picking up an item or having killed a miniboss
         /// </summary>
-        public static readonly AddressData BossPause = new(0x108);
+        public static readonly AddressData FreezeTimer = new(0x2C);
         /// <summary>
-        /// Set for the pause after an item was collected
+        /// 1 if Kraid or Ridley are present, 0 otherwise
         /// </summary>
-        public static readonly AddressData ItemPause = new(0x109);
+        public static readonly AddressData IsMiniBossPresent = new(0x6987);
     }
 
     public static class Progress

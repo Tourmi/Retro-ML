@@ -53,20 +53,17 @@ internal class MetroidPluginConfig : IGamePluginConfig
 
     public object this[string fieldName]
     {
-        get
+        get => fieldName switch
         {
-            return fieldName switch
-            {
-                nameof(UseGrid) => UseGrid,
-                nameof(UseDirectionToGoodie) => UseDirectionToGoodie,
-                nameof(ViewDistance) => ViewDistance,
-                nameof(Raycount) => Raycount,
-                nameof(InternalClockLength) => InternalClockLength,
-                nameof(InternalClockTickLength) => InternalClockTickLength,
-                nameof(FrameSkip) => FrameSkip,
-                _ => 0,
-            };
-        }
+            nameof(UseGrid) => UseGrid,
+            nameof(UseDirectionToGoodie) => UseDirectionToGoodie,
+            nameof(ViewDistance) => ViewDistance,
+            nameof(Raycount) => Raycount,
+            nameof(InternalClockLength) => InternalClockLength,
+            nameof(InternalClockTickLength) => InternalClockTickLength,
+            nameof(FrameSkip) => FrameSkip,
+            _ => 0,
+        };
         set
         {
             switch (fieldName)
@@ -115,14 +112,14 @@ internal class MetroidPluginConfig : IGamePluginConfig
 
     public List<IScoreFactor> ScoreFactors { get; set; }
 
-    public MetroidPluginConfig()
+    public MetroidPluginConfig() => ScoreFactors = new List<IScoreFactor>()
     {
-        ScoreFactors = new List<IScoreFactor>()
-        {
-            new TimeTakenScoreFactor() { ScoreMultiplier = -0.1, IsDisabled = false },
-            new ProgressScoreFactor() { ScoreMultiplier = 1, IsDisabled = false }
-        };
-    }
+        new DiedScoreFactor() { ScoreMultiplier = -10, IsDisabled = false },
+        new TimeTakenScoreFactor() { ScoreMultiplier = -0.1, IsDisabled = false },
+        new ObjectiveScoreFactor() { ScoreMultiplier = 100, IsDisabled = false },
+        new ProgressScoreFactor() { ScoreMultiplier = 1, IsDisabled = false },
+        new HealthScoreFactor() { ScoreMultiplier = 0.1, IsDisabled = true }
+    };
 
     public string Serialize() => JsonConvert.SerializeObject(this, SerializationUtils.JSON_CONFIG);
 
@@ -133,6 +130,7 @@ internal class MetroidPluginConfig : IGamePluginConfig
         ScoreFactors = cfg.ScoreFactors;
 
         UseGrid = cfg.UseGrid;
+        UseDirectionToGoodie = cfg.UseDirectionToGoodie;
         ViewDistance = cfg.ViewDistance;
         Raycount = cfg.Raycount;
         InternalClockLength = cfg.InternalClockLength;
@@ -166,24 +164,20 @@ internal class MetroidPluginConfig : IGamePluginConfig
                 neuralConfig.EnabledStates[enabledIndex++],
                 (dataFetcher) => Raycast.GetRayDistances(((MetroidDataFetcher)dataFetcher).GetDangerousTilesAroundPosition(ViewDistance, ViewDistance), ViewDistance, Raycount), Raycount / 4, 4));
         }
-        if (UseDirectionToGoodie)
+
+        neuralConfig.InputNodes.Add((UseDirectionToGoodie, UseGrid) switch
         {
-            neuralConfig.InputNodes.Add(new InputNode("Goodies",
-                neuralConfig.EnabledStates[enabledIndex++],
-                (dataFetcher) => ((MetroidDataFetcher)dataFetcher).GetDirectionToNearestGoodTile(), 2, 1));
-        }
-        else if (UseGrid)
-        {
-            neuralConfig.InputNodes.Add(new InputNode("Goodies",
-                neuralConfig.EnabledStates[enabledIndex++],
-                (dataFetcher) => ((MetroidDataFetcher)dataFetcher).GetGoodTilesAroundPosition(ViewDistance, ViewDistance), ViewDistance * 2 + 1, ViewDistance * 2 + 1));
-        }
-        else
-        {
-            neuralConfig.InputNodes.Add(new InputNode("Goodies",
-                neuralConfig.EnabledStates[enabledIndex++],
-                (dataFetcher) => Raycast.GetRayDistances(((MetroidDataFetcher)dataFetcher).GetGoodTilesAroundPosition(ViewDistance, ViewDistance), ViewDistance, Raycount), Raycount / 4, 4));
-        }
+            (true, _) => new InputNode("Goodies",
+                                neuralConfig.EnabledStates[enabledIndex++],
+                                (dataFetcher) => ((MetroidDataFetcher)dataFetcher).GetDirectionToNearestGoodTile(), 2, 1),
+            (false, true) => new InputNode("Goodies",
+                                neuralConfig.EnabledStates[enabledIndex++],
+                                (dataFetcher) => ((MetroidDataFetcher)dataFetcher).GetGoodTilesAroundPosition(ViewDistance, ViewDistance), ViewDistance * 2 + 1, ViewDistance * 2 + 1),
+            _ => new InputNode("Goodies",
+                                neuralConfig.EnabledStates[enabledIndex++],
+                                (dataFetcher) => Raycast.GetRayDistances(((MetroidDataFetcher)dataFetcher).GetGoodTilesAroundPosition(ViewDistance, ViewDistance), ViewDistance, Raycount), Raycount / 4, 4)
+        });
+
         neuralConfig.InputNodes.Add(new InputNode("Health", neuralConfig.EnabledStates[enabledIndex++], (dataFetcher) => ((MetroidDataFetcher)dataFetcher).GetSamusHealthRatio()));
         neuralConfig.InputNodes.Add(new InputNode("Missiles", neuralConfig.EnabledStates[enabledIndex++], (dataFetcher) => ((MetroidDataFetcher)dataFetcher).GetCurrentMissiles()));
         neuralConfig.InputNodes.Add(new InputNode("X Speed", neuralConfig.EnabledStates[enabledIndex++], (dataFetcher) => ((MetroidDataFetcher)dataFetcher).GetSamusHorizontalSpeed()));

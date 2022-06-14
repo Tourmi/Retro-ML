@@ -73,13 +73,10 @@ internal class TimeTakenScoreFactor : IScoreFactor
         levelFrames = 0;
     }
 
-    public IScoreFactor Clone()
+    public IScoreFactor Clone() => new TimeTakenScoreFactor()
     {
-        return new TimeTakenScoreFactor()
-        {
-            IsDisabled = IsDisabled,
-            ScoreMultiplier = ScoreMultiplier,
-            MaximumTrainingTime = MaximumTrainingTime
-        };
-    }
+        IsDisabled = IsDisabled,
+        ScoreMultiplier = ScoreMultiplier,
+        MaximumTrainingTime = MaximumTrainingTime
+    };
 }

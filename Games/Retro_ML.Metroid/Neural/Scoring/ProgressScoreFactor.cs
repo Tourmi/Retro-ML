@@ -2,19 +2,17 @@
 using Retro_ML.Game;
 using Retro_ML.Metroid.Game;
 using Retro_ML.Neural.Scoring;
-using System.Diagnostics;
 
 namespace Retro_ML.Metroid.Neural.Scoring;
 
 internal class ProgressScoreFactor : IScoreFactor
 {
     private double currScore;
+    private double maxScore;
     private bool isInit = false;
     private int previousX;
     private int previousY;
     private int framesWithoutProgress;
-    private bool wasSamusFrozen;
-
     public string Name => "Progression";
 
     public bool CanBeDisabled => true;
@@ -26,16 +24,12 @@ internal class ProgressScoreFactor : IScoreFactor
 
     public double ScoreMultiplier { get; set; }
     public double MaximumTimeWithoutProgress { get; set; } = 10.0;
-    public bool StopAfterObjectiveReached { get; set; } = false;
-    public double RewardOnObjectiveReached { get; set; } = 100.0;
 
     public ExtraField[] ExtraFields { get; set; }
 
     public FieldInfo[] Fields => new FieldInfo[]
     {
-        new DoubleFieldInfo(nameof(MaximumTimeWithoutProgress), "Maximum time without progress", 0, double.MaxValue, 1.0),
-        new BoolFieldInfo(nameof(StopAfterObjectiveReached), "Stop after objective reached"),
-        new DoubleFieldInfo(nameof(RewardOnObjectiveReached), "Reward when objective reached", double.MinValue, double.MaxValue, 1.0)
+        new DoubleFieldInfo(nameof(MaximumTimeWithoutProgress), "Maximum time without progress", 0, double.MaxValue, 1.0)
     };
 
     public ProgressScoreFactor()
@@ -45,31 +39,21 @@ internal class ProgressScoreFactor : IScoreFactor
 
     public object this[string fieldName]
     {
-        get
+        get => fieldName switch
         {
-            return fieldName switch
-            {
-                nameof(MaximumTimeWithoutProgress) => MaximumTimeWithoutProgress,
-                nameof(StopAfterObjectiveReached) => StopAfterObjectiveReached,
-                nameof(RewardOnObjectiveReached) => RewardOnObjectiveReached,
-                _ => 0,
-            };
-        }
+            nameof(MaximumTimeWithoutProgress) => MaximumTimeWithoutProgress,
+            _ => 0,
+        };
         set
         {
             switch (fieldName)
             {
                 case nameof(MaximumTimeWithoutProgress): MaximumTimeWithoutProgress = (double)value; break;
-                case nameof(StopAfterObjectiveReached): StopAfterObjectiveReached = (bool)value; break;
-                case nameof(RewardOnObjectiveReached): RewardOnObjectiveReached = (double)value; break;
             }
         }
     }
 
-    public double GetFinalScore()
-    {
-        return currScore;
-    }
+    public double GetFinalScore() => currScore;
 
     public void LevelDone()
     {
@@ -98,38 +82,19 @@ internal class ProgressScoreFactor : IScoreFactor
         double distY = currY - previousY;
         //correct the distance if there was an overflow/underflow
         if (distX > 128) distX -= byte.MaxValue;
-        if (distX < 128) distX += byte.MaxValue;
+        if (distX < -128) distX += byte.MaxValue;
         if (distY > 128) distY -= byte.MaxValue;
-        if (distY < 128) distY += byte.MaxValue;
+        if (distY < -128) distY += byte.MaxValue;
 
         var navigationDirection = df.GetNavigationDirection();
-        var scoreDelta = ScoreMultiplier / 16.0 * (distX * navigationDirection[0, 0] + distY * navigationDirection[0, 1]);
-        currScore += scoreDelta;
-
-        Debug.WriteLine(currScore);
+        currScore += ScoreMultiplier / 16.0 * (distX * navigationDirection[0, 0] + distY * navigationDirection[0, 1]);
 
         if (df.CanSamusAct())
         {
-            if (scoreDelta <= 0)
-            {
-                framesWithoutProgress++;
-            }
-            else
-            {
-                framesWithoutProgress = 0;
-            }
+            framesWithoutProgress = currScore <= maxScore ? framesWithoutProgress + 1 : 0;
+        }
 
-            wasSamusFrozen = false;
-        }
-        else
-        {
-            if (df.IsSamusFrozenAfterObjective() && !wasSamusFrozen)
-            {
-                ScoreMultiplier += RewardOnObjectiveReached;
-                shouldStop = StopAfterObjectiveReached;
-                wasSamusFrozen = true;
-            }
-        }
+        maxScore = currScore;
 
         if (MaximumTimeWithoutProgress != 0 && framesWithoutProgress > MaximumTimeWithoutProgress * 60.0)
         {
@@ -140,15 +105,10 @@ internal class ProgressScoreFactor : IScoreFactor
         previousY = currY;
     }
 
-    public IScoreFactor Clone()
+    public IScoreFactor Clone() => new ProgressScoreFactor()
     {
-        return new ProgressScoreFactor()
-        {
-            ScoreMultiplier = ScoreMultiplier,
-            IsDisabled = IsDisabled,
-            RewardOnObjectiveReached = RewardOnObjectiveReached,
-            StopAfterObjectiveReached = StopAfterObjectiveReached,
-            MaximumTimeWithoutProgress = MaximumTimeWithoutProgress
-        };
-    }
+        ScoreMultiplier = ScoreMultiplier,
+        IsDisabled = IsDisabled,
+        MaximumTimeWithoutProgress = MaximumTimeWithoutProgress
+    };
 }
