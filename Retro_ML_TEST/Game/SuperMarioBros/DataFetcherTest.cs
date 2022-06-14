@@ -109,7 +109,7 @@ namespace Retro_ML_TEST.Game.SuperMarioBros
         [Test]
         public void IsSpritePresent()
         {
-            byte[] spriteArrayEmpty = {0x00, 0x00, 0x00, 0x00, 0x00 };
+            byte[] spriteArrayEmpty = { 0x00, 0x00, 0x00, 0x00, 0x00 };
             byte[] spriteArrayPresent = { 0x00, 0x00, 0x01, 0x00, 0x00 };
             Assert.AreEqual(spriteArrayEmpty, dataFetcher!.IsSpritePresent());
             mockEmulatorAdapter!.SetMemory(Addresses.SpriteAddresses.IsSpritePresent.Address, new byte[] { 0x00, 0x00, 0x01, 0x00, 0x00 });

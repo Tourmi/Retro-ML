@@ -4,7 +4,6 @@ using Retro_ML.SuperMarioBros.Configuration;
 using Retro_ML.SuperMarioBros.Game;
 using Retro_ML.SuperMarioBros.Neural.Scoring;
 using Retro_ML_TEST.Emulator;
-using System;
 
 namespace Retro_ML_TEST.Game.SuperMarioBros
 {

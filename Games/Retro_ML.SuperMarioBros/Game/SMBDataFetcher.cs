@@ -218,7 +218,7 @@ namespace Retro_ML.SuperMarioBros.Game
             //For ennemies and firebar
             for (int i = 0; i < 5; i++)
             {
-                if (isSpriteUp[i] == 0) 
+                if (isSpriteUp[i] == 0)
                     continue;
                 //Sprite is firebar
                 if (Data.Sprite.FireBarSprite.Contains(spriteType[i])) DrawFirebarTiles(x_dist, y_dist, result, i);
