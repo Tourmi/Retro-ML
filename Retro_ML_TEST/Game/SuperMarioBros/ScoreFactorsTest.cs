@@ -73,17 +73,6 @@ namespace Retro_ML_TEST.Game.SuperMarioBros
             double expectedScore = (5.0 / 16.0) * 10;
             Assert.AreEqual(expectedScore, sf.GetFinalScore());
 
-            emu!.SetMemory(Addresses.PlayerAddresses.MarioPositionY.Address, 0x00);
-            df.NextState();
-            sf.Update(df);
-            emu!.SetMemory(Addresses.PlayerAddresses.MarioPositionY.Address, 0x20);
-            emu!.SetMemory(Addresses.GameAddresses.CurrentScreen.Address, 0x00);
-            df.NextFrame();
-            sf.Update(df);
-            sf.LevelDone();
-            double expectedScore2 = ((32.0 * 0.25 / 16.0) * 10) + expectedScore;
-            Assert.AreEqual(expectedScore2, sf.GetFinalScore());
-
             emu!.SetMemory(Addresses.PlayerAddresses.MarioPositionX.Address, 0x00);
             emu!.SetMemory(Addresses.GameAddresses.CurrentScreen.Address, 0x00);
             emu!.SetMemory(Addresses.PlayerAddresses.MarioFloatState.Address, 0x01);
@@ -94,7 +83,7 @@ namespace Retro_ML_TEST.Game.SuperMarioBros
             df.NextFrame();
             sf.Update(df);
             sf.LevelDone();
-            Assert.AreEqual(expectedScore2, sf.GetFinalScore(), "The distance traveled in the air should not have counted.");
+            Assert.AreEqual(expectedScore, sf.GetFinalScore(), "The distance traveled in the air should not have counted.");
 
             emu!.SetMemory(Addresses.PlayerAddresses.MarioPositionX.Address, 0x00);
             emu!.SetMemory(Addresses.GameAddresses.CurrentScreen.Address, 0x00);
@@ -106,7 +95,7 @@ namespace Retro_ML_TEST.Game.SuperMarioBros
             df.NextFrame();
             sf.Update(df);
             sf.LevelDone();
-            double expectedScore3 = ((32.0 / 16.0) * 10) + expectedScore2;
+            double expectedScore3 = ((32.0 / 16.0) * 10) + expectedScore;
             Assert.AreEqual(expectedScore3, sf.GetFinalScore(), "The distance traveled in the water should have counted.");
         }
 

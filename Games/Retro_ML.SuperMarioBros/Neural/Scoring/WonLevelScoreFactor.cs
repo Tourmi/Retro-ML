@@ -57,7 +57,7 @@ namespace Retro_ML.SuperMarioBros.Neural.Scoring
 
         public IScoreFactor Clone()
         {
-            return new WonLevelScoreFactor() { ScoreMultiplier = ScoreMultiplier };
+            return new WonLevelScoreFactor() { ScoreMultiplier = ScoreMultiplier, ExtraFields = ExtraFields };
         }
     }
 }

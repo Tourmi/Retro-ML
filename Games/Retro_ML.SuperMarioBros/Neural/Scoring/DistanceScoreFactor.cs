@@ -55,7 +55,6 @@ namespace Retro_ML.SuperMarioBros.Neural.Scoring
 
             if (dataFetcher.IsOnGround() || dataFetcher.IsInWater())
             {
-                double totalSubScore = 0;
                 if (newPosX > maxXPosition)
                 {
                     currScore += (newPosX - maxXPosition) / 16.0 * ScoreMultiplier;
@@ -75,7 +74,8 @@ namespace Retro_ML.SuperMarioBros.Neural.Scoring
             return new DistanceScoreFactor()
             {
                 IsDisabled = IsDisabled,
-                ScoreMultiplier = ScoreMultiplier
+                ScoreMultiplier = ScoreMultiplier,
+                ExtraFields = ExtraFields
             };
         }
     }

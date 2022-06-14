@@ -7,8 +7,8 @@ namespace Retro_ML.SuperMarioBros.Neural.Scoring
 {
     internal class StopMovingScoreFactor : IScoreFactor
     {
-        private const int MAX_IMMOBILE_FRAMES = 15;
-        private const int MAX_IMMOBILE_FRAMES_IF_ALREADY_MOVED = 4 * 60;
+        private const string MAX_IMMOBILE_FRAMES = "Max immobile frames";
+        private const string MAX_IMMOBILE_FRAMES_IF_ALREADY_MOVED = "Max immobiles frames when moved";
 
         private int immobileFrames = 0;
         private uint maxXPosition = 0;
@@ -17,11 +17,19 @@ namespace Retro_ML.SuperMarioBros.Neural.Scoring
 
         private double currScore = 0;
 
-        public FieldInfo[] Fields => Array.Empty<FieldInfo>();
+        public FieldInfo[] Fields => new FieldInfo[]
+         {
+             new IntegerFieldInfo(nameof(MaxImmobileFrames), "Max immobile frames", 1, int.MaxValue, 1),
+             new IntegerFieldInfo(nameof(MaxImmobileFramesIfMoved), "Max immobiles frames when moved", 1, int.MaxValue, 1),
+         };
 
         public StopMovingScoreFactor()
         {
-            ExtraFields = Array.Empty<ExtraField>();
+            ExtraFields = new ExtraField[]
+            {
+                new ExtraField(MAX_IMMOBILE_FRAMES, 15),
+                new ExtraField(MAX_IMMOBILE_FRAMES_IF_ALREADY_MOVED, 240)
+            };
         }
 
         public object this[string fieldName]
@@ -30,6 +38,8 @@ namespace Retro_ML.SuperMarioBros.Neural.Scoring
             {
                 return fieldName switch
                 {
+                    nameof(MaxImmobileFrames) => MaxImmobileFrames,
+                    nameof(MaxImmobileFramesIfMoved) => MaxImmobileFramesIfMoved,
                     _ => 0,
                 };
             }
@@ -37,10 +47,13 @@ namespace Retro_ML.SuperMarioBros.Neural.Scoring
             {
                 switch (fieldName)
                 {
+                    case nameof(MaxImmobileFrames): MaxImmobileFrames = (int)value; break;
+                    case nameof(MaxImmobileFramesIfMoved): MaxImmobileFramesIfMoved = (int)value; break;
                 }
             }
         }
-
+        public int MaxImmobileFrames { get; set; } = 15;
+        public int MaxImmobileFramesIfMoved { get; set; } = 240;
         public bool ShouldStop => shouldStop;
         public double ScoreMultiplier { get; set; }
 
@@ -66,7 +79,7 @@ namespace Retro_ML.SuperMarioBros.Neural.Scoring
             if (dataFetcher.CanAct() && newPosX <= maxXPosition)
             {
                 immobileFrames++;
-                if (immobileFrames >= MAX_IMMOBILE_FRAMES && moved < 1 || immobileFrames >= MAX_IMMOBILE_FRAMES_IF_ALREADY_MOVED)
+                if (immobileFrames >= MaxImmobileFrames && moved < 1 || immobileFrames >= MaxImmobileFramesIfMoved)
                 {
                     shouldStop = true;
                     currScore += ScoreMultiplier;
@@ -91,7 +104,7 @@ namespace Retro_ML.SuperMarioBros.Neural.Scoring
 
         public IScoreFactor Clone()
         {
-            return new StopMovingScoreFactor() { IsDisabled = IsDisabled, ScoreMultiplier = ScoreMultiplier };
+            return new StopMovingScoreFactor() { IsDisabled = IsDisabled, ScoreMultiplier = ScoreMultiplier, ExtraFields = ExtraFields, MaxImmobileFrames = MaxImmobileFrames, MaxImmobileFramesIfMoved = MaxImmobileFramesIfMoved };
         }
     }
 }

@@ -12,17 +12,25 @@ namespace Retro_ML.SuperMarioBros.Neural.Scoring
         private double currScore;
         private int levelFrames = 0;
 
+        public FieldInfo[] Fields => new FieldInfo[]
+        {
+             new DoubleFieldInfo(nameof(MaximumLevelTime), "Maximum Level Time", 60.0, double.MaxValue, 1.0)
+        };
+
         public TimeTakenScoreFactor()
         {
-            ExtraFields = Array.Empty<ExtraField>();
+            ExtraFields = new ExtraField[]
+            {
+                new(MAXIMUM_LEVEL_TIME, 240)
+            };
         }
-        public FieldInfo[] Fields => Array.Empty<FieldInfo>();
         public object this[string fieldName]
         {
             get
             {
                 return fieldName switch
                 {
+                    nameof(MaximumLevelTime) => MaximumLevelTime,
                     _ => 0,
                 };
             }
@@ -30,9 +38,12 @@ namespace Retro_ML.SuperMarioBros.Neural.Scoring
             {
                 switch (fieldName)
                 {
+                    case nameof(MaximumLevelTime): MaximumLevelTime = (int)value; break;
                 }
             }
         }
+
+        public double MaximumLevelTime { get; set; } = 240;
 
         public bool ShouldStop => shouldStop;
         public double ScoreMultiplier { get; set; }
@@ -51,7 +62,7 @@ namespace Retro_ML.SuperMarioBros.Neural.Scoring
         {
             levelFrames++;
             currScore += ScoreMultiplier / 60.0;
-            if (levelFrames >= ExtraField.GetValue(ExtraFields, MAXIMUM_LEVEL_TIME) * 60)
+            if (levelFrames >= MaximumLevelTime * 60)
             {
                 shouldStop = true;
             }
@@ -65,7 +76,7 @@ namespace Retro_ML.SuperMarioBros.Neural.Scoring
 
         public IScoreFactor Clone()
         {
-            return new TimeTakenScoreFactor() { IsDisabled = IsDisabled, ScoreMultiplier = ScoreMultiplier };
+            return new TimeTakenScoreFactor() { IsDisabled = IsDisabled, ScoreMultiplier = ScoreMultiplier, ExtraFields = ExtraFields, MaximumLevelTime = MaximumLevelTime };
         }
     }
 }

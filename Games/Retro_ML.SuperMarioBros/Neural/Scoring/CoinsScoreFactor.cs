@@ -68,7 +68,7 @@ namespace Retro_ML.SuperMarioBros.Neural.Scoring
 
         public IScoreFactor Clone()
         {
-            return new CoinsScoreFactor() { IsDisabled = IsDisabled, ScoreMultiplier = ScoreMultiplier };
+            return new CoinsScoreFactor() { IsDisabled = IsDisabled, ScoreMultiplier = ScoreMultiplier, ExtraFields = ExtraFields };
         }
     }
 }

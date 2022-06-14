@@ -47,18 +47,6 @@
             /// </summary>
             public static readonly AddressData Score = new(0x07DD, 6);
             /// <summary>
-            /// Level
-            /// </summary>
-            public static readonly AddressData Level = new(0x0760, 1, AddressData.CacheTypes.Level);
-            /// <summary>
-            /// Current Mario score
-            /// </summary>
-            public static readonly AddressData World = new(0x075F, 1, AddressData.CacheTypes.Level);
-            /// <summary>
-            /// Current game Timer (0100 0000 0000)
-            /// </summary>
-            public static readonly AddressData GameTimer = new(0x07F8, 3);
-            /// <summary>
             /// Type of levels
             /// 00 - Normal
             /// 01 - Underwater
@@ -66,7 +54,7 @@
             /// 03 - Underground
             /// 04 - Castle
             /// </summary>
-            public static readonly AddressData LevelType = new(0x0773, 1, AddressData.CacheTypes.Level);
+            public static readonly AddressData LevelType = new(0x0773, 1);
             /// <summary>
             /// Screen Number. Increment by 1 for every 255 pixel traveled on the right by mario.
             /// </summary>
@@ -137,7 +125,7 @@
             /// <summary>
             ///Mario X-Speed Absolute,mario speed in either direction (0 - 0x28)
             /// </summary>
-            public static readonly AddressData MarioMaxVelocity = new(0x0700, 1);
+            public static readonly AddressData MarioXSpeed = new(0x0700, 1);
             /// <summary>
             ///Swimming flag set to 0 if player is swimming
             /// </summary>

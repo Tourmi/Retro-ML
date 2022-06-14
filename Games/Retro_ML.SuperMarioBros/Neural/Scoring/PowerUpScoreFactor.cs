@@ -104,7 +104,8 @@ namespace Retro_ML.SuperMarioBros.Neural.Scoring
                 ScoreMultiplier = ScoreMultiplier, 
                 MushroomMult = MushroomMult,
                 FlowerMult = FlowerMult,
-                StarMult = StarMult 
+                StarMult = StarMult,
+                ExtraFields = ExtraFields
             };
         }
     }

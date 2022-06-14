@@ -28,24 +28,11 @@ namespace Retro_ML_TEST.Game.SuperMarioBros
             Assert.False(dataFetcher!.CanAct());
             mockEmulatorAdapter!.SetMemory(Addresses.PlayerAddresses.MarioActionState.Address, 0x08);
             Assert.False(dataFetcher!.CanAct(), "The cache should not have updated");
-            dataFetcher.NextFrame();
+            dataFetcher!.NextFrame();
             Assert.True(dataFetcher!.CanAct(), "The cache should have updated");
             mockEmulatorAdapter!.SetMemory(Addresses.PlayerAddresses.MarioActionState.Address, 0x02);
-            dataFetcher.NextState();
-            Assert.False(dataFetcher!.CanAct(), "The cache should have updated");
-        }
-
-        [Test]
-        public void LevelCache()
-        {
-            Assert.False(dataFetcher!.IsWaterLevel());
-            mockEmulatorAdapter!.SetMemory(Addresses.GameAddresses.LevelType.Address, 0x01);
-            dataFetcher.NextFrame();
-            Assert.False(dataFetcher!.IsWaterLevel(), "The cache should not have been updated");
-            dataFetcher!.NextFrame();
-            Assert.False(dataFetcher!.IsWaterLevel(), "The cache should not have been updated");
             dataFetcher!.NextState();
-            Assert.True(dataFetcher!.IsWaterLevel(), "The cache should have been updated");
+            Assert.False(dataFetcher!.CanAct(), "The cache should have updated");
         }
 
         [Test]
@@ -310,17 +297,17 @@ namespace Retro_ML_TEST.Game.SuperMarioBros
         public void IsAtMaxSpeed()
         {
             mockEmulatorAdapter!.SetMemory(Addresses.PlayerAddresses.IsSwimming.Address, 0x01);
-            mockEmulatorAdapter!.SetMemory(Addresses.PlayerAddresses.MarioMaxVelocity.Address, 0x28);
+            mockEmulatorAdapter!.SetMemory(Addresses.PlayerAddresses.MarioXSpeed.Address, 0x28);
             dataFetcher!.NextFrame();
             Assert.IsTrue(dataFetcher!.IsAtMaxSpeed());
-            mockEmulatorAdapter!.SetMemory(Addresses.PlayerAddresses.MarioMaxVelocity.Address, 0x20);
+            mockEmulatorAdapter!.SetMemory(Addresses.PlayerAddresses.MarioXSpeed.Address, 0x20);
             dataFetcher!.NextFrame();
             Assert.IsFalse(dataFetcher!.IsAtMaxSpeed());
             mockEmulatorAdapter!.SetMemory(Addresses.PlayerAddresses.IsSwimming.Address, 0x00);
-            mockEmulatorAdapter!.SetMemory(Addresses.PlayerAddresses.MarioMaxVelocity.Address, 0x18);
+            mockEmulatorAdapter!.SetMemory(Addresses.PlayerAddresses.MarioXSpeed.Address, 0x18);
             dataFetcher!.NextFrame();
             Assert.IsTrue(dataFetcher!.IsAtMaxSpeed());
-            mockEmulatorAdapter!.SetMemory(Addresses.PlayerAddresses.MarioMaxVelocity.Address, 0x10);
+            mockEmulatorAdapter!.SetMemory(Addresses.PlayerAddresses.MarioXSpeed.Address, 0x10);
             dataFetcher!.NextFrame();
             Assert.IsFalse(dataFetcher!.IsAtMaxSpeed());
         }
@@ -391,13 +378,13 @@ namespace Retro_ML_TEST.Game.SuperMarioBros
         }
 
         [Test]
-        public void DrarSpriteTiles()
+        public void DrawSpriteTiles()
         {
             Assert.Ignore("Not implemented yet");
         }
 
         [Test]
-        public void DrarFirebarTiles()
+        public void DrawFirebarTiles()
         {
             Assert.Ignore("Not implemented yet");
         }

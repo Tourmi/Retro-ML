@@ -19,7 +19,6 @@ namespace Retro_ML.SuperMarioBros.Game
         private readonly IEmulatorAdapter emulator;
         private readonly Dictionary<uint, byte[]> frameCache;
         private readonly Dictionary<uint, byte[]> tileCache;
-        private readonly Dictionary<uint, byte[]> levelCache;
 
         private ushort currScreen;
 
@@ -30,7 +29,6 @@ namespace Retro_ML.SuperMarioBros.Game
             this.emulator = emulator;
             frameCache = new();
             tileCache = new();
-            levelCache = new();
             internalClock = new InternalClock(pluginConfig.InternalClockTickLength, pluginConfig.InternalClockLength);
         }
 
@@ -52,8 +50,6 @@ namespace Retro_ML.SuperMarioBros.Game
             frameCache.Clear();
 
             tileCache.Clear();
-
-            levelCache.Clear();
 
             internalClock.Reset();
 
@@ -82,7 +78,7 @@ namespace Retro_ML.SuperMarioBros.Game
         public bool CanAct() => ReadSingle(PlayerAddresses.MarioActionState) == 0x08;
         public bool IsDead() => ReadSingle(PlayerAddresses.MarioActionState) == 0x0B || ReadSingle(PlayerAddresses.IsFallingToDeath) == 0x01;
         public bool WonLevel() => ReadSingle(PlayerAddresses.MarioActionState) == 0x04 || ReadSingle(PlayerAddresses.MarioActionState) == 0x05 || ReadSingle(GameAddresses.WonCondition) == 0x02 || ReadSingle(PlayerAddresses.MarioFloatState) == 0x03;
-        public bool IsAtMaxSpeed() => IsInWater() ? ReadSingle(PlayerAddresses.MarioMaxVelocity) == 0x18 : ReadSingle(PlayerAddresses.MarioMaxVelocity) == 0x28;
+        public bool IsAtMaxSpeed() => IsInWater() ? ReadSingle(PlayerAddresses.MarioXSpeed) == 0x18 : ReadSingle(PlayerAddresses.MarioXSpeed) == 0x28;
         public bool[,] GetInternalClockState() => internalClock.GetStates();
         public bool IsWaterLevel() => ReadSingle(GameAddresses.LevelType) == 0x01;
         public int GetCoins() => (int)ToUnsignedInteger(Read(GameAddresses.Coins));
@@ -399,11 +395,6 @@ namespace Retro_ML.SuperMarioBros.Game
                 cacheToUse = tileCache;
             }
 
-            if (addressData.CacheType == AddressData.CacheTypes.Level)
-            {
-                cacheToUse = levelCache;
-            }
-
             return cacheToUse;
         }
 
@@ -421,7 +412,7 @@ namespace Retro_ML.SuperMarioBros.Game
                 (PlayerAddresses.MarioActionState, false),
                 (PlayerAddresses.IsSwimming, false),
                 (PlayerAddresses.IsFallingToDeath, false),
-                (PlayerAddresses.MarioMaxVelocity, false),
+                (PlayerAddresses.MarioXSpeed, false),
                 (PlayerAddresses.MarioFloatState, false),
                 (PlayerAddresses.MarioPowerupState, false),
                 (SpriteAddresses.IsSpritePresent, false),
