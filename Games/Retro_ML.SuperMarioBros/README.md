@@ -44,13 +44,9 @@ Training AIs to beat Super Mario Bros levels automatically.
   * The amount of points to attribute if the AI wins a level. Ideally, this should be a high value to encourage actually finishing levels.
 * **Coins**
   * The amount of points to give the AI per coin collected.
-* **High Score**
-  * The amount of points to give the AI for its in-game high-score.
-  * The formula is `(In-game High Score / 1000) * Multiplier`
-  * So a high-score of 55200 with a multiplier of 2 will give a total amount of points of 110.4 to the AI.
 * **Power Up**
   * Points given whenever the AI collects a power up it didn't have yet.
-  * Mushroom, Flower multipliers, Star and 1-up
+  * Mushroom, Flower multipliers, Stars and 1-up
     * Additional multiplier for the type of power-up collected. If the global multiplier is 4, and the star multiplier is 2, then the AI is awarded 8 points for collecting a star.
 * **Taken Damage**
   * Points applied whenever an AI takes damage, not counting dying. 
