@@ -19,11 +19,12 @@ namespace Retro_ML.Metroid.Neural.Train;
 internal class MetroidPhenomeEvaluator : IPhenomeEvaluator<IBlackBox<double>>
 {
     private readonly EmulatorManager emulatorManager;
+    private readonly INeuralTrainer trainer;
+    private readonly ApplicationConfig appConfig;
+    private readonly MetroidPluginConfig pluginConfig;
+
     private IEmulatorAdapter? emulator;
-    private INeuralTrainer trainer;
     private MetroidDataFetcher? dataFetcher;
-    private ApplicationConfig appConfig;
-    private MetroidPluginConfig pluginConfig;
     private InputSetter? inputSetter;
     private OutputGetter? outputGetter;
 

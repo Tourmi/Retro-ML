@@ -32,8 +32,8 @@ internal class MetroidDataFetcher : IDataFetcher
     private readonly Dictionary<uint, byte[]> frameCache;
     private readonly Dictionary<uint, byte[]> roomCache;
     private readonly MetroidPluginConfig pluginConfig;
+    private readonly InternalClock internalClock;
 
-    private InternalClock internalClock;
     private byte previousScrollX;
     private byte previousScrollY;
     private int delayRoomCacheClearTimer;
