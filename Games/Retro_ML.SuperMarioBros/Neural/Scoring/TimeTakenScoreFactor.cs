@@ -38,7 +38,7 @@ namespace Retro_ML.SuperMarioBros.Neural.Scoring
             {
                 switch (fieldName)
                 {
-                    case nameof(MaximumLevelTime): MaximumLevelTime = (int)value; break;
+                    case nameof(MaximumLevelTime): MaximumLevelTime = (double)value; break;
                 }
             }
         }
@@ -76,7 +76,7 @@ namespace Retro_ML.SuperMarioBros.Neural.Scoring
 
         public IScoreFactor Clone()
         {
-            return new TimeTakenScoreFactor() { IsDisabled = IsDisabled, ScoreMultiplier = ScoreMultiplier, ExtraFields = ExtraFields, MaximumLevelTime = MaximumLevelTime };
+            return new TimeTakenScoreFactor() { IsDisabled = IsDisabled, ScoreMultiplier = ScoreMultiplier,  MaximumLevelTime = MaximumLevelTime };
         }
     }
 }

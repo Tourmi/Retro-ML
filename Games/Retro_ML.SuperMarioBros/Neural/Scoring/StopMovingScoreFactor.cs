@@ -25,11 +25,7 @@ namespace Retro_ML.SuperMarioBros.Neural.Scoring
 
         public StopMovingScoreFactor()
         {
-            ExtraFields = new ExtraField[]
-            {
-                new ExtraField(MAX_IMMOBILE_FRAMES, 15),
-                new ExtraField(MAX_IMMOBILE_FRAMES_IF_ALREADY_MOVED, 240)
-            };
+            ExtraFields = Array.Empty<ExtraField>();
         }
 
         public object this[string fieldName]
@@ -104,7 +100,7 @@ namespace Retro_ML.SuperMarioBros.Neural.Scoring
 
         public IScoreFactor Clone()
         {
-            return new StopMovingScoreFactor() { IsDisabled = IsDisabled, ScoreMultiplier = ScoreMultiplier, ExtraFields = ExtraFields, MaxImmobileFrames = MaxImmobileFrames, MaxImmobileFramesIfMoved = MaxImmobileFramesIfMoved };
+            return new StopMovingScoreFactor() { IsDisabled = IsDisabled, ScoreMultiplier = ScoreMultiplier, MaxImmobileFrames = MaxImmobileFrames, MaxImmobileFramesIfMoved = MaxImmobileFramesIfMoved };
         }
     }
 }
