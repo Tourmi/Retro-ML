@@ -151,8 +151,11 @@ function parseCommand(cmd)
             inputs.Select = true 
         end
 
-        joypad.set(inputs, 1)
-        joypad.set(inputs)
+        if string.find(emu.getsystemid(), "GB") then
+            joypad.set(inputs)
+        else
+            joypad.set(inputs, 1)
+        end
         okay()
         return
     end
