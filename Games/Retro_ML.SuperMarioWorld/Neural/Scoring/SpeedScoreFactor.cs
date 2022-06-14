@@ -62,6 +62,9 @@ namespace Retro_ML.SuperMarioWorld.Neural.Scoring
         public double VerticalMult { get; set; } = 0.25;
 
         public string Name => "Speed";
+
+        public string Tooltip => "Gives points based on the speed of the AI";
+
         public bool CanBeDisabled => true;
         public bool IsDisabled { get; set; }
         public bool ShouldStop => false;

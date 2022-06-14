@@ -19,7 +19,7 @@ namespace Retro_ML.Tetris.Neural.Scoring
 
         public FieldInfo[] Fields => new FieldInfo[]
         {
-             new DoubleFieldInfo(nameof(MaximumLevelTime), "Maximum Level Time", 1.0, double.MaxValue, 0.5)
+             new DoubleFieldInfo(nameof(MaximumLevelTime), "Maximum Level Time", 1.0, double.MaxValue, 0.5, "Maximum time the level can go on for, in seconds")
         };
 
         public TimeTakenScoreFactor()
@@ -55,6 +55,8 @@ namespace Retro_ML.Tetris.Neural.Scoring
         public double ScoreMultiplier { get; set; }
 
         public string Name => "Time taken";
+
+        public string Tooltip => "Reward applied every frame of the level";
 
         public bool CanBeDisabled => true;
 

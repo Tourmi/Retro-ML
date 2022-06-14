@@ -39,6 +39,8 @@ namespace Retro_ML.SuperMarioWorld.Neural.Scoring
 
         public string Name => "Died";
 
+        public string Tooltip => "The amount of points to attribute to an AI that died";
+
         public bool CanBeDisabled => false;
 
         public bool IsDisabled { get => false; set { } }

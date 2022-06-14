@@ -8,6 +8,7 @@ namespace Retro_ML.Application.ViewModels.Components.FieldInfo
         public abstract object GetValue();
         public abstract string FieldName { get; }
         public abstract string DisplayName { get; }
+        public abstract string? Tooltip { get; }
 
         public static FieldInfoViewModel GetFieldInfoViewModel(Configuration.FieldInformation.FieldInfo fieldInfo, object value)
         {

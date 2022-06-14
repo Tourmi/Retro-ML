@@ -13,6 +13,8 @@ namespace Retro_ML.SuperMarioKart.Neural.Scoring
 
         public string Name => "Finished race";
 
+        public string Tooltip => "Reward applied when the driver finishes a race";
+
         public bool CanBeDisabled => false;
 
         public bool IsDisabled { get => false; set { } }
@@ -25,7 +27,7 @@ namespace Retro_ML.SuperMarioKart.Neural.Scoring
 
         public FieldInfo[] Fields => new FieldInfo[]
         {
-             new DoubleFieldInfo(nameof(RankingMult), "Ranking multiplier", double.MinValue, double.MaxValue, 0.25),
+             new DoubleFieldInfo(nameof(RankingMult), "Ranking multiplier", double.MinValue, double.MaxValue, 0.25, "Gives additional points in Grand Prix mode depending on the AI's placing at the end of the race"),
         };
 
         public FinishedRaceScoreFactor()

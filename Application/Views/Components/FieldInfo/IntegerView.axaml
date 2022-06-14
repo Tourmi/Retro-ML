@@ -16,6 +16,6 @@
 
 	<StackPanel Spacing="5">
 		<TextBlock Classes="h1" Text="{Binding DisplayName}"/>
-		<NumericUpDown Classes="numericUpDown" Value="{Binding Value}" Minimum="{Binding MinimumValue}" Maximum="{Binding MaximumValue}" Increment="{Binding Increment}" ShowButtonSpinner="{Binding HasIncrement}"/>
+		<NumericUpDown Classes="numericUpDown" ToolTip.Tip="{Binding Tooltip}" Value="{Binding Value}" Minimum="{Binding MinimumValue}" Maximum="{Binding MaximumValue}" Increment="{Binding Increment}" ShowButtonSpinner="{Binding HasIncrement}"/>
 	</StackPanel>
 </UserControl>

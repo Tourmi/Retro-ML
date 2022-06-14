@@ -8,5 +8,10 @@
         {
             PossibleValues = possibleValues;
         }
+
+        public IntegerChoiceFieldInfo(string name, string readableName, int[] possibleValues, string tooltip) : base(name, readableName, tooltip)
+        {
+            PossibleValues = possibleValues;
+        }
     }
 }

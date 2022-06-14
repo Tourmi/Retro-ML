@@ -10,6 +10,7 @@ namespace Retro_ML.Application.ViewModels.Components
         public ScoreFactorViewModel(IScoreFactor scoreFactor)
         {
             Name = scoreFactor.Name;
+            Tooltip = scoreFactor.Tooltip;
             CanBeDisabled = scoreFactor.CanBeDisabled;
             isEnabled = !scoreFactor.IsDisabled;
             multiplier = scoreFactor.ScoreMultiplier;
@@ -23,6 +24,7 @@ namespace Retro_ML.Application.ViewModels.Components
         }
 
         public string Name { get; }
+        public string Tooltip { get; }
         public bool CanBeDisabled { get; }
         private bool isEnabled;
         public bool IsChecked

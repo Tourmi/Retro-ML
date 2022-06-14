@@ -15,6 +15,8 @@ namespace Retro_ML.SuperMarioKart.Neural.Scoring
 
         public string Name => "Offroad";
 
+        public string Tooltip => "Reward applied for every frame the driver spends offroad";
+
         public bool CanBeDisabled => true;
 
         public bool IsDisabled { get; set; }
@@ -26,7 +28,7 @@ namespace Retro_ML.SuperMarioKart.Neural.Scoring
 
         public FieldInfo[] Fields => new FieldInfo[]
         {
-             new DoubleFieldInfo(nameof(StopAfter), "Stop after", 0, double.MaxValue, 0.5)
+             new DoubleFieldInfo(nameof(StopAfter), "Stop after", 0, double.MaxValue, 0.5, "Stops the training on the current racetrack after the AI spends this amount of seconds offroad consecutively")
         };
 
         public OffRoadScoreFactor()

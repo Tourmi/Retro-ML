@@ -14,12 +14,12 @@ namespace Retro_ML.SuperMarioKart.Configuration
     {
         public FieldInfo[] Fields => new FieldInfo[]
         {
-            new IntegerFieldInfo(nameof(ViewDistance), "View Distance", 4, 64, 1),
-            new IntegerFieldInfo(nameof(ViewAngle), "View Angle (Degrees)", 10, 360, 10),
-            new IntegerChoiceFieldInfo(nameof(Raycount), "Raycast count", new int[] { 4, 8, 16, 32, 64 }),
-            new IntegerFieldInfo(nameof(InternalClockTickLength), "Internal Clock Tick Length (Frames)", 1, 3600, 1),
-            new IntegerChoiceFieldInfo(nameof(InternalClockLength), "Internal Clock Length", new int[] {1,2,3,4,5,6,7,8,16 }),
-            new IntegerFieldInfo(nameof(FrameSkip), "Frames to skip", 0, 15, 1)
+            new IntegerFieldInfo(nameof(ViewDistance), "View Distance", 4, 64, 1, "Distance in tiles that the AI can see"),
+            new IntegerFieldInfo(nameof(ViewAngle), "View Angle (Degrees)", 10, 360, 10, "The angle at which the AI can see"),
+            new IntegerChoiceFieldInfo(nameof(Raycount), "Raycast count", new int[] { 4, 8, 16, 32, 64 }, "The amount of vision rays to use"),
+            new IntegerFieldInfo(nameof(InternalClockTickLength), "Internal Clock Tick Length (Frames)", 1, 3600, 1, "The time (in frames) that it takes for the internal clock to move to its next state"),
+            new IntegerChoiceFieldInfo(nameof(InternalClockLength), "Internal Clock Length", new int[] {1,2,3,4,5,6,7,8,16 }, "The total amount of nodes the internal clock has"),
+            new IntegerFieldInfo(nameof(FrameSkip), "Frames to skip", 0, 15, 1, "Amount of frames to skip on every AI iteration")
         };
 
         public object this[string fieldName]

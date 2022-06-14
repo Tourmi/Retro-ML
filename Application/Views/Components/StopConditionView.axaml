@@ -18,7 +18,7 @@
 		</StackPanel>
 		<StackPanel Margin="5" Spacing="10" Orientation="Horizontal" IsVisible="{Binding HasParam}">
 			<TextBlock Classes="p" Text="{Binding ParamName}" VerticalAlignment="Center"/>
-			<NumericUpDown Value="{Binding ParamValue}" ShowButtonSpinner="False" Increment="1" Minimum="1" Maximum="999999999" VerticalAlignment="Center"/>
+			<NumericUpDown ToolTip.Tip="{Binding Tooltip}" Value="{Binding ParamValue}" ShowButtonSpinner="False" Increment="1" Minimum="1" Maximum="999999999" VerticalAlignment="Center"/>
 		</StackPanel>
 
 	</StackPanel>

@@ -41,6 +41,8 @@ namespace Retro_ML.Tetris.Neural.Scoring
 
         public string Name => "Game Over";
 
+        public string Tooltip => "Reward when the AI is game over";
+
         public bool CanBeDisabled => false;
 
         public bool IsDisabled { get => false; set { } }

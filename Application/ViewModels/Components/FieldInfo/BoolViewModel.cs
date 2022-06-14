@@ -8,6 +8,7 @@ namespace Retro_ML.Application.ViewModels.Components.FieldInfo
         public BoolFieldInfo FieldInfo { get; }
         public override string FieldName => FieldInfo.Name;
         public override string DisplayName => FieldInfo.ReadableName;
+        public override string? Tooltip => FieldInfo.Tooltip;
 
         private bool isChecked;
         public bool IsChecked
@@ -19,7 +20,7 @@ namespace Retro_ML.Application.ViewModels.Components.FieldInfo
         public BoolViewModel()
         {
             this.IsChecked = true;
-            FieldInfo = new BoolFieldInfo("TestField", "Test Field");
+            FieldInfo = new BoolFieldInfo("TestField", "Test Field", "Test Field");
         }
 
         public BoolViewModel(BoolFieldInfo boolFieldInfo, bool value)

@@ -15,6 +15,8 @@ namespace Retro_ML.SuperMarioKart.Neural.Scoring
 
         public string Name => "Coins";
 
+        public string Tooltip => "Reward applied whenever the AI picks up coins";
+
         public bool CanBeDisabled => true;
 
         public bool IsDisabled { get; set; }
@@ -26,7 +28,7 @@ namespace Retro_ML.SuperMarioKart.Neural.Scoring
 
         public FieldInfo[] Fields => new FieldInfo[]
         {
-             new DoubleFieldInfo(nameof(LosingCoinsMult), "Losing coins multiplier", double.MinValue, double.MaxValue, 0.25),
+             new DoubleFieldInfo(nameof(LosingCoinsMult), "Losing coins multiplier", double.MinValue, double.MaxValue, 0.25, "Multiplier to apply if the AI loses coins"),
         };
 
         public CoinsScoreFactor()

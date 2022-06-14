@@ -14,7 +14,7 @@ namespace Retro_ML.SuperMarioKart.Neural.Scoring
 
         public FieldInfo[] Fields => new FieldInfo[]
         {
-             new DoubleFieldInfo(nameof(MaximumRaceTime), "Maximum Race Time", 30.0, double.MaxValue, 1.0)
+             new DoubleFieldInfo(nameof(MaximumRaceTime), "Maximum Race Time", 30.0, double.MaxValue, 1.0, "Reward applied every frame of the race")
         };
 
         public TimeTakenScoreFactor()
@@ -50,6 +50,8 @@ namespace Retro_ML.SuperMarioKart.Neural.Scoring
         public double ScoreMultiplier { get; set; }
 
         public string Name => "Time taken";
+
+        public string Tooltip => "Reward applied every frame of the race";
 
         public bool CanBeDisabled => true;
 

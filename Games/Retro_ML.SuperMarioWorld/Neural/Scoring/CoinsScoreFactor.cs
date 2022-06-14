@@ -37,6 +37,9 @@ namespace Retro_ML.SuperMarioWorld.Neural.Scoring
 
         public string Name => "Coins";
 
+        public string Tooltip => "The amount of points to give the AI per coin collected";
+
+
         public bool CanBeDisabled => true;
 
         public bool IsDisabled { get; set; }

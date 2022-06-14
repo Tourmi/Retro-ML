@@ -17,7 +17,7 @@
 	<StackPanel>
 		<StackPanel Orientation="Horizontal" VerticalAlignment="Center" Spacing="10">
 			<TextBlock Classes="h1" Text="{Binding DisplayName}" VerticalAlignment="Center"/>
-			<CheckBox IsChecked="{Binding IsChecked}" VerticalAlignment="Center"/>
+			<CheckBox IsChecked="{Binding IsChecked}" ToolTip.Tip="{Binding Tooltip}" VerticalAlignment="Center"/>
 		</StackPanel>
 	</StackPanel>
 </UserControl>
