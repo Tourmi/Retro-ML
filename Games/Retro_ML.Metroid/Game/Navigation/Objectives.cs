@@ -1,10 +1,9 @@
-﻿namespace Retro_ML.Metroid.Game.Navigation
+﻿namespace Retro_ML.Metroid.Game.Navigation;
+
+internal enum Objectives
 {
-    internal enum Objectives
-    {
-        None,
-        Reach,
-        Kill,
-        Obtain
-    }
+    None,
+    Reach,
+    Kill,
+    Obtain
 }

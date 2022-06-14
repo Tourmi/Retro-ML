@@ -2,85 +2,84 @@
 using Retro_ML.Game;
 using Retro_ML.Neural.Scoring;
 
-namespace Retro_ML.Metroid.Neural.Scoring
+namespace Retro_ML.Metroid.Neural.Scoring;
+
+internal class TimeTakenScoreFactor : IScoreFactor
 {
-    internal class TimeTakenScoreFactor : IScoreFactor
+    public const string MAXIMUM_TRAINING_TIME = "Maximum Training Time";
+
+    private bool shouldStop = false;
+    private double currScore;
+    private int levelFrames = 0;
+
+    public FieldInfo[] Fields => new FieldInfo[]
     {
-        public const string MAXIMUM_TRAINING_TIME = "Maximum Training Time";
+         new DoubleFieldInfo(nameof(MaximumTrainingTime), "Maximum Training Time", 30.0, double.MaxValue, 1.0)
+    };
 
-        private bool shouldStop = false;
-        private double currScore;
-        private int levelFrames = 0;
+    public TimeTakenScoreFactor()
+    {
+        ExtraFields = Array.Empty<ExtraField>();
+    }
 
-        public FieldInfo[] Fields => new FieldInfo[]
+    public object this[string fieldName]
+    {
+        get => fieldName switch
         {
-             new DoubleFieldInfo(nameof(MaximumTrainingTime), "Maximum Training Time", 30.0, double.MaxValue, 1.0)
+            nameof(MaximumTrainingTime) => MaximumTrainingTime,
+            _ => 0,
         };
 
-        public TimeTakenScoreFactor()
+        set
         {
-            ExtraFields = Array.Empty<ExtraField>();
-        }
-
-        public object this[string fieldName]
-        {
-            get => fieldName switch
+            switch (fieldName)
             {
-                nameof(MaximumTrainingTime) => MaximumTrainingTime,
-                _ => 0,
-            };
-
-            set
-            {
-                switch (fieldName)
-                {
-                    case nameof(MaximumTrainingTime): MaximumTrainingTime = (double)value; break;
-                }
+                case nameof(MaximumTrainingTime): MaximumTrainingTime = (double)value; break;
             }
         }
+    }
 
-        /// <summary>
-        /// Time in seconds before stopping the current save state
-        /// </summary>
-        public double MaximumTrainingTime { get; set; } = 300;
+    /// <summary>
+    /// Time in seconds before stopping the current save state
+    /// </summary>
+    public double MaximumTrainingTime { get; set; } = 300;
 
-        public bool ShouldStop => shouldStop;
-        public double ScoreMultiplier { get; set; }
+    public bool ShouldStop => shouldStop;
+    public double ScoreMultiplier { get; set; }
 
-        public string Name => "Time taken";
+    public string Name => "Time taken";
 
-        public bool CanBeDisabled => true;
+    public bool CanBeDisabled => true;
 
-        public bool IsDisabled { get; set; }
+    public bool IsDisabled { get; set; }
 
-        public ExtraField[] ExtraFields { get; set; }
+    public ExtraField[] ExtraFields { get; set; }
 
-        public double GetFinalScore() => currScore;
+    public double GetFinalScore() => currScore;
 
-        public void Update(IDataFetcher dataFetcher)
+    public void Update(IDataFetcher dataFetcher)
+    {
+        levelFrames++;
+        currScore += ScoreMultiplier / 60.0;
+        if (levelFrames >= MaximumTrainingTime * 60)
         {
-            levelFrames++;
-            currScore += ScoreMultiplier / 60.0;
-            if (levelFrames >= MaximumTrainingTime * 60)
-            {
-                shouldStop = true;
-            }
+            shouldStop = true;
         }
+    }
 
-        public void LevelDone()
-        {
-            shouldStop = false;
-            levelFrames = 0;
-        }
+    public void LevelDone()
+    {
+        shouldStop = false;
+        levelFrames = 0;
+    }
 
-        public IScoreFactor Clone()
+    public IScoreFactor Clone()
+    {
+        return new TimeTakenScoreFactor()
         {
-            return new TimeTakenScoreFactor()
-            {
-                IsDisabled = IsDisabled,
-                ScoreMultiplier = ScoreMultiplier,
-                MaximumTrainingTime = MaximumTrainingTime
-            };
-        }
+            IsDisabled = IsDisabled,
+            ScoreMultiplier = ScoreMultiplier,
+            MaximumTrainingTime = MaximumTrainingTime
+        };
     }
 }

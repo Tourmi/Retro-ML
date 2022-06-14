@@ -4,41 +4,40 @@ using SharpNeat.Experiments;
 using SharpNeat.NeuralNets;
 using System.Text.Json;
 
-namespace Retro_ML.Metroid.Neural.Train
+namespace Retro_ML.Metroid.Neural.Train;
+
+internal class MetroidExperimentFactory : INeatExperimentFactory
 {
-    internal class MetroidExperimentFactory : INeatExperimentFactory
+    public string Id => "smk-experiment-factory";
+
+    private readonly EmulatorManager emulatorManager;
+    private readonly ApplicationConfig appConfig;
+    private readonly MetroidTrainer trainer;
+
+    public MetroidExperimentFactory(EmulatorManager emulator, ApplicationConfig appConfig, MetroidTrainer trainer)
     {
-        public string Id => "smk-experiment-factory";
+        emulatorManager = emulator;
+        this.appConfig = appConfig;
+        this.trainer = trainer;
+    }
 
-        private readonly EmulatorManager emulatorManager;
-        private readonly ApplicationConfig appConfig;
-        private readonly MetroidTrainer trainer;
+    public INeatExperiment<double> CreateExperiment(JsonElement configElem)
+    {
+        var evalScheme = new MetroidEvaluationScheme(emulatorManager, appConfig, trainer);
 
-        public MetroidExperimentFactory(EmulatorManager emulator, ApplicationConfig appConfig, MetroidTrainer trainer)
+        var experiment = new NeatExperiment<double>(evalScheme, Id)
         {
-            emulatorManager = emulator;
-            this.appConfig = appConfig;
-            this.trainer = trainer;
-        }
+            IsAcyclic = true,
+            ActivationFnName = ActivationFunctionId.LeakyReLU.ToString()
+        };
 
-        public INeatExperiment<double> CreateExperiment(JsonElement configElem)
-        {
-            var evalScheme = new MetroidEvaluationScheme(emulatorManager, appConfig, trainer);
+        // Read standard neat experiment json config and use it configure the experiment.
+        NeatExperimentJsonReader<double>.Read(experiment, configElem);
+        return experiment;
+    }
 
-            var experiment = new NeatExperiment<double>(evalScheme, Id)
-            {
-                IsAcyclic = true,
-                ActivationFnName = ActivationFunctionId.LeakyReLU.ToString()
-            };
-
-            // Read standard neat experiment json config and use it configure the experiment.
-            NeatExperimentJsonReader<double>.Read(experiment, configElem);
-            return experiment;
-        }
-
-        public INeatExperiment<float> CreateExperimentSinglePrecision(JsonElement configElem)
-        {
-            throw new NotImplementedException();
-        }
+    public INeatExperiment<float> CreateExperimentSinglePrecision(JsonElement configElem)
+    {
+        throw new NotImplementedException();
     }
 }
