@@ -94,7 +94,7 @@ internal class ProgressScoreFactor : IScoreFactor
             framesWithoutProgress = currScore <= maxScore ? framesWithoutProgress + 1 : 0;
         }
 
-        maxScore = currScore;
+        maxScore = Math.Max(currScore, maxScore);
 
         if (MaximumTimeWithoutProgress != 0 && framesWithoutProgress > MaximumTimeWithoutProgress * 60.0)
         {
