@@ -37,7 +37,7 @@ namespace Retro_ML.SuperMarioWorld.Neural.Scoring
 
         public string Name => "High Score";
 
-        public string Tooltip => "The amount of points to give the AI for its in-game high-score";
+        public string Tooltip => "The reward to give the AI for its in-game high-score";
 
         public bool CanBeDisabled => true;
 

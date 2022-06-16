@@ -37,7 +37,7 @@ namespace Retro_ML.SuperMarioWorld.Neural.Scoring
 
         public string Name => "Yoshi Coins";
 
-        public string Tooltip => "The amount of points to give the AI per Yoshi Coin collected";
+        public string Tooltip => "Reward to give the AI per Yoshi Coin collected";
 
         public bool CanBeDisabled => true;
 

@@ -38,7 +38,7 @@ namespace Retro_ML.SuperMarioWorld.Neural.Scoring
 
         public string Name => "1-ups";
 
-        public string Tooltip => "The amount of points to give the AI per 1-up collected from any source";
+        public string Tooltip => "Reward to give the AI per 1-up collected from any source";
 
         public bool CanBeDisabled => true;
 

@@ -63,7 +63,7 @@ namespace Retro_ML.SuperMarioWorld.Neural.Scoring
 
         public string Name => "Speed";
 
-        public string Tooltip => "Gives points based on the speed of the AI";
+        public string Tooltip => "Reward based on the speed of the AI";
 
         public bool CanBeDisabled => true;
         public bool IsDisabled { get; set; }

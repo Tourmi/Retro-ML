@@ -64,7 +64,7 @@ namespace Retro_ML.SuperMarioWorld.Neural.Scoring
 
         public string Name => "Power Up";
 
-        public string Tooltip => "Points given whenever the AI collects a power up it didn't have yet";
+        public string Tooltip => "Reward given whenever the AI collects a power up it didn't have yet";
 
         public bool CanBeDisabled => true;
 
