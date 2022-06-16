@@ -31,7 +31,7 @@
 						<NumericUpDown Classes="numericTextBox" Value="{Binding Multithread}" Minimum="1" ToolTip.Tip="This is the amount of emulators which will be booted while training"/>
 						<TextBlock Classes="h1" Text="Communication Port with Arduino"/>
 						<TextBox Classes="numericTextBox" Text="{Binding ArduinoPort}" ToolTip.Tip="Communication port with an Arduino that's connected to the PC. Should be left like it is if no arduinos are connected"/>
-						<TextBlock Classes="h1" Text="Save states to use" Tooltip.Tip="Save states to use while training AIs"/>
+						<TextBlock Classes="h1" Text="Save states to use" ToolTip.Tip="Save states to use while training AIs"/>
 						<Button Command="{Binding SelectSaveStates}" Classes="configButton" Content="Select save states"/>
 						<TextBlock Classes="p" Text="Selected: "/>
 						<TextBlock Classes="p" Text="{Binding SaveStates}"/>

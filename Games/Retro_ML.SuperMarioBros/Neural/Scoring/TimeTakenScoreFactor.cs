@@ -50,6 +50,8 @@ namespace Retro_ML.SuperMarioBros.Neural.Scoring
 
         public string Name => "Time taken";
 
+        public string Tooltip => "Reward applied when the AI takes way too long to complete a level. Recommended to set to a negative value and leave enabled in case AIs decide to take way too much time on a level";
+
         public bool CanBeDisabled => true;
 
         public bool IsDisabled { get; set; }

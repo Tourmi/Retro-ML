@@ -28,6 +28,8 @@ namespace Retro_ML.SuperMarioBros.Neural.Scoring
 
         public string Name => "Won level";
 
+        public string Tooltip => "Reward to give if the AI wins a level. Ideally, this should be a high value to encourage actually finishing levels";
+
         public bool CanBeDisabled => false;
 
         public bool IsDisabled { get => false; set { } }

@@ -29,6 +29,8 @@ namespace Retro_ML.SuperMarioBros.Neural.Scoring
 
         public string Name => "Distance travelled";
 
+        public string Tooltip => "Reward for each tile the AI traverses. This is based on the maximum distance, so going back and forth will not increase the reward";
+
         public bool CanBeDisabled => true;
 
         public bool IsDisabled { get; set; }
