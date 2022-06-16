@@ -36,6 +36,8 @@ namespace Retro_ML.SuperMarioWorld.Neural.Scoring
 
         public string Name => "Taken Damage";
 
+        public string Tooltip => "Reward given whenever an AI takes damage, not counting dying";
+
         public bool CanBeDisabled => true;
 
         public bool IsDisabled { get; set; }

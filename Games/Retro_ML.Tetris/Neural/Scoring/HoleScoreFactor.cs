@@ -20,7 +20,7 @@ namespace Retro_ML.Tetris.Neural.Scoring
 
         public FieldInfo[] Fields => new FieldInfo[]
         {
-             new IntegerFieldInfo(nameof(NumberOfHoles), "Number of holes permitted", 0, 50, 1),
+             new IntegerFieldInfo(nameof(NumberOfHoles), "Number of holes permitted", 0, 50, 1, "Stops the current level if the AI creates X holes"),
         };
 
         public HoleScoreFactor()
@@ -57,6 +57,8 @@ namespace Retro_ML.Tetris.Neural.Scoring
         public double ScoreMultiplier { get; set; }
 
         public string Name => "Number of holes";
+
+        public string Tooltip => "Reward applied whenever the AI creates a hole when placing blocks";
 
         public bool CanBeDisabled => true;
 

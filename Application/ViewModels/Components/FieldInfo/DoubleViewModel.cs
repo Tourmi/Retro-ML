@@ -8,6 +8,7 @@ namespace Retro_ML.Application.ViewModels.Components.FieldInfo
         public DoubleFieldInfo FieldInfo { get; }
         public override string FieldName => FieldInfo.Name;
         public override string DisplayName => FieldInfo.ReadableName;
+        public override string? Tooltip => FieldInfo.Tooltip;
 
         private double value;
         public double Value
@@ -26,7 +27,7 @@ namespace Retro_ML.Application.ViewModels.Components.FieldInfo
 
         public DoubleViewModel()
         {
-            FieldInfo = new DoubleFieldInfo("TestField", "Test Field", 5.05, 25.05, 0.05);
+            FieldInfo = new DoubleFieldInfo("TestField", "Test Field", 5.05, 25.05, 0.05, "Test Field");
             Value = 15;
         }
 

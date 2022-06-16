@@ -11,6 +11,11 @@
         string Name { get; }
 
         /// <summary>
+        /// Description of the condition when hovering it
+        /// </summary>
+        string Tooltip { get; }
+
+        /// <summary>
         /// Whether or not this stop condition should be used.
         /// </summary>
         bool ShouldUse { get; set; }

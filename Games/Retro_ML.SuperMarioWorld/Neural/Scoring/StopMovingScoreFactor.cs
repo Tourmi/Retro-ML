@@ -52,6 +52,8 @@ namespace Retro_ML.SuperMarioWorld.Neural.Scoring
 
         public string Name => "Stopped moving";
 
+        public string Tooltip => "Stops the current level if the AI has stopped progressing through the level. This is based on the maximum distance reached so far, not the current position";
+
         public bool CanBeDisabled => true;
 
         public bool IsDisabled { get; set; }

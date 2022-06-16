@@ -7,6 +7,8 @@
 
         public string Name => "Stop when plateau reached";
 
+        public string Tooltip => "Will stop the training session once an AI has stopped improving over the specified amount of generations";
+
         public bool ShouldUse { get; set; }
 
         public bool HasParam => true;

@@ -17,9 +17,9 @@ namespace Retro_ML.SuperMarioWorld.Neural.Scoring
 
         public FieldInfo[] Fields => new FieldInfo[]
         {
-             new DoubleFieldInfo(nameof(MushroomMult), "Mushroom Mult", double.MinValue, double.MaxValue, 0.25),
-             new DoubleFieldInfo(nameof(FlowerMult), "Flower Mult", double.MinValue, double.MaxValue, 0.25),
-             new DoubleFieldInfo(nameof(CapeMult), "Cape Mult", double.MinValue, double.MaxValue, 0.25),
+             new DoubleFieldInfo(nameof(MushroomMult), "Mushroom Mult", double.MinValue, double.MaxValue, 0.25, "Multiplier when the AI gets a mushroom"),
+             new DoubleFieldInfo(nameof(FlowerMult), "Flower Mult", double.MinValue, double.MaxValue, 0.25, "Multiplier when the AI gets a flower"),
+             new DoubleFieldInfo(nameof(CapeMult), "Cape Mult", double.MinValue, double.MaxValue, 0.25, "Multiplier when the AI gets a cape"),
         };
 
         public PowerUpScoreFactor()
@@ -63,6 +63,8 @@ namespace Retro_ML.SuperMarioWorld.Neural.Scoring
         public double ScoreMultiplier { get; set; }
 
         public string Name => "Power Up";
+
+        public string Tooltip => "Reward given whenever the AI collects a power up it didn't have yet";
 
         public bool CanBeDisabled => true;
 

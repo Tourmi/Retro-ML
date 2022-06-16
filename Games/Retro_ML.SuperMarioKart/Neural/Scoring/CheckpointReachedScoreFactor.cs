@@ -42,6 +42,8 @@ namespace Retro_ML.SuperMarioKart.Neural.Scoring
 
         public string Name => "Checkpoint Reached";
 
+        public string Tooltip => "Reward applied when the driver reaches a new checkpoint";
+
         public bool CanBeDisabled => true;
 
         public bool IsDisabled { get; set; }

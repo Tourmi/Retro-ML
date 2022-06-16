@@ -6,6 +6,8 @@
 
         public string Name => "Stop after X minutes";
 
+        public string Tooltip => "Will stop the training session after the specified amount of minutes";
+
         public bool ShouldUse { get; set; }
 
         public bool HasParam => true;

@@ -23,7 +23,7 @@ namespace Retro_ML.Tetris.Neural.Scoring
 
         public FieldInfo[] Fields => new FieldInfo[]
         {
-             new IntegerFieldInfo(nameof(HeightDifference), "Maximum height difference from median", 1, 17, 1)
+             new IntegerFieldInfo(nameof(HeightDifference), "Maximum height difference from median", 1, 17, 1, "The difference between the max and median")
         };
 
         public ColumnHeightScoreFactor()
@@ -57,6 +57,8 @@ namespace Retro_ML.Tetris.Neural.Scoring
         public int HeightDifference { get; set; } = 5;
 
         public string Name => "Column Height";
+
+        public string Tooltip => "Reward applied when the AI creates a big gap between the maximum height and the median";
 
         public bool CanBeDisabled => true;
 

@@ -16,6 +16,8 @@ namespace Retro_ML.SuperMarioKart.Neural.Scoring
 
         public string Name => "Collisions";
 
+        public string Tooltip => "Reward applied whenever the AI collides with a wall, another racer, etc";
+
         public bool CanBeDisabled => true;
 
         public bool IsDisabled { get; set; }
@@ -28,7 +30,7 @@ namespace Retro_ML.SuperMarioKart.Neural.Scoring
 
         public FieldInfo[] Fields => new FieldInfo[]
         {
-             new IntegerFieldInfo(nameof(StopAfterXCollisions), "Maximum collisions", 0, int.MaxValue, 1),
+             new IntegerFieldInfo(nameof(StopAfterXCollisions), "Maximum collisions", 0, int.MaxValue, 1, "Stops the current race if the total collisions reach this number"),
         };
 
         public CollisionScoreFactor()

@@ -26,10 +26,10 @@ namespace Retro_ML.Tetris.Neural.Scoring
 
         public FieldInfo[] Fields => new FieldInfo[]
         {
-             new DoubleFieldInfo(nameof(SingleScoreMult), "Single Multiplier", double.MinValue, double.MaxValue, 0.25),
-             new DoubleFieldInfo(nameof(DoubleScoreMult), "Double Multiplier", double.MinValue, double.MaxValue, 0.25),
-             new DoubleFieldInfo(nameof(TripleScoreMult), "Triple Multiplier", double.MinValue, double.MaxValue, 0.25),
-             new DoubleFieldInfo(nameof(TetrisScoreMult), "Tetris Multiplier", double.MinValue, double.MaxValue, 0.25)
+             new DoubleFieldInfo(nameof(SingleScoreMult), "Single Multiplier", double.MinValue, double.MaxValue, 0.25, "Multiplier for clearing a single line"),
+             new DoubleFieldInfo(nameof(DoubleScoreMult), "Double Multiplier", double.MinValue, double.MaxValue, 0.25, "Multiplier when clearing 2 lines at the same time"),
+             new DoubleFieldInfo(nameof(TripleScoreMult), "Triple Multiplier", double.MinValue, double.MaxValue, 0.25, "Multiplier when clearing 3 lines at the same time"),
+             new DoubleFieldInfo(nameof(TetrisScoreMult), "Tetris Multiplier", double.MinValue, double.MaxValue, 0.25, "Multiplier when clearing 4 lines at the same time")
         };
 
         public LineClearedScoreFactor()
@@ -77,6 +77,8 @@ namespace Retro_ML.Tetris.Neural.Scoring
         public double ScoreMultiplier { get; set; }
 
         public string Name => "Line Cleared";
+
+        public string Tooltip => "Reward applied when the AI clears one or multiple lines";
 
         public bool CanBeDisabled => false;
 
