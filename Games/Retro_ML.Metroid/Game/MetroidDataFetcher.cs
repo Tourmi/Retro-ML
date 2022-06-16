@@ -87,6 +87,8 @@ internal class MetroidDataFetcher : IDataFetcher
     public ushort GetMaximumHealth() => (ushort)((ReadSingle(Progress.EnergyTanks) + 1) * TANK_HEALTH - 1);
     public double GetSamusHealthRatio() => GetSamusHealth() / (double)GetMaximumHealth();
     public ushort GetDeathCount() => (ushort)ReadULong(Progress.Deaths);
+    public short GetSamusYSpeed() => (short)(((sbyte)ReadSingle(Samus.VerticalSpeed)) * 0x100 + ReadSingle(Samus.VerticalFractionalSpeed));
+    public short GetSamusXSpeed() => (short)(((sbyte)ReadSingle(Samus.HorizontalSpeed)) * 0x100 + ReadSingle(Samus.HorizontalFractionalSpeed));
     public byte GetSamusXPosition() => ReadSingle(Samus.XPosition);
     public byte GetSamusYPosition() => ReadSingle(Samus.YPosition);
     public (int xPos, int yPos) GetSamusScreensPosition() => GetScreensPosition(GetSamusXPosition() / META_TILE_SIZE, GetSamusYPosition() / META_TILE_SIZE, IsSamusInFirstScreen());
@@ -99,6 +101,7 @@ internal class MetroidDataFetcher : IDataFetcher
     public bool IsSamusInDoor() => ReadSingle(Gamestate.InADoor) != 0;
     public bool IsSamusInFirstScreen() => ReadSingle(Samus.CurrentScreen) == 0;
     public bool IsSamusFrozen() => ReadSingle(Gamestate.FreezeTimer) != 0;
+    public bool IsSamusGrounded() => GetSamusYSpeed() == 0;
     public bool IsBossPresent() => ReadSingle(Gamestate.IsMiniBossPresent) != 0;
 
     public bool HasBombs() => (ReadSingle(Progress.Equipment) & 0b0000_0001) != 0;
@@ -114,10 +117,10 @@ internal class MetroidDataFetcher : IDataFetcher
     public bool KilledRidley() => false; //TODO : detect whether or not ridley was killed
     public bool KilledMotherBrain() => false; //TODO : detect whether or not mother brain was killed (maybe use timer?)
 
-    public double SamusInvincibilityTimer() => ReadSingle(Samus.InvincibleTimer) / (double)INVINCIBILITY_TIMER_LENGTH;
-    public double GetCurrentMissiles() => ReadSingle(Progress.Missiles) / Math.Max(1.0, ReadSingle(Progress.MissileCapacity));
-    public double GetSamusVerticalSpeed() => (((sbyte)ReadSingle(Samus.VerticalSpeed)) * 0x100 + ReadSingle(Samus.VerticalFractionalSpeed)) / (double)MAXIMUM_VERTICAL_SPEED;
-    public double GetSamusHorizontalSpeed() => (((sbyte)ReadSingle(Samus.HorizontalSpeed)) * 0x100 + ReadSingle(Samus.HorizontalFractionalSpeed)) / (double)MAXIMUM_HORIZONTAL_SPEED;
+    public double GetSamusInvincibilityTimerRatio() => ReadSingle(Samus.InvincibleTimer) / (double)INVINCIBILITY_TIMER_LENGTH;
+    public double GetCurrentMissileRatio() => ReadSingle(Progress.Missiles) / Math.Max(1.0, ReadSingle(Progress.MissileCapacity));
+    public double GetSamusYSpeedRatio() => GetSamusYSpeed() / (double)MAXIMUM_VERTICAL_SPEED;
+    public double GetSamusXSpeedRatio() => GetSamusXSpeed() / (double)MAXIMUM_HORIZONTAL_SPEED;
 
     public bool IsHorizontalRoom() => (ReadSingle(Room.HorizontalOrVertical) & 0b0000_1000) == 0;
     public bool IsOnNameTable3() => (ReadSingle(Room.PPUCTL0) & 0b0000_0011) != 0;
@@ -141,27 +144,110 @@ internal class MetroidDataFetcher : IDataFetcher
     public bool CanSamusAct() => (IsSamusInDoor(), IsSamusFrozen()) == (false, false);
 
     /// <summary>
-    /// Returns a 3x3 array containing the acquisition status of progression items.
+    /// Returns whether or not Samus can pass under the blocks in front of her. Can tell her when she has to use her Morph ball
     /// <code>
-    /// 0,0 : Bombs
-    /// 0,1 : High Jump
-    /// 0,2 : Long Beam
-    /// 1,0 : Screw Attack
-    /// 1,1 : Morph Ball
-    /// 1,2 : Varia Suit
-    /// 2,0 : Wave Beam
-    /// 2,1 : Ice Beam
-    /// 2,2 : Missiles
+    /// S : Samus
+    /// X : Solid
+    /// - : Space
+    /// . : Anything
+    /// 
+    /// Left side
+    /// XS.
+    /// -S.
+    /// XX.
+    /// 
+    /// Right side
+    /// .SX
+    /// .S-
+    /// .XX
     /// </code>
+    /// </summary>
+    public bool CanPassUnder()
+    {
+        if (!IsSamusGrounded()) return false;
+        var tiles = GetTiles(1, 1);
+        int dirr = (int)SamusLookDirection();
+
+        return Tile.IsSolid(tiles[0, 1 + dirr])
+               && !Tile.IsSolid(tiles[1, 1 + dirr])
+               && Tile.IsSolid(tiles[2, 1])
+               && Tile.IsSolid(tiles[2, 1 + dirr]);
+    }
+
+    /// <summary>
+    /// Returns whether or not samus is in front of a door
+    /// </summary>
+    public bool IsInFrontOfDoor() => GetDoorInfo().isInFront;
+
+    /// <summary>
+    /// Returns whether or not Samus is in front of a missile door
+    /// </summary>
+    public bool IsInFrontOfMissileDoor() => GetDoorInfo() switch
+    {
+        (true, true, false) => true,
+        _ => false
+    };
+
+    private (bool isInFront, bool isMissile, bool isOpen) GetDoorInfo()
+    {
+        byte xPos = GetSamusXPosition();
+        var samusDirr = SamusLookDirection();
+        //if xPos negative, then Samus is in the right half of the screen
+        (var doorStatusDirr, var doorFrameAddress, bool lookingTowardsDoor) = xPos > 128 ?
+                                                                                        (-1, Room.RightDoorFrameOffset, samusDirr > 0) :
+                                                                                        (1, Room.LeftDoorFrameOffset, samusDirr < 0);
+        if (!lookingTowardsDoor) return (false, false, false);
+
+        byte yPos = GetSamusYPosition();
+        //120 is too low, 95 is too high
+        if (yPos is > 120 or < 95) return (false, false, false);
+        if (doorStatusDirr > 0 && (xPos is < 16 or > 48)) return (false, false, false);
+        if (doorStatusDirr < 0 && (xPos is < 208 or > 240)) return (false, false, false);
+
+        if (!IsSamusInFirstScreen()) doorFrameAddress = new AddressData(doorFrameAddress.Address + (Room.TilesNamespace3.Address - Room.TilesNamespace0.Address));
+
+        byte[] res = Read(doorFrameAddress, new AddressData((uint)(doorFrameAddress.Address + doorStatusDirr)));
+        (byte doorFrame, byte doorStatus) = (res[0], res[1]);
+
+        if (!Tile.IsDoorFrame(doorFrame)) return (false, false, false);
+        bool isOpen = !Tile.IsDoor(doorStatus);
+        bool isMissile = Tile.IsMissileDoor(doorFrame);
+
+        return (true, isMissile, isOpen);
+    }
+
+    /// <summary>
+    /// Returns a 1xEquipment array containing the acquisition status of progression items. Here's the order of the items : 
+    /// <code>
+    /// Bombs
+    /// High Jump
+    /// Long Beam
+    /// Screw Attack
+    /// Morph Ball
+    /// Varia Suit
+    /// Wave Beam
+    /// Ice Beam
+    /// Missiles
+    /// </code>
+    /// Note that items that are disabled are just skipped
     /// </summary>
     /// <returns></returns>
     public bool[,] GetEquipment()
     {
-        return new bool[,] {
-            { HasBombs(), HasHighJump(), HasLongBeam() },
-            { HasScrewAttack(), HasMorphBall(), HasVariaSuit() },
-            { HasWaveBeam(), HasIceBeam(), HasMissiles() }
+        bool[,] result = new bool[1, pluginConfig.EquipmentCount];
+        var equipFuncs = new Func<bool>[] {
+           HasBombs, HasHighJump, HasLongBeam,
+           HasScrewAttack, HasMorphBall, HasVariaSuit,
+           HasWaveBeam, HasIceBeam, HasMissiles
         };
+        int currIndex = 0;
+        var equipStatus = pluginConfig.EquipmentStatus;
+        for (int i = 0; i < equipStatus.Length; i++)
+        {
+            if (equipStatus[i]) result[0, currIndex++] = equipFuncs[i]();
+        }
+
+        return result;
     }
 
     /// <summary>
@@ -258,7 +344,7 @@ internal class MetroidDataFetcher : IDataFetcher
         {
             for (int j = 0; j < tiles.GetLength(1); j++)
             {
-                result[i, j] = tiles[i, j] != 0xFF; //TODO : check ID for bushes
+                result[i, j] = Tile.IsSolid(tiles[i, j]);
             }
         }
 

@@ -10,8 +10,8 @@ internal class ProgressScoreFactor : IScoreFactor
     private double currScore;
     private double maxScore;
     private bool isInit = false;
-    private int previousX;
-    private int previousY;
+    private byte previousX;
+    private byte previousY;
     private int framesWithoutProgress;
     public string Name => "Progression";
 
@@ -32,10 +32,7 @@ internal class ProgressScoreFactor : IScoreFactor
         new DoubleFieldInfo(nameof(MaximumTimeWithoutProgress), "Maximum time without progress", 0, double.MaxValue, 1.0)
     };
 
-    public ProgressScoreFactor()
-    {
-        ExtraFields = Array.Empty<ExtraField>();
-    }
+    public ProgressScoreFactor() => ExtraFields = Array.Empty<ExtraField>();
 
     public object this[string fieldName]
     {
@@ -78,8 +75,15 @@ internal class ProgressScoreFactor : IScoreFactor
             isInit = true;
         }
 
+        //If samus isn't grounded, don't count vertical progress
+        if (!df.IsSamusGrounded())
+        {
+            currY = previousY;
+        }
+
         double distX = currX - previousX;
         double distY = currY - previousY;
+
         //correct the distance if there was an overflow/underflow
         if (distX > 128) distX -= byte.MaxValue;
         if (distX < -128) distX += byte.MaxValue;

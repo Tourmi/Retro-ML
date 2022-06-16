@@ -32,9 +32,24 @@ internal static class Addresses
     {
         /// <summary>
         /// The currently loaded tiles, split into two pages of 0x400 tiles.
-        /// The final 2 rows of tiles appear to be useless
+        /// The final 2 rows of tiles appear to be useless. Here are some useful tile IDs
+        /// <code>
+        /// 0xFF : Empty
+        /// 0x4E : Door (Blue-red part)
+        /// 0xA0 : Regular Door Frame (Tiny squares past the door)
+        /// 0xA1 : Missile Door Frame (Tiny squares past the door)
+        /// 0xCD - 0xD4 : Bush (can pass through)
+        /// </code>
         /// </summary>
         public static readonly AddressData Tiles = new(0x6000, 0x800, AddressData.CacheDurations.Room);
+        /// <summary>
+        /// Tiles for the PPU namespace 0
+        /// </summary>
+        public static readonly AddressData TilesNamespace0 = new(0x6000, 0x400, AddressData.CacheDurations.Room);
+        /// <summary>
+        /// Tiles for the PPU namespace 3
+        /// </summary>
+        public static readonly AddressData TilesNamespace3 = new(0x6400, 0x400, AddressData.CacheDurations.Room);
         /// <summary>
         /// X position of camera scroll
         /// </summary>
@@ -69,6 +84,14 @@ internal static class Addresses
         /// Bit 0000_X000 is set for a vertical room, unset for a horizontal room
         /// </summary>
         public static readonly AddressData HorizontalOrVertical = new(0xFA);
+        /// <summary>
+        /// Offset to get the doorframe tile, when a door is present on the left side of the screen. Assumes door is on namespace0
+        /// </summary>
+        public static readonly AddressData LeftDoorFrameOffset = new(0x61E1);
+        /// <summary>
+        /// Offset to get the doorframe tile, when a door is present on the right side of the screen. Assumes door is on namespace0
+        /// </summary>
+        public static readonly AddressData RightDoorFrameOffset = new(0x61FE);
     }
 
     public static class Gamestate
