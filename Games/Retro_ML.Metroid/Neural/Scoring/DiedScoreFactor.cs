@@ -10,6 +10,8 @@ internal class DiedScoreFactor : IScoreFactor
 
     public string Name => "Died";
 
+    public string Tooltip => "Reward given when the AI dies.";
+
     public bool CanBeDisabled => false;
 
     public bool IsDisabled { get; set; }

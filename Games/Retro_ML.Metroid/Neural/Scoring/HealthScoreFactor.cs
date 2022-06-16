@@ -11,6 +11,7 @@ internal class HealthScoreFactor : IScoreFactor
     private int currHealth;
 
     public string Name => "Health";
+    public string Tooltip => "Reward given when the AI's health changes.";
 
     public bool CanBeDisabled => true;
 
@@ -26,8 +27,8 @@ internal class HealthScoreFactor : IScoreFactor
 
     public FieldInfo[] Fields => new FieldInfo[]
     {
-        new DoubleFieldInfo(nameof(LostHealthMultiplier), "Lost Health Multiplier", double.MinValue, double.MaxValue, 1.0),
-        new DoubleFieldInfo(nameof(GainedHealthMultiplier), "Gained Health Multiplier", double.MinValue, double.MaxValue, 1.0)
+        new DoubleFieldInfo(nameof(LostHealthMultiplier), "Lost Health Multiplier", double.MinValue, double.MaxValue, 1.0, "Multiplier applied on top of regular multiplier. Should be negative."),
+        new DoubleFieldInfo(nameof(GainedHealthMultiplier), "Gained Health Multiplier", double.MinValue, double.MaxValue, 1.0, "Multiplier applied on top of regular multiplier. Should be positive.")
     };
 
     public HealthScoreFactor() => ExtraFields = Array.Empty<ExtraField>();

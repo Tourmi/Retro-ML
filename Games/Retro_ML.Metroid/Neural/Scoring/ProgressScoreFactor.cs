@@ -14,6 +14,7 @@ internal class ProgressScoreFactor : IScoreFactor
     private byte previousY;
     private int framesWithoutProgress;
     public string Name => "Progression";
+    public string Tooltip => "Reward given for each tile traversed towards the current navigation direction";
 
     public bool CanBeDisabled => true;
 
@@ -29,7 +30,7 @@ internal class ProgressScoreFactor : IScoreFactor
 
     public FieldInfo[] Fields => new FieldInfo[]
     {
-        new DoubleFieldInfo(nameof(MaximumTimeWithoutProgress), "Maximum time without progress", 0, double.MaxValue, 1.0)
+        new DoubleFieldInfo(nameof(MaximumTimeWithoutProgress), "Maximum time without progress", 0, double.MaxValue, 1.0, "Stops the current save state after this amount of consecutive seconds without any progress.")
     };
 
     public ProgressScoreFactor() => ExtraFields = Array.Empty<ExtraField>();

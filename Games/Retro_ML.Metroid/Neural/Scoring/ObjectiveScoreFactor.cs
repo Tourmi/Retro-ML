@@ -12,6 +12,7 @@ internal class ObjectiveScoreFactor : IScoreFactor
     private bool wasBossPresent;
 
     public string Name => "Objective Complete";
+    public string Tooltip => "Reward given when the AI kills a boss or collects an item.";
 
     public bool CanBeDisabled => true;
 
@@ -30,8 +31,8 @@ internal class ObjectiveScoreFactor : IScoreFactor
     public FieldInfo[] Fields => new FieldInfo[]
     {
         new BoolFieldInfo(nameof(StopOnObjectiveReached), "Stop on objective reached"),
-        new DoubleFieldInfo(nameof(ItemMultiplier), "Item Multiplier", double.MinValue, double.MaxValue, 1.0),
-        new DoubleFieldInfo(nameof(BossMultiplier), "Boss Multiplier", double.MinValue, double.MaxValue, 1.0),
+        new DoubleFieldInfo(nameof(ItemMultiplier), "Item Multiplier", double.MinValue, double.MaxValue, 1.0, "Multiplier applied on top of the regular multiplier when collecting an item."),
+        new DoubleFieldInfo(nameof(BossMultiplier), "Boss Multiplier", double.MinValue, double.MaxValue, 1.0, "Multiplier applied on top of the regular multiplier when a boss was killed."),
     };
 
     public ObjectiveScoreFactor() => ExtraFields = Array.Empty<ExtraField>();

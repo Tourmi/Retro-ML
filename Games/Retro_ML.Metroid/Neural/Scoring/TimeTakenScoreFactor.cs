@@ -14,7 +14,7 @@ internal class TimeTakenScoreFactor : IScoreFactor
 
     public FieldInfo[] Fields => new FieldInfo[]
     {
-         new DoubleFieldInfo(nameof(MaximumTrainingTime), "Maximum Training Time", 30.0, double.MaxValue, 1.0)
+         new DoubleFieldInfo(nameof(MaximumTrainingTime), "Maximum Training Time", 30.0, double.MaxValue, 1.0, "Stop the current save state after this amount of seconds.")
     };
 
     public TimeTakenScoreFactor()
@@ -48,6 +48,7 @@ internal class TimeTakenScoreFactor : IScoreFactor
     public double ScoreMultiplier { get; set; }
 
     public string Name => "Time taken";
+    public string Tooltip => "Reward applied for each second spent in the current save state.";
 
     public bool CanBeDisabled => true;
 
