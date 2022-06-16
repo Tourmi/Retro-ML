@@ -1,5 +1,5 @@
-# Super Mario Kart Plugin
-Plugin by Tourmi & Jaewongtongsoup
+# Super Mario Bros Plugin
+Plugin by Jaewongtongsoup & Tourmi
 -------
 Training AIs to beat Super Mario Bros levels automatically.
 
