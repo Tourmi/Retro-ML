@@ -46,23 +46,23 @@ internal class MetroidPluginConfig : IGamePluginConfig
 
     public FieldInfo[] Fields => new FieldInfo[]
     {
-        new BoolFieldInfo(nameof(UseGrid), "Use Vision Grid"),
-        new BoolFieldInfo(nameof(UseDirectionToGoodie), "Use Direction to goodie"),
-        new IntegerFieldInfo(nameof(ViewDistance), "View distance", 1, 8, 1),
-        new IntegerChoiceFieldInfo(nameof(Raycount), "Raycast count", new int[] { 4, 8, 16, 32, 64 }),
-        new IntegerFieldInfo(nameof(InternalClockTickLength), "Internal Clock Tick Length (Frames)", 1, 3600, 1),
-        new IntegerChoiceFieldInfo(nameof(InternalClockLength), "Internal Clock Length", new int[] {1,2,3,4,5,6,7,8,16 }),
-        new IntegerFieldInfo(nameof(FrameSkip), "Frames to skip", 0, 15, 1),
+        new BoolFieldInfo(nameof(UseGrid), "Use Vision Grid", "Whether or not to use the Vision Grid instead of a Raycast"),
+        new BoolFieldInfo(nameof(UseDirectionToGoodie), "Use Direction to goodie", "Whether to just give the direction to the nearest pickup/powerup (2 nodes), or go with the Raycast/Vision grid"),
+        new IntegerFieldInfo(nameof(ViewDistance), "View distance", 1, 8, 1, "Distance the AI can see around it"),
+        new IntegerChoiceFieldInfo(nameof(Raycount), "Raycast count", new int[] { 4, 8, 16, 32, 64 }, "Amount of vision rays to cast around Samus"),
+        new IntegerFieldInfo(nameof(InternalClockTickLength), "Internal Clock Tick Length (Frames)", 1, 3600, 1, "Length of a single tick for the internal clock"),
+        new IntegerChoiceFieldInfo(nameof(InternalClockLength), "Internal Clock Length", new int[] {1,2,3,4,5,6,7,8,16 }, "Amount of nodes for the internal clock"),
+        new IntegerFieldInfo(nameof(FrameSkip), "Frames to skip", 0, 15, 1, "Amount of frames to skip for every AI evaluation"),
 
-        new BoolFieldInfo(nameof(ShowBombs), "Bombs in Equipment"),
-        new BoolFieldInfo(nameof(ShowHighJump), "High Jump in Equipment"),
-        new BoolFieldInfo(nameof(ShowLongBeam), "Long Beam in Equipment"),
-        new BoolFieldInfo(nameof(ShowScrew), "Screw Attack in Equipment"),
-        new BoolFieldInfo(nameof(ShowMorphBall), "Morph Ball (Maru Mari) in Equipment"),
-        new BoolFieldInfo(nameof(ShowVaria), "Varia Suit in Equipment"),
-        new BoolFieldInfo(nameof(ShowWaveBeam), "Wave Beam in Equipment"),
-        new BoolFieldInfo(nameof(ShowIceBeam), "Ice Beam in Equipment"),
-        new BoolFieldInfo(nameof(ShowMissiles), "Missiles in Equipment"),
+        new BoolFieldInfo(nameof(ShowBombs), "Bombs in Equipment", "Allows the AI to see if it has bombs"),
+        new BoolFieldInfo(nameof(ShowHighJump), "High Jump in Equipment", "Allows the AI to see if it has the high jump"),
+        new BoolFieldInfo(nameof(ShowLongBeam), "Long Beam in Equipment", "Allows the AI to see if it has the long beam"),
+        new BoolFieldInfo(nameof(ShowScrew), "Screw Attack in Equipment", "Allows the AI to see if it has the screw attack"),
+        new BoolFieldInfo(nameof(ShowMorphBall), "Morph Ball (Maru Mari) in Equipment", "Allows the AI to see if it has the morph ball (maru mari)"),
+        new BoolFieldInfo(nameof(ShowVaria), "Varia Suit in Equipment", "Allows the AI to see if it has the varia suit"),
+        new BoolFieldInfo(nameof(ShowWaveBeam), "Wave Beam in Equipment", "Allows the AI to see if it has the wave beam"),
+        new BoolFieldInfo(nameof(ShowIceBeam), "Ice Beam in Equipment", "Allows the AI to see if it has the ice beam"),
+        new BoolFieldInfo(nameof(ShowMissiles), "Missiles in Equipment", "Allows the AI to see if it gathered at least one missile upgrade"),
     };
 
     public object this[string fieldName]
