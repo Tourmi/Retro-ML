@@ -4,6 +4,8 @@
     {
         public string Name => "Stop when fitness reached";
 
+        public string Tooltip => "Will stop the training session once the best genome reaches the target fitness specified";
+
         public bool ShouldUse { get; set; }
 
         public bool HasParam => true;

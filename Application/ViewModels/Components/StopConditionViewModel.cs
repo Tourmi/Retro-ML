@@ -8,6 +8,7 @@ namespace Retro_ML.Application.ViewModels.Components
         private IStopCondition stopCondition;
 
         public string Name => stopCondition.Name;
+        public string Tooltip => stopCondition.Tooltip;
         private bool _isChecked;
         public bool IsChecked
         {

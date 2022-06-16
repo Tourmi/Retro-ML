@@ -22,10 +22,10 @@ namespace Retro_ML.SuperMarioWorld.Neural.Scoring
 
         public FieldInfo[] Fields => new FieldInfo[]
         {
-             new DoubleFieldInfo(nameof(EastDistance), "East Mult", double.MinValue, double.MaxValue, 0.25),
-             new DoubleFieldInfo(nameof(WestDistance), "West Mult", double.MinValue, double.MaxValue, 0.25),
-             new DoubleFieldInfo(nameof(UpDistance), "Up Mult", double.MinValue, double.MaxValue, 0.25),
-             new DoubleFieldInfo(nameof(DownDistance), "Down Mult", double.MinValue, double.MaxValue, 0.25)
+             new DoubleFieldInfo(nameof(EastDistance), "East Mult", double.MinValue, double.MaxValue, 0.25, "Multiplier when the AI is moving east"),
+             new DoubleFieldInfo(nameof(WestDistance), "West Mult", double.MinValue, double.MaxValue, 0.25, "Multiplier when the AI is moving west"),
+             new DoubleFieldInfo(nameof(UpDistance), "Up Mult", double.MinValue, double.MaxValue, 0.25, "Multiplier when the AI is moving up"),
+             new DoubleFieldInfo(nameof(DownDistance), "Down Mult", double.MinValue, double.MaxValue, 0.25, "Multiplier when the AI is moving down")
         };
 
         public DistanceScoreFactor()
@@ -73,6 +73,8 @@ namespace Retro_ML.SuperMarioWorld.Neural.Scoring
         public double ScoreMultiplier { get; set; }
 
         public string Name => "Distance travelled";
+
+        public string Tooltip => "Reward for each tile the AI traverses. This is based on the maximum distance, so going back and forth will not increase the reward";
 
         public bool CanBeDisabled => true;
 

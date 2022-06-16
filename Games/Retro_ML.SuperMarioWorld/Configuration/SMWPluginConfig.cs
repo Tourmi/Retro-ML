@@ -13,13 +13,13 @@ namespace Retro_ML.SuperMarioWorld.Configuration
     {
         public FieldInfo[] Fields => new FieldInfo[]
         {
-            new BoolFieldInfo(nameof(UseGrid), "Use Vision Grid"),
-            new IntegerFieldInfo(nameof(GridDistanceX), "Vision Grid Horizontal Distance", 1, 10, 1),
-            new IntegerFieldInfo(nameof (GridDistanceY), "Vision Grid Vertical Distance", 1, 10, 1),
-            new IntegerFieldInfo(nameof(RayLength), "Vision Ray Distance", 1, 10, 1),
-            new IntegerChoiceFieldInfo(nameof(RayCount), "Vision Ray Count", new int[] { 4, 8, 16, 32, 64 }),
-            new IntegerFieldInfo(nameof(InternalClockTickLength), "Internal Clock Tick Length (Frames)", 1, 3600, 1),
-            new IntegerChoiceFieldInfo(nameof(InternalClockLength), "Internal Clock Length", new int[] {1,2,3,4,5,6,7,8,16 })
+            new BoolFieldInfo(nameof(UseGrid), "Use Vision Grid", "Whether or not to use the Vision Grid. If turned off, the AI will instead Raycast for its vision"),
+            new IntegerFieldInfo(nameof(GridDistanceX), "Vision Grid Horizontal Distance", 1, 10, 1, "The horizontal distance that the AI can see for, in tiles, not including the tile the AI is on. This means that if we set both the horizontal and vertical distances to 4, a 9x9 grid of inputs will be used"),
+            new IntegerFieldInfo(nameof (GridDistanceY), "Vision Grid Vertical Distance", 1, 10, 1, "The vertical distance that the AI can see for, in tiles, not including the tile the AI is on. This means that if we set both the horizontal and vertical distances to 4, a 9x9 grid of inputs will be used"),
+            new IntegerFieldInfo(nameof(RayLength), "Vision Ray Distance", 1, 10, 1, "The total distance to cast rays, in tiles"),
+            new IntegerChoiceFieldInfo(nameof(RayCount), "Vision Ray Count", new int[] { 4, 8, 16, 32, 64 }, "The amount of vision rays to cast"),
+            new IntegerFieldInfo(nameof(InternalClockTickLength), "Internal Clock Tick Length (Frames)", 1, 3600, 1, "The time (in frames) that it takes for the internal clock to move to its next state"),
+            new IntegerChoiceFieldInfo(nameof(InternalClockLength), "Internal Clock Length", new int[] {1,2,3,4,5,6,7,8,16 }, "The total amount of nodes the internal clock has")
         };
 
         public object this[string fieldName]

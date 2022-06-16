@@ -21,5 +21,13 @@
             MaximumValue = maximumValue;
             Increment = increment;
         }
+
+        public IntegerFieldInfo(string name, string readableName, int minimumValue, int maximumValue, int increment, string tooltip) : base(name, readableName, tooltip)
+        {
+            MinimumValue = minimumValue;
+            MaximumValue = maximumValue;
+            Increment = increment;
+        }
+
     }
 }

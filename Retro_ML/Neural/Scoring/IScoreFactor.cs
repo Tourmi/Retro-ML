@@ -15,6 +15,11 @@ namespace Retro_ML.Neural.Scoring
         [JsonIgnore]
         string Name { get; }
         /// <summary>
+        /// Readable text when hovering the field
+        /// </summary>
+        [JsonIgnore]
+        string Tooltip { get; }
+        /// <summary>
         /// Whether or not this Score Factor can be disabled
         /// </summary>
         [JsonIgnore]

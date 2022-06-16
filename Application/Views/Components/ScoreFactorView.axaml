@@ -11,8 +11,8 @@
 	</UserControl.Styles>
 	
 	<StackPanel Spacing="10">
-		<TextBlock Classes="h1" Text="{Binding Name}"/>
-		<StackPanel Margin="5,0,0,0" Orientation="Horizontal" VerticalAlignment="Center" Spacing="10">
+		<TextBlock Classes="h1" Text="{Binding Name}" ToolTip.Tip="{Binding Tooltip}"/>
+		<StackPanel ToolTip.Tip="{Binding Tooltip}" Margin="5,0,0,0" Orientation="Horizontal" VerticalAlignment="Center" Spacing="10">
 			<TextBlock Text="Enabled:" VerticalAlignment="Center"/>
 			<CheckBox IsEnabled="{Binding CanBeDisabled}" IsChecked="{Binding IsChecked}" VerticalAlignment="Center"/>
 			<TextBlock Text="Multiplier:" VerticalAlignment="Center"/>

@@ -10,7 +10,7 @@
 		<StyleInclude Source="/Styles/MainStyles.axaml" />
 	</UserControl.Styles>
 
-	<StackPanel>
+	<StackPanel ToolTip.Tip="{Binding Tooltip}">
 		<TextBlock Classes="h1" Margin="5" Text="{Binding Name}"/>
 		<StackPanel Margin="5" Spacing="10" Orientation="Horizontal">
 			<TextBlock Classes="p" Text="Is Enabled" VerticalAlignment="Center"/>

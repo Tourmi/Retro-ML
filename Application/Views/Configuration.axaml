@@ -20,18 +20,18 @@
 			<TabControl TabStripPlacement="Left" HorizontalContentAlignment="Left" Classes="configTabControl">
 				<TabItem Header="Application" Classes="configTabControl">
 					<StackPanel Classes="tabContent">
-						<TextBlock Classes="h1" Text="ROM Path"/>
+						<TextBlock Classes="h1" Text="ROM Path" ToolTip.Tip="The path to the ROM file. Clicking the Select ROM button allows to select a new ROM"/>
 						<TextBlock Text="{Binding RomPath}"/>
 						<Button Command="{Binding SelectRom}" Classes="configButton" Content="Select ROM"/>
-						<TextBlock Classes="h1" Text="Game plugin"/>
+						<TextBlock Classes="h1" Text="Game plugin" ToolTip.Tip="The game plugin to use for the ROM. The available plugins will be the ones present in the ./plugins/ folder"/>
 						<ComboBox Items="{Binding GamePlugins}" SelectedItem="{Binding GamePluginName}"/>
 						<TextBlock Text="{Binding PluginGameName}"/>
 						<TextBlock Text="{Binding PluginConsoleName}"/>
 						<TextBlock Classes="h1" Text="Multithread"/>
-						<NumericUpDown Classes="numericTextBox" Value="{Binding Multithread}" Minimum="1"/>
+						<NumericUpDown Classes="numericTextBox" Value="{Binding Multithread}" Minimum="1" ToolTip.Tip="This is the amount of emulators which will be booted while training"/>
 						<TextBlock Classes="h1" Text="Communication Port with Arduino"/>
-						<TextBox Classes="numericTextBox" Text="{Binding ArduinoPort}"/>
-						<TextBlock Classes="h1" Text="Save states to use"/>
+						<TextBox Classes="numericTextBox" Text="{Binding ArduinoPort}" ToolTip.Tip="Communication port with an Arduino that's connected to the PC. Should be left like it is if no arduinos are connected"/>
+						<TextBlock Classes="h1" Text="Save states to use" Tooltip.Tip="Save states to use while training AIs"/>
 						<Button Command="{Binding SelectSaveStates}" Classes="configButton" Content="Select save states"/>
 						<TextBlock Classes="p" Text="Selected: "/>
 						<TextBlock Classes="p" Text="{Binding SaveStates}"/>
@@ -58,20 +58,28 @@
 						<TextBlock Classes="h1" Text="{Binding GeneralTrainingSettingsString}"/>
 						<Grid Margin="5" ColumnDefinitions="*,*" RowDefinitions="Auto,Auto,Auto">
 							<TextBlock Classes="p" Text="{Binding NumberOfAIString}" Grid.Row="0" Grid.Column="0"/>
-							<NumericUpDown Classes="numericTextBox" Value="{Binding NumberAI}" Minimum="0" Grid.Row="0" Grid.Column="1"/>
+							<NumericUpDown Classes="numericTextBox" Value="{Binding NumberAI}" ToolTip.Tip="Determines the total population size of the training" Minimum="0" Grid.Row="0" Grid.Column="1"/>
 							<TextBlock Classes="p" Text="Initial Connections" Grid.Row="1" Grid.Column="0"/>
-							<NumericUpDown Classes="numericTextBox" Value="{Binding InitialInterconnectionsProportion}" Grid.Row="1" Grid.Column="1" Maximum="0.995" Increment="0.005" FormatString="0.###"/>
+							<NumericUpDown Classes="numericTextBox"
+										   Value="{Binding InitialInterconnectionsProportion}" 
+										   ToolTip.Tip="We recommend leaving this option at 0, but it allows the specification of a percentage of predefined connections when training a new AI" 
+										   Grid.Row="1" Grid.Column="1" Maximum="0.995" Increment="0.005" FormatString="0.###"/>
 						</Grid>
 						<TextBlock Classes="h1" Text="{Binding EvolutionSettingsString}"/>
 						<Grid Margin="5" ColumnDefinitions="*,*" RowDefinitions="Auto,Auto,Auto">
 							<TextBlock Classes="p" Text="{Binding SpeciesCountString}" Grid.Row="0" Grid.Column="0"/>
-							<NumericUpDown Classes="numericTextBox" Value="{Binding SpeciesCount}" Minimum="1" Maximum="{Binding NumberAI}" Grid.Row="0" Grid.Column="1"/>
-
+							<NumericUpDown Classes="numericTextBox" Value="{Binding SpeciesCount}" 
+										   ToolTip.Tip="Determines the number of species to use for the NEAT algorithm. A higher value will make breakthroughs more common while training, but a value that's too high will be detrimental to the evolution of the individual species." 
+										   Minimum="1" Maximum="{Binding NumberAI}" Grid.Row="0" Grid.Column="1"/>
 							<TextBlock Classes="p" Text="{Binding ElitismProportionString}" Grid.Row="1"/>
-							<NumericUpDown Classes="numericTextBox" Value="{Binding ElitismProportion}" Minimum="0.01" Increment="0.01" FormatString="0.##" ShowButtonSpinner="False" Maximum="1" Grid.Row="1" Grid.Column="1"/>
+							<NumericUpDown Classes="numericTextBox" Value="{Binding ElitismProportion}" 
+										   ToolTip.Tip="The percentage of species to keep in each generation. New species will be created from the species that are kept, either by sexual reproduction, or asexual reproduction." 
+										   Minimum="0.01" Increment="0.01" FormatString="0.##" ShowButtonSpinner="False" Maximum="1" Grid.Row="1" Grid.Column="1"/>
 
 							<TextBlock Classes="p" Text="{Binding SelectionProportionString}" Grid.Row="2"/>
-							<NumericUpDown Classes="numericTextBox" Value="{Binding SelectionProportion}" Minimum="0.01" Increment="0.01" FormatString="0.##" ShowButtonSpinner="False" Maximum="1" Grid.Row="2" Grid.Column="1"/>
+							<NumericUpDown Classes="numericTextBox" Value="{Binding SelectionProportion}"
+										   ToolTip.Tip="The percentage of AIs to keep between each generation, within a species. New AIs will be created within the species based on the AIs that are kept."
+										   Minimum="0.01" Increment="0.01" FormatString="0.##" ShowButtonSpinner="False" Maximum="1" Grid.Row="2" Grid.Column="1"/>
 						</Grid>
 					</StackPanel>
 				</TabItem>
@@ -119,22 +127,22 @@
 						<Grid Margin="5" ColumnDefinitions="*,*" RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto,Auto">
 
 							<TextBlock Classes="p" Text="Sound Enabled" Grid.Row="1"/>
-							<CheckBox IsChecked="{Binding SoundEnabled}" Grid.Row="1" Grid.Column="2" VerticalAlignment="Center" Margin="5" />
+							<CheckBox IsChecked="{Binding SoundEnabled}" ToolTip.Tip="Toggles the sound for the emulator. Recommended to leave it off for training emulators, as they can get quite noisy" Grid.Row="1" Grid.Column="2" VerticalAlignment="Center" Margin="5" />
 
 							<TextBlock Classes="p" Text="Sound Volume" Grid.Row="2"/>
-							<NumericUpDown Classes="numericTextBox" Value="{Binding SoundVolume}" Minimum="0" Increment="10" Maximum="100" Grid.Row="2" Grid.Column="1"/>
+							<NumericUpDown Classes="numericTextBox" ToolTip.Tip="The volume setting of the emulator. Value between 0 and 100" Value="{Binding SoundVolume}" Minimum="0" Increment="10" Maximum="100" Grid.Row="2" Grid.Column="1"/>
 
 							<TextBlock Classes="p" Text="Unlimited Framerate" Grid.Row="3"/>
-							<CheckBox IsChecked="{Binding Unthrottled}" Grid.Row="3" Grid.Column="2" VerticalAlignment="Center" Margin="5" />
+							<CheckBox IsChecked="{Binding Unthrottled}" ToolTip.Tip="Whether or not to allow the emulator to run at an uncapped framerate" Grid.Row="3" Grid.Column="2" VerticalAlignment="Center" Margin="5" />
 
 							<TextBlock Classes="p" Text="Zoom Factor" Grid.Row="4"/>
-							<NumericUpDown Classes="numericTextBox" Value="{Binding ZoomFactor}" Minimum="1" ShowButtonSpinner="True" Maximum="4" Grid.Row="4" Grid.Column="1"/>
+							<NumericUpDown Classes="numericTextBox" ToolTip.Tip="The scaling factor of the emulators" Value="{Binding ZoomFactor}" Minimum="1" ShowButtonSpinner="True" Maximum="4" Grid.Row="4" Grid.Column="1"/>
 
 							<TextBlock Classes="p" Text="Graphics Engine" Grid.Row="5"/>
-							<ComboBox Margin="5" Grid.Row="5" Grid.Column="1" Width="175" Items="{Binding DispMethodList}" SelectedIndex="{Binding DispMethod}"/>
+							<ComboBox Margin="5" Grid.Row="5" Grid.Column="1" ToolTip.Tip="The graphics engine to use for the emulator instances. Leave this to its default value, unless the emulators have trouble running properly." Width="175" Items="{Binding DispMethodList}" SelectedIndex="{Binding DispMethod}"/>
 
 							<TextBlock Classes="p" Text="Activate Video" Grid.Row="6"/>
-							<CheckBox Margin="5" Grid.Row="6" Grid.Column="1" IsChecked="{Binding DispSpeedupFeatures}"/>
+							<CheckBox Margin="5" Grid.Row="6" Grid.Column="1" ToolTip.Tip="If video is deactivated, the emulator will only show a black screen." IsChecked="{Binding DispSpeedupFeatures}"/>
 						</Grid>
 					</StackPanel>
 				</TabItem>
@@ -145,22 +153,22 @@
 						<Grid Margin="5" ColumnDefinitions="*,*" RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto,Auto">
 
 							<TextBlock Classes="p" Text="Sound Enabled" Grid.Row="1"/>
-							<CheckBox IsChecked="{Binding SoundEnabledPlayMode}" Grid.Row="1" Grid.Column="2" VerticalAlignment="Center" Margin="5" />
+							<CheckBox IsChecked="{Binding SoundEnabledPlayMode}" ToolTip.Tip="Toggles the sound for the emulator. Recommended to leave it off for training emulators, as they can get quite noisy" Grid.Row="1" Grid.Column="2" VerticalAlignment="Center" Margin="5" />
 
 							<TextBlock Classes="p" Text="Sound Volume" Grid.Row="2"/>
-							<NumericUpDown Classes="numericTextBox" Value="{Binding SoundVolumePlayMode}" Minimum="0" Increment="10" Maximum="100" Grid.Row="2" Grid.Column="1"/>
+							<NumericUpDown Classes="numericTextBox" ToolTip.Tip="The volume setting of the emulator. Value between 0 and 100" Value="{Binding SoundVolumePlayMode}" Minimum="0" Increment="10" Maximum="100" Grid.Row="2" Grid.Column="1"/>
 
 							<TextBlock Classes="p" Text="Unlimited Framerate" Grid.Row="3"/>
-							<CheckBox IsChecked="{Binding UnthrottledPlayMode}" Grid.Row="3" Grid.Column="2" VerticalAlignment="Center" Margin="5" />
+							<CheckBox IsChecked="{Binding UnthrottledPlayMode}" ToolTip.Tip="Whether or not to allow the emulator to run at an uncapped framerate" Grid.Row="3" Grid.Column="2" VerticalAlignment="Center" Margin="5" />
 
 							<TextBlock Classes="p" Text="Zoom Factor" Grid.Row="4"/>
-							<NumericUpDown Classes="numericTextBox" Value="{Binding ZoomFactorPlayMode}" Minimum="1" ShowButtonSpinner="True" Maximum="4" Grid.Row="4" Grid.Column="1"/>
+							<NumericUpDown Classes="numericTextBox" ToolTip.Tip="The scaling factor of the emulators" Value="{Binding ZoomFactorPlayMode}" Minimum="1" ShowButtonSpinner="True" Maximum="4" Grid.Row="4" Grid.Column="1"/>
 
 							<TextBlock Classes="p" Text="Graphics Engine" Grid.Row="5"/>
-							<ComboBox Margin="5" Grid.Row="5" Grid.Column="1" Width="175" Items="{Binding DispMethodList}" SelectedIndex="{Binding DispMethodPlayMode}"/>
+							<ComboBox Margin="5" Grid.Row="5" ToolTip.Tip="The graphics engine to use for the emulator instances. Leave this to its default value, unless the emulators have trouble running properly." Grid.Column="1" Width="175" Items="{Binding DispMethodList}" SelectedIndex="{Binding DispMethodPlayMode}"/>
 
 							<TextBlock Classes="p" Text="Activate Video" Grid.Row="6"/>
-							<CheckBox Margin="5" Grid.Row="6" Grid.Column="1" IsChecked="{Binding DispSpeedupFeaturesPlayMode}"/>
+							<CheckBox Margin="5" Grid.Row="6" ToolTip.Tip="If video is deactivated, the emulator will only show a black screen." Grid.Column="1" IsChecked="{Binding DispSpeedupFeaturesPlayMode}"/>
 						</Grid>
 					</StackPanel>
 				</TabItem>

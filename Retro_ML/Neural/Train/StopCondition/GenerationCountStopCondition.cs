@@ -4,6 +4,8 @@
     {
         public string Name => "Stop after X generations";
 
+        public string Tooltip => "Will stop the training session once the specified amount of generations is reached";
+
         public bool ShouldUse { get; set; }
 
         public bool HasParam => true;

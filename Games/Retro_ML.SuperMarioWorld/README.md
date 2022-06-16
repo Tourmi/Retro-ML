@@ -1,4 +1,4 @@
-# Super Mario Kart Plugin
+# Super Mario World Plugin
 Plugin by Tourmi & Voltage98
 -------
 Training AIs to beat Super Mario World levels automatically.

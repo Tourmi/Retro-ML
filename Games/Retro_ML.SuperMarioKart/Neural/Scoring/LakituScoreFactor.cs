@@ -16,6 +16,8 @@ namespace Retro_ML.SuperMarioKart.Neural.Scoring
 
         public string Name => "Lakitu";
 
+        public string Tooltip => "Reward applied whenever the AI puts itself in a situation to get picked up by Lakitu";
+
         public bool CanBeDisabled => true;
 
         public bool IsDisabled { get; set; }
@@ -28,7 +30,7 @@ namespace Retro_ML.SuperMarioKart.Neural.Scoring
 
         public FieldInfo[] Fields => new FieldInfo[]
         {
-             new IntegerFieldInfo(nameof(StopAfterXFalls), "Stop after X falls", 0, int.MaxValue, 1),
+             new IntegerFieldInfo(nameof(StopAfterXFalls), "Stop after X falls", 0, int.MaxValue, 1, "Stops the current race if the AI falls off-track this amount of times"),
         };
 
         public LakituScoreFactor()

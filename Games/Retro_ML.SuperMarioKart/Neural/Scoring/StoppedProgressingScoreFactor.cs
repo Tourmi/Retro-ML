@@ -19,7 +19,7 @@ namespace Retro_ML.SuperMarioKart.Neural.Scoring
 
         public FieldInfo[] Fields => new FieldInfo[]
         {
-             new DoubleFieldInfo(nameof(MaxTimeWithoutProgress), "Max time w/o progress", 1.0, double.MaxValue, 0.5)
+             new DoubleFieldInfo(nameof(MaxTimeWithoutProgress), "Max time w/o progress", 1.0, double.MaxValue, 0.5, "The time in seconds before eliminating the AI for not making progress")
         };
 
         public StoppedProgressingScoreFactor()
@@ -55,6 +55,8 @@ namespace Retro_ML.SuperMarioKart.Neural.Scoring
         public double ScoreMultiplier { get; set; }
 
         public string Name => "Stopped progressing";
+
+        public string Tooltip => "Reward applied whenever the driver stops progressing in the racetrack for a certain amount of time";
 
         public bool CanBeDisabled => true;
 

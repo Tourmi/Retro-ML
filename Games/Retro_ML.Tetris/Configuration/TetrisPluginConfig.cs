@@ -13,9 +13,9 @@ namespace Retro_ML.Tetris.Configuration
     {
         public FieldInfo[] Fields => new FieldInfo[]
         {
-             new IntegerFieldInfo(nameof(VisibleRows), "Visible Rows", 4, 17, 1),
-             new IntegerFieldInfo(nameof(NbAttempts), "Number of Attempts", 1, 50, 1),
-             new BoolFieldInfo(nameof(UseNormalizedHeights), "Use Normalized Heights")
+             new IntegerFieldInfo(nameof(VisibleRows), "Visible Rows", 4, 17, 1, "Number of rows the AI can see"),
+             new IntegerFieldInfo(nameof(NbAttempts), "Number of Attempts", 1, 50, 1, "The number of attempts the AI will do for each save states selected"),
+             new BoolFieldInfo(nameof(UseNormalizedHeights), "Use Normalized Heights", "When this option is enabled, the AIs will be given the height of each columns normalized ")
         };
 
         public List<IScoreFactor> ScoreFactors { get; set; }

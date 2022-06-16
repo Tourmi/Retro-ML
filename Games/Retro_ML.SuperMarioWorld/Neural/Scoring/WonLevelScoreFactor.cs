@@ -15,8 +15,8 @@ namespace Retro_ML.SuperMarioWorld.Neural.Scoring
 
         public FieldInfo[] Fields => new FieldInfo[]
         {
-             new DoubleFieldInfo(nameof(GoalMult), "Goal Multiplier", double.MinValue, double.MaxValue, 0.25),
-             new DoubleFieldInfo(nameof(KeyMult), "Key Multiplier", double.MinValue, double.MaxValue, 0.25),
+             new DoubleFieldInfo(nameof(GoalMult), "Goal Multiplier", double.MinValue, double.MaxValue, 0.25, "Set to 0 or a negative value if you want to discourage finishing a level through the regular level ending"),
+             new DoubleFieldInfo(nameof(KeyMult), "Key Multiplier", double.MinValue, double.MaxValue, 0.25, "Set to 0 or a negative value if you want to discourage finishing a level with a key"),
         };
 
         public WonLevelScoreFactor()
@@ -56,6 +56,8 @@ namespace Retro_ML.SuperMarioWorld.Neural.Scoring
         public double ScoreMultiplier { get; set; }
 
         public string Name => "Won level";
+
+        public string Tooltip => "Reward to give if the AI wins a level. Ideally, this should be a high value to encourage actually finishing levels";
 
         public bool CanBeDisabled => false;
 
