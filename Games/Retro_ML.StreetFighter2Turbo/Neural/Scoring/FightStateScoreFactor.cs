@@ -47,8 +47,8 @@ namespace Retro_ML.StreetFighter2Turbo.Neural.Scoring
                 }
             }
         }
-        public int MaxImmobileFrames { get; set; } = 90;
-        public int MaxInnactiveFrames { get; set; } = 150;
+        public int MaxImmobileFrames { get; set; } = 300;
+        public int MaxInnactiveFrames { get; set; } = 450;
 
         public bool ShouldStop => shouldStop;
         public double ScoreMultiplier { get; set; }
