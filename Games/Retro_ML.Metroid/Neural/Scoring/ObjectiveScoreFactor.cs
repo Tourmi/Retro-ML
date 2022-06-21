@@ -115,6 +115,7 @@ internal class ObjectiveScoreFactor : IScoreFactor
         IsDisabled = IsDisabled,
         StopOnObjectiveReached = StopOnObjectiveReached,
         ItemMultiplier = ItemMultiplier,
-        BossMultiplier = BossMultiplier
+        BossMultiplier = BossMultiplier,
+        DamagedBossMultiplier = DamagedBossMultiplier
     };
 }

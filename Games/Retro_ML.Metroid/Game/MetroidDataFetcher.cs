@@ -88,7 +88,6 @@ internal class MetroidDataFetcher : IDataFetcher
     public ushort GetSamusHealth() => (ushort)ReadNybbleDigitsToUlong(Samus.Health);
     public ushort GetMaximumHealth() => (ushort)((ReadSingle(Progress.EnergyTanks) + 1) * TANK_HEALTH - 1);
     public double GetSamusHealthRatio() => GetSamusHealth() / (double)GetMaximumHealth();
-    public ushort GetDeathCount() => (ushort)ReadULong(Progress.Deaths);
     public short GetSamusYSpeed() => (short)(((sbyte)ReadSingle(Samus.VerticalSpeed)) * 0x100 + ReadSingle(Samus.VerticalFractionalSpeed));
     public short GetSamusXSpeed() => (short)(((sbyte)ReadSingle(Samus.HorizontalSpeed)) * 0x100 + ReadSingle(Samus.HorizontalFractionalSpeed));
     public byte GetSamusXPosition() => ReadSingle(Samus.XPosition);
@@ -126,8 +125,8 @@ internal class MetroidDataFetcher : IDataFetcher
 
     public bool IsHorizontalRoom() => (ReadSingle(Room.HorizontalOrVertical) & 0b0000_1000) == 0;
     public bool IsOnNameTable3() => (ReadSingle(Room.PPUCTL0) & 0b0000_0011) != 0;
-    public bool DoorOnNameTable0(bool leftSide) => (ReadSingle(Room.DoorOnNameTable0) & (leftSide ? 1 : 2)) != 0;
-    public bool DoorOnNameTable3(bool leftSide) => (ReadSingle(Room.DoorOnNameTable3) & (leftSide ? 1 : 2)) != 0;
+    public bool DoorOnNameTable0(bool leftSide) => (ReadSingle(Room.DoorOnNameTable0) & (leftSide ? 0b0001 : 0b0010)) != 0;
+    public bool DoorOnNameTable3(bool leftSide) => (ReadSingle(Room.DoorOnNameTable3) & (leftSide ? 0b0001 : 0b0010)) != 0;
     public byte GetScrollX() => ReadSingle(Room.ScrollX);
     public byte GetScrollY() => ReadSingle(Room.ScrollY);
     public (byte x, byte y) GetMapPosition() => (ReadSingle(Gamestate.MapX), ReadSingle(Gamestate.MapY));
@@ -193,7 +192,7 @@ internal class MetroidDataFetcher : IDataFetcher
     {
         byte xPos = GetSamusXPosition();
         var samusDirr = SamusLookDirection();
-        //if xPos negative, then Samus is in the right half of the screen
+        //if xPos > 128, then Samus is in the right half of the screen
         (var doorStatusDirr, var doorFrameAddress, bool lookingTowardsDoor) = xPos > 128 ?
                                                                                         (-1, Room.RightDoorFrameOffset, samusDirr > 0) :
                                                                                         (1, Room.LeftDoorFrameOffset, samusDirr < 0);
@@ -763,7 +762,6 @@ internal class MetroidDataFetcher : IDataFetcher
         {
             Samus.Health,
             Progress.EnergyTanks,
-            Progress.Deaths,
             Samus.XPosition,
             Samus.YPosition,
             Samus.LookingDirection,
