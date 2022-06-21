@@ -5,14 +5,13 @@ using Retro_ML.Configuration.FieldInformation;
 
 namespace Retro_ML.StreetFighter2Turbo.Neural.Scoring
 {
-    internal class WonRoundlScoreFactor : IScoreFactor
+    internal class IsInFightingDistanceScoreFactor : IScoreFactor
     {
-        private bool shouldStop = false;
         private double currScore;
 
         public FieldInfo[] Fields => Array.Empty<FieldInfo>();
 
-        public WonRoundlScoreFactor()
+        public IsInFightingDistanceScoreFactor()
         {
             ExtraFields = Array.Empty<ExtraField>();
         }
@@ -23,16 +22,16 @@ namespace Retro_ML.StreetFighter2Turbo.Neural.Scoring
             set { }
         }
 
-        public bool ShouldStop => shouldStop;
+        public bool ShouldStop => false;
         public double ScoreMultiplier { get; set; }
 
-        public string Name => "Won level";
+        public string Name => "IsInFightingDistance";
 
-        public string Tooltip => "Reward to give if the AI wins a round.";
+        public string Tooltip => "Reward the ai if it stays in an hitting distance of the enemy, close to it";
 
-        public bool CanBeDisabled => false;
+        public bool CanBeDisabled => true;
 
-        public bool IsDisabled { get => false; set { } }
+        public bool IsDisabled { get; set; }
 
         public ExtraField[] ExtraFields { get; set; }
 
@@ -45,21 +44,26 @@ namespace Retro_ML.StreetFighter2Turbo.Neural.Scoring
 
         private void Update(SF2TDataFetcher dataFetcher)
         {
-            if (dataFetcher.isPlayer2Dead())
+            //If distance between AI and player is equal or less than 13245 (approx 33BD)
+            if (dataFetcher.GetHorizontalDistanceBetweenPlayers() <= 13245)
             {
-                shouldStop = true;
-                currScore += ScoreMultiplier;
+               currScore += ScoreMultiplier;
             }
         }
 
         public void LevelDone()
         {
-            shouldStop = false;
+     
         }
 
         public IScoreFactor Clone()
         {
-            return new WonRoundlScoreFactor() { ScoreMultiplier = ScoreMultiplier, ExtraFields = ExtraFields };
+            return new IsInFightingDistanceScoreFactor()
+            {
+                IsDisabled = IsDisabled,
+                ScoreMultiplier = ScoreMultiplier,
+                ExtraFields = ExtraFields
+            };
         }
     }
 }

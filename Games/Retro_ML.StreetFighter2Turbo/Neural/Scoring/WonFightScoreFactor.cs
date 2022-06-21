@@ -5,14 +5,14 @@ using Retro_ML.Configuration.FieldInformation;
 
 namespace Retro_ML.StreetFighter2Turbo.Neural.Scoring
 {
-    internal class IsInHittingDistanceScoreFactor : IScoreFactor
+    internal class WonFightScoreFactor : IScoreFactor
     {
         private bool shouldStop = false;
         private double currScore;
 
         public FieldInfo[] Fields => Array.Empty<FieldInfo>();
 
-        public IsInHittingDistanceScoreFactor()
+        public WonFightScoreFactor()
         {
             ExtraFields = Array.Empty<ExtraField>();
         }
@@ -23,16 +23,16 @@ namespace Retro_ML.StreetFighter2Turbo.Neural.Scoring
             set { }
         }
 
-        public bool ShouldStop => false;
+        public bool ShouldStop => shouldStop;
         public double ScoreMultiplier { get; set; }
 
-        public string Name => "IsInHittingDistance";
+        public string Name => "Won level";
 
-        public string Tooltip => "Reward the ai if it stays in an hitting distance of the enemy, close to it";
+        public string Tooltip => "Reward to give if the AI wins a round / fight.";
 
-        public bool CanBeDisabled => true;
+        public bool CanBeDisabled => false;
 
-        public bool IsDisabled { get; set; }
+        public bool IsDisabled { get => false; set { } }
 
         public ExtraField[] ExtraFields { get; set; }
 
@@ -45,10 +45,16 @@ namespace Retro_ML.StreetFighter2Turbo.Neural.Scoring
 
         private void Update(SF2TDataFetcher dataFetcher)
         {
-            //If distance between AI and player is equal or less than 40 
-            if (dataFetcher.GetDistanceBetweenPlayers() <= 40)
+            if (dataFetcher.isPlayer2Dead() && (dataFetcher.GetPlayer1RoundCount() != 2))
             {
-               currScore += ScoreMultiplier;
+                shouldStop = false;
+                currScore += ScoreMultiplier;
+            }
+
+            else if (dataFetcher.isPlayer2Dead() && (dataFetcher.GetPlayer1RoundCount() == 2))
+            {
+                shouldStop = true;
+                currScore += ScoreMultiplier;
             }
         }
 
@@ -59,12 +65,7 @@ namespace Retro_ML.StreetFighter2Turbo.Neural.Scoring
 
         public IScoreFactor Clone()
         {
-            return new IsInHittingDistanceScoreFactor()
-            {
-                IsDisabled = IsDisabled,
-                ScoreMultiplier = ScoreMultiplier,
-                ExtraFields = ExtraFields
-            };
+            return new WonFightScoreFactor() { ScoreMultiplier = ScoreMultiplier, ExtraFields = ExtraFields };
         }
     }
 }

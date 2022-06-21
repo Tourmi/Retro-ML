@@ -42,20 +42,27 @@ namespace Retro_ML.StreetFighter2Turbo.Game
         }
 
         public bool[,] GetInternalClockState() => internalClock.GetStates();
-        public byte GetPlayer1XPos() => ReadSingle(GameAddresses.Player1XPos);
-        public byte GetPlayer2XPos() => ReadSingle(GameAddresses.Player2XPos);
-        public byte GetPlayer1Screen() => ReadSingle(GameAddresses.Player1CurrentScreen);
-        public byte GetPlayer2Screen() => ReadSingle(GameAddresses.Player2CurrentScreen);
-        public uint GetPlayer1AbsoluteXPosition() => (uint)(GetPlayer1Screen() * 0x100) + GetPlayer1XPos();
-        public uint GetPlayer2AbsoluteXPosition() => (uint)(GetPlayer2Screen() * 0x100) + GetPlayer2XPos();
-        public uint GetDistanceBetweenPlayers() => (uint)Math.Abs(GetPlayer2AbsoluteXPosition() - GetPlayer1AbsoluteXPosition());
-        public bool isPlayer1Dead() => ReadSingle(GameAddresses.Player1HP) == 0x07;
-        public bool isPlayer2Dead() => ReadSingle(GameAddresses.Player2HP) == 0x07;
-        public bool isPlayer1Crouched() => ToUnsignedInteger(Read(GameAddresses.Player1State)) == 0x6D;
-        public bool isPlayer2Crouched() => ToUnsignedInteger(Read(GameAddresses.Player2State)) == 0x6D;
-        public bool isPlayer1Airborn() => ToUnsignedInteger(Read(GameAddresses.Player1State)) == 0x65;
-        public bool isPlayer2Airborn() => ToUnsignedInteger(Read(GameAddresses.Player2State)) == 0x65;
-
+        public byte GetPlayer1Screen() => ReadSingle(Player1Addresses.CurrentScreen);
+        public byte GetPlayer2Screen() => ReadSingle(Player2Addresses.CurrentScreen);
+        public uint GetPlayer1XPos() => (uint)(ToUnsignedInteger(Read(Player1Addresses.XPos)) + (GetPlayer1Screen() * 0x10000));
+        public uint GetPlayer1YPos() => ToUnsignedInteger(Read(Player1Addresses.YPos));
+        public uint GetPlayer2XPos() => (uint)(ToUnsignedInteger(Read(Player2Addresses.XPos)) + (GetPlayer2Screen() * 0x10000));
+        public uint GetPlayer2YPos() => ToUnsignedInteger(Read(Player2Addresses.YPos));
+        public uint GetPlayer1Hp() => ToUnsignedInteger(Read(Player1Addresses.HP));
+        public uint GetPlayer2Hp() => ToUnsignedInteger(Read(Player2Addresses.HP));
+        public byte GetPlayer1RoundCount() => ReadSingle(Player1Addresses.RoundsWin);
+        public byte GetPlayer2RoundCount() => ReadSingle(Player2Addresses.RoundsWin);
+        public uint GetHorizontalDistanceBetweenPlayers() => (uint)Math.Abs(GetPlayer2XPos() - GetPlayer1XPos());
+        public bool isPlayer1Dead() => ReadSingle(Player1Addresses.HP) == 0xFF;
+        public bool isPlayer2Dead() => ReadSingle(Player2Addresses.HP) == 0xFF;
+        public bool isPlayer1Crouched() => ReadSingle(Player1Addresses.State) == 0x02;
+        public bool isPlayer2Crouched() => ReadSingle(Player1Addresses.State) == 0x02;
+        public bool isPlayer1Jumping() => ReadSingle(Player1Addresses.State) == 0x04;
+        public bool isPlayer2Jumping() => ReadSingle(Player1Addresses.State) == 0x04;
+        public bool isPlayer1Attacking() => ReadSingle(Player1Addresses.State) == 0x0E;
+        public bool isPlayer2Attacking() => ReadSingle(Player1Addresses.State) == 0x0E;
+        public bool isPlayer1Blocking() => ReadSingle(Player1Addresses.Input) == 0x03;
+        public bool isPlayer2Blocking() => ReadSingle(Player1Addresses.Input) == 0x03;
 
         /// <summary>
         /// Reads a single byte from the emulator's memory
@@ -144,14 +151,22 @@ namespace Retro_ML.StreetFighter2Turbo.Game
         {
             (AddressData, bool)[] toRead = new (AddressData, bool)[]
             {
-                (GameAddresses.Player1XPos, false),
-                (GameAddresses.Player2XPos, false),
-                (GameAddresses.Player1CurrentScreen, false),
-                (GameAddresses.Player2CurrentScreen, false),
-                (GameAddresses.Player1State, false),
-                (GameAddresses.Player2State, false),
-                (GameAddresses.Player1HP, false),
-                (GameAddresses.Player2HP, false),
+                (Player1Addresses.XPos, false),
+                (Player1Addresses.YPos, false),
+                (Player1Addresses.CurrentScreen, false),
+                (Player1Addresses.State, false),
+                (Player1Addresses.HP, false),
+                (Player1Addresses.EndRoundStatus, false),
+                (Player1Addresses.RoundsWin, false),
+                (Player1Addresses.Input, false),
+                (Player2Addresses.XPos, false),
+                (Player2Addresses.YPos, false),
+                (Player2Addresses.CurrentScreen, false),
+                (Player2Addresses.State, false),
+                (Player2Addresses.HP, false),
+                (Player2Addresses.EndRoundStatus, false),
+                (Player2Addresses.RoundsWin, false),
+                (Player2Addresses.Input, false),
                 (GameAddresses.RoundTimer, false),
             };
 

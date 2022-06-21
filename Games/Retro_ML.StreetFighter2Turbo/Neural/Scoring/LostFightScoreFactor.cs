@@ -5,14 +5,14 @@ using Retro_ML.Configuration.FieldInformation;
 
 namespace Retro_ML.StreetFighter2Turbo.Neural.Scoring
 {
-    internal class DiedScoreFactor : IScoreFactor
+    internal class LostFightScoreFactor : IScoreFactor
     {
         private bool shouldStop = false;
         private double currScore;
 
         public FieldInfo[] Fields => Array.Empty<FieldInfo>();
 
-        public DiedScoreFactor()
+        public LostFightScoreFactor()
         {
             ExtraFields = Array.Empty<ExtraField>();
         }
@@ -23,7 +23,7 @@ namespace Retro_ML.StreetFighter2Turbo.Neural.Scoring
             set { }
         }
 
-        public string Tooltip => "The reward to give an AI that died";
+        public string Tooltip => "The reward to give an AI that lost a round / fight";
 
         public bool ShouldStop => shouldStop;
         public double ScoreMultiplier { get; set; }
@@ -45,7 +45,13 @@ namespace Retro_ML.StreetFighter2Turbo.Neural.Scoring
 
         private void Update(SF2TDataFetcher dataFetcher)
         {
-            if (dataFetcher.isPlayer1Dead())
+            if (dataFetcher.isPlayer1Dead() && (dataFetcher.GetPlayer2RoundCount() != 2))
+            {
+                shouldStop = false;
+                currScore += ScoreMultiplier;
+            }
+
+            else if (dataFetcher.isPlayer1Dead() && (dataFetcher.GetPlayer2RoundCount() == 2))
             {
                 shouldStop = true;
                 currScore += ScoreMultiplier;
@@ -59,7 +65,7 @@ namespace Retro_ML.StreetFighter2Turbo.Neural.Scoring
 
         public IScoreFactor Clone()
         {
-            return new DiedScoreFactor() { ScoreMultiplier = ScoreMultiplier };
+            return new LostFightScoreFactor() { ScoreMultiplier = ScoreMultiplier };
         }
     }
 }
