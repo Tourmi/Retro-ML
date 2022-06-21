@@ -55,14 +55,16 @@ namespace Retro_ML.StreetFighter2Turbo.Game
         public uint GetHorizontalDistanceBetweenPlayers() => (uint)Math.Abs(GetPlayer2XPos() - GetPlayer1XPos());
         public bool isPlayer1Dead() => ReadSingle(Player1Addresses.HP) == 0xFF;
         public bool isPlayer2Dead() => ReadSingle(Player2Addresses.HP) == 0xFF;
+        public bool isPlayer1InEndRound() => ReadSingle(Player1Addresses.EndRoundStatus) == 0x01;
+        public bool isPlayer2InEndRound() => ReadSingle(Player2Addresses.EndRoundStatus) == 0x01;
         public bool isPlayer1Crouched() => ReadSingle(Player1Addresses.State) == 0x02;
-        public bool isPlayer2Crouched() => ReadSingle(Player1Addresses.State) == 0x02;
+        public bool isPlayer2Crouched() => ReadSingle(Player2Addresses.State) == 0x02;
         public bool isPlayer1Jumping() => ReadSingle(Player1Addresses.State) == 0x04;
-        public bool isPlayer2Jumping() => ReadSingle(Player1Addresses.State) == 0x04;
+        public bool isPlayer2Jumping() => ReadSingle(Player2Addresses.State) == 0x04;
         public bool isPlayer1Attacking() => ReadSingle(Player1Addresses.State) == 0x0E;
-        public bool isPlayer2Attacking() => ReadSingle(Player1Addresses.State) == 0x0E;
+        public bool isPlayer2Attacking() => ReadSingle(Player2Addresses.State) == 0x0E;
         public bool isPlayer1Blocking() => ReadSingle(Player1Addresses.Input) == 0x03;
-        public bool isPlayer2Blocking() => ReadSingle(Player1Addresses.Input) == 0x03;
+        public bool isPlayer2Blocking() => ReadSingle(Player2Addresses.Input) == 0x03;
 
         /// <summary>
         /// Reads a single byte from the emulator's memory

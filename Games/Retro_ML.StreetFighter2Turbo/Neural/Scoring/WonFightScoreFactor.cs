@@ -45,13 +45,7 @@ namespace Retro_ML.StreetFighter2Turbo.Neural.Scoring
 
         private void Update(SF2TDataFetcher dataFetcher)
         {
-            if (dataFetcher.isPlayer2Dead() && (dataFetcher.GetPlayer1RoundCount() != 2))
-            {
-                shouldStop = false;
-                currScore += ScoreMultiplier;
-            }
-
-            else if (dataFetcher.isPlayer2Dead() && (dataFetcher.GetPlayer1RoundCount() == 2))
+            if (dataFetcher.isPlayer2Dead() && dataFetcher.isPlayer1InEndRound())
             {
                 shouldStop = true;
                 currScore += ScoreMultiplier;
