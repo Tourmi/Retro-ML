@@ -72,7 +72,7 @@ internal class HealthScoreFactor : IScoreFactor
 
         var diff = (newHealth - currHealth);
 
-        currScore = ScoreMultiplier * diff * (diff < 0 ? LostHealthMultiplier : GainedHealthMultiplier);
+        currScore = ScoreMultiplier * Math.Abs(diff) * (diff < 0 ? LostHealthMultiplier : GainedHealthMultiplier);
 
         currHealth = newHealth;
     }
