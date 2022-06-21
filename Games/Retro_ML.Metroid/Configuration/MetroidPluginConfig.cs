@@ -47,6 +47,7 @@ internal class MetroidPluginConfig : IGamePluginConfig
     public FieldInfo[] Fields => new FieldInfo[]
     {
         new BoolFieldInfo(nameof(UseGrid), "Use Vision Grid", "Whether or not to use the Vision Grid instead of a Raycast"),
+        new BoolFieldInfo(nameof(DoublePrecision), "Double precision", "Doubles the precision of tiles, sprites, etc. being fed to the AI by using 8x8 tiles instead of 16x16 tiles. NOT RECOMMENDED IF USING VISION GRID"),
         new BoolFieldInfo(nameof(UseDirectionToGoodie), "Use Direction to goodie", "Whether to just give the direction to the nearest pickup/powerup (2 nodes), or go with the Raycast/Vision grid"),
         new IntegerFieldInfo(nameof(ViewDistance), "View distance", 1, 8, 1, "Distance the AI can see around it"),
         new IntegerChoiceFieldInfo(nameof(Raycount), "Raycast count", new int[] { 4, 8, 16, 32, 64 }, "Amount of vision rays to cast around Samus"),
@@ -70,6 +71,7 @@ internal class MetroidPluginConfig : IGamePluginConfig
         get => fieldName switch
         {
             nameof(UseGrid) => UseGrid,
+            nameof(DoublePrecision) => DoublePrecision,
             nameof(UseDirectionToGoodie) => UseDirectionToGoodie,
             nameof(ViewDistance) => ViewDistance,
             nameof(Raycount) => Raycount,
@@ -92,6 +94,7 @@ internal class MetroidPluginConfig : IGamePluginConfig
             switch (fieldName)
             {
                 case nameof(UseGrid): UseGrid = (bool)value; break;
+                case nameof(DoublePrecision): DoublePrecision = (bool)value; break;
                 case nameof(UseDirectionToGoodie): UseDirectionToGoodie = (bool)value; break;
                 case nameof(ViewDistance): ViewDistance = (int)value; break;
                 case nameof(Raycount): Raycount = (int)value; break;
@@ -115,6 +118,10 @@ internal class MetroidPluginConfig : IGamePluginConfig
     /// Whether or not to use a grid for multiple inputs.
     /// </summary>
     public bool UseGrid { get; set; } = false;
+    /// <summary>
+    /// Doubles the precision of tiles, sprites, etc. being fed to the AI by using 8x8 tiles instead of 16x16 tiles.
+    /// </summary>
+    public bool DoublePrecision { get; set; } = true;
     /// <summary>
     /// Whether or not to simply use the x,y direction from the nearest goodie, instead of rays or a grid
     /// </summary>
@@ -219,6 +226,7 @@ internal class MetroidPluginConfig : IGamePluginConfig
         ScoreFactors = cfg.ScoreFactors;
 
         UseGrid = cfg.UseGrid;
+        DoublePrecision = cfg.DoublePrecision;
         UseDirectionToGoodie = cfg.UseDirectionToGoodie;
         ViewDistance = cfg.ViewDistance;
         Raycount = cfg.Raycount;
@@ -245,23 +253,25 @@ internal class MetroidPluginConfig : IGamePluginConfig
             neuralConfig.EnabledStates = DEFAULT_ENABLED_STATES;
         }
         neuralConfig.InputNodes.Clear();
+
+        var viewDistance = ViewDistance * (DoublePrecision ? 2 : 1);
         if (UseGrid)
         {
             neuralConfig.InputNodes.Add(new InputNode("Solid Tiles",
                 neuralConfig.EnabledStates[enabledIndex++],
-                (dataFetcher) => ((MetroidDataFetcher)dataFetcher).GetSolidTilesAroundPosition(ViewDistance, ViewDistance), ViewDistance * 2 + 1, ViewDistance * 2 + 1));
+                (dataFetcher) => ((MetroidDataFetcher)dataFetcher).GetSolidTilesAroundPosition(), viewDistance * 2 + 1, viewDistance * 2 + 1));
             neuralConfig.InputNodes.Add(new InputNode("Dangers",
                 neuralConfig.EnabledStates[enabledIndex++],
-                (dataFetcher) => ((MetroidDataFetcher)dataFetcher).GetDangerousTilesAroundPosition(ViewDistance, ViewDistance), ViewDistance * 2 + 1, ViewDistance * 2 + 1));
+                (dataFetcher) => ((MetroidDataFetcher)dataFetcher).GetDangerousTilesAroundPosition(), viewDistance * 2 + 1, viewDistance * 2 + 1));
         }
         else
         {
             neuralConfig.InputNodes.Add(new InputNode("Solid Tiles",
                 neuralConfig.EnabledStates[enabledIndex++],
-                (dataFetcher) => Raycast.GetRayDistances(((MetroidDataFetcher)dataFetcher).GetSolidTilesAroundPosition(ViewDistance, ViewDistance), ViewDistance, Raycount), Raycount / 4, 4));
+                (dataFetcher) => Raycast.GetRayDistances(((MetroidDataFetcher)dataFetcher).GetSolidTilesAroundPosition(), viewDistance, Raycount), Raycount / 4, 4));
             neuralConfig.InputNodes.Add(new InputNode("Dangers",
                 neuralConfig.EnabledStates[enabledIndex++],
-                (dataFetcher) => Raycast.GetRayDistances(((MetroidDataFetcher)dataFetcher).GetDangerousTilesAroundPosition(ViewDistance, ViewDistance), ViewDistance, Raycount), Raycount / 4, 4));
+                (dataFetcher) => Raycast.GetRayDistances(((MetroidDataFetcher)dataFetcher).GetDangerousTilesAroundPosition(), viewDistance, Raycount), Raycount / 4, 4));
         }
 
         neuralConfig.InputNodes.Add((UseDirectionToGoodie, UseGrid) switch
@@ -271,10 +281,10 @@ internal class MetroidPluginConfig : IGamePluginConfig
                                 (dataFetcher) => ((MetroidDataFetcher)dataFetcher).GetDirectionToNearestGoodTile(), 2, 1),
             (false, true) => new InputNode("Goodies",
                                 neuralConfig.EnabledStates[enabledIndex++],
-                                (dataFetcher) => ((MetroidDataFetcher)dataFetcher).GetGoodTilesAroundPosition(ViewDistance, ViewDistance), ViewDistance * 2 + 1, ViewDistance * 2 + 1),
+                                (dataFetcher) => ((MetroidDataFetcher)dataFetcher).GetGoodTilesAroundPosition(), viewDistance * 2 + 1, viewDistance * 2 + 1),
             _ => new InputNode("Goodies",
                                 neuralConfig.EnabledStates[enabledIndex++],
-                                (dataFetcher) => Raycast.GetRayDistances(((MetroidDataFetcher)dataFetcher).GetGoodTilesAroundPosition(ViewDistance, ViewDistance), ViewDistance, Raycount), Raycount / 4, 4)
+                                (dataFetcher) => Raycast.GetRayDistances(((MetroidDataFetcher)dataFetcher).GetGoodTilesAroundPosition(), viewDistance, Raycount), Raycount / 4, 4)
         });
 
         neuralConfig.InputNodes.Add(new InputNode("Health", neuralConfig.EnabledStates[enabledIndex++], (dataFetcher) => ((MetroidDataFetcher)dataFetcher).GetSamusHealthRatio()));

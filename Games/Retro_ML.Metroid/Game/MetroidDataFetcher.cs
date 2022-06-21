@@ -14,14 +14,12 @@ namespace Retro_ML.Metroid.Game;
 /// </summary>
 internal class MetroidDataFetcher : IDataFetcher
 {
-    public const int TILE_SIZE = 0x8;
-    public const int META_TILE_SIZE = 0x10;
-    public const int ROOM_WIDTH = 0x20;
-    public const int CORRECTED_ROOM_WIDTH = ROOM_WIDTH / 2;
-    public const int ROOM_HEIGHT = 0x1E;
-    public const int CORRECTED_ROOM_HEIGHT = ROOM_HEIGHT / 2;
-    public const int ROOM_VERTICAL_SPACING = 0x20;
-    public const int CORRECTED_ROOM_VERTICAL_SPACING = ROOM_VERTICAL_SPACING / 2;
+    private const int TILE_SIZE = 0x8;
+    private const int META_TILE_SIZE = 0x10;
+    private const int ROOM_WIDTH = 0x20;
+    private const int CORRECTED_ROOM_WIDTH = ROOM_WIDTH / 2;
+    private const int ROOM_HEIGHT = 0x1E;
+    private const int CORRECTED_ROOM_HEIGHT = ROOM_HEIGHT / 2;
 
     public const int MAXIMUM_VERTICAL_SPEED = 0x500;
     public const int MAXIMUM_HORIZONTAL_SPEED = 0x180;
@@ -40,6 +38,10 @@ internal class MetroidDataFetcher : IDataFetcher
     private bool wasSamusInDoor;
     private (byte x, byte y) currentMapPosition;
     private Navigator navigator;
+
+    public int RealTileSize => pluginConfig.DoublePrecision ? TILE_SIZE : META_TILE_SIZE;
+    public int RealRoomWidth => pluginConfig.DoublePrecision ? ROOM_WIDTH : CORRECTED_ROOM_WIDTH;
+    public int RealRoomHeight => pluginConfig.DoublePrecision ? ROOM_HEIGHT : CORRECTED_ROOM_HEIGHT;
 
     public MetroidDataFetcher(IEmulatorAdapter emulator, NeuralConfig neuralConfig, MetroidPluginConfig pluginConfig)
     {
@@ -91,7 +93,7 @@ internal class MetroidDataFetcher : IDataFetcher
     public short GetSamusXSpeed() => (short)(((sbyte)ReadSingle(Samus.HorizontalSpeed)) * 0x100 + ReadSingle(Samus.HorizontalFractionalSpeed));
     public byte GetSamusXPosition() => ReadSingle(Samus.XPosition);
     public byte GetSamusYPosition() => ReadSingle(Samus.YPosition);
-    public (int xPos, int yPos) GetSamusScreensPosition() => GetScreensPosition(GetSamusXPosition() / META_TILE_SIZE, GetSamusYPosition() / META_TILE_SIZE, IsSamusInFirstScreen());
+    public (int xPos, int yPos) GetSamusScreensPosition() => GetScreensPosition(GetSamusXPosition() / RealTileSize, GetSamusYPosition() / RealTileSize, IsSamusInFirstScreen());
     public double SamusLookDirection() => (ReadSingle(Samus.LookingDirection) * -2.0) + 1;
     public bool IsSamusInMorphBall() => ReadSingle(Samus.Status) == 0x3;
     public bool IsSamusInLava() => ReadSingle(Samus.InLava) == 1;
@@ -268,9 +270,10 @@ internal class MetroidDataFetcher : IDataFetcher
 
     public Objectives GetNavigationObjective() => navigator.GetDirectionToGo(currentMapPosition.x, currentMapPosition.y, this).objective;
 
-    public bool[,] GetDangerousTilesAroundPosition(int xDist, int yDist)
+    public bool[,] GetDangerousTilesAroundPosition()
     {
-        var result = new bool[yDist * 2 + 1, xDist * 2 + 1];
+        var dist = pluginConfig.ViewDistance * (pluginConfig.DoublePrecision ? 2 : 1);
+        var result = new bool[dist * 2 + 1, dist * 2 + 1];
 
         FetchSprites(result, GetEnemies());
         FetchSkreeProjectiles(result);
@@ -292,7 +295,7 @@ internal class MetroidDataFetcher : IDataFetcher
 
         foreach (var powerup in powerups)
         {
-            (var xPos, var yPos) = GetScreensPosition(powerup[2] / META_TILE_SIZE, powerup[1] / META_TILE_SIZE, powerup[3] == 0);
+            (var xPos, var yPos) = GetScreensPosition(powerup[2] / RealTileSize, powerup[1] / RealTileSize, powerup[3] == 0);
             xPos -= samusX;
             yPos -= samusY;
 
@@ -308,7 +311,7 @@ internal class MetroidDataFetcher : IDataFetcher
         {
             foreach (var pickup in pickups)
             {
-                (var xPos, var yPos) = GetScreensPosition(pickup.XPos / META_TILE_SIZE, pickup.YPos / META_TILE_SIZE, pickup.IsInFirstScreen);
+                (var xPos, var yPos) = GetScreensPosition(pickup.XPos / RealTileSize, pickup.YPos / RealTileSize, pickup.IsInFirstScreen);
                 xPos -= samusX;
                 yPos -= samusY;
 
@@ -326,9 +329,10 @@ internal class MetroidDataFetcher : IDataFetcher
         return new double[,] { { x / dist, y / dist } };
     }
 
-    public bool[,] GetGoodTilesAroundPosition(int xDist, int yDist)
+    public bool[,] GetGoodTilesAroundPosition()
     {
-        var result = new bool[yDist * 2 + 1, xDist * 2 + 1];
+        var dist = pluginConfig.ViewDistance * (pluginConfig.DoublePrecision ? 2 : 1);
+        var result = new bool[dist * 2 + 1, dist * 2 + 1];
 
         FetchSprites(result, GetPickups());
         FetchPowerUps(result);
@@ -336,10 +340,11 @@ internal class MetroidDataFetcher : IDataFetcher
         return result;
     }
 
-    public bool[,] GetSolidTilesAroundPosition(int xDist, int yDist)
+    public bool[,] GetSolidTilesAroundPosition()
     {
-        var result = new bool[yDist * 2 + 1, xDist * 2 + 1];
-        var tiles = GetTiles(xDist, yDist);
+        var dist = pluginConfig.ViewDistance * (pluginConfig.DoublePrecision ? 2 : 1);
+        var result = new bool[dist * 2 + 1, dist * 2 + 1];
+        var tiles = GetTiles(dist, dist);
 
         for (int i = 0; i < tiles.GetLength(0); i++)
         {
@@ -376,8 +381,8 @@ internal class MetroidDataFetcher : IDataFetcher
             if (sprite.XPos < left) left = byte.MinValue;
             if (sprite.XPos > right) right = byte.MaxValue;
 
-            (var xMin, var yMin) = GetScreensPosition(left / META_TILE_SIZE, top / META_TILE_SIZE, sprite.IsInFirstScreen);
-            (var xMax, var yMax) = GetScreensPosition(right / META_TILE_SIZE, bottom / META_TILE_SIZE, sprite.IsInFirstScreen);
+            (var xMin, var yMin) = GetScreensPosition(left / RealTileSize, top / RealTileSize, sprite.IsInFirstScreen);
+            (var xMax, var yMax) = GetScreensPosition(right / RealTileSize, bottom / RealTileSize, sprite.IsInFirstScreen);
 
             xMin -= samusX;
             xMax -= samusX;
@@ -430,7 +435,7 @@ internal class MetroidDataFetcher : IDataFetcher
         {
             if (!projectile.IsActive()) continue;
 
-            (var xPos, var yPos) = GetScreensPosition(projectile.XPos / META_TILE_SIZE, projectile.YPos / META_TILE_SIZE, projectile.IsInFirstScreen);
+            (var xPos, var yPos) = GetScreensPosition(projectile.XPos / RealTileSize, projectile.YPos / RealTileSize, projectile.IsInFirstScreen);
 
             xPos -= samusX;
             yPos -= samusY;
@@ -469,7 +474,7 @@ internal class MetroidDataFetcher : IDataFetcher
         for (int i = 0; i < powerups.Length; i++)
         {
             var powerup = powerups[i];
-            (var xPos, var yPos) = GetScreensPosition(powerup[2] / META_TILE_SIZE, powerup[1] / META_TILE_SIZE, powerup[3] == 0);
+            (var xPos, var yPos) = GetScreensPosition(powerup[2] / RealTileSize, powerup[1] / RealTileSize, powerup[3] == 0);
 
             xPos -= samusX;
             yPos -= samusY;
@@ -545,21 +550,26 @@ internal class MetroidDataFetcher : IDataFetcher
     {
         var tiles = Read(Room.Tiles);
         //Exclude the final 2 rows of tiles.
-        var firstScreen = tiles[0x0..0x3C0].To2DArray(ROOM_HEIGHT, ROOM_WIDTH).QuarterArray();
-        var secondScreen = tiles[0x400..0x7C0].To2DArray(ROOM_HEIGHT, ROOM_WIDTH).QuarterArray();
+        var firstScreen = tiles[0x0..0x3C0].To2DArray(ROOM_HEIGHT, ROOM_WIDTH);
+        var secondScreen = tiles[0x400..0x7C0].To2DArray(ROOM_HEIGHT, ROOM_WIDTH);
+        if (!pluginConfig.DoublePrecision)
+        {
+            firstScreen = firstScreen.QuarterArray();
+            secondScreen = secondScreen.QuarterArray();
+        }
 
         if (IsOnNameTable3())
         {
             (secondScreen, firstScreen) = (firstScreen, secondScreen);
         }
 
-        (int horizontalCorrection, int verticalCorrection) = IsHorizontalRoom() ? (CORRECTED_ROOM_WIDTH, 0) : (0, CORRECTED_ROOM_HEIGHT);
+        (int horizontalCorrection, int verticalCorrection) = IsHorizontalRoom() ? (RealRoomWidth, 0) : (0, RealRoomHeight);
 
-        var result = new byte[CORRECTED_ROOM_HEIGHT + verticalCorrection, CORRECTED_ROOM_WIDTH + horizontalCorrection];
+        var result = new byte[RealRoomHeight + verticalCorrection, RealRoomWidth + horizontalCorrection];
 
-        for (int i = 0; i < CORRECTED_ROOM_HEIGHT; i++)
+        for (int i = 0; i < RealRoomHeight; i++)
         {
-            for (int j = 0; j < CORRECTED_ROOM_WIDTH; j++)
+            for (int j = 0; j < RealRoomWidth; j++)
             {
                 result[i, j] = firstScreen[i, j];
                 result[i + verticalCorrection, j + horizontalCorrection] = secondScreen[i, j];
@@ -574,8 +584,8 @@ internal class MetroidDataFetcher : IDataFetcher
     /// </summary>
     private (int xPos, int yPos) GetScreensPosition(int x, int y, bool isInFirstScreen) => (IsInSecondLoadedScreen(isInFirstScreen), IsHorizontalRoom()) switch
     {
-        (true, true) => (x + CORRECTED_ROOM_WIDTH, y),
-        (true, false) => (x, y + CORRECTED_ROOM_HEIGHT),
+        (true, true) => (x + RealRoomWidth, y),
+        (true, false) => (x, y + RealRoomHeight),
         _ => (x, y)
     };
 
