@@ -83,11 +83,9 @@ namespace Retro_ML.StreetFighter2Turbo.Neural.Scoring
 
         public IScoreFactor Clone()
         {
-            return new FightStateScoreFactor()
+            return new CombatScoreFactor()
             {
-                IsDisabled = IsDisabled,
                 ScoreMultiplier = ScoreMultiplier,
-                ExtraFields = ExtraFields
             };
         }
     }

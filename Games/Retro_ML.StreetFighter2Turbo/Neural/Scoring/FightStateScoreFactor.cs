@@ -137,7 +137,6 @@ namespace Retro_ML.StreetFighter2Turbo.Neural.Scoring
         {
             return new FightStateScoreFactor()
             {
-                IsDisabled = IsDisabled,
                 ScoreMultiplier = ScoreMultiplier,
                 MaxImmobileFrames = MaxImmobileFrames,
                 MaxInnactiveFrames = MaxInnactiveFrames
