@@ -47,15 +47,15 @@ namespace Retro_ML.StreetFighter2Turbo.Neural.Scoring
                 }
             }
         }
-        public int MaxImmobileFrames { get; set; } = 300;
-        public int MaxInnactiveFrames { get; set; } = 450;
+        public int MaxImmobileFrames { get; set; } = 90;
+        public int MaxInnactiveFrames { get; set; } = 150;
 
         public bool ShouldStop => shouldStop;
         public double ScoreMultiplier { get; set; }
 
-        public string Name => "IsInFightingDistance";
+        public string Name => "FightState";
 
-        public string Tooltip => "Reward the ai if it stays in an hitting distance of the enemy, close to it";
+        public string Tooltip => "Penalize the ai if it doesnt hit or doesnt move for x amount of frames";
 
         public bool CanBeDisabled => true;
 
@@ -83,6 +83,7 @@ namespace Retro_ML.StreetFighter2Turbo.Neural.Scoring
                 p2CurrentHP = p2HP;
                 immobileFrames = 0;
                 innactiveFrames = 0;
+                isInited = true;
             }
 
             //If the player can move and has not moved yet
@@ -94,16 +95,16 @@ namespace Retro_ML.StreetFighter2Turbo.Neural.Scoring
                     shouldStop = true;
                     currScore += ScoreMultiplier;
                 }
-
-                else
-                {
-                    immobileFrames = 0;
-                    p1CurrentPos = p1Pos;
-                }
             }
 
-            //If the player can attack and has not attacked in a certain time frame
-            if (!dataFetcher.isPlayer1Staggered() && p2CurrentHP == p2HP)
+            else
+            {
+                immobileFrames = 0;
+                p1CurrentPos = p1Pos;
+            }
+
+            //If the player can attack and has not attacked in a certain time frame. If the enemy has less HP, fleeing is considered a valid strategy and AI should not be discalified
+            if (!dataFetcher.isPlayer1Staggered() && p2CurrentHP == p2HP && p2HP >= p1HP)
             {
                 innactiveFrames++;
                 if (innactiveFrames >= MaxInnactiveFrames)
@@ -111,12 +112,13 @@ namespace Retro_ML.StreetFighter2Turbo.Neural.Scoring
                     shouldStop = true;
                     currScore += ScoreMultiplier;
                 }
+            }
 
-                else
-                {
-                    innactiveFrames = 0;
-                    p2CurrentHP = p2HP;
-                }
+            else
+            {
+                innactiveFrames = 0;
+                p1CurrentHP = p1HP;
+                p2CurrentHP = p2HP;
             }
         }
 

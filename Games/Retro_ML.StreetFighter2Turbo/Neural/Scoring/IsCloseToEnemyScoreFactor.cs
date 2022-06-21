@@ -5,16 +5,16 @@ using Retro_ML.Configuration.FieldInformation;
 
 namespace Retro_ML.StreetFighter2Turbo.Neural.Scoring
 {
-    internal class CombatScoreFactor : IScoreFactor
+    internal class IsCloseToEnemyScoreFactor : IScoreFactor
     {
-        private bool isInited = false;
         private double currScore;
-        private uint player1HP = 0;
-        private uint player2HP = 0;
+        private bool isInited = false;
+        private uint p1CurrentHP = 0;
+        private uint p2CurrentHP = 0;
 
         public FieldInfo[] Fields => Array.Empty<FieldInfo>();
 
-        public CombatScoreFactor()
+        public IsCloseToEnemyScoreFactor()
         {
             ExtraFields = Array.Empty<ExtraField>();
         }
@@ -28,9 +28,9 @@ namespace Retro_ML.StreetFighter2Turbo.Neural.Scoring
         public bool ShouldStop => false;
         public double ScoreMultiplier { get; set; }
 
-        public string Name => "Combat";
+        public string Name => "Is close to the enemy";
 
-        public string Tooltip => "Reward the ai if it hits the enemy or block an enemy hit and penalize it if it gets hit";
+        public string Tooltip => "Penalize the ai if it does not stays in an hitting distance of the enemy, close to it. If the ai has more HP than the enemy, fleeing is a valid strategy therefore it wont lose points";
 
         public bool CanBeDisabled => true;
 
@@ -47,40 +47,39 @@ namespace Retro_ML.StreetFighter2Turbo.Neural.Scoring
 
         private void Update(SF2TDataFetcher dataFetcher)
         {
+            var distance = dataFetcher.GetHorizontalDistanceBetweenPlayers();
             var p1HP = dataFetcher.GetPlayer1Hp();
-            var p2HP = dataFetcher.GetPlayer1Hp();
+            var p2HP = dataFetcher.GetPlayer2Hp();
 
             if (!isInited)
             {
-                player1HP = p1HP;
-                player2HP = p2HP;
+                p1CurrentHP = p1HP;
+                p2CurrentHP = p2HP;
                 isInited = true;
             }
 
-            //Can be hit at the same time***
-
-            //If player got hit and lost HP and is not considered K.O
-            if (p1HP < player1HP && p1HP != 255)
+            //If the player has the same or less HP compared to the enemy, it should be encouraged to get close / in fighting distance
+            if (p2CurrentHP >= p1CurrentHP)
             {
-                currScore -= (player1HP - p1HP) * ScoreMultiplier;
-                player1HP = p1HP;
-                player2HP = p2HP;
+                if (distance <= 13000)
+                {
+                    currScore += ScoreMultiplier;
+                }
             }
 
-            //If player hit ai, and it didnt K.O
-            else if (p2HP < player2HP && p2HP != 255)
+            //Else fleeing is a valid strategy and it shouldnt lose points
+            else
             {
-                currScore += (player2HP - p2HP) * 2 * ScoreMultiplier;
-                player1HP = p1HP;
-                player2HP = p2HP;
+                p1CurrentHP = p1HP;
+                p2CurrentHP = p2HP;
             }
         }
 
         public void LevelDone()
         {
             isInited = false;
-            player1HP = 0;
-            player2HP = 0;
+            p1CurrentHP = 0;
+            p2CurrentHP = 0;
         }
 
         public IScoreFactor Clone()
@@ -89,7 +88,6 @@ namespace Retro_ML.StreetFighter2Turbo.Neural.Scoring
             {
                 IsDisabled = IsDisabled,
                 ScoreMultiplier = ScoreMultiplier,
-                ExtraFields = ExtraFields
             };
         }
     }
