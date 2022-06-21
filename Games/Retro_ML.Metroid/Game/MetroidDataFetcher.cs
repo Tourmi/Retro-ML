@@ -126,7 +126,6 @@ internal class MetroidDataFetcher : IDataFetcher
     public bool IsOnNameTable3() => (ReadSingle(Room.PPUCTL0) & 0b0000_0011) != 0;
     public bool DoorOnNameTable0(bool leftSide) => (ReadSingle(Room.DoorOnNameTable0) & (leftSide ? 1 : 2)) != 0;
     public bool DoorOnNameTable3(bool leftSide) => (ReadSingle(Room.DoorOnNameTable3) & (leftSide ? 1 : 2)) != 0;
-    public bool IsRoomBeingLoadedValid() => ReadSingle(Room.RoomIndexBeingLoaded) != 0xFF;
     public byte GetScrollX() => ReadSingle(Room.ScrollX);
     public byte GetScrollY() => ReadSingle(Room.ScrollY);
     public (byte x, byte y) GetMapPosition() => (ReadSingle(Gamestate.MapX), ReadSingle(Gamestate.MapY));
@@ -267,11 +266,13 @@ internal class MetroidDataFetcher : IDataFetcher
         return new double[,] { { xDirr, yDirr }, { objective == Objectives.Obtain ? 1 : 0, objective == Objectives.Kill ? 1 : 0 } };
     }
 
+    public Objectives GetNavigationObjective() => navigator.GetDirectionToGo(currentMapPosition.x, currentMapPosition.y, this).objective;
+
     public bool[,] GetDangerousTilesAroundPosition(int xDist, int yDist)
     {
         var result = new bool[yDist * 2 + 1, xDist * 2 + 1];
 
-        FetchEnemies(result);
+        FetchSprites(result, GetEnemies());
         FetchSkreeProjectiles(result);
 
         return result;
@@ -329,7 +330,7 @@ internal class MetroidDataFetcher : IDataFetcher
     {
         var result = new bool[yDist * 2 + 1, xDist * 2 + 1];
 
-        FetchPickups(result);
+        FetchSprites(result, GetPickups());
         FetchPowerUps(result);
 
         return result;
@@ -348,28 +349,50 @@ internal class MetroidDataFetcher : IDataFetcher
             }
         }
 
+        FetchSprites(result, GetEnemies().Where(e => e.IsFrozen));
+
         return result;
     }
 
-    private void FetchEnemies(bool[,] tiles)
+    private void FetchSprites(bool[,] tiles, IEnumerable<Sprite> sprites)
     {
         int xDist = (tiles.GetLength(1) - 1) / 2;
         int yDist = (tiles.GetLength(0) - 1) / 2;
 
-        var enemies = GetEnemies();
-
         (var samusX, var samusY) = GetSamusScreensPosition();
 
-        foreach (var enemy in enemies)
+        foreach (var sprite in sprites)
         {
-            (var xPos, var yPos) = GetScreensPosition(enemy.XPos / META_TILE_SIZE, enemy.YPos / META_TILE_SIZE, enemy.IsInFirstScreen);
+            var correctedXRadius = Math.Max(0, sprite.XRadius - 1);
+            var correctedYRadius = Math.Max(0, sprite.YRadius - 1);
 
-            xPos -= samusX;
-            yPos -= samusY;
+            byte left = (byte)(sprite.XPos - correctedXRadius);
+            byte right = (byte)(sprite.XPos + correctedXRadius);
+            byte top = (byte)(sprite.YPos - correctedYRadius);
+            byte bottom = (byte)(sprite.YPos + correctedYRadius);
 
-            if (xPos >= -xDist && xPos <= xDist && yPos >= -yDist && yPos <= yDist)
+            if (sprite.YPos < top) top = byte.MinValue;
+            if (sprite.YPos > bottom) bottom = byte.MaxValue;
+            if (sprite.XPos < left) left = byte.MinValue;
+            if (sprite.XPos > right) right = byte.MaxValue;
+
+            (var xMin, var yMin) = GetScreensPosition(left / META_TILE_SIZE, top / META_TILE_SIZE, sprite.IsInFirstScreen);
+            (var xMax, var yMax) = GetScreensPosition(right / META_TILE_SIZE, bottom / META_TILE_SIZE, sprite.IsInFirstScreen);
+
+            xMin -= samusX;
+            xMax -= samusX;
+            yMin -= samusY;
+            yMax -= samusY;
+
+            for (int i = yMin; i <= yMax; i++)
             {
-                tiles[yPos + yDist, xPos + xDist] = true;
+                for (int j = xMin; j <= xMax; j++)
+                {
+                    if (j >= -xDist && j <= xDist && i >= -yDist && i <= yDist)
+                    {
+                        tiles[i + yDist, j + xDist] = true;
+                    }
+                }
             }
         }
     }
@@ -387,7 +410,7 @@ internal class MetroidDataFetcher : IDataFetcher
         {
             Sprite enemy = new(baseByteGroups[i], extraByteGroups[i]);
 
-            if (enemy.IsAlive())
+            if (enemy.IsAlive)
             {
                 yield return enemy;
             }
@@ -419,28 +442,6 @@ internal class MetroidDataFetcher : IDataFetcher
         }
     }
 
-    private void FetchPickups(bool[,] tiles)
-    {
-        int xDist = (tiles.GetLength(1) - 1) / 2;
-        int yDist = (tiles.GetLength(0) - 1) / 2;
-        var pickups = GetPickups();
-
-        (var samusX, var samusY) = GetSamusScreensPosition();
-
-        foreach (var enemy in pickups)
-        {
-            (var xPos, var yPos) = GetScreensPosition(enemy.XPos / META_TILE_SIZE, enemy.YPos / META_TILE_SIZE, enemy.IsInFirstScreen);
-
-            xPos -= samusX;
-            yPos -= samusY;
-
-            if (xPos >= -xDist && xPos <= xDist && yPos >= -yDist && yPos <= yDist)
-            {
-                tiles[yPos + yDist, xPos + xDist] = true;
-            }
-        }
-    }
-
     private IEnumerable<Sprite> GetPickups()
     {
         var baseByteGroups = ReadMultiple(Sprites.BaseSingleSprite, Sprites.BaseSingleSprite, Sprites.AllBaseSprites).ToArray();
@@ -450,7 +451,7 @@ internal class MetroidDataFetcher : IDataFetcher
         {
             Sprite sprite = new(baseByteGroups[i], extraByteGroups[i]);
 
-            if (sprite.IsPickup())
+            if (sprite.IsPickup)
             {
                 yield return sprite;
             }
@@ -544,7 +545,7 @@ internal class MetroidDataFetcher : IDataFetcher
     {
         var tiles = Read(Room.Tiles);
         //Exclude the final 2 rows of tiles.
-        var firstScreen = tiles[0x0..0x4C0].To2DArray(ROOM_HEIGHT, ROOM_WIDTH).QuarterArray();
+        var firstScreen = tiles[0x0..0x3C0].To2DArray(ROOM_HEIGHT, ROOM_WIDTH).QuarterArray();
         var secondScreen = tiles[0x400..0x7C0].To2DArray(ROOM_HEIGHT, ROOM_WIDTH).QuarterArray();
 
         if (IsOnNameTable3())
@@ -761,7 +762,10 @@ internal class MetroidDataFetcher : IDataFetcher
             Samus.HasMetroidOnHead,
             Samus.IsOnElevator,
             Samus.UsingMissiles,
+            Gamestate.FreezeTimer,
+            Gamestate.IsMiniBossPresent,
             Gamestate.InADoor,
+            Room.PPUCTL0,
             Samus.InvincibleTimer,
             Progress.Missiles,
             Progress.MissileCapacity,
@@ -769,6 +773,14 @@ internal class MetroidDataFetcher : IDataFetcher
             Room.HorizontalOrVertical,
             Room.ScrollX,
             Room.ScrollY,
+            Room.LeftDoorFrameOffset,
+            new AddressData(Room.LeftDoorFrameOffset.Address + 1),
+            new AddressData(Room.LeftDoorFrameOffset.Address + (Room.TilesNamespace3.Address - Room.TilesNamespace0.Address)),
+            new AddressData(Room.LeftDoorFrameOffset.Address + (Room.TilesNamespace3.Address - Room.TilesNamespace0.Address) + 1),
+            Room.RightDoorFrameOffset,
+            new AddressData(Room.RightDoorFrameOffset.Address - 1),
+            new AddressData(Room.RightDoorFrameOffset.Address - (Room.TilesNamespace3.Address - Room.TilesNamespace0.Address)),
+            new AddressData(Room.RightDoorFrameOffset.Address - (Room.TilesNamespace3.Address - Room.TilesNamespace0.Address) - 1),
             Gamestate.MapX,
             Gamestate.MapY,
             Samus.VerticalSpeed,

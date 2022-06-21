@@ -61,11 +61,11 @@ internal static class Addresses
         /// <summary>
         /// Not zero when a door is on the nametable 0
         /// </summary>
-        public static readonly AddressData DoorOnNameTable0 = new(0x6D);
+        public static readonly AddressData DoorOnNameTable0 = new(0x6D, 1, AddressData.CacheDurations.Room);
         /// <summary>
         /// Not zero when a door is on the nametable 3
         /// </summary>
-        public static readonly AddressData DoorOnNameTable3 = new(0x6C);
+        public static readonly AddressData DoorOnNameTable3 = new(0x6C, 1, AddressData.CacheDurations.Room);
         /// <summary>
         /// The index of the room currently being loaded.
         /// <code>
@@ -229,6 +229,14 @@ internal static class Addresses
         /// </code>
         /// </summary>
         public static readonly AddressData Status = new(0x6AF4);
+        /// <summary>
+        /// Vertical "radius" of the sprite. Double the value for the total height of the sprite
+        /// </summary>
+        public static readonly AddressData VerticalRadius = new(0x6AF5);
+        /// <summary>
+        /// Horizontal "radius" of the sprite. Double the value for the total width of the sprite
+        /// </summary>
+        public static readonly AddressData HorizontalRadius = new(0x6AF6);
         /// <summary>
         /// Current name table of the enemy (The screen it is currently on)
         /// </summary>

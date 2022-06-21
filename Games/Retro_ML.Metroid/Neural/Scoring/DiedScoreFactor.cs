@@ -14,7 +14,7 @@ internal class DiedScoreFactor : IScoreFactor
 
     public bool CanBeDisabled => false;
 
-    public bool IsDisabled { get; set; }
+    public bool IsDisabled { get => false; set { } }
 
     private bool shouldStop = false;
     public bool ShouldStop => shouldStop;
@@ -48,9 +48,8 @@ internal class DiedScoreFactor : IScoreFactor
         }
     }
 
-    public IScoreFactor Clone() => new HealthScoreFactor()
+    public IScoreFactor Clone() => new DiedScoreFactor()
     {
-        ScoreMultiplier = ScoreMultiplier,
-        IsDisabled = IsDisabled
+        ScoreMultiplier = ScoreMultiplier
     };
 }

@@ -1,12 +1,16 @@
 ﻿using Retro_ML.Configuration.FieldInformation;
 using Retro_ML.Game;
 using Retro_ML.Metroid.Game;
+using Retro_ML.Metroid.Game.Navigation;
 using Retro_ML.Neural.Scoring;
 
 namespace Retro_ML.Metroid.Neural.Scoring;
 
 internal class ProgressScoreFactor : IScoreFactor
 {
+    private const byte DOOR_ENTER_Y = 113;
+    private const byte DOOR_ENTER_Y_MORPH_BALL = 120;
+
     private double currScore;
     private double maxScore;
     private bool isInit = false;
@@ -76,6 +80,14 @@ internal class ProgressScoreFactor : IScoreFactor
             isInit = true;
         }
 
+        //If Samus is near door, pretend she was on the ground, and don't count progress.
+        if (df.IsSamusInDoor() || df.IsInFrontOfDoor())
+        {
+            previousY = df.IsSamusInMorphBall() ? DOOR_ENTER_Y_MORPH_BALL : DOOR_ENTER_Y;
+            currY = previousY;
+            previousX = currX;
+        }
+
         //If samus isn't grounded, don't count vertical progress
         if (!df.IsSamusGrounded())
         {
@@ -92,6 +104,18 @@ internal class ProgressScoreFactor : IScoreFactor
         if (distY < -128) distY += byte.MaxValue;
 
         var navigationDirection = df.GetNavigationDirection();
+
+        if (df.GetNavigationObjective() == Objectives.Obtain)
+        {
+            var powerup = df.GetPowerups().Where(p => (p[3] == 0) == df.IsSamusInFirstScreen()).SingleOrDefault();
+            if (powerup != null)
+            {
+                var dirr = df.GetDirectionToNearestGoodTile();
+                navigationDirection[0, 0] = dirr[0, 0];
+                navigationDirection[0, 1] = dirr[0, 1];
+            }
+        }
+
         currScore += ScoreMultiplier / 16.0 * (distX * navigationDirection[0, 0] + distY * navigationDirection[0, 1]);
 
         if (df.CanSamusAct())
