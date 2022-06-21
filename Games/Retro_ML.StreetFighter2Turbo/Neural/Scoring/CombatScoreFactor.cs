@@ -57,22 +57,22 @@ namespace Retro_ML.StreetFighter2Turbo.Neural.Scoring
                 isInit = true;
             }
 
+            //Can be hit at the same time***
+
             //If player got hit and lost HP and is not considered K.O
             if (p1HP < player1HP && p1HP != 255)
             {
                 currScore -= (player1HP - p1HP) * ScoreMultiplier;
+                player1HP = p1HP;
+                player2HP = p2HP;
             }
 
             //If player hit ai, and it didnt K.O
             else if (p2HP < player2HP && p2HP != 255)
             {
                 currScore += (player2HP - p2HP) * 2 * ScoreMultiplier;
-            }
-
-            //If player blocked an hit
-            else if (dataFetcher.isPlayer1Blocking() && dataFetcher.isPlayer2Attacking())
-            {
-                currScore += 5 * ScoreMultiplier;
+                player1HP = p1HP;
+                player2HP = p2HP;
             }
         }
 
@@ -85,7 +85,7 @@ namespace Retro_ML.StreetFighter2Turbo.Neural.Scoring
 
         public IScoreFactor Clone()
         {
-            return new IsInFightingDistanceScoreFactor()
+            return new FightStateScoreFactor()
             {
                 IsDisabled = IsDisabled,
                 ScoreMultiplier = ScoreMultiplier,

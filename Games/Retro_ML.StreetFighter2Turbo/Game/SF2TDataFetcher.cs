@@ -61,10 +61,12 @@ namespace Retro_ML.StreetFighter2Turbo.Game
         public bool isPlayer2Crouched() => ReadSingle(Player2Addresses.State) == 0x02;
         public bool isPlayer1Jumping() => ReadSingle(Player1Addresses.State) == 0x04;
         public bool isPlayer2Jumping() => ReadSingle(Player2Addresses.State) == 0x04;
-        public bool isPlayer1Attacking() => ReadSingle(Player1Addresses.State) == 0x0E;
-        public bool isPlayer2Attacking() => ReadSingle(Player2Addresses.State) == 0x0E;
+        public bool isPlayer1Attacking() => ReadSingle(Player1Addresses.State) == 0x0A;
+        public bool isPlayer2Attacking() => ReadSingle(Player2Addresses.State) == 0x0A;
         public bool isPlayer1Blocking() => ReadSingle(Player1Addresses.Input) == 0x03;
         public bool isPlayer2Blocking() => ReadSingle(Player2Addresses.Input) == 0x03;
+        public bool isPlayer1Staggered() => ReadSingle(Player1Addresses.State) == 0x14;
+        public bool isPlayer2Staggered() => ReadSingle(Player2Addresses.State) == 0x14;
 
         /// <summary>
         /// Reads a single byte from the emulator's memory
@@ -80,7 +82,7 @@ namespace Retro_ML.StreetFighter2Turbo.Game
         /// <returns></returns>
         private byte[] Read(AddressData addressData)
         {
-            var cacheToUse = GetCacheToUse(addressData);
+            var cacheToUse = frameCache;
             if (!cacheToUse.ContainsKey(addressData.Address))
                 cacheToUse[addressData.Address] = emulator.ReadMemory(addressData.Address, addressData.Length);
 
@@ -100,7 +102,7 @@ namespace Retro_ML.StreetFighter2Turbo.Game
 
             foreach ((AddressData address, bool isLowHighByte) in addresses)
             {
-                var cacheToUse = GetCacheToUse(address);
+                var cacheToUse = frameCache;
                 if (!cacheToUse.ContainsKey(address.Address))
                 {
                     toFetch.Add((address.Address, address.Length));
@@ -125,7 +127,7 @@ namespace Retro_ML.StreetFighter2Turbo.Game
             {
                 int count = (int)address.Length;
 
-                var cacheToUse = GetCacheToUse(address);
+                var cacheToUse = frameCache;
                 if (!cacheToUse.ContainsKey(address.Address))
                 {
                     cacheToUse[address.Address] = data[dataIndex..(dataIndex + count)];
@@ -142,11 +144,6 @@ namespace Retro_ML.StreetFighter2Turbo.Game
             }
 
             return bytes.ToArray();
-        }
-
-        private Dictionary<uint, byte[]> GetCacheToUse(AddressData addressData)
-        {
-            return frameCache;
         }
 
         private void InitFrameCache()
