@@ -163,28 +163,40 @@ namespace Retro_ML_TEST.Game.Metroid
 
         [Test]
         public void HasBombs() => TestFlagValue(df!.HasBombs, Addresses.Progress.Equipment.Address, 0b0000_0001, false);
+        
         [Test]
         public void HasHighJump() => TestFlagValue(df!.HasHighJump, Addresses.Progress.Equipment.Address, 0b0000_0010, false);
+        
         [Test]
         public void HasLongBeam() => TestFlagValue(df!.HasLongBeam, Addresses.Progress.Equipment.Address, 0b0000_0100, false);
+        
         [Test]
         public void HasScrewAttack() => TestFlagValue(df!.HasScrewAttack, Addresses.Progress.Equipment.Address, 0b0000_1000, false);
+        
         [Test]
         public void HasMorphBall() => TestFlagValue(df!.HasMorphBall, Addresses.Progress.Equipment.Address, 0b0001_0000, false);
+        
         [Test]
         public void HasVariaSuit() => TestFlagValue(df!.HasVariaSuit, Addresses.Progress.Equipment.Address, 0b0010_0000, false);
+        
         [Test]
         public void HasWaveBeam() => TestFlagValue(df!.HasWaveBeam, Addresses.Progress.Equipment.Address, 0b0100_0000, false);
+        
         [Test]
         public void HasIceBeam() => TestFlagValue(df!.HasIceBeam, Addresses.Progress.Equipment.Address, 0b1000_0000, false);
+        
         [Test]
         public void MultipleEquipments() => TestFlagValue(df!.HasIceBeam, Addresses.Progress.Equipment.Address, 0b1111_1111, false);
+        
         [Test]
         public void HasMissiles() => TestFlagValue(df!.HasMissiles, Addresses.Progress.MissileCapacity.Address, 5, false);
+        
         [Test]
         public void KilledKraid() => Assert.Ignore("Function not properly implemented");
+        
         [Test]
         public void KilledRidley() => Assert.Ignore("Function not properly implemented");
+        
         [Test]
         public void KilledMotherBrain() => Assert.Ignore("Function not properly implemented");
 

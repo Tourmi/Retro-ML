@@ -64,7 +64,5 @@ internal struct PathPoint
             y <= Y && y > other.Y
         )
     );
-
-
     public bool Equals(int x, int y) => (X, Y) == (x, y);
 }

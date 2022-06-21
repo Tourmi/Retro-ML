@@ -14,7 +14,6 @@ internal class MetroidPlayer : SharpNeatPlayer
     public MetroidPlayer(EmulatorManager emulatorManager, ApplicationConfig appConfig) : base(emulatorManager, appConfig)
     {
         pluginConfig = (MetroidPluginConfig)appConfig.GamePluginConfig!;
-
     }
 
     protected override void DoFrame(IBlackBox<double> blackBox)
