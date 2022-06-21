@@ -65,6 +65,11 @@ namespace Retro_ML.StreetFighter2Turbo.Neural.Scoring
                 {
                     currScore += ScoreMultiplier;
                 }
+
+                else
+                {
+                    currScore -= ScoreMultiplier;
+                }
             }
 
             //Else fleeing is a valid strategy and it shouldnt lose points

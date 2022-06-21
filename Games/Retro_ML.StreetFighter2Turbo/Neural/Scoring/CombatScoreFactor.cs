@@ -48,7 +48,7 @@ namespace Retro_ML.StreetFighter2Turbo.Neural.Scoring
         private void Update(SF2TDataFetcher dataFetcher)
         {
             var p1HP = dataFetcher.GetPlayer1Hp();
-            var p2HP = dataFetcher.GetPlayer1Hp();
+            var p2HP = dataFetcher.GetPlayer2Hp();
 
             if (!isInited)
             {
@@ -56,8 +56,6 @@ namespace Retro_ML.StreetFighter2Turbo.Neural.Scoring
                 player2HP = p2HP;
                 isInited = true;
             }
-
-            //Can be hit at the same time***
 
             //If player got hit and lost HP and is not considered K.O
             if (p1HP < player1HP && p1HP != 255)
@@ -68,7 +66,7 @@ namespace Retro_ML.StreetFighter2Turbo.Neural.Scoring
             }
 
             //If player hit ai, and it didnt K.O
-            else if (p2HP < player2HP && p2HP != 255)
+            if (p2HP < player2HP && p2HP != 255)
             {
                 currScore += (player2HP - p2HP) * 2 * ScoreMultiplier;
                 player1HP = p1HP;
