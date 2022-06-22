@@ -95,9 +95,9 @@ public class NeuralConfig
 
     private void InitMemoryNodes()
     {
-        OutputMemoryNodes.Add(new OutputNode("Short Term Memory", ShortTermMemoryNodeCount, 1));
-        OutputMemoryNodes.Add(new OutputNode("Long Term Memory", LongTermMemoryNodeCount, 2));
-        OutputMemoryNodes.Add(new OutputNode("Permanent Memory", PermanentMemoryNodeCount, 2));
+        OutputMemoryNodes.Add(new OutputNode("Short Term Memory", ShortTermMemoryNodeCount, 1, usesActivationThreshold: false));
+        OutputMemoryNodes.Add(new OutputNode("Long Term Memory", LongTermMemoryNodeCount, 2, usesActivationThreshold: true, isHalfActivationThreshold: true));
+        OutputMemoryNodes.Add(new OutputNode("Permanent Memory", PermanentMemoryNodeCount, 2, usesActivationThreshold: true, isHalfActivationThreshold: true));
         InputMemoryNodes.Add(new InputNode("Short Term Memory", ShortTermMemoryNodeCount > 0, ShortTermMemoryNodeCount, 1));
         InputMemoryNodes.Add(new InputNode("Long Term Memory", LongTermMemoryNodeCount > 0, LongTermMemoryNodeCount, 1));
         InputMemoryNodes.Add(new InputNode("Permanent Memory", PermanentMemoryNodeCount > 0, PermanentMemoryNodeCount, 1));

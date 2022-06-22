@@ -83,7 +83,7 @@ internal class NetworkViewModel : ViewModelBase
         public static int GridSize => NetworkViewModel.GridSize;
         public static int LeftOffset => NetworkViewModel.LeftOffset;
 
-        public NodeGroupViewModel(string name, Color targetColor, int gridWidth = 1, int gridHeight = 1, bool isOutput = false)
+        public NodeGroupViewModel(string name, Color targetColor, int gridWidth = 1, int gridHeight = 1, bool isActivationTheshold = false, bool isHalfThreshold = false)
         {
             Name = name;
 
@@ -96,14 +96,16 @@ internal class NetworkViewModel : ViewModelBase
                 Nodes.Add(new Node());
             }
 
-            IsOutput = isOutput;
+            IsActivationThreshold = isActivationTheshold;
+            IsHalfThreshold = isHalfThreshold;
         }
 
         public string Name { get; }
         public Color TargetColor { get; }
         public int GridWidth { get; }
         public int GridHeight { get; }
-        public bool IsOutput { get; }
+        public bool IsActivationThreshold { get; }
+        public bool IsHalfThreshold { get; }
 
         public ObservableCollection<Node> Nodes { get; set; }
     }
@@ -176,7 +178,7 @@ internal class NetworkViewModel : ViewModelBase
             foreach (var node in config.AllOutputNodes)
             {
                 if (!node.ShouldUse) continue;
-                Outputs.Add(new(node.Name, DefaultActiveColor, node.TotalWidth, node.TotalHeight, isOutput: true));
+                Outputs.Add(new(node.Name, DefaultActiveColor, node.TotalWidth, node.TotalHeight, isActivationTheshold: node.UsesActivationThreshold, isHalfThreshold: node.IsHalfActivationThreshold));
             }
         });
     }
@@ -355,7 +357,11 @@ internal class NetworkViewModel : ViewModelBase
             {
                 double prevValue = nodeGroup.Nodes[i].Value;
                 double value = states[i + startIndex];
-                if (nodeGroup.IsOutput) value = value > IInput.INPUT_THRESHOLD ? 1 : 0;
+                //Only apply input threshold for first half of "HalfThreshold" groups
+                if (nodeGroup.IsActivationThreshold && (!nodeGroup.IsHalfThreshold || i < nodeGroup.Nodes.Count / 2))
+                {
+                    value = value > IInput.INPUT_THRESHOLD ? 1 : 0;
+                }
                 if (prevValue != value)
                 {
                     nodeGroup.Nodes[i] = new Node(value, nodeGroup.TargetColor);
