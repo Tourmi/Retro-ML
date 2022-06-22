@@ -409,6 +409,7 @@ namespace Retro_ML.Application.ViewModels
         public ConfigurationViewModel()
         {
             GamePluginConfigFields = new ObservableCollection<FieldInfoViewModel>();
+            GamePlugins = new();
 
             _pluginConsoleName = "";
             _gamePlugin = "";
@@ -570,7 +571,6 @@ namespace Retro_ML.Application.ViewModels
         private void DeserializeConfig()
         {
             //Plugins
-            GamePlugins = new ObservableCollection<string>();
             PluginUtils.LoadPlugins();
             foreach (var plugin in PluginUtils.GamePlugins)
             {
