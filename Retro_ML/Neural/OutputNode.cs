@@ -1,23 +1,31 @@
-﻿namespace Retro_ML.Neural
-{
-    /// <summary>
-    /// Configuration of a single output node
-    /// </summary>
-    public class OutputNode
-    {
-        /// <summary>
-        /// Name of the output node
-        /// </summary>
-        public string Name { get; }
-        /// <summary>
-        /// Whether or not the output node should be used by the neural network.
-        /// </summary>
-        public bool ShouldUse { get; }
+﻿namespace Retro_ML.Neural;
 
-        public OutputNode(string name, bool shouldUse)
-        {
-            Name = name;
-            ShouldUse = shouldUse;
-        }
+/// <summary>
+/// Configuration of a single output node
+/// </summary>
+public class OutputNode : INode
+{
+    public string Name { get; }
+    public bool ShouldUse { get; }
+    public bool IsMultipleNodes { get; }
+    public int TotalWidth { get; }
+    public int TotalHeight { get; }
+
+    public OutputNode(string name, bool shouldUse)
+    {
+        Name = name;
+        ShouldUse = shouldUse;
+        IsMultipleNodes = false;
+        TotalWidth = 1;
+        TotalHeight = 1;
+    }
+
+    public OutputNode(string name, int width, int height)
+    {
+        Name = name;
+        ShouldUse = width != 0 && height != 0;
+        IsMultipleNodes = width * height > 1;
+        TotalWidth = width;
+        TotalHeight = height;
     }
 }
