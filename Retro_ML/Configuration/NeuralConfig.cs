@@ -9,10 +9,10 @@ namespace Retro_ML.Configuration;
 /// </summary>
 public class NeuralConfig
 {
-    public int ShortTermMemoryNodeCount { get; set; } = 2;
-    public int LongTermMemoryNodeCount { get; set; } = 3;
-    public int PermanentMemoryNodeCount { get; set; } = 4;
-    public double MaximumMemoryNodeValue { get; set; } = 1.0;
+    public int ShortTermMemoryNodeCount { get; set; }
+    public int LongTermMemoryNodeCount { get; set; }
+    public int PermanentMemoryNodeCount { get; set; }
+    public double MaximumMemoryNodeValue { get; set; }
 
     /// <summary>
     /// The input nodes to use by the neural network
@@ -50,6 +50,8 @@ public class NeuralConfig
         EnabledStates = Array.Empty<bool>();
         InputMemoryNodes = new();
         OutputMemoryNodes = new();
+
+        MaximumMemoryNodeValue = 1.0;
 
         InitMemoryNodes();
     }

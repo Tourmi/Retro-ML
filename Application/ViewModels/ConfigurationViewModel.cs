@@ -358,6 +358,47 @@ namespace Retro_ML.Application.ViewModels
         }
 
         public ObservableCollection<ScoreFactorViewModel> Objectives { get; set; }
+
+        private int _shortTermMemoryCount;
+        public int ShortTermMemoryCount
+        {
+            get => _shortTermMemoryCount;
+            set
+            {
+                this.RaiseAndSetIfChanged(ref _shortTermMemoryCount, value);
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(ShortTermMemoryCount)));
+            }
+        }
+        private int _longTermMemoryCount;
+        public int LongTermMemoryCount
+        {
+            get => _longTermMemoryCount;
+            set
+            {
+                this.RaiseAndSetIfChanged(ref _longTermMemoryCount, value);
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(LongTermMemoryCount)));
+            }
+        }
+        private int _permanentMemoryCount;
+        public int PermanentMemoryCount
+        {
+            get => _permanentMemoryCount;
+            set
+            {
+                this.RaiseAndSetIfChanged(ref _permanentMemoryCount, value);
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(PermanentMemoryCount)));
+            }
+        }
+        private double _memoryMaximumValue;
+        public double MaximumMemoryValue
+        {
+            get => _memoryMaximumValue;
+            set
+            {
+                this.RaiseAndSetIfChanged(ref _memoryMaximumValue, value);
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(MaximumMemoryValue)));
+            }
+        }
         public ObservableCollection<InputOutputConfigViewModel> NeuralConfigs { get; }
 
         public new event PropertyChangedEventHandler PropertyChanged;
@@ -369,12 +410,6 @@ namespace Retro_ML.Application.ViewModels
         {
             GamePluginConfigFields = new ObservableCollection<FieldInfoViewModel>();
 
-            GamePlugins = new ObservableCollection<string>();
-            PluginUtils.LoadPlugins();
-            foreach (var plugin in PluginUtils.GamePlugins)
-            {
-                GamePlugins.Add(plugin.PluginName);
-            }
             _pluginConsoleName = "";
             _gamePlugin = "";
             _pluginGameName = "";
@@ -509,6 +544,11 @@ namespace Retro_ML.Application.ViewModels
             SaveGamePluginConfig();
 
             //Tab Neural
+            ApplicationConfig.NeuralConfig.ShortTermMemoryNodeCount = ShortTermMemoryCount;
+            ApplicationConfig.NeuralConfig.LongTermMemoryNodeCount = LongTermMemoryCount;
+            ApplicationConfig.NeuralConfig.PermanentMemoryNodeCount = PermanentMemoryCount;
+            ApplicationConfig.NeuralConfig.MaximumMemoryNodeValue = MaximumMemoryValue;
+
             int inputCount = ApplicationConfig.NeuralConfig.InputNodes.Count;
             int outputCount = ApplicationConfig.NeuralConfig.OutputNodes.Count;
             for (int i = 0; i < inputCount; i++)
@@ -529,6 +569,14 @@ namespace Retro_ML.Application.ViewModels
         /// </summary>
         private void DeserializeConfig()
         {
+            //Plugins
+            GamePlugins = new ObservableCollection<string>();
+            PluginUtils.LoadPlugins();
+            foreach (var plugin in PluginUtils.GamePlugins)
+            {
+                GamePlugins.Add(plugin.PluginName);
+            }
+
             //Tab NeuralNetwork
             string configJSon = File.ReadAllText(DefaultPaths.SHARPNEAT_CONFIG);
             SharpNeatModel = SharpNeatModel.Deserialize(configJSon);
@@ -723,8 +771,13 @@ namespace Retro_ML.Application.ViewModels
         private void PopulateNeuralConfig()
         {
             using var delay = DelayChangeNotifications();
+            ShortTermMemoryCount = ApplicationConfig!.NeuralConfig.ShortTermMemoryNodeCount;
+            LongTermMemoryCount = ApplicationConfig.NeuralConfig.LongTermMemoryNodeCount;
+            PermanentMemoryCount = ApplicationConfig.NeuralConfig.PermanentMemoryNodeCount;
+            MaximumMemoryValue = ApplicationConfig.NeuralConfig.MaximumMemoryNodeValue;
+
             NeuralConfigs.Clear();
-            foreach (var input in ApplicationConfig!.NeuralConfig.InputNodes)
+            foreach (var input in ApplicationConfig.NeuralConfig.InputNodes)
             {
                 NeuralConfigs.Add(new(input));
             }
