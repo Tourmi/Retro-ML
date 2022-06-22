@@ -111,7 +111,19 @@
 							Changing these values will make previous training populations invalid with the new settings
 						</TextBlock>
 						<Button Content="Load neural configuration" Classes="configButton" Command="{Binding LoadNeuralConfig}"/>
-
+						<TextBlock Classes="h1" Text="Short Term Memory Cells Count"/>
+						<NumericUpDown Classes="numericTextBox" Value="{Binding ShortTermMemoryCount}" Minimum="0" 
+									   ToolTip.Tip="Amount of short term memory cells available to the neural network. These values are written to on every evaluation."/>
+						<TextBlock Classes="h1" Text="Long Term Memory Cells Count"/>
+						<NumericUpDown Classes="numericTextBox" Value="{Binding LongTermMemoryCount}" Minimum="0" 
+									   ToolTip.Tip="Amount of short term memory cells available to the neural network. The AIs can choose whether or not to write to these cells."/>
+						<TextBlock Classes="h1" Text="Permanent Memory Cells Count"/>
+						<NumericUpDown Classes="numericTextBox" Value="{Binding PermanentMemoryCount}" Minimum="0" 
+									   ToolTip.Tip="Amount of permanent memory cells available to the neural network. Once written to, the AI may not write to these cells again."/>
+						<TextBlock Classes="h1" Text="Maximum Memory Value"/>
+						<NumericUpDown Classes="numericTextBox" Value="{Binding MaximumMemoryValue}" Minimum="1.0" Increment="0.5" 
+									   ToolTip.Tip="The maximum value that the AI can store in a memory cell, be it negative or positive."/>
+						<TextBlock Classes="h1" Text="Input-Output nodes"/>
 						<ItemsControl Items="{Binding NeuralConfigs}">
 							<ItemsControl.ItemsPanel>
 								<ItemsPanelTemplate>

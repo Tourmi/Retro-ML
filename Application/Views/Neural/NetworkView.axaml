@@ -69,7 +69,7 @@
 			<ItemsControl Items="{Binding Inputs}" DockPanel.Dock="Left">
 				<ItemsControl.ItemsPanel>
 					<ItemsPanelTemplate>
-						<StackPanel Orientation="Vertical" Spacing="{Binding SpacingBetweenInputs}" />
+						<StackPanel Orientation="Vertical" Spacing="{Binding SpacingBetweenNodeGroups}" />
 					</ItemsPanelTemplate>
 				</ItemsControl.ItemsPanel>
 				<ItemsControl.ItemTemplate>
@@ -102,7 +102,7 @@
 			<ItemsControl Items="{Binding Outputs}" DockPanel.Dock="Right">
 				<ItemsControl.ItemsPanel>
 					<ItemsPanelTemplate>
-						<StackPanel Orientation="Vertical" Spacing="{Binding SpacingBetweenInputs}" />
+						<StackPanel Orientation="Vertical" Spacing="{Binding SpacingBetweenNodeGroups}" />
 					</ItemsPanelTemplate>
 				</ItemsControl.ItemsPanel>
 				<ItemsControl.ItemTemplate>

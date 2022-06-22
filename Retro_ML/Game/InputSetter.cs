@@ -1,5 +1,6 @@
 ﻿using Retro_ML.Configuration;
 using Retro_ML.Neural;
+using Retro_ML.Neural.Memory;
 using SharpNeat.BlackBox;
 
 namespace Retro_ML.Game
@@ -11,18 +12,21 @@ namespace Retro_ML.Game
     {
         private readonly List<InputNode> inputNodes;
 
-        private IDataFetcher dataFetcher;
+        private readonly IDataFetcher dataFetcher;
 
-        public InputSetter(IDataFetcher dataReader, NeuralConfig config)
+        private readonly NeuralMemory neuralMemory;
+
+        public InputSetter(IDataFetcher dataReader, NeuralConfig config, NeuralMemory neuralMemory)
         {
             dataFetcher = dataReader;
             inputNodes = config.InputNodes;
+
+            this.neuralMemory = neuralMemory;
         }
 
         /// <summary>
         /// Sets the states of the given input vector based on the input nodes.
         /// </summary>
-        /// <param name="inputs"></param>
         public void SetInputs(IVector<double> inputs)
         {
             int currOffset = 0;
@@ -31,7 +35,7 @@ namespace Retro_ML.Game
             {
                 if (!input.ShouldUse) continue;
 
-                if (input.IsMultipleInputs)
+                if (input.IsMultipleNodes)
                 {
                     var inputStates = input.GetStates(dataFetcher);
                     for (int i = 0; i < inputStates.GetLength(0); i++)
@@ -47,6 +51,8 @@ namespace Retro_ML.Game
                     inputs[currOffset++] = input.GetState(dataFetcher);
                 }
             }
+
+            neuralMemory.SetMemory(inputs, currOffset);
         }
     }
 }
