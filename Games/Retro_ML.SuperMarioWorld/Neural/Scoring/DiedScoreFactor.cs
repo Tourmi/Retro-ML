@@ -1,4 +1,5 @@
-﻿using Retro_ML.Game;
+﻿using Retro_ML.Configuration.FieldInformation;
+using Retro_ML.Game;
 using Retro_ML.Neural.Scoring;
 using Retro_ML.SuperMarioWorld.Game;
 
@@ -9,15 +10,36 @@ namespace Retro_ML.SuperMarioWorld.Neural.Scoring
         private bool shouldStop = false;
         private double currScore;
 
+        public FieldInfo[] Fields => Array.Empty<FieldInfo>();
+
         public DiedScoreFactor()
         {
             ExtraFields = Array.Empty<ExtraField>();
+        }
+
+        public object this[string fieldName]
+        {
+            get
+            {
+                return fieldName switch
+                {
+                    _ => 0,
+                };
+            }
+            set
+            {
+                switch (fieldName)
+                {
+                }
+            }
         }
 
         public bool ShouldStop => shouldStop;
         public double ScoreMultiplier { get; set; }
 
         public string Name => "Died";
+
+        public string Tooltip => "The reward to give an AI that died";
 
         public bool CanBeDisabled => false;
 
@@ -49,7 +71,7 @@ namespace Retro_ML.SuperMarioWorld.Neural.Scoring
 
         public IScoreFactor Clone()
         {
-            return new DiedScoreFactor() { ScoreMultiplier = ScoreMultiplier };
+            return new DiedScoreFactor() { ScoreMultiplier = ScoreMultiplier, ExtraFields = ExtraFields };
         }
     }
 }

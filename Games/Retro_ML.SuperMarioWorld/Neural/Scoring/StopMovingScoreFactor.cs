@@ -1,4 +1,5 @@
-﻿using Retro_ML.Game;
+﻿using Retro_ML.Configuration.FieldInformation;
+using Retro_ML.Game;
 using Retro_ML.Neural.Scoring;
 using Retro_ML.SuperMarioWorld.Game;
 
@@ -22,15 +23,36 @@ namespace Retro_ML.SuperMarioWorld.Neural.Scoring
 
         private double currScore = 0;
 
+        public FieldInfo[] Fields => Array.Empty<FieldInfo>();
+
         public StopMovingScoreFactor()
         {
             ExtraFields = Array.Empty<ExtraField>();
+        }
+
+        public object this[string fieldName]
+        {
+            get
+            {
+                return fieldName switch
+                {
+                    _ => 0,
+                };
+            }
+            set
+            {
+                switch (fieldName)
+                {
+                }
+            }
         }
 
         public bool ShouldStop => shouldStop;
         public double ScoreMultiplier { get; set; }
 
         public string Name => "Stopped moving";
+
+        public string Tooltip => "Stops the current level if the AI has stopped progressing through the level. This is based on the maximum distance reached so far, not the current position";
 
         public bool CanBeDisabled => true;
 

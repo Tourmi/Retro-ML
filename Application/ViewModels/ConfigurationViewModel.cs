@@ -4,7 +4,6 @@ using Retro_ML.Application.Models;
 using Retro_ML.Application.ViewModels.Components;
 using Retro_ML.Application.ViewModels.Components.FieldInfo;
 using Retro_ML.Configuration;
-using Retro_ML.Configuration.FieldInformation;
 using Retro_ML.Utils;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -50,7 +49,7 @@ namespace Retro_ML.Application.ViewModels
         public ObservableCollection<string> GamePlugins { get; set; }
         public ObservableCollection<string> DispMethodList { get; set; }
 
-        public ObservableCollection<ViewModelBase> GamePluginConfigFields { get; }
+        public ObservableCollection<FieldInfoViewModel> GamePluginConfigFields { get; }
 
         private string _romPath;
         [DataMember]
@@ -359,6 +358,47 @@ namespace Retro_ML.Application.ViewModels
         }
 
         public ObservableCollection<ScoreFactorViewModel> Objectives { get; set; }
+
+        private int _shortTermMemoryCount;
+        public int ShortTermMemoryCount
+        {
+            get => _shortTermMemoryCount;
+            set
+            {
+                this.RaiseAndSetIfChanged(ref _shortTermMemoryCount, value);
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(ShortTermMemoryCount)));
+            }
+        }
+        private int _longTermMemoryCount;
+        public int LongTermMemoryCount
+        {
+            get => _longTermMemoryCount;
+            set
+            {
+                this.RaiseAndSetIfChanged(ref _longTermMemoryCount, value);
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(LongTermMemoryCount)));
+            }
+        }
+        private int _permanentMemoryCount;
+        public int PermanentMemoryCount
+        {
+            get => _permanentMemoryCount;
+            set
+            {
+                this.RaiseAndSetIfChanged(ref _permanentMemoryCount, value);
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(PermanentMemoryCount)));
+            }
+        }
+        private double _memoryMaximumValue;
+        public double MaximumMemoryValue
+        {
+            get => _memoryMaximumValue;
+            set
+            {
+                this.RaiseAndSetIfChanged(ref _memoryMaximumValue, value);
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(MaximumMemoryValue)));
+            }
+        }
         public ObservableCollection<InputOutputConfigViewModel> NeuralConfigs { get; }
 
         public new event PropertyChangedEventHandler PropertyChanged;
@@ -368,14 +408,9 @@ namespace Retro_ML.Application.ViewModels
         #region Constructor
         public ConfigurationViewModel()
         {
-            GamePluginConfigFields = new ObservableCollection<ViewModelBase>();
+            GamePluginConfigFields = new ObservableCollection<FieldInfoViewModel>();
+            GamePlugins = new();
 
-            GamePlugins = new ObservableCollection<string>();
-            PluginUtils.LoadPlugins();
-            foreach (var plugin in PluginUtils.GamePlugins)
-            {
-                GamePlugins.Add(plugin.PluginName);
-            }
             _pluginConsoleName = "";
             _gamePlugin = "";
             _pluginGameName = "";
@@ -506,25 +541,15 @@ namespace Retro_ML.Application.ViewModels
             }
             ApplicationConfig.SaveStates = _saveStates;
 
-            //Tab Objectives
-            var scoreFactors = ApplicationConfig.GamePluginConfig!.ScoreFactors;
-            for (int i = 0; i < Objectives.Count; i++)
-            {
-                scoreFactors[i].ScoreMultiplier = Objectives[i].Multiplier;
-                if (scoreFactors[i].CanBeDisabled)
-                {
-                    scoreFactors[i].IsDisabled = !Objectives[i].IsChecked;
-                }
-                for (int j = 0; j < scoreFactors[i].ExtraFields.Count(); j++)
-                {
-                    scoreFactors[i].ExtraFields[j].Value = Objectives[i].ExtraFields[j].Value;
-                }
-            }
-
-            //Tab Game
+            //Tab Game && Objectives
             SaveGamePluginConfig();
 
             //Tab Neural
+            ApplicationConfig.NeuralConfig.ShortTermMemoryNodeCount = ShortTermMemoryCount;
+            ApplicationConfig.NeuralConfig.LongTermMemoryNodeCount = LongTermMemoryCount;
+            ApplicationConfig.NeuralConfig.PermanentMemoryNodeCount = PermanentMemoryCount;
+            ApplicationConfig.NeuralConfig.MaximumMemoryNodeValue = MaximumMemoryValue;
+
             int inputCount = ApplicationConfig.NeuralConfig.InputNodes.Count;
             int outputCount = ApplicationConfig.NeuralConfig.OutputNodes.Count;
             for (int i = 0; i < inputCount; i++)
@@ -545,6 +570,13 @@ namespace Retro_ML.Application.ViewModels
         /// </summary>
         private void DeserializeConfig()
         {
+            //Plugins
+            PluginUtils.LoadPlugins();
+            foreach (var plugin in PluginUtils.GamePlugins)
+            {
+                GamePlugins.Add(plugin.PluginName);
+            }
+
             //Tab NeuralNetwork
             string configJSon = File.ReadAllText(DefaultPaths.SHARPNEAT_CONFIG);
             SharpNeatModel = SharpNeatModel.Deserialize(configJSon);
@@ -579,18 +611,7 @@ namespace Retro_ML.Application.ViewModels
             string appConfigJson = File.ReadAllText(DefaultPaths.APP_CONFIG);
             ApplicationConfig = ApplicationConfig.Deserialize(appConfigJson);
 
-            if (ApplicationConfig == null) { return; }
-
-            RomPath = ApplicationConfig.RomPath;
-            GamePluginName = ApplicationConfig.GamePluginName;
-            Multithread = ApplicationConfig.Multithread;
-            ArduinoPort = ApplicationConfig.ArduinoCommunicationPort;
-
-            StopConditions.Clear();
-            for (int i = 0; i < ApplicationConfig.StopConditions.Count; i++)
-            {
-                StopConditions.Add(new(ApplicationConfig.StopConditions[i]));
-            }
+            LoadApplicationConfig();
 
             SetSaveStates(ApplicationConfig.SaveStates);
 
@@ -604,6 +625,22 @@ namespace Retro_ML.Application.ViewModels
             PopulateNeuralConfig();
         }
 
+        public void LoadApplicationConfig()
+        {
+            if (ApplicationConfig == null) { return; }
+
+            RomPath = ApplicationConfig.RomPath;
+            GamePluginName = ApplicationConfig.GamePluginName;
+            Multithread = ApplicationConfig.Multithread;
+            ArduinoPort = ApplicationConfig.ArduinoCommunicationPort;
+
+            StopConditions.Clear();
+            for (int i = 0; i < ApplicationConfig.StopConditions.Count; i++)
+            {
+                StopConditions.Add(new(ApplicationConfig.StopConditions[i]));
+            }
+        }
+
         public void LoadGamePluginConfig()
         {
             GamePluginConfigFields.Clear();
@@ -614,18 +651,7 @@ namespace Retro_ML.Application.ViewModels
 
             foreach (var fieldInfo in pluginConfig.Fields)
             {
-                switch (fieldInfo)
-                {
-                    case BoolFieldInfo fi:
-                        GamePluginConfigFields.Add(new BoolViewModel(fi, (bool)pluginConfig[fi.Name]));
-                        break;
-                    case IntegerChoiceFieldInfo fi:
-                        GamePluginConfigFields.Add(new IntegerChoiceViewModel(fi, (int)pluginConfig[fi.Name]));
-                        break;
-                    case IntegerFieldInfo fi:
-                        GamePluginConfigFields.Add(new IntegerViewModel(fi, (int)pluginConfig[fi.Name]));
-                        break;
-                }
+                GamePluginConfigFields.Add(FieldInfoViewModel.GetFieldInfoViewModel(fieldInfo, pluginConfig[fieldInfo.Name]));
             }
         }
 
@@ -646,17 +672,18 @@ namespace Retro_ML.Application.ViewModels
 
             foreach (var field in GamePluginConfigFields)
             {
-                switch (field)
+                pluginConfig[field.FieldName] = field.GetValue();
+            }
+
+            var scoreFactors = ApplicationConfig.GamePluginConfig.ScoreFactors;
+            for (int i = 0; i < scoreFactors.Count; i++)
+            {
+                if (scoreFactors[i].CanBeDisabled) scoreFactors[i].IsDisabled = !Objectives[i].IsChecked;
+                scoreFactors[i].ScoreMultiplier = Objectives[i].Multiplier;
+
+                foreach (var field in Objectives[i].FieldInfos)
                 {
-                    case BoolViewModel vm:
-                        pluginConfig[vm.FieldName] = vm.IsChecked;
-                        break;
-                    case IntegerChoiceViewModel vm:
-                        pluginConfig[vm.FieldName] = vm.Value;
-                        break;
-                    case IntegerViewModel vm:
-                        pluginConfig[vm.FieldName] = vm.Value;
-                        break;
+                    scoreFactors[i][field.FieldName] = field.GetValue();
                 }
             }
 
@@ -719,11 +746,38 @@ namespace Retro_ML.Application.ViewModels
             PopulateNeuralConfig();
         }
 
+        public async void LoadGameConfig()
+        {
+            OpenFileDialog fileDialog = new();
+            fileDialog.Filters.Add(new FileDialogFilter() { Name = "Game Plugin Config", Extensions = { DefaultPaths.GAME_PLUGIN_CONFIG_EXTENSION } });
+            fileDialog.AllowMultiple = false;
+            fileDialog.Directory = Path.GetFullPath(".");
+
+            string[]? paths = await fileDialog.ShowAsync(ViewLocator.GetMainWindow());
+            if (paths == null) return;
+
+            string gamePluginConfig = await File.ReadAllTextAsync(paths.First());
+
+            ApplicationConfig!.GamePluginConfig!.Deserialize(gamePluginConfig);
+
+            //Tab Game
+            LoadGamePluginConfig();
+
+            //Tab Objectives
+            LoadObjectives();
+
+        }
+
         private void PopulateNeuralConfig()
         {
             using var delay = DelayChangeNotifications();
+            ShortTermMemoryCount = ApplicationConfig!.NeuralConfig.ShortTermMemoryNodeCount;
+            LongTermMemoryCount = ApplicationConfig.NeuralConfig.LongTermMemoryNodeCount;
+            PermanentMemoryCount = ApplicationConfig.NeuralConfig.PermanentMemoryNodeCount;
+            MaximumMemoryValue = ApplicationConfig.NeuralConfig.MaximumMemoryNodeValue;
+
             NeuralConfigs.Clear();
-            foreach (var input in ApplicationConfig!.NeuralConfig.InputNodes)
+            foreach (var input in ApplicationConfig.NeuralConfig.InputNodes)
             {
                 NeuralConfigs.Add(new(input));
             }

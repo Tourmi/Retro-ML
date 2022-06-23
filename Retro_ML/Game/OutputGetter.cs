@@ -1,5 +1,6 @@
 ﻿using Retro_ML.Configuration;
 using Retro_ML.Neural;
+using Retro_ML.Neural.Memory;
 using SharpNeat.BlackBox;
 
 namespace Retro_ML.Game
@@ -12,16 +13,14 @@ namespace Retro_ML.Game
         private readonly List<OutputNode> outputNodes;
         private readonly ApplicationConfig config;
         private readonly NeuralConfig neuralConfig;
+        private readonly NeuralMemory neuralMemory;
 
-        private const bool ALLOW_OPPOSITE_DIRECTIONS = false;
-
-        private const double ACTIVATION_THRESHOLD = 0;
-
-        public OutputGetter(ApplicationConfig config)
+        public OutputGetter(ApplicationConfig config, NeuralMemory neuralMemory)
         {
             this.config = config;
             neuralConfig = config.NeuralConfig;
             outputNodes = neuralConfig.OutputNodes;
+            this.neuralMemory = neuralMemory;
         }
         /// <summary>
         /// Gets the state of the output neurons of the neural network, and parses it to a controller input.
@@ -48,6 +47,8 @@ namespace Retro_ML.Game
             }
 
             input.ValidateButtons();
+
+            neuralMemory.WriteMemory(outputs, currIndex);
 
             return input;
         }

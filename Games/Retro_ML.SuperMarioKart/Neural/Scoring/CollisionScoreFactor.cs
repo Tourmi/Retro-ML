@@ -1,4 +1,5 @@
-﻿using Retro_ML.Game;
+﻿using Retro_ML.Configuration.FieldInformation;
+using Retro_ML.Game;
 using Retro_ML.Neural.Scoring;
 using Retro_ML.SuperMarioKart.Game;
 
@@ -15,6 +16,8 @@ namespace Retro_ML.SuperMarioKart.Neural.Scoring
 
         public string Name => "Collisions";
 
+        public string Tooltip => "Reward applied whenever the AI collides with a wall, another racer, etc";
+
         public bool CanBeDisabled => true;
 
         public bool IsDisabled { get; set; }
@@ -25,6 +28,11 @@ namespace Retro_ML.SuperMarioKart.Neural.Scoring
         public double ScoreMultiplier { get; set; }
         public ExtraField[] ExtraFields { get; set; }
 
+        public FieldInfo[] Fields => new FieldInfo[]
+        {
+             new IntegerFieldInfo(nameof(StopAfterXCollisions), "Maximum collisions", 0, int.MaxValue, 1, "Stops the current race if the total collisions reach this number"),
+        };
+
         public CollisionScoreFactor()
         {
             ExtraFields = new ExtraField[]
@@ -32,6 +40,27 @@ namespace Retro_ML.SuperMarioKart.Neural.Scoring
                 new ExtraField(STOP_AFTER_X_COLLISIONS, 5)
             };
         }
+
+        public object this[string fieldName]
+        {
+            get
+            {
+                return fieldName switch
+                {
+                    nameof(StopAfterXCollisions) => StopAfterXCollisions,
+                    _ => 0,
+                };
+            }
+            set
+            {
+                switch (fieldName)
+                {
+                    case nameof(StopAfterXCollisions): StopAfterXCollisions = (int)value; break;
+                }
+            }
+        }
+
+        public int StopAfterXCollisions { get; set; } = 5;
 
         public double GetFinalScore() => currScore;
 
@@ -61,9 +90,7 @@ namespace Retro_ML.SuperMarioKart.Neural.Scoring
                     currScore += ScoreMultiplier;
                     collisionCount++;
 
-                    double stopAfter = ExtraField.GetValue(ExtraFields, STOP_AFTER_X_COLLISIONS);
-
-                    if (stopAfter >= 1 && collisionCount >= stopAfter)
+                    if (StopAfterXCollisions > 0 && collisionCount >= StopAfterXCollisions)
                     {
                         shouldStop = true;
                     }
@@ -71,6 +98,6 @@ namespace Retro_ML.SuperMarioKart.Neural.Scoring
             }
         }
 
-        public IScoreFactor Clone() => new CollisionScoreFactor() { ScoreMultiplier = ScoreMultiplier, IsDisabled = IsDisabled, ExtraFields = ExtraFields };
+        public IScoreFactor Clone() => new CollisionScoreFactor() { ScoreMultiplier = ScoreMultiplier, IsDisabled = IsDisabled, ExtraFields = ExtraFields, StopAfterXCollisions = StopAfterXCollisions };
     }
 }

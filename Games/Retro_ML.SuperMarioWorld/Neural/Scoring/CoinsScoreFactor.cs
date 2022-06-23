@@ -1,4 +1,5 @@
-﻿using Retro_ML.Game;
+﻿using Retro_ML.Configuration.FieldInformation;
+using Retro_ML.Game;
 using Retro_ML.Neural.Scoring;
 using Retro_ML.SuperMarioWorld.Game;
 
@@ -10,12 +11,33 @@ namespace Retro_ML.SuperMarioWorld.Neural.Scoring
         private int currCoins;
         private double score;
 
+        public FieldInfo[] Fields => Array.Empty<FieldInfo>();
+
         public CoinsScoreFactor()
         {
             ExtraFields = Array.Empty<ExtraField>();
         }
 
+        public object this[string fieldName]
+        {
+            get
+            {
+                return fieldName switch
+                {
+                    _ => 0,
+                };
+            }
+            set
+            {
+                switch (fieldName)
+                {
+                }
+            }
+        }
+
         public string Name => "Coins";
+
+        public string Tooltip => "The reward to give the AI per coin collected";
 
         public bool CanBeDisabled => true;
 

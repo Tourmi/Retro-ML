@@ -1,6 +1,8 @@
 ﻿using Retro_ML.Game;
 using Retro_ML.Neural.Scoring;
 using Retro_ML.SuperMarioWorld.Game;
+using Retro_ML.Configuration.FieldInformation;
+
 
 namespace Retro_ML.SuperMarioWorld.Neural.Scoring
 {
@@ -10,12 +12,33 @@ namespace Retro_ML.SuperMarioWorld.Neural.Scoring
         private int currOneUps;
         private double score;
 
+        public FieldInfo[] Fields => Array.Empty<FieldInfo>();
+
         public OneUpsScoreFactor()
         {
             ExtraFields = Array.Empty<ExtraField>();
         }
 
+        public object this[string fieldName]
+        {
+            get
+            {
+                return fieldName switch
+                {
+                    _ => 0,
+                };
+            }
+            set
+            {
+                switch (fieldName)
+                {
+                }
+            }
+        }
+
         public string Name => "1-ups";
+
+        public string Tooltip => "Reward to give the AI per 1-up collected from any source";
 
         public bool CanBeDisabled => true;
 

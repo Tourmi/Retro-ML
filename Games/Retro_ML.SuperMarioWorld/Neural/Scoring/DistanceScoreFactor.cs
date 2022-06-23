@@ -1,4 +1,5 @@
-﻿using Retro_ML.Game;
+﻿using Retro_ML.Configuration.FieldInformation;
+using Retro_ML.Game;
 using Retro_ML.Neural.Scoring;
 using Retro_ML.SuperMarioWorld.Game;
 
@@ -19,6 +20,14 @@ namespace Retro_ML.SuperMarioWorld.Neural.Scoring
         private bool inited = false;
         private uint levelUID;
 
+        public FieldInfo[] Fields => new FieldInfo[]
+        {
+             new DoubleFieldInfo(nameof(EastDistance), "East Mult", double.MinValue, double.MaxValue, 0.25, "Multiplier when the AI is moving east"),
+             new DoubleFieldInfo(nameof(WestDistance), "West Mult", double.MinValue, double.MaxValue, 0.25, "Multiplier when the AI is moving west"),
+             new DoubleFieldInfo(nameof(UpDistance), "Up Mult", double.MinValue, double.MaxValue, 0.25, "Multiplier when the AI is moving up"),
+             new DoubleFieldInfo(nameof(DownDistance), "Down Mult", double.MinValue, double.MaxValue, 0.25, "Multiplier when the AI is moving down")
+        };
+
         public DistanceScoreFactor()
         {
             ExtraFields = new ExtraField[]
@@ -30,10 +39,42 @@ namespace Retro_ML.SuperMarioWorld.Neural.Scoring
             };
         }
 
+        public object this[string fieldName]
+        {
+            get
+            {
+                return fieldName switch
+                {
+                    nameof(EastDistance) => EastDistance,
+                    nameof(WestDistance) => WestDistance,
+                    nameof(UpDistance) => UpDistance,
+                    nameof(DownDistance) => DownDistance,
+                    _ => 0,
+                };
+            }
+            set
+            {
+                switch (fieldName)
+                {
+                    case nameof(EastDistance): EastDistance = (double)value; break;
+                    case nameof(WestDistance): WestDistance = (double)value; break;
+                    case nameof(UpDistance): UpDistance = (double)value; break;
+                    case nameof(DownDistance): DownDistance = (double)value; break;
+                }
+            }
+        }
+
+        public double EastDistance { get; set; } = 1.0;
+        public double WestDistance { get; set; } = 0.0;
+        public double UpDistance { get; set; } = 0.5;
+        public double DownDistance { get; set; } = 0.25;
+
         public bool ShouldStop => false;
         public double ScoreMultiplier { get; set; }
 
         public string Name => "Distance travelled";
+
+        public string Tooltip => "Reward for each tile the AI traverses. This is based on the maximum distance, so going back and forth will not increase the reward";
 
         public bool CanBeDisabled => true;
 
@@ -74,22 +115,22 @@ namespace Retro_ML.SuperMarioWorld.Neural.Scoring
                 double totalSubScore = 0;
                 if (newPosX > maxXPosition)
                 {
-                    totalSubScore += (newPosX - maxXPosition) * ExtraField.GetValue(ExtraFields, EAST_DISTANCE);
+                    totalSubScore += (newPosX - maxXPosition) * EastDistance;
                     maxXPosition = newPosX;
                 }
                 if (newPosX < minXPosition)
                 {
-                    totalSubScore += (minXPosition - newPosX) * ExtraField.GetValue(ExtraFields, WEST_DISTANCE);
+                    totalSubScore += (minXPosition - newPosX) * WestDistance;
                     minXPosition = newPosX;
                 }
                 if (newPosY > maxYPosition)
                 {
-                    totalSubScore += (newPosY - maxYPosition) * ExtraField.GetValue(ExtraFields, DOWN_DISTANCE);
+                    totalSubScore += (newPosY - maxYPosition) * DownDistance;
                     maxYPosition = newPosY;
                 }
                 if (newPosY < minYPosition)
                 {
-                    totalSubScore += (minYPosition - newPosY) * ExtraField.GetValue(ExtraFields, UP_DISTANCE);
+                    totalSubScore += (minYPosition - newPosY) * UpDistance;
                     minYPosition = newPosY;
                 }
 
@@ -112,7 +153,11 @@ namespace Retro_ML.SuperMarioWorld.Neural.Scoring
             {
                 IsDisabled = IsDisabled,
                 ScoreMultiplier = ScoreMultiplier,
-                ExtraFields = ExtraFields
+                ExtraFields = ExtraFields,
+                EastDistance = EastDistance,
+                WestDistance = WestDistance,
+                DownDistance = DownDistance,
+                UpDistance = UpDistance
             };
         }
     }

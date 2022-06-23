@@ -3,11 +3,12 @@ using Retro_ML.Configuration.FieldInformation;
 
 namespace Retro_ML.Application.ViewModels.Components.FieldInfo
 {
-    internal class IntegerViewModel : ViewModelBase
+    internal class IntegerViewModel : FieldInfoViewModel
     {
         public IntegerFieldInfo FieldInfo { get; }
-        public string FieldName => FieldInfo.Name;
-        public string DisplayName => FieldInfo.ReadableName;
+        public override string FieldName => FieldInfo.Name;
+        public override string DisplayName => FieldInfo.ReadableName;
+        public override string? Tooltip => FieldInfo.Tooltip;
 
         private int value;
         public int Value
@@ -25,7 +26,7 @@ namespace Retro_ML.Application.ViewModels.Components.FieldInfo
 
         public IntegerViewModel()
         {
-            FieldInfo = new IntegerFieldInfo("TestField", "Test Field", 5, 25, 5);
+            FieldInfo = new IntegerFieldInfo("TestField", "Test Field", 5, 25, 5, "Test Field");
             Value = 15;
         }
 
@@ -35,5 +36,6 @@ namespace Retro_ML.Application.ViewModels.Components.FieldInfo
             Value = value;
         }
 
+        public override object GetValue() => value;
     }
 }

@@ -1,4 +1,5 @@
-﻿using Retro_ML.Game;
+﻿using Retro_ML.Configuration.FieldInformation;
+using Retro_ML.Game;
 using Retro_ML.Neural.Scoring;
 using Retro_ML.SuperMarioKart.Game;
 
@@ -14,6 +15,8 @@ namespace Retro_ML.SuperMarioKart.Neural.Scoring
 
         public string Name => "Offroad";
 
+        public string Tooltip => "Reward applied for every frame the driver spends offroad";
+
         public bool CanBeDisabled => true;
 
         public bool IsDisabled { get; set; }
@@ -23,6 +26,11 @@ namespace Retro_ML.SuperMarioKart.Neural.Scoring
         public double ScoreMultiplier { get; set; }
         public ExtraField[] ExtraFields { get; set; }
 
+        public FieldInfo[] Fields => new FieldInfo[]
+        {
+             new DoubleFieldInfo(nameof(StopAfter), "Stop after", 0, double.MaxValue, 0.5, "Stops the training on the current racetrack after the AI spends this amount of seconds offroad consecutively")
+        };
+
         public OffRoadScoreFactor()
         {
             ExtraFields = new ExtraField[]
@@ -30,6 +38,27 @@ namespace Retro_ML.SuperMarioKart.Neural.Scoring
                 new ExtraField(STOP_AFTER, 5)
             };
         }
+
+        public object this[string fieldName]
+        {
+            get
+            {
+                return fieldName switch
+                {
+                    nameof(StopAfter) => StopAfter,
+                    _ => 0,
+                };
+            }
+            set
+            {
+                switch (fieldName)
+                {
+                    case nameof(StopAfter): StopAfter = (int)value; break;
+                }
+            }
+        }
+
+        public double StopAfter { get; set; } = 5;
 
         public double GetFinalScore() => currScore;
 
@@ -52,7 +81,7 @@ namespace Retro_ML.SuperMarioKart.Neural.Scoring
                 framesOffroad = 0;
             }
 
-            if (framesOffroad >= ExtraField.GetValue(ExtraFields, STOP_AFTER) * 60.0)
+            if (framesOffroad >= StopAfter * 60.0)
             {
                 shouldStop = true;
             }
@@ -60,7 +89,7 @@ namespace Retro_ML.SuperMarioKart.Neural.Scoring
 
         public IScoreFactor Clone()
         {
-            return new OffRoadScoreFactor() { IsDisabled = IsDisabled, ScoreMultiplier = ScoreMultiplier, ExtraFields = ExtraFields };
+            return new OffRoadScoreFactor() { IsDisabled = IsDisabled, ScoreMultiplier = ScoreMultiplier, ExtraFields = ExtraFields, StopAfter = StopAfter };
         }
     }
 }

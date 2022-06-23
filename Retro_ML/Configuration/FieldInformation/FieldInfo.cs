@@ -7,12 +7,15 @@
         /// </summary>
         public string Name { get; }
         public string ReadableName { get; }
+        public string? Tooltip { get; }
 
+        public FieldInfo(string name, string readableName): this(name, readableName, null) { }
 
-        public FieldInfo(string name, string readableName)
+        public FieldInfo(string name, string readableName, string? tooltip)
         {
             Name = name;
             ReadableName = readableName;
+            Tooltip = tooltip;
         }
     }
 }

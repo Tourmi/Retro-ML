@@ -1,6 +1,7 @@
 ﻿using Retro_ML.Arduino;
 using Retro_ML.Configuration;
 using Retro_ML.Game;
+using Retro_ML.Neural.Memory;
 using System.Diagnostics;
 using System.Net.Sockets;
 
@@ -32,6 +33,7 @@ namespace Retro_ML.Emulator
         private ArduinoPreviewer? arduinoPreviewer;
 
         private readonly IDataFetcher dataFetcher;
+        private readonly NeuralMemory neuralMemory;
         private readonly InputSetter inputSetter;
         private readonly OutputGetter outputGetter;
 
@@ -62,9 +64,10 @@ namespace Retro_ML.Emulator
             client = server.Accept();
             savestates = Directory.GetFiles(savestatesPath);
 
-            this.dataFetcher = dataFetcherFactory.GetDataFetcher(config, this);
-            inputSetter = new InputSetter(dataFetcher, config.NeuralConfig);
-            outputGetter = new OutputGetter(config);
+            dataFetcher = dataFetcherFactory.GetDataFetcher(config, this);
+            neuralMemory = new NeuralMemory(config.NeuralConfig.ShortTermMemoryNodeCount, config.NeuralConfig.LongTermMemoryNodeCount, config.NeuralConfig.PermanentMemoryNodeCount, config.NeuralConfig.MaximumMemoryNodeValue);
+            inputSetter = new InputSetter(dataFetcher, config.NeuralConfig, neuralMemory);
+            outputGetter = new OutputGetter(config, neuralMemory);
         }
         public void SetArduinoPreviewer(ArduinoPreviewer arduinoPreviewer)
         {
@@ -74,6 +77,7 @@ namespace Retro_ML.Emulator
         public void LoadRom(string path)
         {
             SendCommand(Commands.LOAD_ROM, path);
+            neuralMemory.Reset();
         }
 
         public string[] GetStates()
@@ -84,6 +88,7 @@ namespace Retro_ML.Emulator
         public void LoadState(string saveState)
         {
             SendCommand(Commands.LOAD_STATE, Path.GetFullPath(saveState));
+            neuralMemory.Reset();
         }
 
         public void NextFrame()

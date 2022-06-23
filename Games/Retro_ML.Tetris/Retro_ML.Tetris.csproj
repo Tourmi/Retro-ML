@@ -1,0 +1,26 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<TargetFramework>net6.0</TargetFramework>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Nullable>enable</Nullable>
+	</PropertyGroup>
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+		<DebugType>embedded</DebugType>
+	</PropertyGroup>
+
+
+	<ItemGroup>
+		<InternalsVisibleTo Include="Retro_ML_TEST" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\..\Retro_ML\Retro_ML.csproj" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<Reference Include="SharpNeat">
+			<HintPath>..\..\Submodules\SharpNEAT\src\SharpNeat\bin\Release\net6.0\SharpNeat.dll</HintPath>
+		</Reference>
+	</ItemGroup>
+</Project>

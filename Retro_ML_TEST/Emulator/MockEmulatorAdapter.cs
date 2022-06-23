@@ -2,6 +2,7 @@
 using Retro_ML.Configuration;
 using Retro_ML.Emulator;
 using Retro_ML.Game;
+using Retro_ML.Neural.Memory;
 using Retro_ML.SuperMarioWorld.Configuration;
 using Retro_ML.SuperMarioWorld.Game;
 using System;
@@ -16,6 +17,7 @@ namespace Retro_ML_TEST.Emulator
         public event Action<(int sourceNode, int targetNode, double weight)[][], int[]>? ChangedLinkedNetwork;
 
         public SMWDataFetcher DataFetcher;
+        public NeuralMemory NeuralMemory;
         public InputSetter InputSetter;
         public OutputGetter OutputGetter;
 
@@ -24,8 +26,9 @@ namespace Retro_ML_TEST.Emulator
         public MockEmulatorAdapter()
         {
             DataFetcher = new SMWDataFetcher(this, new NeuralConfig(), new SMWPluginConfig());
-            InputSetter = new InputSetter(DataFetcher, new NeuralConfig());
-            OutputGetter = new OutputGetter(new ApplicationConfig());
+            NeuralMemory = new NeuralMemory(0, 0, 0, 1);
+            InputSetter = new InputSetter(DataFetcher, new NeuralConfig(), NeuralMemory);
+            OutputGetter = new OutputGetter(new ApplicationConfig(), NeuralMemory);
 
             Memory = new Dictionary<uint, byte>();
         }
@@ -52,6 +55,8 @@ namespace Retro_ML_TEST.Emulator
         public void LoadState(string saveState)
         {
             LoadStateCallCount++;
+
+            NeuralMemory.Reset();
 
             if (!GetStates().Any(state => saveState.EndsWith(state)))
             {

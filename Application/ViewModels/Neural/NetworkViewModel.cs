@@ -35,9 +35,9 @@ namespace Retro_ML.Application.ViewModels.Neural
                 else if (value >= 1) currColor = targetColor;
                 else if (value < 0)
                 {
-                    byte r = (byte)(BaseColor.R + (NegativeColor.R - BaseColor.R) * value);
-                    byte g = (byte)(BaseColor.G + (NegativeColor.G - BaseColor.G) * value);
-                    byte b = (byte)(BaseColor.B + (NegativeColor.B - BaseColor.B) * value);
+                    byte r = (byte)(BaseColor.R + (NegativeColor.R - BaseColor.R) * value * -1);
+                    byte g = (byte)(BaseColor.G + (NegativeColor.G - BaseColor.G) * value * -1);
+                    byte b = (byte)(BaseColor.B + (NegativeColor.B - BaseColor.B) * value * -1);
 
                     currColor = Color.FromRgb(r, g, b);
                 }
@@ -83,7 +83,7 @@ namespace Retro_ML.Application.ViewModels.Neural
             public static int GridSize => NetworkViewModel.GridSize;
             public static int LeftOffset => NetworkViewModel.LeftOffset;
 
-            public NodeGroupViewModel(string name, Color targetColor, int gridWidth = 1, int gridHeight = 1, bool isOutput = false)
+            public NodeGroupViewModel(string name, Color targetColor, int gridWidth = 1, int gridHeight = 1, bool isActivationTheshold = false, bool isHalfThreshold = false)
             {
                 Name = name;
 
@@ -96,14 +96,16 @@ namespace Retro_ML.Application.ViewModels.Neural
                     Nodes.Add(new Node());
                 }
 
-                IsOutput = isOutput;
+                IsActivationThreshold = isActivationTheshold;
+                IsHalfThreshold = isHalfThreshold;
             }
 
             public string Name { get; }
             public Color TargetColor { get; }
             public int GridWidth { get; }
             public int GridHeight { get; }
-            public bool IsOutput { get; }
+            public bool IsActivationThreshold { get; }
+            public bool IsHalfThreshold { get; }
 
             public ObservableCollection<Node> Nodes { get; set; }
         }
@@ -115,15 +117,30 @@ namespace Retro_ML.Application.ViewModels.Neural
         public static Color GoodiesActiveColor = Color.Parse("#0E0");
         public static Color WaterActiveColor = Color.Parse("#00E");
 
+        /// <summary>
+        /// Total width of the neural network screen
+        /// </summary>
         public static int TotalWidth => 1800;
+        /// <summary>
+        /// Total height of the neural network screen
+        /// </summary>
         public static int TotalHeight => 800;
 
+        /// <summary>
+        /// Total size of a single node
+        /// </summary>
         public static int GridSize => 12;
+        /// <summary>
+        /// Size of the node's internal circle
+        /// </summary>
         public static int NodeSize => GridSize - 2;
-        public static int LeftOffset => 100;
-        public static int SpacingBetweenInputs => 5;
+        public static int LeftOffset => 150;
+        /// <summary>
+        /// Space between each node group
+        /// </summary>
+        public static int SpacingBetweenNodeGroups => 5;
 
-        private static readonly Point middleOfNode = new Point(GridSize / 2.0, GridSize / 2.0);
+        private static readonly Point middleOfNode = new(GridSize / 2.0, GridSize / 2.0);
 
         private bool runningTopologyUpdate = false;
         private bool runningUpdate = false;
@@ -147,7 +164,7 @@ namespace Retro_ML.Application.ViewModels.Neural
             Dispatcher.UIThread.Post(() =>
             {
                 using var delay = DelayChangeNotifications();
-                foreach (var node in config.InputNodes)
+                foreach (var node in config.AllInputNodes)
                 {
                     if (!node.ShouldUse) continue;
                     Color targetColor = DefaultActiveColor;
@@ -158,10 +175,10 @@ namespace Retro_ML.Application.ViewModels.Neural
                     Inputs.Add(new NodeGroupViewModel(node.Name, targetColor, node.TotalWidth, node.TotalHeight));
                 }
 
-                foreach (var node in config.OutputNodes)
+                foreach (var node in config.AllOutputNodes)
                 {
                     if (!node.ShouldUse) continue;
-                    Outputs.Add(new(node.Name, DefaultActiveColor, isOutput: true));
+                    Outputs.Add(new(node.Name, DefaultActiveColor, node.TotalWidth, node.TotalHeight, isActivationTheshold: node.UsesActivationThreshold, isHalfThreshold: node.IsHalfActivationThreshold));
                 }
             });
         }
@@ -307,14 +324,14 @@ namespace Retro_ML.Application.ViewModels.Neural
                 }
 
                 initialY += GridSize * group.GridHeight;
-                initialY += SpacingBetweenInputs;
+                initialY += SpacingBetweenNodeGroups;
             }
 
             return result;
         }
 
         /// <summary>
-        /// Updates the status of the nodes of the neural network. Note that for now, middle nodes are not updated.
+        /// Updates the status of the nodes of the neural network. Note that middle nodes are not updated.
         /// </summary>
         /// <param name="inputs"></param>
         /// <param name="outputs"></param>
@@ -340,8 +357,12 @@ namespace Retro_ML.Application.ViewModels.Neural
                 {
                     double prevValue = nodeGroup.Nodes[i].Value;
                     double value = states[i + startIndex];
-                    if (nodeGroup.IsOutput) value = value > IInput.INPUT_THRESHOLD ? 1 : 0;
-                    if (prevValue != value && !(prevValue <= 0 && value <= 0) && !(prevValue >= 1 && value >= 1))
+                    //Only apply input threshold for first half of "HalfThreshold" groups
+                    if (nodeGroup.IsActivationThreshold && (!nodeGroup.IsHalfThreshold || i < nodeGroup.Nodes.Count / 2))
+                    {
+                        value = value > IInput.INPUT_THRESHOLD ? 1 : 0;
+                    }
+                    if (prevValue != value)
                     {
                         nodeGroup.Nodes[i] = new Node(value, nodeGroup.TargetColor);
                     }
