@@ -9,6 +9,8 @@ namespace Retro_ML.StreetFighter2Turbo.Neural.Scoring
     {
         private bool shouldStop = false;
         private double currScore;
+        private uint maxTime = 0;
+        private bool isInited = false;
 
         public FieldInfo[] Fields => Array.Empty<FieldInfo>();
 
@@ -45,16 +47,25 @@ namespace Retro_ML.StreetFighter2Turbo.Neural.Scoring
 
         private void Update(SF2TDataFetcher dataFetcher)
         {
-            if (dataFetcher.isPlayer1Dead() && dataFetcher.isPlayer2InEndRound())
+            if (!isInited)
+            {
+                maxTime = dataFetcher.GetRoundTimer();
+                isInited = true;
+            }
+
+            //If the round is finished via Player 1 K.O, penalize the AI depending on the time he survived.
+            if (dataFetcher.isPlayer1Dead())
             {
                 shouldStop = true;
-                currScore += ScoreMultiplier;
+                currScore += ScoreMultiplier + (maxTime - dataFetcher.GetRoundTimer());
             }
         }
 
         public void LevelDone()
         {
             shouldStop = false;
+            maxTime = 0;
+            isInited = false;
         }
 
         public IScoreFactor Clone()

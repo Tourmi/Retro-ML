@@ -15,7 +15,7 @@ namespace Retro_ML.StreetFighter2Turbo.Neural.Train
 
         public int OutputCount => appConfig.NeuralConfig.GetOutputCount();
 
-        public bool IsDeterministic => true; // Change if using random levels
+        public bool IsDeterministic => false; // Change if using random levels
 
         public IComparer<FitnessInfo> FitnessComparer => PrimaryFitnessInfoComparer.Singleton;
 

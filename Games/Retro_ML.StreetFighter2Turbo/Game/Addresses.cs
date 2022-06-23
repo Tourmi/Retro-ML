@@ -30,9 +30,9 @@
         public static class GameAddresses
         {
             /// <summary>
-            /// Round Timer, runs from 0x9928 to 0x0000, but jumps back up to 0x0028 when time is up
+            /// Round Timer, In Hex from 0x99 to 0x00. Represents seconds.
             /// </summary>
-            public static readonly AddressData RoundTimer = new(0x18F2, 2);
+            public static readonly AddressData RoundTimer = new(0x18F3, 1);
             
         }
 

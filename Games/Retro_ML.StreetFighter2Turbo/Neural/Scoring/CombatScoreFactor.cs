@@ -68,7 +68,7 @@ namespace Retro_ML.StreetFighter2Turbo.Neural.Scoring
             //If player hit ai, and it didnt K.O
             if (p2HP < player2HP && p2HP != 255)
             {
-                currScore += (player2HP - p2HP) * 2 * ScoreMultiplier;
+                currScore += (player2HP - p2HP) * 3 * ScoreMultiplier;
                 player1HP = p1HP;
                 player2HP = p2HP;
             }

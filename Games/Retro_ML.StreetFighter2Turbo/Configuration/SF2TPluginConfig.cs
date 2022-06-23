@@ -54,11 +54,12 @@ namespace Retro_ML.StreetFighter2Turbo.Configuration
         {
             ScoreFactors = new List<IScoreFactor>()
             {
-                new LostFightScoreFactor() { IsDisabled=false, ScoreMultiplier = -50 },
+                new LostFightScoreFactor() { IsDisabled=false, ScoreMultiplier = -100 },
                 new WonFightScoreFactor() { IsDisabled = false, ScoreMultiplier = 500 },
                 new FightStateScoreFactor() { IsDisabled = false, ScoreMultiplier = -10 },
-                new CombatScoreFactor() { IsDisabled = false, ScoreMultiplier = 2 },
+                new CombatScoreFactor() { IsDisabled = false, ScoreMultiplier = 1 },
                 new IsCloseToEnemyScoreFactor() { IsDisabled = false, ScoreMultiplier = 1 },
+                new TimeTakenScoreFactor() { IsDisabled = false, ScoreMultiplier = 1 },
             };
         }
 
@@ -77,9 +78,9 @@ namespace Retro_ML.StreetFighter2Turbo.Configuration
         {
 
             int enabledIndex = 0;
-            if (neuralConfig.EnabledStates.Length != 17 + 10)
+            if (neuralConfig.EnabledStates.Length != 18 + 10)
             {
-                neuralConfig.EnabledStates = Enumerable.Repeat(true, 17 + 10).ToArray();
+                neuralConfig.EnabledStates = Enumerable.Repeat(true, 18 + 10).ToArray();
             }
             neuralConfig.InputNodes.Clear();
 
@@ -98,6 +99,7 @@ namespace Retro_ML.StreetFighter2Turbo.Configuration
             neuralConfig.InputNodes.Add(new InputNode("Enemy Y Position", neuralConfig.EnabledStates[enabledIndex++], (dataFetcher) => ((SF2TDataFetcher)dataFetcher).GetPlayer2YPos()));
             neuralConfig.InputNodes.Add(new InputNode("Player Health", neuralConfig.EnabledStates[enabledIndex++], (dataFetcher) => ((SF2TDataFetcher)dataFetcher).GetPlayer1Hp()));
             neuralConfig.InputNodes.Add(new InputNode("Enemy Health", neuralConfig.EnabledStates[enabledIndex++], (dataFetcher) => ((SF2TDataFetcher)dataFetcher).GetPlayer2Hp()));
+            neuralConfig.InputNodes.Add(new InputNode("Time Left", neuralConfig.EnabledStates[enabledIndex++], (dataFetcher) => ((SF2TDataFetcher)dataFetcher).GetRoundTimer()));
             neuralConfig.InputNodes.Add(new InputNode("Internal Clock", neuralConfig.EnabledStates[enabledIndex++], (dataFetcher) => ((SF2TDataFetcher)dataFetcher).GetInternalClockState(), Math.Min(8, InternalClockLength), Math.Max(1, InternalClockLength / 8)));
             neuralConfig.InputNodes.Add(new InputNode("Bias", neuralConfig.EnabledStates[enabledIndex++], (dataFetcher) => true));
 

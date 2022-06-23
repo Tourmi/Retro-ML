@@ -89,7 +89,7 @@ namespace Retro_ML.StreetFighter2Turbo.Neural.Scoring
 
         public IScoreFactor Clone()
         {
-            return new FightStateScoreFactor()
+            return new IsCloseToEnemyScoreFactor()
             {
                 ScoreMultiplier = ScoreMultiplier,
             };

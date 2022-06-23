@@ -42,6 +42,7 @@ namespace Retro_ML.StreetFighter2Turbo.Game
         }
 
         public bool[,] GetInternalClockState() => internalClock.GetStates();
+        public byte GetRoundTimer() => ReadSingle(GameAddresses.RoundTimer);
         public byte GetPlayer1Screen() => ReadSingle(Player1Addresses.CurrentScreen);
         public byte GetPlayer2Screen() => ReadSingle(Player2Addresses.CurrentScreen);
         public uint GetPlayer1XPos() => (uint)(ToUnsignedInteger(Read(Player1Addresses.XPos)) + (GetPlayer1Screen() * 0x10000));
@@ -65,8 +66,8 @@ namespace Retro_ML.StreetFighter2Turbo.Game
         public bool isPlayer2Attacking() => ReadSingle(Player2Addresses.State) == 0x0A;
         public bool isPlayer1Blocking() => ReadSingle(Player1Addresses.Input) == 0x03;
         public bool isPlayer2Blocking() => ReadSingle(Player2Addresses.Input) == 0x03;
-        public bool isPlayer1Staggered() => ReadSingle(Player1Addresses.State) == 0x14;
-        public bool isPlayer2Staggered() => ReadSingle(Player2Addresses.State) == 0x14;
+        public bool isPlayer1Staggered() => ReadSingle(Player1Addresses.State) == 0x14 || ReadSingle(Player1Addresses.State) == 0x0E;
+        public bool isPlayer2Staggered() => ReadSingle(Player2Addresses.State) == 0x14 || ReadSingle(Player2Addresses.State) == 0x0E;
 
         /// <summary>
         /// Reads a single byte from the emulator's memory
