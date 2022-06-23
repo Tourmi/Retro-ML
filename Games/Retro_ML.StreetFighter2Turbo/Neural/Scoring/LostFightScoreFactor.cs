@@ -9,7 +9,7 @@ namespace Retro_ML.StreetFighter2Turbo.Neural.Scoring
     {
         private bool shouldStop = false;
         private double currScore;
-        private uint maxTime = 0;
+        private ulong maxTime = 0;
         private bool isInited = false;
 
         public FieldInfo[] Fields => Array.Empty<FieldInfo>();

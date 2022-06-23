@@ -54,7 +54,7 @@ namespace Retro_ML.StreetFighter2Turbo.Configuration
         {
             ScoreFactors = new List<IScoreFactor>()
             {
-                new LostFightScoreFactor() { IsDisabled=false, ScoreMultiplier = -100 },
+                new LostFightScoreFactor() { IsDisabled=false, ScoreMultiplier = -50 },
                 new WonFightScoreFactor() { IsDisabled = false, ScoreMultiplier = 500 },
                 new FightStateScoreFactor() { IsDisabled = false, ScoreMultiplier = -10 },
                 new CombatScoreFactor() { IsDisabled = false, ScoreMultiplier = 1 },

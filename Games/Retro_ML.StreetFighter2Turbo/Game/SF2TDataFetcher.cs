@@ -1,6 +1,7 @@
 ﻿using Retro_ML.Configuration;
 using Retro_ML.Emulator;
 using Retro_ML.Game;
+using Retro_ML.Utils;
 using Retro_ML.StreetFighter2Turbo.Configuration;
 using static Retro_ML.StreetFighter2Turbo.Game.Addresses;
 
@@ -42,7 +43,7 @@ namespace Retro_ML.StreetFighter2Turbo.Game
         }
 
         public bool[,] GetInternalClockState() => internalClock.GetStates();
-        public byte GetRoundTimer() => ReadSingle(GameAddresses.RoundTimer);
+        public ulong GetRoundTimer() => ReadNybbleDigitsToUlong(GameAddresses.RoundTimer);
         public byte GetPlayer1Screen() => ReadSingle(Player1Addresses.CurrentScreen);
         public byte GetPlayer2Screen() => ReadSingle(Player2Addresses.CurrentScreen);
         public uint GetPlayer1XPos() => (uint)(ToUnsignedInteger(Read(Player1Addresses.XPos)) + (GetPlayer1Screen() * 0x10000));
@@ -181,6 +182,35 @@ namespace Retro_ML.StreetFighter2Turbo.Game
             {
                 value += (uint)bytes[i] << i * 8;
             }
+            return value;
+        }
+
+        /// <summary>
+        /// <br>Reads up to 8 bytes from the address, assuming byte-wise little endian, and interprets all nybbles as decimal digits.</br>
+        /// <br>Examples:</br>
+        /// <code>
+        /// 0x563412 -> 123456
+        /// 0x90     -> 90    
+        /// 0x0180   -> 8001  
+        /// 0x4      -> 4     
+        /// 0xA      -> 10    
+        /// </code>
+        /// </summary>
+        /// <param name="addressData"></param>
+        /// <returns></returns>
+        private ulong ReadNybbleDigitsToUlong(AddressData addressData)
+        {
+            var bytes = Read(addressData);
+            ulong value = 0;
+            for (int i = 0; i < bytes.Length && i < 8; i++)
+            {
+                var currByte = bytes[i];
+
+                var smallDigit = currByte & 0b0000_1111;
+                var bigDigit = (currByte & 0b1111_0000) >> 4;
+                value += ((ulong)(smallDigit + bigDigit * 10)) * 100.PosPow(i);
+            }
+
             return value;
         }
     }
