@@ -78,9 +78,9 @@ namespace Retro_ML.StreetFighter2Turbo.Configuration
         {
 
             int enabledIndex = 0;
-            if (neuralConfig.EnabledStates.Length != 18 + 10)
+            if (neuralConfig.EnabledStates.Length != 19 + 10)
             {
-                neuralConfig.EnabledStates = Enumerable.Repeat(true, 18 + 10).ToArray();
+                neuralConfig.EnabledStates = Enumerable.Repeat(true, 19 + 10).ToArray();
             }
             neuralConfig.InputNodes.Clear();
 
@@ -95,6 +95,7 @@ namespace Retro_ML.StreetFighter2Turbo.Configuration
             neuralConfig.InputNodes.Add(new InputNode("Player Staggered", neuralConfig.EnabledStates[enabledIndex++], (dataFetcher) => ((SF2TDataFetcher)dataFetcher).isPlayer1Staggered()));
             neuralConfig.InputNodes.Add(new InputNode("Enemy Staggered", neuralConfig.EnabledStates[enabledIndex++], (dataFetcher) => ((SF2TDataFetcher)dataFetcher).isPlayer2Staggered()));
             neuralConfig.InputNodes.Add(new InputNode("X Distance Between Enemy and Player", neuralConfig.EnabledStates[enabledIndex++], (dataFetcher) => ((SF2TDataFetcher)dataFetcher).GetHorizontalDistanceBetweenPlayers()));
+            neuralConfig.InputNodes.Add(new InputNode("Is Player on the right side of the enemy", neuralConfig.EnabledStates[enabledIndex++], (dataFetcher) => ((SF2TDataFetcher)dataFetcher).isPlayer1RightOfPlayer2()));
             neuralConfig.InputNodes.Add(new InputNode("Player Y Position", neuralConfig.EnabledStates[enabledIndex++], (dataFetcher) => ((SF2TDataFetcher)dataFetcher).GetPlayer1YPos()));
             neuralConfig.InputNodes.Add(new InputNode("Enemy Y Position", neuralConfig.EnabledStates[enabledIndex++], (dataFetcher) => ((SF2TDataFetcher)dataFetcher).GetPlayer2YPos()));
             neuralConfig.InputNodes.Add(new InputNode("Player Health", neuralConfig.EnabledStates[enabledIndex++], (dataFetcher) => ((SF2TDataFetcher)dataFetcher).GetPlayer1Hp()));

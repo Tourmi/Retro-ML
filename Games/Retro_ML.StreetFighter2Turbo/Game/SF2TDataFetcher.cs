@@ -68,6 +68,7 @@ namespace Retro_ML.StreetFighter2Turbo.Game
         public bool isPlayer2Blocking() => ReadSingle(Player2Addresses.Input) == 0x03;
         public bool isPlayer1Staggered() => ReadSingle(Player1Addresses.State) == 0x14 || ReadSingle(Player1Addresses.State) == 0x0E;
         public bool isPlayer2Staggered() => ReadSingle(Player2Addresses.State) == 0x14 || ReadSingle(Player2Addresses.State) == 0x0E;
+        public bool isPlayer1RightOfPlayer2() => GetPlayer2XPos() < GetPlayer1XPos() ? true : false;
 
         /// <summary>
         /// Reads a single byte from the emulator's memory
