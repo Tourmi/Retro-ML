@@ -54,10 +54,10 @@ namespace Retro_ML.StreetFighter2Turbo.Neural.Scoring
             }
 
             //If the round is finished via Player 1 K.O, penalize the AI depending on the time he survived.
-            if (dataFetcher.isPlayer1Dead())
+            if (dataFetcher.isPlayer1Dead() && !dataFetcher.isPlayer2Dead())
             {
-                shouldStop = true;
                 currScore += ScoreMultiplier + (maxTime - dataFetcher.GetRoundTimer());
+                shouldStop = true;
             }
         }
 

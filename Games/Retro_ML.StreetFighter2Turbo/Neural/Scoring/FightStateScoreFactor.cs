@@ -86,23 +86,6 @@ namespace Retro_ML.StreetFighter2Turbo.Neural.Scoring
                 isInited = true;
             }
 
-            //If the player can move and has not moved yet
-            if (!dataFetcher.isPlayer1Staggered() && p1CurrentPos == p1Pos)
-            {
-                immobileFrames++;
-                if (immobileFrames >= MaxImmobileFrames)
-                {
-                    shouldStop = true;
-                    currScore += ScoreMultiplier;
-                }
-            }
-
-            else
-            {
-                immobileFrames = 0;
-                p1CurrentPos = p1Pos;
-            }
-
             //If the player can attack and has not attacked in a certain time frame. If the enemy has less HP, fleeing is considered a valid strategy and AI should not be discalified
             if (!dataFetcher.isPlayer1Staggered() && p2CurrentHP == p2HP && p2HP >= p1HP)
             {
@@ -116,6 +99,23 @@ namespace Retro_ML.StreetFighter2Turbo.Neural.Scoring
 
             else
             {
+                //If the player can move and has not in a certain time frame
+                if (!dataFetcher.isPlayer1Staggered() && p1CurrentPos == p1Pos)
+                {
+                    immobileFrames++;
+                    if (immobileFrames >= MaxImmobileFrames)
+                    {
+                        shouldStop = true;
+                        currScore += ScoreMultiplier;
+                    }
+                }
+
+                else
+                {
+                    immobileFrames = 0;
+                    p1CurrentPos = p1Pos;
+                }
+
                 innactiveFrames = 0;
                 p1CurrentHP = p1HP;
                 p2CurrentHP = p2HP;

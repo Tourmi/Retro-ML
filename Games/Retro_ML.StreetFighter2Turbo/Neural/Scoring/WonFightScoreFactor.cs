@@ -46,10 +46,10 @@ namespace Retro_ML.StreetFighter2Turbo.Neural.Scoring
         private void Update(SF2TDataFetcher dataFetcher)
         {
             //If the round is finished via Player 2 K.O, reward ai for killing the enemy depending on time used
-            if (dataFetcher.isPlayer2Dead())
+            if (dataFetcher.isPlayer2Dead() && dataFetcher.isPlayer1Dead())
             {
-                shouldStop = true;
                 currScore += ScoreMultiplier + dataFetcher.GetRoundTimer();
+                shouldStop = true;
             }
         }
 

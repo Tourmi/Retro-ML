@@ -59,7 +59,7 @@ namespace Retro_ML.StreetFighter2Turbo.Configuration
                 new FightStateScoreFactor() { IsDisabled = false, ScoreMultiplier = -10 },
                 new CombatScoreFactor() { IsDisabled = false, ScoreMultiplier = 1 },
                 new IsCloseToEnemyScoreFactor() { IsDisabled = false, ScoreMultiplier = 1 },
-                new TimeTakenScoreFactor() { IsDisabled = false, ScoreMultiplier = 1 },
+                new DrawFightScoreFactor() { IsDisabled = false, ScoreMultiplier = 1 },
             };
         }
 

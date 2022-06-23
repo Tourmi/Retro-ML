@@ -5,13 +5,14 @@ using Retro_ML.StreetFighter2Turbo.Game;
 
 namespace Retro_ML.StreetFighter2Turbo.Neural.Scoring
 {
-    internal class TimeTakenScoreFactor : IScoreFactor
+    internal class DrawFightScoreFactor : IScoreFactor
     {
         private double currScore;
+        private bool shouldStop = false;
 
         public FieldInfo[] Fields => Array.Empty<FieldInfo>();
 
-        public TimeTakenScoreFactor()
+        public DrawFightScoreFactor()
         {
             ExtraFields = Array.Empty<ExtraField>();
         }
@@ -22,7 +23,7 @@ namespace Retro_ML.StreetFighter2Turbo.Neural.Scoring
             set { }
         }
 
-        public bool ShouldStop => false;
+        public bool ShouldStop => shouldStop;
         public double ScoreMultiplier { get; set; }
 
         public string Name => "Time taken";
@@ -45,19 +46,34 @@ namespace Retro_ML.StreetFighter2Turbo.Neural.Scoring
         private void Update(SF2TDataFetcher dataFetcher)
         {
             //If the round is finished via timeout, reward ai if it ended with more HP than the enemy, or penalize it for the opposite.
-            if ((dataFetcher.isPlayer1InEndRound() || dataFetcher.isPlayer2InEndRound()) && !dataFetcher.isPlayer1Dead() && !dataFetcher.isPlayer2Dead())
+            if (dataFetcher.isPlayer1InEndRound() && dataFetcher.isPlayer2InEndRound() && !dataFetcher.isPlayer1Dead() && !dataFetcher.isPlayer2Dead())
             {
-                currScore += ScoreMultiplier * (dataFetcher.GetPlayer1Hp() - dataFetcher.GetPlayer2Hp());
+                if (dataFetcher.GetPlayer1Hp() >= dataFetcher.GetPlayer2Hp())
+                {
+                    currScore += ScoreMultiplier * (dataFetcher.GetPlayer1Hp() - dataFetcher.GetPlayer2Hp());
+                }
+                else if (dataFetcher.GetPlayer2Hp() >= dataFetcher.GetPlayer1Hp())
+                {
+                    currScore += ScoreMultiplier * (dataFetcher.GetPlayer2Hp() - dataFetcher.GetPlayer1Hp());
+                }
+                else
+                {
+                    currScore += 0;
+                }
+
+                shouldStop = true;
+
             }
         }
 
         public void LevelDone()
         {
+            shouldStop = false;
         }
 
         public IScoreFactor Clone()
         {
-            return new TimeTakenScoreFactor() { ScoreMultiplier = ScoreMultiplier };
+            return new DrawFightScoreFactor() { ScoreMultiplier = ScoreMultiplier };
         }
     }
 }
