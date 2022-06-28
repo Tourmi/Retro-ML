@@ -156,8 +156,8 @@ function parseCommand(cmd)
                 inputs.Select = true 
             end
             if string.find(sub_cmd, "JX") then
-                local start_x = string.find(sub_cmd, "JX") + 2
-                local end_x = string.find(sub_cmd, ";", start_x) - 1
+                local start_x = string.find(sub_cmd, "JX")
+                local end_x = string.find(sub_cmd, ";", start_x)
                 local tilt_value = tonumber(string.sub(sub_cmd, start_x + 2, end_x - 1))
 
                 analog_inputs["Tilt X"] = tilt_value
