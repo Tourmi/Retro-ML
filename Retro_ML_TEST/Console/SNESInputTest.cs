@@ -74,10 +74,10 @@ namespace Retro_ML_TEST.Console
         public void GetString()
         {
             var input = new SNESInput();
-            Assert.AreEqual("", input.GetString());
+            Assert.AreEqual("P1()", input.GetString());
 
             input.FromString("sSRLdurlYXBA");
-            Assert.AreEqual("ABXYlrudLRSs", input.GetString());
+            Assert.AreEqual("P1(ABXYlrudLRSs)", input.GetString());
         }
     }
 }
