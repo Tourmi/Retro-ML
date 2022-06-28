@@ -95,7 +95,7 @@ namespace Retro_ML.Famicom
                 }
             }
 
-            return output;
+            return $"P1({output})";
         }
 
         public void SetButton(int index, double value)

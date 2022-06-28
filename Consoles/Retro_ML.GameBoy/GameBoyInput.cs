@@ -97,7 +97,7 @@ namespace Retro_ML.GameBoy
                 }
             }
 
-            return output;
+            return $"P0({output})";
         }
 
         public void SetButton(int index, double value)
