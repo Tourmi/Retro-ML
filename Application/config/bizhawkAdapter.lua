@@ -118,7 +118,6 @@ function parseCommand(cmd)
             local close_index = string.find(updated_cmd, "%)")
             local sub_cmd = string.sub(updated_cmd, open_index + 1, close_index - 1)
             local inputs = {}
-            local analog_inputs = {}
             if string.find(sub_cmd, "A") then
                 inputs.A = true 
             end
@@ -130,6 +129,9 @@ function parseCommand(cmd)
             end
             if string.find(sub_cmd, "Y") then 
                 inputs.Y = true 
+            end
+            if string.find(sub_cmd, "Z") then 
+                inputs.Z = true 
             end
             if string.find(sub_cmd, "u") then 
                 inputs.Up = true 
@@ -155,32 +157,50 @@ function parseCommand(cmd)
             if string.find(sub_cmd, "s") then 
                 inputs.Select = true 
             end
-            if string.find(sub_cmd, "JX") then
-                local start_x = string.find(sub_cmd, "JX")
+            if string.find(sub_cmd, "Cu") then 
+                inputs["C Up"] = true 
+            end
+            if string.find(sub_cmd, "Cd") then 
+                inputs["C Down"] = true 
+            end
+            if string.find(sub_cmd, "Cl") then 
+                inputs["C Left"] = true 
+            end
+            if string.find(sub_cmd, "Cr") then 
+                inputs["C Right"] = true 
+            end
+            if string.find(sub_cmd, "Du") then 
+                inputs["DPad U"] = true 
+            end
+            if string.find(sub_cmd, "Dd") then 
+                inputs["DPad D"] = true 
+            end
+            if string.find(sub_cmd, "Dl") then 
+                inputs["DPad L"] = true 
+            end
+            if string.find(sub_cmd, "Dr") then 
+                inputs["DPad R"] = true 
+            end
+            if string.find(sub_cmd, "Jx") then
+                local start_x = string.find(sub_cmd, "Jx")
                 local end_x = string.find(sub_cmd, ";", start_x)
                 local tilt_value = tonumber(string.sub(sub_cmd, start_x + 2, end_x - 1))
 
-                analog_inputs["Tilt X"] = tilt_value
+                inputs["Tilt X"] = tilt_value
             end
-            if string.find(sub_cmd, "JY") then
-                local start_y = string.find(sub_cmd, "JY")
+            if string.find(sub_cmd, "Jy") then
+                local start_y = string.find(sub_cmd, "Jy")
                 local end_y = string.find(sub_cmd, ";", start_y)
                 local tilt_value = tonumber(string.sub(sub_cmd, start_y + 2, end_y - 1))
                 
-                analog_inputs["Tilt Y"] = tilt_value
+                inputs["Tilt Y"] = tilt_value
             end
 
             local player_number = tonumber(string.sub(updated_cmd, 2, 2))
             if player_number == 0 then
                 joypad.set(inputs)
-                if next(analog_inputs) ~= nil then
-                    joypad.setanalog(analog_inputs)
-                end
             else
                 joypad.set(inputs, player_number)
-                if next(analog_inputs) ~= nil then
-                    joypad.setanalog(analog_inputs, player_number)
-                end
             end
 
             updated_cmd = string.sub(updated_cmd, close_index + 1)

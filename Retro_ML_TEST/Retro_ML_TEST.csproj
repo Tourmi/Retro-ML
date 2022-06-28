@@ -18,6 +18,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Consoles\Retro_ML.N64\Retro_ML.N64.csproj" />
     <ProjectReference Include="..\Consoles\Retro_ML.SNES\Retro_ML.SNES.csproj" />
     <ProjectReference Include="..\Consoles\Retro_ML.Famicom\Retro_ML.Famicom.csproj" />
     <ProjectReference Include="..\Games\Retro_ML.SuperMarioKart\Retro_ML.SuperMarioKart.csproj" />
