@@ -7,12 +7,14 @@ namespace Retro_ML.StreetFighter2Turbo.Neural.Scoring
 {
     internal class CombatScoreFactor : IScoreFactor
     {
-        private bool isInited = false;
         private double currScore;
-        private uint player1HP = 0;
-        private uint player2HP = 0;
+        private double currTimer;
+        private double hpDelta;
 
-        public FieldInfo[] Fields => Array.Empty<FieldInfo>();
+        public FieldInfo[] Fields => new FieldInfo[]
+        {
+            new DoubleFieldInfo(nameof(TimerInfluence), "Timer Influence", 0, 1, 0.01, "Percentage of the score attributed by the end round timer"),
+        };
 
         public CombatScoreFactor()
         {
@@ -21,16 +23,31 @@ namespace Retro_ML.StreetFighter2Turbo.Neural.Scoring
 
         public object this[string fieldName]
         {
-            get => 0;
-            set { }
+            get
+            {
+                return fieldName switch
+                {
+                    nameof(TimerInfluence) => TimerInfluence,
+                    _ => 0,
+                };
+            }
+            set
+            {
+                switch (fieldName)
+                {
+                    case nameof(TimerInfluence): TimerInfluence = (double)value; break;
+                }
+            }
         }
+
+        public double TimerInfluence { get; set; } = 0.5;
 
         public bool ShouldStop => false;
         public double ScoreMultiplier { get; set; }
 
         public string Name => "Combat";
 
-        public string Tooltip => "Reward the ai if it hits the enemy or block an enemy hit and penalize it if it gets hit";
+        public string Tooltip => "Reward applied to the AI depending on the time taken and the health difference between the two players";
 
         public bool CanBeDisabled => true;
 
@@ -47,38 +64,13 @@ namespace Retro_ML.StreetFighter2Turbo.Neural.Scoring
 
         private void Update(SF2TDataFetcher dataFetcher)
         {
-            var p1HP = dataFetcher.GetPlayer1Hp();
-            var p2HP = dataFetcher.GetPlayer2Hp();
-
-            if (!isInited)
-            {
-                player1HP = p1HP;
-                player2HP = p2HP;
-                isInited = true;
-            }
-
-            //If player got hit and lost HP and is not considered K.O
-            if (p1HP < player1HP && p1HP != 255)
-            {
-                currScore -= (player1HP - p1HP) * ScoreMultiplier;
-                player1HP = p1HP;
-                player2HP = p2HP;
-            }
-
-            //If player hit ai, and it didnt K.O
-            if (p2HP < player2HP && p2HP != 255)
-            {
-                currScore += (player2HP - p2HP) * 3 * ScoreMultiplier;
-                player1HP = p1HP;
-                player2HP = p2HP;
-            }
+            currTimer = dataFetcher.GetRoundTimerNormalized();
+            hpDelta = dataFetcher.GetPlayer1HpNormalized() - dataFetcher.GetPlayer2HpNormalized();
         }
 
         public void LevelDone()
         {
-            isInited = false;
-            player1HP = 0;
-            player2HP = 0;
+            currScore += (currTimer * TimerInfluence + (1.0 - TimerInfluence)) * ScoreMultiplier * hpDelta;
         }
 
         public IScoreFactor Clone()
@@ -86,6 +78,7 @@ namespace Retro_ML.StreetFighter2Turbo.Neural.Scoring
             return new CombatScoreFactor()
             {
                 ScoreMultiplier = ScoreMultiplier,
+                TimerInfluence = TimerInfluence,
             };
         }
     }

@@ -11,10 +11,54 @@ namespace Retro_ML.StreetFighter2Turbo.Configuration
 {
     internal class SF2TPluginConfig : IGamePluginConfig
     {
+        private static readonly bool[] DEFAULT_ENABLED_STATES = new bool[]
+        {
+            true, //Player Crouched
+            true, //Enemy Crouched
+            true, //Player Jumping
+            true, //Enemy Jumping
+            true, //Player Attacking
+            true, //Enemy Attacking
+            true, //Player Punching
+            true, //Enemy Punching
+            true, //Player Kicking
+            true, //Enemy Kicking
+            true, //Player Throwing
+            true, //Enemy Throwing
+            true, //Player Blocking
+            true, //Enemy Blocking
+            true, //Player Staggered
+            true, //Enemy Staggered
+            true, //Player Attack Strength
+            true, //Enemy Attack Strength
+            true, //Player X
+            true, //Enemy X
+            true, //X Delta
+            true, //Y Delta
+            true, //Enemy Direction
+            true, //Player Health
+            true, //Enemy Health
+            true, //Time Left
+            false, //Internal Clock
+            true, //Bias
+
+            true, //A
+            true, //B
+            true, //X
+            true, //Y
+            true, //Left
+            true, //Right
+            true, //Up
+            true, //Down
+            true, //Left Shoulder
+            true, //Right Shoulder
+        };
+
         public FieldInfo[] Fields => new FieldInfo[]
         {
             new IntegerFieldInfo(nameof(InternalClockTickLength), "Internal Clock Tick Length (Frames)", 1, 3600, 1),
-            new IntegerChoiceFieldInfo(nameof(InternalClockLength), "Internal Clock Length", new int[] {1,2,3,4,5,6,7,8,16 })
+            new IntegerChoiceFieldInfo(nameof(InternalClockLength), "Internal Clock Length", new int[] {1,2,3,4,5,6,7,8,16 }),
+            new IntegerFieldInfo(nameof(FrameSkip), "Frames to skip", 0, 15, 1, "Amount of frames to skip for every AI evaluation"),
         };
 
         public object this[string fieldName]
@@ -25,6 +69,7 @@ namespace Retro_ML.StreetFighter2Turbo.Configuration
                 {
                     nameof(InternalClockLength) => InternalClockLength,
                     nameof(InternalClockTickLength) => InternalClockTickLength,
+                    nameof(FrameSkip) => FrameSkip,
                     _ => 0,
                 };
             }
@@ -34,10 +79,10 @@ namespace Retro_ML.StreetFighter2Turbo.Configuration
                 {
                     case nameof(InternalClockLength): InternalClockLength = (int)value; break;
                     case nameof(InternalClockTickLength): InternalClockTickLength = (int)value; break;
+                    case nameof(FrameSkip): FrameSkip = (int)value; break;
                 }
             }
         }
-
         /// <summary>
         /// The amount of inputs for the internal clock.
         /// </summary>
@@ -48,18 +93,20 @@ namespace Retro_ML.StreetFighter2Turbo.Configuration
         /// </summary>
         public int InternalClockTickLength { get; set; } = 2;
 
+        /// <summary>
+        /// Skips this amount of frames for every neural network updates.
+        /// </summary>
+        public int FrameSkip { get; set; } = 0;
+
         public List<IScoreFactor> ScoreFactors { get; set; }
 
         public SF2TPluginConfig()
         {
             ScoreFactors = new List<IScoreFactor>()
             {
-                new LostFightScoreFactor() { IsDisabled=false, ScoreMultiplier = -50 },
-                new WonFightScoreFactor() { IsDisabled = false, ScoreMultiplier = 500 },
-                new FightStateScoreFactor() { IsDisabled = false, ScoreMultiplier = -10 },
-                new CombatScoreFactor() { IsDisabled = false, ScoreMultiplier = 1 },
-                new IsCloseToEnemyScoreFactor() { IsDisabled = false, ScoreMultiplier = 1 },
-                new DrawFightScoreFactor() { IsDisabled = false, ScoreMultiplier = 1 },
+                new EndRoundScoreFactor() { IsDisabled=false, ScoreMultiplier = 1000 },
+                new FightStateScoreFactor() { IsDisabled = false, ScoreMultiplier = -50 },
+                new CombatScoreFactor() { IsDisabled = false, ScoreMultiplier = 176 },
             };
         }
 
@@ -71,16 +118,16 @@ namespace Retro_ML.StreetFighter2Turbo.Configuration
 
             InternalClockLength = cfg.InternalClockLength;
             InternalClockTickLength = cfg.InternalClockTickLength;
+            FrameSkip = cfg.FrameSkip;
             ScoreFactors = cfg.ScoreFactors;
         }
 
         public void InitNeuralConfig(NeuralConfig neuralConfig)
         {
-
             int enabledIndex = 0;
-            if (neuralConfig.EnabledStates.Length != 19 + 10)
+            if (neuralConfig.EnabledStates.Length != DEFAULT_ENABLED_STATES.Length)
             {
-                neuralConfig.EnabledStates = Enumerable.Repeat(true, 19 + 10).ToArray();
+                neuralConfig.EnabledStates = DEFAULT_ENABLED_STATES;
             }
             neuralConfig.InputNodes.Clear();
 
@@ -90,17 +137,26 @@ namespace Retro_ML.StreetFighter2Turbo.Configuration
             neuralConfig.InputNodes.Add(new InputNode("Enemy Airborn", neuralConfig.EnabledStates[enabledIndex++], (dataFetcher) => ((SF2TDataFetcher)dataFetcher).isPlayer2Jumping()));
             neuralConfig.InputNodes.Add(new InputNode("Player Attacking", neuralConfig.EnabledStates[enabledIndex++], (dataFetcher) => ((SF2TDataFetcher)dataFetcher).isPlayer1Attacking()));
             neuralConfig.InputNodes.Add(new InputNode("Enemy Attacking", neuralConfig.EnabledStates[enabledIndex++], (dataFetcher) => ((SF2TDataFetcher)dataFetcher).isPlayer2Attacking()));
+            neuralConfig.InputNodes.Add(new InputNode("Player Punching", neuralConfig.EnabledStates[enabledIndex++], (dataFetcher) => ((SF2TDataFetcher)dataFetcher).isPlayer1Punching()));
+            neuralConfig.InputNodes.Add(new InputNode("Enemy Punching", neuralConfig.EnabledStates[enabledIndex++], (dataFetcher) => ((SF2TDataFetcher)dataFetcher).isPlayer2Punching()));
+            neuralConfig.InputNodes.Add(new InputNode("Player Kicking", neuralConfig.EnabledStates[enabledIndex++], (dataFetcher) => ((SF2TDataFetcher)dataFetcher).isPlayer1Kicking()));
+            neuralConfig.InputNodes.Add(new InputNode("Enemy Kicking", neuralConfig.EnabledStates[enabledIndex++], (dataFetcher) => ((SF2TDataFetcher)dataFetcher).isPlayer2Kicking()));
+            neuralConfig.InputNodes.Add(new InputNode("Player Throwing", neuralConfig.EnabledStates[enabledIndex++], (dataFetcher) => ((SF2TDataFetcher)dataFetcher).isPlayer1Throwing()));
+            neuralConfig.InputNodes.Add(new InputNode("Enemy Throwing", neuralConfig.EnabledStates[enabledIndex++], (dataFetcher) => ((SF2TDataFetcher)dataFetcher).isPlayer2Throwing()));
             neuralConfig.InputNodes.Add(new InputNode("Player Blocking", neuralConfig.EnabledStates[enabledIndex++], (dataFetcher) => ((SF2TDataFetcher)dataFetcher).isPlayer1Blocking()));
             neuralConfig.InputNodes.Add(new InputNode("Enemy Blocking", neuralConfig.EnabledStates[enabledIndex++], (dataFetcher) => ((SF2TDataFetcher)dataFetcher).isPlayer2Blocking()));
             neuralConfig.InputNodes.Add(new InputNode("Player Staggered", neuralConfig.EnabledStates[enabledIndex++], (dataFetcher) => ((SF2TDataFetcher)dataFetcher).isPlayer1Staggered()));
             neuralConfig.InputNodes.Add(new InputNode("Enemy Staggered", neuralConfig.EnabledStates[enabledIndex++], (dataFetcher) => ((SF2TDataFetcher)dataFetcher).isPlayer2Staggered()));
-            neuralConfig.InputNodes.Add(new InputNode("X Distance Between Enemy and Player", neuralConfig.EnabledStates[enabledIndex++], (dataFetcher) => ((SF2TDataFetcher)dataFetcher).GetHorizontalDistanceBetweenPlayers()));
-            neuralConfig.InputNodes.Add(new InputNode("Is Player on the right side of the enemy", neuralConfig.EnabledStates[enabledIndex++], (dataFetcher) => ((SF2TDataFetcher)dataFetcher).isPlayer1RightOfPlayer2()));
-            neuralConfig.InputNodes.Add(new InputNode("Player Y Position", neuralConfig.EnabledStates[enabledIndex++], (dataFetcher) => ((SF2TDataFetcher)dataFetcher).GetPlayer1YPos()));
-            neuralConfig.InputNodes.Add(new InputNode("Enemy Y Position", neuralConfig.EnabledStates[enabledIndex++], (dataFetcher) => ((SF2TDataFetcher)dataFetcher).GetPlayer2YPos()));
-            neuralConfig.InputNodes.Add(new InputNode("Player Health", neuralConfig.EnabledStates[enabledIndex++], (dataFetcher) => ((SF2TDataFetcher)dataFetcher).GetPlayer1Hp()));
-            neuralConfig.InputNodes.Add(new InputNode("Enemy Health", neuralConfig.EnabledStates[enabledIndex++], (dataFetcher) => ((SF2TDataFetcher)dataFetcher).GetPlayer2Hp()));
-            neuralConfig.InputNodes.Add(new InputNode("Time Left", neuralConfig.EnabledStates[enabledIndex++], (dataFetcher) => ((SF2TDataFetcher)dataFetcher).GetRoundTimer()));
+            neuralConfig.InputNodes.Add(new InputNode("Player Attack Strength", neuralConfig.EnabledStates[enabledIndex++], (dataFetcher) => ((SF2TDataFetcher)dataFetcher).GetPlayer1AttackStrength()));
+            neuralConfig.InputNodes.Add(new InputNode("Enemy Attack Strength", neuralConfig.EnabledStates[enabledIndex++], (dataFetcher) => ((SF2TDataFetcher)dataFetcher).GetPlayer2AttackStrength()));
+            neuralConfig.InputNodes.Add(new InputNode("Player X", neuralConfig.EnabledStates[enabledIndex++], (dataFetcher) => ((SF2TDataFetcher)dataFetcher).GetPlayer1XPosNormalized()));
+            neuralConfig.InputNodes.Add(new InputNode("Enemy X", neuralConfig.EnabledStates[enabledIndex++], (dataFetcher) => ((SF2TDataFetcher)dataFetcher).GetPlayer2XPosNormalized()));
+            neuralConfig.InputNodes.Add(new InputNode("X Delta", neuralConfig.EnabledStates[enabledIndex++], (dataFetcher) => ((SF2TDataFetcher)dataFetcher).GetHorizontalDistanceBetweenPlayers()));
+            neuralConfig.InputNodes.Add(new InputNode("Y Delta", neuralConfig.EnabledStates[enabledIndex++], (dataFetcher) => ((SF2TDataFetcher)dataFetcher).GetVerticalDistanceBetweenPlayers()));
+            neuralConfig.InputNodes.Add(new InputNode("Enemy Direction", neuralConfig.EnabledStates[enabledIndex++], (dataFetcher) => ((SF2TDataFetcher)dataFetcher).GetEnemyDirection()));
+            neuralConfig.InputNodes.Add(new InputNode("Player Health", neuralConfig.EnabledStates[enabledIndex++], (dataFetcher) => ((SF2TDataFetcher)dataFetcher).GetPlayer1HpNormalized()));
+            neuralConfig.InputNodes.Add(new InputNode("Enemy Health", neuralConfig.EnabledStates[enabledIndex++], (dataFetcher) => ((SF2TDataFetcher)dataFetcher).GetPlayer2HpNormalized()));
+            neuralConfig.InputNodes.Add(new InputNode("Time Left", neuralConfig.EnabledStates[enabledIndex++], (dataFetcher) => ((SF2TDataFetcher)dataFetcher).GetRoundTimerNormalized()));
             neuralConfig.InputNodes.Add(new InputNode("Internal Clock", neuralConfig.EnabledStates[enabledIndex++], (dataFetcher) => ((SF2TDataFetcher)dataFetcher).GetInternalClockState(), Math.Min(8, InternalClockLength), Math.Max(1, InternalClockLength / 8)));
             neuralConfig.InputNodes.Add(new InputNode("Bias", neuralConfig.EnabledStates[enabledIndex++], (dataFetcher) => true));
 

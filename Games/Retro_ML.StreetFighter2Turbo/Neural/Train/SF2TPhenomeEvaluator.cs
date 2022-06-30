@@ -3,6 +3,7 @@ using Retro_ML.Emulator;
 using Retro_ML.Game;
 using Retro_ML.Neural.Scoring;
 using Retro_ML.Neural.Train;
+using Retro_ML.StreetFighter2Turbo.Configuration;
 using Retro_ML.StreetFighter2Turbo.Game;
 using Retro_ML.Utils;
 using Retro_ML.Utils.SharpNeat;
@@ -24,11 +25,13 @@ namespace Retro_ML.StreetFighter2Turbo.Neural.Train
         private ApplicationConfig appConfig;
         private InputSetter? inputSetter;
         private OutputGetter? outputGetter;
+        private readonly SF2TPluginConfig pluginConfig;
 
         public SF2TPhenomeEvaluator(EmulatorManager emulatorManager, ApplicationConfig appConfig, SF2TTrainer trainer)
         {
             this.emulatorManager = emulatorManager;
             this.appConfig = appConfig;
+            pluginConfig = (SF2TPluginConfig)appConfig.GamePluginConfig!;
             this.trainer = trainer;
         }
 
@@ -98,7 +101,7 @@ namespace Retro_ML.StreetFighter2Turbo.Neural.Train
             phenome.Activate();
 
             emulator!.SendInput(outputGetter!.GetControllerInput(phenome.OutputVector));
-            emulator!.NextFrame();
+            emulator!.NextFrames(pluginConfig.FrameSkip + 1, true);
         }
     }
 }
