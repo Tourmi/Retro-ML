@@ -2,31 +2,42 @@
 using Retro_ML.Emulator;
 using Retro_ML.Game;
 using Retro_ML.Neural.Scoring;
-using Retro_ML.Utils;
 using Retro_ML.Utils.SharpNeat;
 using SharpNeat.BlackBox;
-using SharpNeat.Evaluation;
 
-namespace Retro_ML.Neural.Train;
-public class DefaultPhenomeEvaluator : IPhenomeEvaluator<IBlackBox<double>>
+namespace Retro_ML.Neural;
+public class DefaultEvaluator : IEvaluator
 {
-    protected readonly EmulatorManager emulatorManager;
-    protected readonly INeuralTrainer trainer;
+    protected readonly IEmulatorAdapter emulator;
     protected readonly ApplicationConfig appConfig;
+    protected readonly IBlackBox<double> phenome;
     protected readonly IGamePluginConfig gamePluginConfig;
+    protected readonly IEnumerable<string> saveStates;
+    protected readonly IDataFetcher dataFetcher;
+    protected readonly InputSetter inputSetter;
+    protected readonly OutputGetter outputGetter;
 
-    protected IEmulatorAdapter? emulator;
-    protected IDataFetcher? dataFetcher;
-    protected InputSetter? inputSetter;
-    protected OutputGetter? outputGetter;
-
-    public DefaultPhenomeEvaluator(EmulatorManager emulatorManager, ApplicationConfig appConfig, INeuralTrainer trainer)
+    public DefaultEvaluator(ApplicationConfig appConfig,
+                                  IBlackBox<double> phenome,
+                                  IEnumerable<string> saveStates,
+                                  IEmulatorAdapter emulator)
     {
-        this.emulatorManager = emulatorManager;
         this.appConfig = appConfig;
-        this.trainer = trainer;
         gamePluginConfig = appConfig.GamePluginConfig!;
+
+        this.phenome = phenome;
+        this.saveStates = saveStates;
+
+        this.emulator = emulator;
+        dataFetcher = emulator.GetDataFetcher();
+        inputSetter = emulator.GetInputSetter();
+        outputGetter = emulator.GetOutputGetter();
     }
+
+    /// <summary>
+    /// When set to true, quickly stops the evaluation of the current genome
+    /// </summary>
+    public virtual bool ShouldStop { get; set; }
 
     /// <summary>
     /// How many frames to skip per evaluation. Used in real-time games.
@@ -37,34 +48,11 @@ public class DefaultPhenomeEvaluator : IPhenomeEvaluator<IBlackBox<double>>
     /// </summary>
     protected virtual bool FrameSkipShouldKeepControllerInputs => true;
 
-    public virtual FitnessInfo Evaluate(IBlackBox<double> phenome)
+    public virtual double Evaluate()
     {
-        try
-        {
-            Score score = new(appConfig.GetScoreFactorClones());
-
-            emulator = emulatorManager.WaitOne();
-            int[] outputMap = new int[phenome.OutputCount];
-            Array.Copy(phenome.OutputVector.GetField<int[]>("_map"), outputMap, phenome.OutputCount);
-            emulator.NetworkChanged(SharpNeatUtils.GetConnectionLayers(phenome), outputMap);
-            dataFetcher = emulator.GetDataFetcher();
-            inputSetter = emulator.GetInputSetter();
-            outputGetter = emulator.GetOutputGetter();
-
-            DoSaveStateLoop(phenome, score);
-
-            dataFetcher = null;
-            emulatorManager.FreeOne(emulator);
-            emulator = null;
-
-            return new FitnessInfo(score.GetFinalScore());
-        }
-        catch (Exception ex)
-        {
-            Exceptions.QueueException(new Exception($"Error occured during training. Was an emulator closed?\n{ex.Message}\n{ex.StackTrace}"));
-
-            return FitnessInfo.DefaultFitnessInfo;
-        }
+        Score score = new(appConfig.GetScoreFactorClones());
+        DoSaveStateLoop(phenome, score);
+        return score.GetFinalScore();
     }
 
     /// <summary>
@@ -74,10 +62,9 @@ public class DefaultPhenomeEvaluator : IPhenomeEvaluator<IBlackBox<double>>
     /// <param name="score"></param>
     protected virtual void DoSaveStateLoop(IBlackBox<double> phenome, Score score)
     {
-        var saveStates = appConfig.SaveStates;
         foreach (var state in saveStates)
         {
-            if (trainer.ForceStop)
+            if (ShouldStop)
             {
                 return;
             }
@@ -94,9 +81,9 @@ public class DefaultPhenomeEvaluator : IPhenomeEvaluator<IBlackBox<double>>
     /// <param name="state"></param>
     protected virtual void DoSaveState(IBlackBox<double> phenome, Score score, string state)
     {
-        emulator!.LoadState(Path.GetFullPath(state));
+        emulator.LoadState(Path.GetFullPath(state));
         emulator.NextFrame();
-        dataFetcher!.NextState();
+        dataFetcher.NextState();
 
         DoEvaluationLoop(phenome, score);
 
@@ -110,14 +97,14 @@ public class DefaultPhenomeEvaluator : IPhenomeEvaluator<IBlackBox<double>>
     {
         while (!score.ShouldStop)
         {
-            if (trainer.ForceStop)
+            if (ShouldStop)
             {
                 return;
             }
             DoEvaluationIteration(phenome, score);
 
-            dataFetcher!.NextFrame();
-            emulator!.NetworkUpdated(SharpNeatUtils.VectorToArray(phenome.InputVector), SharpNeatUtils.VectorToArray(phenome.OutputVector));
+            dataFetcher.NextFrame();
+            emulator.NetworkUpdated(SharpNeatUtils.VectorToArray(phenome.InputVector), SharpNeatUtils.VectorToArray(phenome.OutputVector));
         }
     }
 
@@ -139,7 +126,7 @@ public class DefaultPhenomeEvaluator : IPhenomeEvaluator<IBlackBox<double>>
     protected virtual void DoActivation(IBlackBox<double> phenome)
     {
         phenome.ResetState();
-        inputSetter!.SetInputs(phenome.InputVector);
+        inputSetter.SetInputs(phenome.InputVector);
 
         phenome.Activate();
     }
@@ -150,7 +137,7 @@ public class DefaultPhenomeEvaluator : IPhenomeEvaluator<IBlackBox<double>>
     /// <param name="phenome"></param>
     protected virtual void DoAIAction(IBlackBox<double> phenome)
     {
-        emulator!.SendInput(outputGetter!.GetControllerInput(phenome.OutputVector));
-        emulator!.NextFrames(FrameSkip + 1, FrameSkipShouldKeepControllerInputs);
+        emulator.SendInput(outputGetter!.GetControllerInput(phenome.OutputVector));
+        emulator.NextFrames(FrameSkip + 1, FrameSkipShouldKeepControllerInputs);
     }
 }
