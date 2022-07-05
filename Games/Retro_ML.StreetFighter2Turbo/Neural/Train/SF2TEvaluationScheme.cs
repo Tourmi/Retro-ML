@@ -1,5 +1,6 @@
 ﻿using Retro_ML.Configuration;
 using Retro_ML.Emulator;
+using Retro_ML.Neural.Train;
 using SharpNeat.BlackBox;
 using SharpNeat.Evaluation;
 
@@ -31,7 +32,7 @@ namespace Retro_ML.StreetFighter2Turbo.Neural.Train
             this.trainer = trainer;
         }
 
-        public IPhenomeEvaluator<IBlackBox<double>> CreateEvaluator() => new SF2TPhenomeEvaluator(emulatorManager, appConfig, trainer);
+        public IPhenomeEvaluator<IBlackBox<double>> CreateEvaluator() => new SharpNeatPhenomeEvaluator(emulatorManager, appConfig, trainer);
 
         public bool TestForStopCondition(FitnessInfo fitnessInfo) => false;
     }
