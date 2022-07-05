@@ -105,7 +105,7 @@ namespace Retro_ML.StreetFighter2Turbo.Configuration
             ScoreFactors = new List<IScoreFactor>()
             {
                 new EndRoundScoreFactor() { IsDisabled=false, ScoreMultiplier = 1000 },
-                new FightStateScoreFactor() { IsDisabled = false, ScoreMultiplier = -50 },
+                new StopFightingScoreFactor() { IsDisabled = false, ScoreMultiplier = -50 },
                 new CombatScoreFactor() { IsDisabled = false, ScoreMultiplier = 176 },
             };
         }
@@ -131,22 +131,22 @@ namespace Retro_ML.StreetFighter2Turbo.Configuration
             }
             neuralConfig.InputNodes.Clear();
 
-            neuralConfig.InputNodes.Add(new InputNode("Player Crouched", neuralConfig.EnabledStates[enabledIndex++], (dataFetcher) => ((SF2TDataFetcher)dataFetcher).isPlayer1Crouched()));
-            neuralConfig.InputNodes.Add(new InputNode("Enemy Crouched", neuralConfig.EnabledStates[enabledIndex++], (dataFetcher) => ((SF2TDataFetcher)dataFetcher).isPlayer2Crouched()));
-            neuralConfig.InputNodes.Add(new InputNode("Player Airborn", neuralConfig.EnabledStates[enabledIndex++], (dataFetcher) => ((SF2TDataFetcher)dataFetcher).isPlayer1Jumping()));
-            neuralConfig.InputNodes.Add(new InputNode("Enemy Airborn", neuralConfig.EnabledStates[enabledIndex++], (dataFetcher) => ((SF2TDataFetcher)dataFetcher).isPlayer2Jumping()));
-            neuralConfig.InputNodes.Add(new InputNode("Player Attacking", neuralConfig.EnabledStates[enabledIndex++], (dataFetcher) => ((SF2TDataFetcher)dataFetcher).isPlayer1Attacking()));
-            neuralConfig.InputNodes.Add(new InputNode("Enemy Attacking", neuralConfig.EnabledStates[enabledIndex++], (dataFetcher) => ((SF2TDataFetcher)dataFetcher).isPlayer2Attacking()));
-            neuralConfig.InputNodes.Add(new InputNode("Player Punching", neuralConfig.EnabledStates[enabledIndex++], (dataFetcher) => ((SF2TDataFetcher)dataFetcher).isPlayer1Punching()));
-            neuralConfig.InputNodes.Add(new InputNode("Enemy Punching", neuralConfig.EnabledStates[enabledIndex++], (dataFetcher) => ((SF2TDataFetcher)dataFetcher).isPlayer2Punching()));
-            neuralConfig.InputNodes.Add(new InputNode("Player Kicking", neuralConfig.EnabledStates[enabledIndex++], (dataFetcher) => ((SF2TDataFetcher)dataFetcher).isPlayer1Kicking()));
-            neuralConfig.InputNodes.Add(new InputNode("Enemy Kicking", neuralConfig.EnabledStates[enabledIndex++], (dataFetcher) => ((SF2TDataFetcher)dataFetcher).isPlayer2Kicking()));
-            neuralConfig.InputNodes.Add(new InputNode("Player Throwing", neuralConfig.EnabledStates[enabledIndex++], (dataFetcher) => ((SF2TDataFetcher)dataFetcher).isPlayer1Throwing()));
-            neuralConfig.InputNodes.Add(new InputNode("Enemy Throwing", neuralConfig.EnabledStates[enabledIndex++], (dataFetcher) => ((SF2TDataFetcher)dataFetcher).isPlayer2Throwing()));
-            neuralConfig.InputNodes.Add(new InputNode("Player Blocking", neuralConfig.EnabledStates[enabledIndex++], (dataFetcher) => ((SF2TDataFetcher)dataFetcher).isPlayer1Blocking()));
-            neuralConfig.InputNodes.Add(new InputNode("Enemy Blocking", neuralConfig.EnabledStates[enabledIndex++], (dataFetcher) => ((SF2TDataFetcher)dataFetcher).isPlayer2Blocking()));
-            neuralConfig.InputNodes.Add(new InputNode("Player Staggered", neuralConfig.EnabledStates[enabledIndex++], (dataFetcher) => ((SF2TDataFetcher)dataFetcher).isPlayer1Staggered()));
-            neuralConfig.InputNodes.Add(new InputNode("Enemy Staggered", neuralConfig.EnabledStates[enabledIndex++], (dataFetcher) => ((SF2TDataFetcher)dataFetcher).isPlayer2Staggered()));
+            neuralConfig.InputNodes.Add(new InputNode("Player Crouched", neuralConfig.EnabledStates[enabledIndex++], (dataFetcher) => ((SF2TDataFetcher)dataFetcher).IsPlayer1Crouched()));
+            neuralConfig.InputNodes.Add(new InputNode("Enemy Crouched", neuralConfig.EnabledStates[enabledIndex++], (dataFetcher) => ((SF2TDataFetcher)dataFetcher).IsPlayer2Crouched()));
+            neuralConfig.InputNodes.Add(new InputNode("Player Airborn", neuralConfig.EnabledStates[enabledIndex++], (dataFetcher) => ((SF2TDataFetcher)dataFetcher).IsPlayer1Jumping()));
+            neuralConfig.InputNodes.Add(new InputNode("Enemy Airborn", neuralConfig.EnabledStates[enabledIndex++], (dataFetcher) => ((SF2TDataFetcher)dataFetcher).IsPlayer2Jumping()));
+            neuralConfig.InputNodes.Add(new InputNode("Player Attacking", neuralConfig.EnabledStates[enabledIndex++], (dataFetcher) => ((SF2TDataFetcher)dataFetcher).IsPlayer1Attacking()));
+            neuralConfig.InputNodes.Add(new InputNode("Enemy Attacking", neuralConfig.EnabledStates[enabledIndex++], (dataFetcher) => ((SF2TDataFetcher)dataFetcher).IsPlayer2Attacking()));
+            neuralConfig.InputNodes.Add(new InputNode("Player Punching", neuralConfig.EnabledStates[enabledIndex++], (dataFetcher) => ((SF2TDataFetcher)dataFetcher).IsPlayer1Punching()));
+            neuralConfig.InputNodes.Add(new InputNode("Enemy Punching", neuralConfig.EnabledStates[enabledIndex++], (dataFetcher) => ((SF2TDataFetcher)dataFetcher).IsPlayer2Punching()));
+            neuralConfig.InputNodes.Add(new InputNode("Player Kicking", neuralConfig.EnabledStates[enabledIndex++], (dataFetcher) => ((SF2TDataFetcher)dataFetcher).IsPlayer1Kicking()));
+            neuralConfig.InputNodes.Add(new InputNode("Enemy Kicking", neuralConfig.EnabledStates[enabledIndex++], (dataFetcher) => ((SF2TDataFetcher)dataFetcher).IsPlayer2Kicking()));
+            neuralConfig.InputNodes.Add(new InputNode("Player Throwing", neuralConfig.EnabledStates[enabledIndex++], (dataFetcher) => ((SF2TDataFetcher)dataFetcher).IsPlayer1Throwing()));
+            neuralConfig.InputNodes.Add(new InputNode("Enemy Throwing", neuralConfig.EnabledStates[enabledIndex++], (dataFetcher) => ((SF2TDataFetcher)dataFetcher).IsPlayer2Throwing()));
+            neuralConfig.InputNodes.Add(new InputNode("Player Blocking", neuralConfig.EnabledStates[enabledIndex++], (dataFetcher) => ((SF2TDataFetcher)dataFetcher).IsPlayer1Blocking()));
+            neuralConfig.InputNodes.Add(new InputNode("Enemy Blocking", neuralConfig.EnabledStates[enabledIndex++], (dataFetcher) => ((SF2TDataFetcher)dataFetcher).IsPlayer2Blocking()));
+            neuralConfig.InputNodes.Add(new InputNode("Player Staggered", neuralConfig.EnabledStates[enabledIndex++], (dataFetcher) => ((SF2TDataFetcher)dataFetcher).IsPlayer1Staggered()));
+            neuralConfig.InputNodes.Add(new InputNode("Enemy Staggered", neuralConfig.EnabledStates[enabledIndex++], (dataFetcher) => ((SF2TDataFetcher)dataFetcher).IsPlayer2Staggered()));
             neuralConfig.InputNodes.Add(new InputNode("Player Attack Strength", neuralConfig.EnabledStates[enabledIndex++], (dataFetcher) => ((SF2TDataFetcher)dataFetcher).GetPlayer1AttackStrength()));
             neuralConfig.InputNodes.Add(new InputNode("Enemy Attack Strength", neuralConfig.EnabledStates[enabledIndex++], (dataFetcher) => ((SF2TDataFetcher)dataFetcher).GetPlayer2AttackStrength()));
             neuralConfig.InputNodes.Add(new InputNode("Player X", neuralConfig.EnabledStates[enabledIndex++], (dataFetcher) => ((SF2TDataFetcher)dataFetcher).GetPlayer1XPosNormalized()));

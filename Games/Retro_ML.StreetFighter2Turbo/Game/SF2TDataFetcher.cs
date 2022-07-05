@@ -50,10 +50,10 @@ namespace Retro_ML.StreetFighter2Turbo.Game
         }
 
         public bool[,] GetInternalClockState() => internalClock.GetStates();
-        public bool isRoundOver() => isPlayer1InEndRound() || isPlayer2InEndRound();
-        public bool hasPlayerWon() => isRoundOver() && GetPlayer1Hp() > GetPlayer2Hp();
-        public bool hasPlayerLost() => isRoundOver() && GetPlayer2Hp() > GetPlayer1Hp();
-        public bool isRoundDraw() => isRoundOver() && GetPlayer1Hp() == GetPlayer2Hp();
+        public bool IsRoundOver() => IsPlayer1InEndRound() || IsPlayer2InEndRound();
+        public bool HasPlayerWon() => IsRoundOver() && GetPlayer1Hp() > GetPlayer2Hp();
+        public bool HasPlayerLost() => IsRoundOver() && GetPlayer2Hp() > GetPlayer1Hp();
+        public bool IsRoundDraw() => IsRoundOver() && GetPlayer1Hp() == GetPlayer2Hp();
         public ulong GetRoundTimer() => ReadNybbleDigitsToUlong(GameAddresses.RoundTimer);
         public double GetRoundTimerNormalized() => GetRoundTimer() / (double)MAX_CLOCK;
         public uint GetPlayer1XPos() => ToUnsignedInteger(Read(Player1Addresses.XPos));
@@ -68,25 +68,27 @@ namespace Retro_ML.StreetFighter2Turbo.Game
         public double GetPlayer2HpNormalized() => GetPlayer2Hp() / (double)MAX_HP;
         public double GetHorizontalDistanceBetweenPlayers() => (GetPlayer2XPos() - GetPlayer1XPos()) / (double)MAX_HORIZONTAL_DISTANCE;
         public double GetVerticalDistanceBetweenPlayers() => (GetPlayer2YPos() - GetPlayer1YPos()) / (double)MAX_VERTICAL_DISTANCE;
-        public bool isPlayer1Dead() => ReadSingle(Player1Addresses.HP) == 0xFF;
-        public bool isPlayer2Dead() => ReadSingle(Player2Addresses.HP) == 0xFF;
-        public bool isPlayer1InEndRound() => ReadSingle(Player1Addresses.EndRoundStatus) == 0x01;
-        public bool isPlayer2InEndRound() => ReadSingle(Player2Addresses.EndRoundStatus) == 0x01;
-        public bool isPlayer1Crouched() => ReadSingle(Player1Addresses.State) == 0x02;
-        public bool isPlayer2Crouched() => ReadSingle(Player2Addresses.State) == 0x02;
-        public bool isPlayer1Jumping() => ReadSingle(Player1Addresses.State) == 0x04;
-        public bool isPlayer2Jumping() => ReadSingle(Player2Addresses.State) == 0x04;
-        public bool isPlayer1Attacking() => ReadSingle(Player1Addresses.State) == 0x0A;
-        public bool isPlayer2Attacking() => ReadSingle(Player2Addresses.State) == 0x0A;
-        public bool isPlayer1Punching() => isPlayer1Attacking() ? ReadSingle(Player1Addresses.AttackType) == 0x00 : false;
-        public bool isPlayer2Punching() => isPlayer2Attacking() ? ReadSingle(Player2Addresses.AttackType) == 0x00 : false;
-        public bool isPlayer1Kicking() => isPlayer1Attacking() ? ReadSingle(Player1Addresses.AttackType) == 0x02 : false;
-        public bool isPlayer2Kicking() => isPlayer2Attacking() ? ReadSingle(Player2Addresses.AttackType) == 0x02 : false;
-        public bool isPlayer1Throwing() => isPlayer1Attacking() ? ToUnsignedInteger(Read(Player1Addresses.AttackStrength)) == 0x200 || ToUnsignedInteger(Read(Player1Addresses.AttackStrength)) == 0x0402 : false;
-        public bool isPlayer2Throwing() => isPlayer2Attacking() ? ToUnsignedInteger(Read(Player2Addresses.AttackStrength)) == 0x200 || ToUnsignedInteger(Read(Player2Addresses.AttackStrength)) == 0x0402 : false;
+        public bool IsPlayer1InEndRound() => ReadSingle(Player1Addresses.EndRoundStatus) == 0x01;
+        public bool IsPlayer2InEndRound() => ReadSingle(Player2Addresses.EndRoundStatus) == 0x01;
+        public bool IsPlayer1Crouched() => ReadSingle(Player1Addresses.State) == 0x02;
+        public bool IsPlayer2Crouched() => ReadSingle(Player2Addresses.State) == 0x02;
+        public bool IsPlayer1Jumping() => ReadSingle(Player1Addresses.State) == 0x04;
+        public bool IsPlayer2Jumping() => ReadSingle(Player2Addresses.State) == 0x04;
+        public bool IsPlayer1Blocking() => ReadSingle(Player1Addresses.Input) == 0x03;
+        public bool IsPlayer2Blocking() => ReadSingle(Player2Addresses.Input) == 0x03;
+        public bool IsPlayer1Staggered() => ReadSingle(Player1Addresses.State) == 0x14 || ReadSingle(Player1Addresses.State) == 0x0E;
+        public bool IsPlayer2Staggered() => ReadSingle(Player2Addresses.State) == 0x14 || ReadSingle(Player2Addresses.State) == 0x0E;
+        public bool IsPlayer1Attacking() => ReadSingle(Player1Addresses.State) == 0x0A;
+        public bool IsPlayer2Attacking() => ReadSingle(Player2Addresses.State) == 0x0A;
+        public bool IsPlayer1Punching() => IsPlayer1Attacking() ? ReadSingle(Player1Addresses.AttackType) == 0x00 : false;
+        public bool IsPlayer2Punching() => IsPlayer2Attacking() ? ReadSingle(Player2Addresses.AttackType) == 0x00 : false;
+        public bool IsPlayer1Kicking() => IsPlayer1Attacking() ? ReadSingle(Player1Addresses.AttackType) == 0x02 : false;
+        public bool IsPlayer2Kicking() => IsPlayer2Attacking() ? ReadSingle(Player2Addresses.AttackType) == 0x02 : false;
+        public bool IsPlayer1Throwing() => IsPlayer1Attacking() ? ToUnsignedInteger(Read(Player1Addresses.AttackStrength)) == 0x200 || ToUnsignedInteger(Read(Player1Addresses.AttackStrength)) == 0x0402 : false;
+        public bool IsPlayer2Throwing() => IsPlayer2Attacking() ? ToUnsignedInteger(Read(Player2Addresses.AttackStrength)) == 0x200 || ToUnsignedInteger(Read(Player2Addresses.AttackStrength)) == 0x0402 : false;
         public double GetPlayer1AttackStrength()
         {
-            if (isPlayer1Attacking())
+            if (IsPlayer1Attacking())
             {
                 //Light attack
                 if (ToUnsignedInteger(Read(Player1Addresses.AttackStrength)) == 0x0000 || ToUnsignedInteger(Read(Player1Addresses.AttackStrength)) == 0x0001) return 1 / 3;
@@ -99,7 +101,7 @@ namespace Retro_ML.StreetFighter2Turbo.Game
         }
         public double GetPlayer2AttackStrength()
         {
-            if (isPlayer2Attacking())
+            if (IsPlayer2Attacking())
             {
                 //Light attack
                 if (ToUnsignedInteger(Read(Player2Addresses.AttackStrength)) == 0x0000 || ToUnsignedInteger(Read(Player2Addresses.AttackStrength)) == 0x0001) return 1 / 3;
@@ -110,10 +112,6 @@ namespace Retro_ML.StreetFighter2Turbo.Game
             }
             return 0;
         }
-        public bool isPlayer1Blocking() => ReadSingle(Player1Addresses.Input) == 0x03;
-        public bool isPlayer2Blocking() => ReadSingle(Player2Addresses.Input) == 0x03;
-        public bool isPlayer1Staggered() => ReadSingle(Player1Addresses.State) == 0x14 || ReadSingle(Player1Addresses.State) == 0x0E;
-        public bool isPlayer2Staggered() => ReadSingle(Player2Addresses.State) == 0x14 || ReadSingle(Player2Addresses.State) == 0x0E;
         public double GetEnemyDirection() => GetPlayer2XPos() < GetPlayer1XPos() ? -1.0 : 1.0;
         private double GetHorizontalPositionRatio(uint pos) => (pos - MIN_HORIZONTAL_POSITION) / (double)(MAX_HORIZONTAL_POSITION - MIN_HORIZONTAL_POSITION) * 2 - 1;
 

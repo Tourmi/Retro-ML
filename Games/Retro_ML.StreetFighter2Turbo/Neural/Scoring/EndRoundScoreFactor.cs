@@ -54,7 +54,7 @@ namespace Retro_ML.StreetFighter2Turbo.Neural.Scoring
         public double ScoreMultiplier { get; set; }
         public double VictoryMultiplier { get; set; } = 1;
         public double DefeatMultiplier { get; set; } = -0.1;
-        public double DrawMultiplier { get; set; } = 0;
+        public double DrawMultiplier { get; set; } = -0.01;
 
         public string Name => "End of Round";
 
@@ -73,23 +73,23 @@ namespace Retro_ML.StreetFighter2Turbo.Neural.Scoring
 
         private void Update(SF2TDataFetcher dataFetcher)
         {
-            if (dataFetcher.isRoundOver())
+            if (dataFetcher.IsRoundOver())
             {
                 shouldStop = true;
-                //If the round is finished via Player 1 K.O, penalize the AI depending on the time he survived.
-                if (dataFetcher.hasPlayerLost())
+                //If the round is finished via Player K.O
+                if (dataFetcher.HasPlayerLost())
                 {
                     currScore += ScoreMultiplier * DefeatMultiplier;
                 }
 
-                //If the round is finished via Player 2 K.O, reward ai for killing the enemy depending on time used
-                if (!dataFetcher.hasPlayerWon())
+                //If the round is finished via Enemy K.O
+                if (!dataFetcher.HasPlayerWon())
                 {
                     currScore += ScoreMultiplier * VictoryMultiplier;
                 }
 
-                //If the round is finished via Draw, reward ai for killing the enemy depending on time used
-                if (dataFetcher.isRoundDraw())
+                //If the round is finished via Draw
+                if (dataFetcher.IsRoundDraw())
                 {
                     currScore += ScoreMultiplier * DrawMultiplier;
                 }

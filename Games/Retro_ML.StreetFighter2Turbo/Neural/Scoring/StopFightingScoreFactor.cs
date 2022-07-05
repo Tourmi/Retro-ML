@@ -74,7 +74,7 @@ namespace Retro_ML.StreetFighter2Turbo.Neural.Scoring
                 isInited = true;
             }
 
-            if (!dataFetcher.isPlayer1Staggered())
+            if (!dataFetcher.IsPlayer1Staggered())
             {
                 //If the player can attack and has not attacked in a certain time frame.
                 if (p2CurrentHP == p2HP)
