@@ -219,6 +219,7 @@ src/Web/Avalonia.Web.Blazor/Interop/Typescript/*.js
 # Manually Added
 ##################
 
+# ROMs
 *.sfc
 *.nes
 *.gb
@@ -228,3 +229,14 @@ src/Web/Avalonia.Web.Blazor/Interop/Typescript/*.js
 *.z64
 *.v64
 *.n64
+*.N64
+*.u64
+*.d64
+*.bin
+*.jap
+*.pal
+*.usa
+*.rom
+
+#Exception
+!*Retro_ML.N64*

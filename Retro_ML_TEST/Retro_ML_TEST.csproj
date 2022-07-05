@@ -18,6 +18,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Consoles\Retro_ML.N64\Retro_ML.N64.csproj" />
     <ProjectReference Include="..\Consoles\Retro_ML.SNES\Retro_ML.SNES.csproj" />
     <ProjectReference Include="..\Consoles\Retro_ML.Famicom\Retro_ML.Famicom.csproj" />
     <ProjectReference Include="..\Games\Retro_ML.StreetFighter2Turbo\Retro_ML.StreetFighter2Turbo.csproj" />
@@ -25,6 +26,7 @@
     <ProjectReference Include="..\Games\Retro_ML.SuperMarioWorld\Retro_ML.SuperMarioWorld.csproj" />
     <ProjectReference Include="..\Games\Retro_ML.Tetris\Retro_ML.Tetris.csproj" />
     <ProjectReference Include="..\Games\Retro_ML.SuperMarioBros\Retro_ML.SuperMarioBros.csproj" />
+    <ProjectReference Include="..\Games\Retro_ML.Metroid\Retro_ML.Metroid.csproj" />
     <ProjectReference Include="..\Retro_ML\Retro_ML.csproj" />
   </ItemGroup>
 

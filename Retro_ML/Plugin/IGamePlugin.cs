@@ -1,6 +1,7 @@
 ﻿using Retro_ML.Configuration;
 using Retro_ML.Emulator;
 using Retro_ML.Game;
+using Retro_ML.Neural;
 using Retro_ML.Neural.Play;
 using Retro_ML.Neural.Train;
 
@@ -40,5 +41,9 @@ namespace Retro_ML.Plugin
         /// </summary>
         /// <returns></returns>
         INeuralTrainer GetNeuralTrainer(EmulatorManager emulatorManager, ApplicationConfig appConfig);
+        IEvaluator GetEvaluator(ApplicationConfig appConfig,
+                                  object phenome,
+                                  IEnumerable<string> saveStates,
+                                  IEmulatorAdapter emulator);
     }
 }

@@ -202,6 +202,20 @@ This page lists all of the inputs and outputs that can be toggled for the neural
 
 Refer to the current game plugin's `README.md` for information about the different Neural Inputs/Outputs.
 
+* **Short Term Memory Cells Count**
+  * How many short term memory cells the AI has available to write to and read from.
+  * These cells are written to on every evaluation.
+* **Long Term Memory Cells Count**
+  * How many long term memory cells the AI has available to write to and read from.
+  * The AIs can choose whether or not to write to these cells.
+* **Permanent Memory Cells Count**
+  * How many permanent memory cells the AI has available to write to and read from.
+  * The AIs can choose whether or not to write to these cells.
+  * Once written to, the AI may no longer write to it, making it unmutable until the next save state is loaded.
+* **Maximum Memory Value**
+  * The maximum value the AI may write to a memory cell, be it a negative or positive value.
+  * Recommended to leave this value at 1.0 so that memory cells remain normalized.
+
 ##### Emulator tabs
 ![Image of one of the emulator menus](docs/config-emulator.png)
 

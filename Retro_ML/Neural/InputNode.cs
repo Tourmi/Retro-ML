@@ -5,38 +5,23 @@ namespace Retro_ML.Neural
     /// <summary>
     /// Configuration of a single neural network input node.
     /// </summary>
-    public class InputNode
+    public class InputNode : INode
     {
         private readonly Func<IDataFetcher, double>? getStateFunction;
         private readonly Func<IDataFetcher, double[,]>? getStatesFunction;
 
-        /// <summary>
-        /// Name of this input node.
-        /// </summary>
         public string Name { get; }
-        /// <summary>
-        /// Whether or not the neural network should use this input node.
-        /// </summary>
         public bool ShouldUse { get; }
-        /// <summary>
-        /// Whether or not this input node is actually an array of input nodes
-        /// </summary>
-        public bool IsMultipleInputs { get; }
-        /// <summary>
-        /// The width of the input node array.
-        /// </summary>
+        public bool IsMultipleNodes { get; }
         public int TotalWidth { get; }
-        /// <summary>
-        /// Height of the input node array.
-        /// </summary>
         public int TotalHeight { get; }
 
-        public InputNode(string name, bool shouldUse, Func<IDataFetcher, bool> getStateFunc) : this(name, shouldUse, false)
+        public InputNode(string name, bool shouldUse, Func<IDataFetcher, bool> getStateFunc) : this(name, shouldUse, 1, 1)
         {
             getStateFunction = (dataFetcher) => getStateFunc(dataFetcher) ? 1 : 0;
         }
 
-        public InputNode(string name, bool shouldUse, Func<IDataFetcher, bool[,]> getStatesFunc, int totalWidth, int totalHeight) : this(name, shouldUse, true)
+        public InputNode(string name, bool shouldUse, Func<IDataFetcher, bool[,]> getStatesFunc, int totalWidth, int totalHeight) : this(name, shouldUse, totalWidth, totalHeight)
         {
             getStatesFunction = (datafetcher) =>
             {
@@ -52,29 +37,25 @@ namespace Retro_ML.Neural
 
                 return values;
             };
-            TotalWidth = totalWidth;
-            TotalHeight = totalHeight;
         }
 
-        public InputNode(string name, bool shouldUse, Func<IDataFetcher, double> getStateFunc) : this(name, shouldUse, false)
+        public InputNode(string name, bool shouldUse, Func<IDataFetcher, double> getStateFunc) : this(name, shouldUse, 1, 1)
         {
             getStateFunction = getStateFunc;
         }
 
-        public InputNode(string name, bool shouldUse, Func<IDataFetcher, double[,]> getStatesFunc, int totalWidth, int totalHeight) : this(name, shouldUse, true)
+        public InputNode(string name, bool shouldUse, Func<IDataFetcher, double[,]> getStatesFunc, int totalWidth, int totalHeight) : this(name, shouldUse, totalWidth, totalHeight)
         {
             getStatesFunction = getStatesFunc;
-            TotalWidth = totalWidth;
-            TotalHeight = totalHeight;
         }
 
-        private InputNode(string name, bool shouldUse, bool isMultiple)
+        public InputNode(string name, bool shouldUse, int width, int height)
         {
             Name = name;
             ShouldUse = shouldUse;
-            IsMultipleInputs = isMultiple;
-            TotalWidth = 1;
-            TotalHeight = 1;
+            IsMultipleNodes = width * height > 1;
+            TotalWidth = width;
+            TotalHeight = height;
         }
 
         /// <summary>

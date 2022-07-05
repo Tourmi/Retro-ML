@@ -113,48 +113,97 @@ function parseCommand(cmd)
     end
     if string.find(cmd, "send_input ") then
         local updated_cmd = string.sub(cmd, 12)
-        local inputs = {}
-        if string.find(updated_cmd, "A") then 
-            inputs.A = true 
-        end
-        if string.find(updated_cmd, "B") then 
-            inputs.B = true 
-        end
-        if string.find(updated_cmd, "X") then 
-            inputs.X = true 
-        end
-        if string.find(updated_cmd, "Y") then 
-            inputs.Y = true 
-        end
-        if string.find(updated_cmd, "u") then 
-            inputs.Up = true 
-        end
-        if string.find(updated_cmd, "d") then 
-            inputs.Down = true 
-        end
-        if string.find(updated_cmd, "l") then 
-            inputs.Left = true 
-        end
-        if string.find(updated_cmd, "r") then 
-            inputs.Right = true 
-        end
-        if string.find(updated_cmd, "L") then 
-            inputs.L = true 
-        end
-        if string.find(updated_cmd, "R") then 
-            inputs.R = true 
-        end
-        if string.find(updated_cmd, "S") then 
-            inputs.Start = true 
-        end
-        if string.find(updated_cmd, "s") then 
-            inputs.Select = true 
-        end
+        while string.find(updated_cmd, "%(") ~= nil do
+            local open_index = string.find(updated_cmd, "%(")
+            local close_index = string.find(updated_cmd, "%)")
+            local sub_cmd = string.sub(updated_cmd, open_index + 1, close_index - 1)
+            local inputs = {}
+            if string.find(sub_cmd, "A") then
+                inputs.A = true 
+            end
+            if string.find(sub_cmd, "B") then 
+                inputs.B = true 
+            end
+            if string.find(sub_cmd, "X") then 
+                inputs.X = true 
+            end
+            if string.find(sub_cmd, "Y") then 
+                inputs.Y = true 
+            end
+            if string.find(sub_cmd, "Z") then 
+                inputs.Z = true 
+            end
+            if string.find(sub_cmd, "u") then 
+                inputs.Up = true 
+            end
+            if string.find(sub_cmd, "d") then 
+                inputs.Down = true 
+            end
+            if string.find(sub_cmd, "l") then 
+                inputs.Left = true 
+            end
+            if string.find(sub_cmd, "r") then 
+                inputs.Right = true 
+            end
+            if string.find(sub_cmd, "L") then 
+                inputs.L = true 
+            end
+            if string.find(sub_cmd, "R") then 
+                inputs.R = true 
+            end
+            if string.find(sub_cmd, "S") then 
+                inputs.Start = true 
+            end
+            if string.find(sub_cmd, "s") then 
+                inputs.Select = true 
+            end
+            if string.find(sub_cmd, "Cu") then 
+                inputs["C Up"] = true 
+            end
+            if string.find(sub_cmd, "Cd") then 
+                inputs["C Down"] = true 
+            end
+            if string.find(sub_cmd, "Cl") then 
+                inputs["C Left"] = true 
+            end
+            if string.find(sub_cmd, "Cr") then 
+                inputs["C Right"] = true 
+            end
+            if string.find(sub_cmd, "Du") then 
+                inputs["DPad U"] = true 
+            end
+            if string.find(sub_cmd, "Dd") then 
+                inputs["DPad D"] = true 
+            end
+            if string.find(sub_cmd, "Dl") then 
+                inputs["DPad L"] = true 
+            end
+            if string.find(sub_cmd, "Dr") then 
+                inputs["DPad R"] = true 
+            end
+            if string.find(sub_cmd, "Jx") then
+                local start_x = string.find(sub_cmd, "Jx")
+                local end_x = string.find(sub_cmd, ";", start_x)
+                local tilt_value = tonumber(string.sub(sub_cmd, start_x + 2, end_x - 1))
 
-        if string.find(emu.getsystemid(), "GB") then
-            joypad.set(inputs)
-        else
-            joypad.set(inputs, 1)
+                inputs["Tilt X"] = tilt_value
+            end
+            if string.find(sub_cmd, "Jy") then
+                local start_y = string.find(sub_cmd, "Jy")
+                local end_y = string.find(sub_cmd, ";", start_y)
+                local tilt_value = tonumber(string.sub(sub_cmd, start_y + 2, end_y - 1))
+                
+                inputs["Tilt Y"] = tilt_value
+            end
+
+            local player_number = tonumber(string.sub(updated_cmd, 2, 2))
+            if player_number == 0 then
+                joypad.set(inputs)
+            else
+                joypad.set(inputs, player_number)
+            end
+
+            updated_cmd = string.sub(updated_cmd, close_index + 1)
         end
         okay()
         return
@@ -168,7 +217,5 @@ function loop()
     end
 end
 
-
 client.gettool("luaconsole").Hide()
 loop()
-
