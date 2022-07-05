@@ -97,7 +97,7 @@ namespace Retro_ML.SNES
                 }
             }
 
-            return output;
+            return $"P1({output})";
         }
 
         public void SetButton(int index, double value)
