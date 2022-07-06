@@ -1,5 +1,5 @@
 # Street Fighter 2 Turbo plugin
-Plugin by Tourmi & Jaewongtongsoup
+Plugin by Jaewongtongsoup
 -------
 Training AIs to beat Street Fighter 2 Turbo fights automatically.
 
@@ -21,9 +21,8 @@ Training AIs to beat Street Fighter 2 Turbo fights automatically.
   * The amount of points depends on the time of the fight and the HP delta between the AI and the enemy.
 * **End Round**
   * Points to attribute depending on the outcome of a round. Also influenced by a different multiplier for every outcome (Win, Lose, Draw)
-    * Specific multipliers for distance traveled in the respective directions. These are multiplied with the objective's multiplier.
 * **Stopped Fighting**
-  * Stops the current fight if the AI has not hit the enemy for a specific amount of frames. Used to speed up the training since we want the ai to be on the offensive the most he can.
+  * Stops the current fight if the AI has not hit the enemy for a specific amount of frames. Used to speed up training by skipping AIs that don't fight.
 
 
 ### Neural Configuration
@@ -52,7 +51,6 @@ Training AIs to beat Street Fighter 2 Turbo fights automatically.
   * X Delta : X position delta between the player and the enemy.
   * Y Delta : Y position delta between the player and the enemy.
   * Enemy Direction : Boolean set to 1 if the enemy is facing left. 0 if the enemy is facing right.
-  * Internal clock : Timed bias value. Alternates between on and off every couple frames.
   * Player Health : Value between 1 and 0 representing the percentage of health remaining to the player.
   * Enemy Health : Value between 1 and 0 representing the percentage of health remaining to the enemy.
   * Time Left : Value between 1 and 0 representing the percentage of the clock remaining.
@@ -67,8 +65,8 @@ Training AIs to beat Street Fighter 2 Turbo fights automatically.
   * `Y` : Low Punch
   * `Left Shoulder` : High Punch
   * `Right Shoulder` : High Kick
-  * `Left` : Move Left / Block
-  * `Right` : Move Right
+  * `Left` : Move Left, blocks if moving away from enemy
+  * `Right` : Move Right, blocks if moving away from enemy
   * `Up` : Jump.
   * `Down` : Crouch.
   * `Start` and `Select` : Useless
