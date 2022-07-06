@@ -15,7 +15,7 @@ namespace Retro_ML.StreetFighter2Turbo.Neural.Scoring
 
         public FieldInfo[] Fields => new FieldInfo[]
          {
-             new IntegerFieldInfo(nameof(MaxInnactiveFrames), "Max innactive frames when the ai is not landing blows", 1, int.MaxValue, 1),
+             new IntegerFieldInfo(nameof(MaxInnactiveFrames), "Maximum inactive frames", 1, int.MaxValue, 1, "The maximum amount of consecutive frames where the AI isn't landing blows before stopping the current training."),
          };
 
         public StopFightingScoreFactor()
@@ -107,6 +107,7 @@ namespace Retro_ML.StreetFighter2Turbo.Neural.Scoring
             return new StopFightingScoreFactor()
             {
                 ScoreMultiplier = ScoreMultiplier,
+                IsDisabled = IsDisabled,
                 MaxInnactiveFrames = MaxInnactiveFrames
             };
         }

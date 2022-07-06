@@ -102,6 +102,4 @@ namespace Retro_ML_TEST.Game.StreetFighter2Turbo
             Assert.AreEqual(secondScore, sf.GetFinalScore());
         }
     }
-
-
 }

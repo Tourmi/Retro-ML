@@ -55,9 +55,9 @@ namespace Retro_ML.StreetFighter2Turbo.Neural.Scoring
 
         public string Name => "End of Round";
 
-        public bool CanBeDisabled => false;
+        public bool CanBeDisabled => true;
 
-        public bool IsDisabled { get => false; set { } }
+        public bool IsDisabled { get; set; }
 
         public ExtraField[] ExtraFields { get; set; }
 
