@@ -96,8 +96,6 @@ namespace Retro_ML.StreetFighter2Turbo.Neural.Scoring
         public void LevelDone()
         {
             shouldStop = false;
-            maxTime = 0;
-            isInited = false;
         }
 
         public IScoreFactor Clone()
