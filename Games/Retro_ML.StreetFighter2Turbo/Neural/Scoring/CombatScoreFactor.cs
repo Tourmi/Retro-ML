@@ -78,6 +78,7 @@ namespace Retro_ML.StreetFighter2Turbo.Neural.Scoring
             return new CombatScoreFactor()
             {
                 ScoreMultiplier = ScoreMultiplier,
+                IsDisabled = IsDisabled,
                 TimerInfluence = TimerInfluence,
             };
         }
