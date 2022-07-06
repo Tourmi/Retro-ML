@@ -91,11 +91,11 @@ namespace Retro_ML.StreetFighter2Turbo.Game
             if (IsPlayer1Attacking())
             {
                 //Light attack
-                if (ToUnsignedInteger(Read(Player1Addresses.AttackStrength)) == 0x0000 || ToUnsignedInteger(Read(Player1Addresses.AttackStrength)) == 0x0001) return 1 / 3;
+                if (ToUnsignedInteger(Read(Player1Addresses.AttackStrength)) == 0x0000 || ToUnsignedInteger(Read(Player1Addresses.AttackStrength)) == 0x0001) return 1.0 / 3.0;
                 //Medium attack
-                if (ToUnsignedInteger(Read(Player1Addresses.AttackStrength)) == 0x0200 || ToUnsignedInteger(Read(Player1Addresses.AttackStrength)) == 0x0202 || ToUnsignedInteger(Read(Player1Addresses.AttackStrength)) == 0x0203) return 2 / 3;
+                if (ToUnsignedInteger(Read(Player1Addresses.AttackStrength)) == 0x0200 || ToUnsignedInteger(Read(Player1Addresses.AttackStrength)) == 0x0202 || ToUnsignedInteger(Read(Player1Addresses.AttackStrength)) == 0x0203) return 2.0 / 3.0;
                 //Heavy attack
-                if (ToUnsignedInteger(Read(Player1Addresses.AttackStrength)) == 0x0402 || ToUnsignedInteger(Read(Player1Addresses.AttackStrength)) == 0x0404 || ToUnsignedInteger(Read(Player1Addresses.AttackStrength)) == 0x0405) return 1;
+                if (ToUnsignedInteger(Read(Player1Addresses.AttackStrength)) == 0x0402 || ToUnsignedInteger(Read(Player1Addresses.AttackStrength)) == 0x0404 || ToUnsignedInteger(Read(Player1Addresses.AttackStrength)) == 0x0405) return 1.0;
             }
             return 0;
         }
@@ -104,11 +104,11 @@ namespace Retro_ML.StreetFighter2Turbo.Game
             if (IsPlayer2Attacking())
             {
                 //Light attack
-                if (ToUnsignedInteger(Read(Player2Addresses.AttackStrength)) == 0x0000 || ToUnsignedInteger(Read(Player2Addresses.AttackStrength)) == 0x0001) return 1 / 3;
+                if (ToUnsignedInteger(Read(Player2Addresses.AttackStrength)) == 0x0000 || ToUnsignedInteger(Read(Player2Addresses.AttackStrength)) == 0x0001) return 1.0 / 3.0;
                 //Medium attack
-                if (ToUnsignedInteger(Read(Player2Addresses.AttackStrength)) == 0x0200 || ToUnsignedInteger(Read(Player2Addresses.AttackStrength)) == 0x0202 || ToUnsignedInteger(Read(Player2Addresses.AttackStrength)) == 0x0203) return 2 / 3;
+                if (ToUnsignedInteger(Read(Player2Addresses.AttackStrength)) == 0x0200 || ToUnsignedInteger(Read(Player2Addresses.AttackStrength)) == 0x0202 || ToUnsignedInteger(Read(Player2Addresses.AttackStrength)) == 0x0203) return 2.0 / 3.0;
                 //Heavy attack
-                if (ToUnsignedInteger(Read(Player2Addresses.AttackStrength)) == 0x0402 || ToUnsignedInteger(Read(Player2Addresses.AttackStrength)) == 0x0404 || ToUnsignedInteger(Read(Player2Addresses.AttackStrength)) == 0x0405) return 1;
+                if (ToUnsignedInteger(Read(Player2Addresses.AttackStrength)) == 0x0402 || ToUnsignedInteger(Read(Player2Addresses.AttackStrength)) == 0x0404 || ToUnsignedInteger(Read(Player2Addresses.AttackStrength)) == 0x0405) return 1.0;
             }
             return 0;
         }

@@ -19,6 +19,8 @@ Training AIs to beat Street Fighter 2 Turbo fights automatically.
 * **Combat**
   * The amount of points to attribute to an AI for its combat prowess at the end of a round. 
   * The amount of points depends on the time of the fight and the HP delta between the AI and the enemy.
+  * The score given is equal to ScoreMultiplier * HPDelta (can be negative) * (TimeOfTheFight * TimerInfluence + (1.0 - TimerInfluence)).
+  * The TimerInfluence is a multiplier between 0 and 1 that represent the weight carried by the time of the fight in the score calculation.
 * **End Round**
   * Points to attribute depending on the outcome of a round. Also influenced by a different multiplier for every outcome (Win, Lose, Draw)
 * **Stopped Fighting**

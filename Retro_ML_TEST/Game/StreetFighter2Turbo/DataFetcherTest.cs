@@ -345,7 +345,7 @@ namespace Retro_ML_TEST.Game.StreetFighter2Turbo
             Assert.False(dataFetcher!.IsPlayer1Attacking());
             mockEmulatorAdapter!.SetMemory(Addresses.Player1Addresses.State.Address, 0x0A);
             dataFetcher!.NextFrame();
-            Assert.True(dataFetcher!.IsPlayer1Jumping());
+            Assert.True(dataFetcher!.IsPlayer1Attacking());
         }
 
         [Test]
@@ -445,35 +445,35 @@ namespace Retro_ML_TEST.Game.StreetFighter2Turbo
         {
             Assert.AreEqual(0, dataFetcher!.GetPlayer1AttackStrength());
             mockEmulatorAdapter!.SetMemory(Addresses.Player1Addresses.State.Address, 0x0A);
-            mockEmulatorAdapter!.SetMemory(Addresses.Player1Addresses.AttackType.Address, new byte[] { 0x00, 0x00 });
+            mockEmulatorAdapter!.SetMemory(Addresses.Player1Addresses.AttackStrength.Address, new byte[] { 0x00, 0x00 });
             dataFetcher!.NextFrame();
             Assert.AreEqual((double)1 / 3, dataFetcher!.GetPlayer1AttackStrength());
             mockEmulatorAdapter!.SetMemory(Addresses.Player1Addresses.State.Address, 0x0A);
-            mockEmulatorAdapter!.SetMemory(Addresses.Player1Addresses.AttackType.Address, new byte[] { 0x00, 0x01 });
+            mockEmulatorAdapter!.SetMemory(Addresses.Player1Addresses.AttackStrength.Address, new byte[] { 0x01, 0x00 });
             dataFetcher!.NextFrame();
             Assert.AreEqual((double)1 / 3, dataFetcher!.GetPlayer1AttackStrength());
             mockEmulatorAdapter!.SetMemory(Addresses.Player1Addresses.State.Address, 0x0A);
-            mockEmulatorAdapter!.SetMemory(Addresses.Player1Addresses.AttackType.Address, new byte[] { 0x02, 0x00 });
+            mockEmulatorAdapter!.SetMemory(Addresses.Player1Addresses.AttackStrength.Address, new byte[] { 0x00, 0x02 });
             dataFetcher!.NextFrame();
             Assert.AreEqual((double)2 / 3, dataFetcher!.GetPlayer1AttackStrength());
             mockEmulatorAdapter!.SetMemory(Addresses.Player1Addresses.State.Address, 0x0A);
-            mockEmulatorAdapter!.SetMemory(Addresses.Player1Addresses.AttackType.Address, new byte[] { 0x02, 0x02 });
+            mockEmulatorAdapter!.SetMemory(Addresses.Player1Addresses.AttackStrength.Address, new byte[] { 0x02, 0x02 });
             dataFetcher!.NextFrame();
             Assert.AreEqual((double)2 / 3, dataFetcher!.GetPlayer1AttackStrength());
             mockEmulatorAdapter!.SetMemory(Addresses.Player1Addresses.State.Address, 0x0A);
-            mockEmulatorAdapter!.SetMemory(Addresses.Player1Addresses.AttackType.Address, new byte[] { 0x02, 0x03 });
+            mockEmulatorAdapter!.SetMemory(Addresses.Player1Addresses.AttackStrength.Address, new byte[] { 0x03, 0x02 });
             dataFetcher!.NextFrame();
             Assert.AreEqual((double)2 / 3, dataFetcher!.GetPlayer1AttackStrength());
             mockEmulatorAdapter!.SetMemory(Addresses.Player1Addresses.State.Address, 0x0A);
-            mockEmulatorAdapter!.SetMemory(Addresses.Player1Addresses.AttackType.Address, new byte[] { 0x04, 0x02 });
+            mockEmulatorAdapter!.SetMemory(Addresses.Player1Addresses.AttackStrength.Address, new byte[] { 0x02, 0x04 });
             dataFetcher!.NextFrame();
             Assert.AreEqual(1.0, dataFetcher!.GetPlayer1AttackStrength());
             mockEmulatorAdapter!.SetMemory(Addresses.Player1Addresses.State.Address, 0x0A);
-            mockEmulatorAdapter!.SetMemory(Addresses.Player1Addresses.AttackType.Address, new byte[] { 0x04, 0x04 });
+            mockEmulatorAdapter!.SetMemory(Addresses.Player1Addresses.AttackStrength.Address, new byte[] { 0x04, 0x04 });
             dataFetcher!.NextFrame();
             Assert.AreEqual(1.0, dataFetcher!.GetPlayer1AttackStrength());
             mockEmulatorAdapter!.SetMemory(Addresses.Player1Addresses.State.Address, 0x0A);
-            mockEmulatorAdapter!.SetMemory(Addresses.Player1Addresses.AttackType.Address, new byte[] { 0x05, 0x05 });
+            mockEmulatorAdapter!.SetMemory(Addresses.Player1Addresses.AttackStrength.Address, new byte[] { 0x05, 0x04 });
             dataFetcher!.NextFrame();
             Assert.AreEqual(1.0, dataFetcher!.GetPlayer1AttackStrength());
         }
@@ -483,35 +483,35 @@ namespace Retro_ML_TEST.Game.StreetFighter2Turbo
         {
             Assert.AreEqual(0, dataFetcher!.GetPlayer2AttackStrength());
             mockEmulatorAdapter!.SetMemory(Addresses.Player2Addresses.State.Address, 0x0A);
-            mockEmulatorAdapter!.SetMemory(Addresses.Player2Addresses.AttackType.Address, new byte[] { 0x00, 0x00 });
+            mockEmulatorAdapter!.SetMemory(Addresses.Player2Addresses.AttackStrength.Address, new byte[] { 0x00, 0x00 });
             dataFetcher!.NextFrame();
             Assert.AreEqual((double)1 / 3, dataFetcher!.GetPlayer2AttackStrength());
             mockEmulatorAdapter!.SetMemory(Addresses.Player2Addresses.State.Address, 0x0A);
-            mockEmulatorAdapter!.SetMemory(Addresses.Player2Addresses.AttackType.Address, new byte[] { 0x00, 0x01 });
+            mockEmulatorAdapter!.SetMemory(Addresses.Player2Addresses.AttackStrength.Address, new byte[] { 0x01, 0x00 });
             dataFetcher!.NextFrame();
             Assert.AreEqual((double)1 / 3, dataFetcher!.GetPlayer2AttackStrength());
             mockEmulatorAdapter!.SetMemory(Addresses.Player2Addresses.State.Address, 0x0A);
-            mockEmulatorAdapter!.SetMemory(Addresses.Player2Addresses.AttackType.Address, new byte[] { 0x02, 0x00 });
+            mockEmulatorAdapter!.SetMemory(Addresses.Player2Addresses.AttackStrength.Address, new byte[] { 0x00, 0x02 });
             dataFetcher!.NextFrame();
             Assert.AreEqual((double)2 / 3, dataFetcher!.GetPlayer2AttackStrength());
             mockEmulatorAdapter!.SetMemory(Addresses.Player2Addresses.State.Address, 0x0A);
-            mockEmulatorAdapter!.SetMemory(Addresses.Player2Addresses.AttackType.Address, new byte[] { 0x02, 0x02 });
+            mockEmulatorAdapter!.SetMemory(Addresses.Player2Addresses.AttackStrength.Address, new byte[] { 0x02, 0x02 });
             dataFetcher!.NextFrame();
             Assert.AreEqual((double)2 / 3, dataFetcher!.GetPlayer2AttackStrength());
             mockEmulatorAdapter!.SetMemory(Addresses.Player2Addresses.State.Address, 0x0A);
-            mockEmulatorAdapter!.SetMemory(Addresses.Player2Addresses.AttackType.Address, new byte[] { 0x02, 0x03 });
+            mockEmulatorAdapter!.SetMemory(Addresses.Player2Addresses.AttackStrength.Address, new byte[] { 0x03, 0x02 });
             dataFetcher!.NextFrame();
             Assert.AreEqual((double)2 / 3, dataFetcher!.GetPlayer2AttackStrength());
             mockEmulatorAdapter!.SetMemory(Addresses.Player2Addresses.State.Address, 0x0A);
-            mockEmulatorAdapter!.SetMemory(Addresses.Player2Addresses.AttackType.Address, new byte[] { 0x04, 0x02 });
+            mockEmulatorAdapter!.SetMemory(Addresses.Player2Addresses.AttackStrength.Address, new byte[] { 0x02, 0x04 });
             dataFetcher!.NextFrame();
             Assert.AreEqual(1.0, dataFetcher!.GetPlayer2AttackStrength());
             mockEmulatorAdapter!.SetMemory(Addresses.Player2Addresses.State.Address, 0x0A);
-            mockEmulatorAdapter!.SetMemory(Addresses.Player2Addresses.AttackType.Address, new byte[] { 0x04, 0x04 });
+            mockEmulatorAdapter!.SetMemory(Addresses.Player2Addresses.AttackStrength.Address, new byte[] { 0x04, 0x04 });
             dataFetcher!.NextFrame();
             Assert.AreEqual(1.0, dataFetcher!.GetPlayer2AttackStrength());
             mockEmulatorAdapter!.SetMemory(Addresses.Player2Addresses.State.Address, 0x0A);
-            mockEmulatorAdapter!.SetMemory(Addresses.Player2Addresses.AttackType.Address, new byte[] { 0x05, 0x05 });
+            mockEmulatorAdapter!.SetMemory(Addresses.Player2Addresses.AttackStrength.Address, new byte[] { 0x05, 0x04 });
             dataFetcher!.NextFrame();
             Assert.AreEqual(1.0, dataFetcher!.GetPlayer2AttackStrength());
         }
