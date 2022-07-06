@@ -8,7 +8,7 @@ namespace Retro_ML.SuperMario64.Neural.Train;
 
 internal class SM64ExperimentFactory : INeatExperimentFactory
 {
-    public string Id => "sm64-experiment-factory";
+    public string Id => $"{appConfig.GamePluginName}-experiment-factory";
 
     private readonly EmulatorManager emulatorManager;
     private readonly ApplicationConfig appConfig;
@@ -36,8 +36,5 @@ internal class SM64ExperimentFactory : INeatExperimentFactory
         return experiment;
     }
 
-    public INeatExperiment<float> CreateExperimentSinglePrecision(JsonElement configElem)
-    {
-        throw new NotImplementedException();
-    }
+    public INeatExperiment<float> CreateExperimentSinglePrecision(JsonElement configElem) => throw new NotImplementedException();
 }
