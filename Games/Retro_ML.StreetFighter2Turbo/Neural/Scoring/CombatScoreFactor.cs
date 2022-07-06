@@ -47,7 +47,7 @@ namespace Retro_ML.StreetFighter2Turbo.Neural.Scoring
 
         public string Name => "Combat";
 
-        public string Tooltip => "Reward applied to the AI depending on the time taken and the health difference between the two players";
+        public string Tooltip => "Reward applied to the AI after a round is finished that represent its efficiency in combat based on HP delta between the player and the enemy and the time taken for combat";
 
         public bool CanBeDisabled => true;
 

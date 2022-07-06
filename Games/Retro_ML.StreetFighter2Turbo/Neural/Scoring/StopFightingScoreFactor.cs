@@ -48,7 +48,7 @@ namespace Retro_ML.StreetFighter2Turbo.Neural.Scoring
 
         public string Name => "Stop Fighting";
 
-        public string Tooltip => "Penalize the ai if it doesnt hit the enemy for x amount of frames";
+        public string Tooltip => "Penalize the ai if it doesnt hit the enemy for a defined amount of frames";
 
         public bool CanBeDisabled => true;
 

@@ -83,7 +83,7 @@ namespace Retro_ML.StreetFighter2Turbo.Neural.Scoring
                 }
 
                 //If the round is finished via Enemy K.O
-                if (!dataFetcher.HasPlayerWon())
+                if (dataFetcher.HasPlayerWon())
                 {
                     currScore += ScoreMultiplier * VictoryMultiplier;
                 }

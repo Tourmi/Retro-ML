@@ -8,23 +8,15 @@
     {
         public struct AddressData
         {
-            public enum CacheTypes
-            {
-                Frame,
-            }
 
-            public AddressData(uint address, uint length, CacheTypes cacheTypes = CacheTypes.Frame, uint highByteLocation = 0)
+            public AddressData(uint address, uint length)
             {
                 Address = address;
                 Length = length;
-                CacheType = cacheTypes;
-                HighByteAddress = highByteLocation;
             }
 
             public uint Address;
             public uint Length;
-            public CacheTypes CacheType;
-            public uint HighByteAddress;
         }
 
         public static class GameAddresses

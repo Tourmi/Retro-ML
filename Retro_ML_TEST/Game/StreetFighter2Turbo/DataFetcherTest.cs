@@ -178,14 +178,14 @@ namespace Retro_ML_TEST.Game.StreetFighter2Turbo
             Assert.AreEqual(0, dataFetcher!.GetRoundTimerNormalized());
             mockEmulatorAdapter!.SetMemory(Addresses.GameAddresses.RoundTimer.Address, 0x05);
             dataFetcher!.NextFrame();
-            Assert.AreEqual((double) 5.0/99.0, dataFetcher!.GetRoundTimerNormalized());
+            Assert.AreEqual((double)5.0 / 99.0, dataFetcher!.GetRoundTimerNormalized());
         }
 
         [Test]
         public void GetPlayer1XPos()
         {
             Assert.AreEqual(0, dataFetcher!.GetPlayer1XPos());
-            mockEmulatorAdapter!.SetMemory(Addresses.Player1Addresses.XPos.Address, new byte[] { 0xC8, 0x32});
+            mockEmulatorAdapter!.SetMemory(Addresses.Player1Addresses.XPos.Address, new byte[] { 0xC8, 0x32 });
             dataFetcher!.NextFrame();
             Assert.AreEqual(13000, dataFetcher!.GetPlayer1XPos());
         }
@@ -445,7 +445,7 @@ namespace Retro_ML_TEST.Game.StreetFighter2Turbo
             mockEmulatorAdapter!.SetMemory(Addresses.Player1Addresses.State.Address, 0x0A);
             mockEmulatorAdapter!.SetMemory(Addresses.Player1Addresses.AttackType.Address, new byte[] { 0x00, 0x00 });
             dataFetcher!.NextFrame();
-            Assert.AreEqual((double) 1/3, dataFetcher!.GetPlayer1AttackStrength());
+            Assert.AreEqual((double)1 / 3, dataFetcher!.GetPlayer1AttackStrength());
             mockEmulatorAdapter!.SetMemory(Addresses.Player1Addresses.State.Address, 0x0A);
             mockEmulatorAdapter!.SetMemory(Addresses.Player1Addresses.AttackType.Address, new byte[] { 0x00, 0x01 });
             dataFetcher!.NextFrame();

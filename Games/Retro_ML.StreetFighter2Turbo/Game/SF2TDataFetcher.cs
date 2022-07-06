@@ -113,6 +113,12 @@ namespace Retro_ML.StreetFighter2Turbo.Game
             return 0;
         }
         public double GetEnemyDirection() => GetPlayer2XPos() < GetPlayer1XPos() ? -1.0 : 1.0;
+
+        /// <summary>
+        /// Get horizontal absolute position of the character in a ratio between -1 and 1
+        /// </summary>
+        /// <param name="pos"></param>
+        /// <returns></returns>
         private double GetHorizontalPositionRatio(uint pos) => (pos - MIN_HORIZONTAL_POSITION) / (double)(MAX_HORIZONTAL_POSITION - MIN_HORIZONTAL_POSITION) * 2 - 1;
 
         /// <summary>
@@ -141,25 +147,21 @@ namespace Retro_ML.StreetFighter2Turbo.Game
         /// </summary>
         /// <param name="addresses"></param>
         /// <returns></returns>
-        private byte[] Read(params (AddressData address, bool isLowHighByte)[] addresses)
+        private byte[] Read(params AddressData[] addresses)
         {
             List<(uint addr, uint length)> toFetch = new();
 
             uint totalBytes = 0;
 
-            foreach ((AddressData address, bool isLowHighByte) in addresses)
+            foreach (var address in addresses)
             {
                 var cacheToUse = frameCache;
                 if (!cacheToUse.ContainsKey(address.Address))
                 {
                     toFetch.Add((address.Address, address.Length));
                 }
-                if (isLowHighByte && !cacheToUse.ContainsKey(address.HighByteAddress))
-                {
-                    toFetch.Add((address.HighByteAddress, address.Length));
-                }
 
-                totalBytes += address.Length * (uint)(isLowHighByte ? 2 : 1);
+                totalBytes += address.Length;
             }
 
             byte[] data = Array.Empty<byte>();
@@ -170,7 +172,7 @@ namespace Retro_ML.StreetFighter2Turbo.Game
 
             List<byte> bytes = new();
             int dataIndex = 0;
-            foreach ((AddressData address, bool isLowHighByte) in addresses)
+            foreach (AddressData address in addresses)
             {
                 int count = (int)address.Length;
 
@@ -180,14 +182,8 @@ namespace Retro_ML.StreetFighter2Turbo.Game
                     cacheToUse[address.Address] = data[dataIndex..(dataIndex + count)];
                     dataIndex += count;
                 }
-                if (isLowHighByte && !cacheToUse.ContainsKey(address.HighByteAddress))
-                {
-                    cacheToUse[address.HighByteAddress] = data[dataIndex..(dataIndex + count)];
-                    dataIndex += count;
-                }
 
                 bytes.AddRange(cacheToUse[address.Address]);
-                if (isLowHighByte) bytes.AddRange(cacheToUse[address.HighByteAddress]);
             }
 
             return bytes.ToArray();
@@ -195,28 +191,28 @@ namespace Retro_ML.StreetFighter2Turbo.Game
 
         private void InitFrameCache()
         {
-            (AddressData, bool)[] toRead = new (AddressData, bool)[]
+            List<AddressData> toRead = new()
             {
-                (Player1Addresses.XPos, false),
-                (Player1Addresses.YPos, false),
-                (Player1Addresses.State, false),
-                (Player1Addresses.HP, false),
-                (Player1Addresses.EndRoundStatus, false),
-                (Player1Addresses.Input, false),
-                (Player1Addresses.AttackType, false),
-                (Player1Addresses.AttackStrength, false),
-                (Player2Addresses.XPos, false),
-                (Player2Addresses.YPos, false),
-                (Player2Addresses.State, false),
-                (Player2Addresses.HP, false),
-                (Player2Addresses.EndRoundStatus, false),
-                (Player2Addresses.Input, false),
-                (Player2Addresses.AttackType, false),
-                (Player2Addresses.AttackStrength, false),
-                (GameAddresses.RoundTimer, false),
+                Player1Addresses.XPos,
+                Player1Addresses.YPos,
+                Player1Addresses.State,
+                Player1Addresses.HP,
+                Player1Addresses.EndRoundStatus,
+                Player1Addresses.Input,
+                Player1Addresses.AttackType,
+                Player1Addresses.AttackStrength,
+                Player2Addresses.XPos,
+                Player2Addresses.YPos,
+                Player2Addresses.State,
+                Player2Addresses.HP,
+                Player2Addresses.EndRoundStatus,
+                Player2Addresses.Input,
+                Player2Addresses.AttackType,
+                Player2Addresses.AttackStrength,
+                GameAddresses.RoundTimer,
             };
 
-            _ = Read(toRead);
+            _ = Read(toRead.ToArray());
         }
 
         private static uint ToUnsignedInteger(byte[] bytes)
