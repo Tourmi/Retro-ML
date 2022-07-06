@@ -9,8 +9,6 @@ namespace Retro_ML_TEST.Game.StreetFighter2Turbo
     [TestFixture]
     internal class DataFetcherTest
     {
-        delegate bool TestFunction();
-
         private SF2TDataFetcher? dataFetcher;
         private MockEmulatorAdapter? mockEmulatorAdapter;
 
@@ -341,6 +339,7 @@ namespace Retro_ML_TEST.Game.StreetFighter2Turbo
             Assert.True(dataFetcher!.IsPlayer2Staggered());
         }
 
+        [Test]
         public void IsPlayer1Attacking()
         {
             Assert.False(dataFetcher!.IsPlayer1Attacking());
@@ -358,6 +357,7 @@ namespace Retro_ML_TEST.Game.StreetFighter2Turbo
             Assert.True(dataFetcher!.IsPlayer2Attacking());
         }
 
+        [Test]
         public void IsPlayer1Punching()
         {
             Assert.False(dataFetcher!.IsPlayer1Punching());
@@ -385,6 +385,7 @@ namespace Retro_ML_TEST.Game.StreetFighter2Turbo
             Assert.False(dataFetcher!.IsPlayer2Punching());
         }
 
+        [Test]
         public void IsPlayer1Kicking()
         {
             Assert.False(dataFetcher!.IsPlayer1Kicking());
@@ -411,7 +412,7 @@ namespace Retro_ML_TEST.Game.StreetFighter2Turbo
             dataFetcher!.NextFrame();
             Assert.False(dataFetcher!.IsPlayer2Kicking());
         }
-
+        [Test]
         public void IsPlayer1Throwing()
         {
             Assert.False(dataFetcher!.IsPlayer1Throwing());
@@ -439,6 +440,7 @@ namespace Retro_ML_TEST.Game.StreetFighter2Turbo
             Assert.True(dataFetcher!.IsPlayer2Throwing());
         }
 
+        [Test]
         public void GetPlayer1AttackStrength()
         {
             Assert.AreEqual(0, dataFetcher!.GetPlayer1AttackStrength());
@@ -476,6 +478,7 @@ namespace Retro_ML_TEST.Game.StreetFighter2Turbo
             Assert.AreEqual(1.0, dataFetcher!.GetPlayer1AttackStrength());
         }
 
+        [Test]
         public void GetPlayer2AttackStrength()
         {
             Assert.AreEqual(0, dataFetcher!.GetPlayer2AttackStrength());
