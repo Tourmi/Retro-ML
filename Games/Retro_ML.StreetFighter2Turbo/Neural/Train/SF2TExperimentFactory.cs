@@ -8,7 +8,7 @@ namespace Retro_ML.StreetFighter2Turbo.Neural.Train
 {
     internal class SF2TExperimentFactory : INeatExperimentFactory
     {
-        public string Id => "smb-experiment-factory";
+        public string Id => $"{appConfig.GamePluginName}-experiment-factory";
 
         private readonly EmulatorManager emulatorManager;
         private readonly ApplicationConfig appConfig;
