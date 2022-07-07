@@ -1,0 +1,30 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+		xmlns:vm="clr-namespace:Retro_ML.Application.ViewModels;assembly=Retro_ML.Application"
+        mc:Ignorable="d" d:DesignWidth="700" d:DesignHeight="500"
+        x:Class="Retro_ML.Application.Views.DebugWindow"
+        Title="Debug Window"
+		Name="DebugWindow"
+		IsEnabled="{Binding IsEnabled}"
+		Background="#183048">
+	
+	<Design.DataContext>
+		<vm:DebugWindowViewModel/>
+	</Design.DataContext>
+	
+	<Window.Styles>
+		<StyleInclude Source="/Styles/MainStyles.axaml" />
+	</Window.Styles>
+	
+	<DockPanel LastChildFill="True">
+		<StackPanel Classes="tabContent" DockPanel.Dock="Top">
+			<TextBlock Classes="h1" Foreground="#cce2f3">Refresh Rate (X/s)</TextBlock>
+			<NumericUpDown Minimum="0" Maximum="60" Value="{Binding RefreshRate}"></NumericUpDown>
+			<Button Classes="generalButtonBlue" Command="{Binding Clear}">Clear</Button>
+		</StackPanel>
+
+		<TextBlock Background="#111" DockPanel.Dock="Bottom" Foreground="#eee" Padding="5" FontFamily="Consolas" Text="{Binding DebugText}"/>
+	</DockPanel>
+</Window>
