@@ -50,6 +50,23 @@ public static class DebugInfo
         }
     }
 
+    public static string GetFormattedInfo()
+    {
+        _ = mutex.WaitOne();
+        string res = string.Empty;
+
+        var entries = infos.ToList();
+        int keyMaxLength = infos.Count == 0 ? 0 : infos.Max((i) => i.Key.Length);
+
+        foreach (var entry in infos)
+        {
+            res += $"{entry.Key.PadLeft(keyMaxLength, ' ')} = {entry.Value}";
+        }
+
+        mutex.ReleaseMutex();
+        return res;
+    }
+
     /// <summary>
     /// Returns true if running in debug mode
     /// </summary>
