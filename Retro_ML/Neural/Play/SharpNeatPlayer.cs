@@ -155,7 +155,7 @@ public sealed class SharpNeatPlayer : INeuralPlayer
 
             syncSemaphore.Release();
             IsPlaying = false;
-            FinishedPlaying?.Invoke();
+            if (!shouldStop) FinishedPlaying?.Invoke();
         }
         catch (Exception ex)
         {
