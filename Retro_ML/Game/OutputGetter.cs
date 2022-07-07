@@ -43,7 +43,12 @@ namespace Retro_ML.Game
                     continue;
                 }
 
-                input.SetButton(controllerIndex, outputs[currIndex]);
+                double value = outputs[currIndex];
+
+                //We assume LeakyReLU, and so, we want the original value if negative
+                value *= value < 0 ? 1000 : 1;
+
+                input.SetButton(controllerIndex, value);
             }
 
             input.ValidateButtons();
