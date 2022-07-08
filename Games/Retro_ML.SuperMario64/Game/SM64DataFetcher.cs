@@ -35,6 +35,17 @@ internal class SM64DataFetcher : IDataFetcher
         frameCache.Clear();
         internalClock.NextFrame();
 
+        DebugInfo.AddInfo("Mario X Pos", GetMarioX().ToString(), "Mario");
+        DebugInfo.AddInfo("Mario Y Pos", GetMarioY().ToString(), "Mario");
+        DebugInfo.AddInfo("Mario Z Pos", GetMarioZ().ToString(), "Mario");
+        DebugInfo.AddInfo("Mario X Speed", GetMarioXSpeed().ToString(), "Mario");
+        DebugInfo.AddInfo("Mario Y Speed", GetMarioYSpeed().ToString(), "Mario");
+        DebugInfo.AddInfo("Mario Z Speed", GetMarioZSpeed().ToString(), "Mario");
+        DebugInfo.AddInfo("Mario Horizontal Speed", GetMarioHorizontalSpeed().ToString(), "Mario");
+        DebugInfo.AddInfo("Mario Ground Offset", GetMarioGroundOffset().ToString(), "Mario");
+        DebugInfo.AddInfo("Coin Count", GetCoinCount().ToString(), "Collected");
+        DebugInfo.AddInfo("Star Count", GetCoinCount().ToString(), "Collected");
+
         InitFrameCache();
     }
 
@@ -50,16 +61,26 @@ internal class SM64DataFetcher : IDataFetcher
     }
 
     public bool[,] GetInternalClockState() => internalClock.GetStates();
+    public float GetMarioX() => ReadFloat(Mario.XPos);
+    public float GetMarioY() => ReadFloat(Mario.YPos);
+    public float GetMarioZ() => ReadFloat(Mario.ZPos);
+    public float GetMarioXSpeed() => ReadFloat(Mario.XSpeed);
+    public float GetMarioYSpeed() => ReadFloat(Mario.YSpeed);
+    public float GetMarioZSpeed() => ReadFloat(Mario.ZSpeed);
+    public float GetMarioHorizontalSpeed() => ReadFloat(Mario.HorizontalSpeed);
+    public float GetMarioGroundOffset() => ReadByte(Mario.GroundOffset);
+    public ushort GetCoinCount() => (ushort)ReadULong(Mario.Coins);
+    public ushort GetStarCount() => (ushort)ReadULong(Progress.StarCount);
 
     /// <summary>
     /// Reads a single byte from the emulator's memory
     /// </summary>
     /// <param name="addressData"></param>
     /// <returns></returns>
-    private byte ReadSingle(AddressData addressData) => Read(addressData)[0];
+    private byte ReadByte(AddressData addressData) => Read(addressData)[0];
 
     /// <summary>
-    /// Reads up to 8 bytes from the address, assuming little endian.
+    /// Reads up to 8 bytes from the address, assuming big endian.
     /// </summary>
     /// <param name="bytes"></param>
     /// <returns></returns>
@@ -69,38 +90,18 @@ internal class SM64DataFetcher : IDataFetcher
         ulong value = 0;
         for (int i = 0; i < bytes.Length && i < 8; i++)
         {
-            value += (ulong)bytes[i] << i * 8;
+            value += (ulong)bytes[i] << (bytes.Length - i - 1) * 8;
         }
         return value;
     }
 
-    /// <summary>
-    /// <br>Reads up to 8 bytes from the address, assuming byte-wise little endian, and interprets all nybbles as decimal digits.</br>
-    /// <br>Examples:</br>
-    /// <code>
-    /// 0x563412 -> 123456
-    /// 0x90     -> 90    
-    /// 0x0180   -> 8001  
-    /// 0x4      -> 4     
-    /// 0xA      -> 10    
-    /// </code>
-    /// </summary>
-    /// <param name="addressData"></param>
-    /// <returns></returns>
-    private ulong ReadNybbleDigitsToUlong(AddressData addressData)
+    private float ReadFloat(AddressData addressData)
     {
         var bytes = Read(addressData);
-        ulong value = 0;
-        for (int i = 0; i < bytes.Length && i < 8; i++)
-        {
-            var currByte = bytes[i];
+        //We need to reverse the bytes if the current system is little endian
+        if (BitConverter.IsLittleEndian) bytes = bytes.Reverse().ToArray();
 
-            var smallDigit = currByte & 0b0000_1111;
-            var bigDigit = (currByte & 0b1111_0000) >> 4;
-            value += (ulong)(smallDigit + bigDigit * 10) * 100.PosPow(i);
-        }
-
-        return value;
+        return BitConverter.ToSingle(bytes);
     }
 
     /// <summary>
