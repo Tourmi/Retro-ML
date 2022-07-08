@@ -2,7 +2,9 @@
 
 namespace Retro_ML.Utils;
 /// <summary>
-/// Class used to store and read debug information. Useful for testing plugins.
+/// <br/> Thread-safe class used to store and read debug information. Useful for testing plugins.
+/// <br/> Void functions are safe to use, since when not in debug mode, the compiler will remove said calls
+/// <br/> Check <see cref="DebugInfo.IsDebug"/> before using non-void functions in this class. 
 /// </summary>
 public static class DebugInfo
 {
@@ -44,7 +46,7 @@ public static class DebugInfo
     }
 
     /// <summary>
-    /// Returns the formatted string for all the logged info so far. Filters by <paramref name="category"/> if not null
+    /// Returns the formatted string for all the logged info so far. Filters by <paramref name="categories"/> if not empty
     /// </summary>
     /// <param name="category"></param>
     /// <returns></returns>
@@ -70,9 +72,12 @@ public static class DebugInfo
     /// </summary>
     public static string[] GetCategories()
     {
+        _ = mutex.WaitOne();
         HashSet<string> categories = new() { DEFAULT_CATEGORY };
 
         categories.UnionWith(infos.Select(i => i.Category));
+
+        mutex.ReleaseMutex();
 
         return categories.ToArray();
     }
