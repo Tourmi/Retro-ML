@@ -56,9 +56,9 @@ public static class DebugInfo
         string res = string.Empty;
 
         var entries = infos.OrderBy(i => i.Priority).ThenBy(i => i.Name).ToList();
-        int keyMaxLength = infos.Count == 0 ? 0 : infos.Max((i) => i.Name.Length);
+        int keyMaxLength = entries.Count == 0 ? 0 : entries.Max((i) => i.Name.Length);
 
-        foreach (var entry in infos.Where(i => categories.Length == 0 || categories.Contains(i.Category)))
+        foreach (var entry in entries.Where(i => categories.Length == 0 || categories.Contains(i.Category)))
         {
             res += $"{entry.Name.PadLeft(keyMaxLength, ' ')} = {entry.Value}\n";
         }
