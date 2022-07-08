@@ -8,7 +8,7 @@ namespace Retro_ML.Utils;
 /// </summary>
 public static class DebugInfo
 {
-    private const string DEFAULT_CATEGORY = "Default";
+    private const string DEFAULT_CATEGORY = "None";
 
     private struct DebugInfoEntry
     {
@@ -55,10 +55,10 @@ public static class DebugInfo
         _ = mutex.WaitOne();
         string res = string.Empty;
 
-        var entries = infos.OrderBy(i => i.Priority).ThenBy(i => i.Name).ToList();
+        var entries = infos.ToList();
         int keyMaxLength = infos.Count == 0 ? 0 : infos.Max((i) => i.Name.Length);
 
-        foreach (var entry in infos.Where(i => categories.Length == 0 || categories.Contains(i.Category)))
+        foreach (var entry in infos.Where(i => categories.Length == 0 || categories.Contains(i.Category)).OrderBy(i => i.Priority))
         {
             res += $"{entry.Name.PadLeft(keyMaxLength, ' ')} = {entry.Value}\n";
         }
@@ -79,7 +79,7 @@ public static class DebugInfo
 
         mutex.ReleaseMutex();
 
-        return categories.OrderBy(c => c.ToLower()).ToArray();
+        return categories.ToArray();
     }
 
     /// <summary>
