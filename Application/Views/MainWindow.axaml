@@ -7,6 +7,11 @@
         x:Class="Retro_ML.Application.Views.MainWindow"
         Icon="/Assets/logo.ico"
         Title="Retro Games Machine Learning"
-		Content="{Binding Content}"
 		Closed="HandleWindowClosed">
+	<DockPanel LastChildFill="True">
+		<Menu DockPanel.Dock="Top" IsVisible="False">
+			<MenuItem Command="{Binding OpenDebug}" HotKey="F2"/>
+		</Menu>
+		<ContentControl Content="{Binding Content}" DockPanel.Dock="Bottom"/>
+	</DockPanel>
 </Window>
