@@ -89,10 +89,6 @@ internal class DebugWindowViewModel : ViewModelBase, IDisposable
     {
         while (!shouldStop)
         {
-            DebugInfo.AddInfo("prio -1", "val-1", "prios", -1);
-            DebugInfo.AddInfo("priority -20", "val-2", "prios", -20);
-            DebugInfo.AddInfo("prio 3", "val-3", "prios", 3);
-            DebugInfo.AddInfo("prio 1", "val-4", "prios", 1);
             Thread.Sleep(TimeSpan.FromSeconds(sleepTime));
             timeSinceLastUpdate += sleepTime;
             if (timeSinceLastUpdate >= 1.0 / RefreshRate)
