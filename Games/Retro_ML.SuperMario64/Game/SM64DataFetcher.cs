@@ -43,8 +43,8 @@ internal class SM64DataFetcher : IDataFetcher
         DebugInfo.AddInfo("Mario Z Speed", GetMarioZSpeed().ToString(), "Mario");
         DebugInfo.AddInfo("Mario Horizontal Speed", GetMarioHorizontalSpeed().ToString(), "Mario");
         DebugInfo.AddInfo("Mario Ground Offset", GetMarioGroundOffset().ToString(), "Mario");
-        DebugInfo.AddInfo("Coin Count", GetCoinCount().ToString(), "Collected");
-        DebugInfo.AddInfo("Star Count", GetCoinCount().ToString(), "Collected");
+        DebugInfo.AddInfo("Coin Count", GetCoinCount().ToString(), "Collected", priority: 1);
+        DebugInfo.AddInfo("Star Count", GetStarCount().ToString(), "Collected", priority: 1);
 
         InitFrameCache();
     }
