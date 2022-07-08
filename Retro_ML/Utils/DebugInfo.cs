@@ -6,9 +6,19 @@ namespace Retro_ML.Utils;
 /// </summary>
 public static class DebugInfo
 {
+    private const string DEFAULT_CATEGORY = "None";
+
+    private struct DebugInfoEntry
+    {
+        public string Name;
+        public string Value;
+        public string Category;
+        public int Priority;
+    }
+
     private static bool isDebug = false;
     private static readonly Mutex mutex = new();
-    private static readonly Dictionary<string, string> infos = new();
+    private static readonly List<DebugInfoEntry> infos = new();
 
     /// <summary>
     /// Deletes all stored information
@@ -22,49 +32,49 @@ public static class DebugInfo
     }
 
     /// <summary>
-    /// Adds new information to preview.
+    /// Adds new information to preview. A lower <paramref name="priority"/> means that the value will show up first.
     /// </summary>
     [Conditional("DEBUG")]
-    public static void AddInfo(string key, string value)
+    public static void AddInfo(string name, string value, string category = DEFAULT_CATEGORY, int priority = 0)
     {
         _ = mutex.WaitOne();
-        infos[key] = value;
+        _ = infos.RemoveAll(e => e.Name == name);
+        infos.Add(new DebugInfoEntry() { Name = name, Value = value, Category = category, Priority = priority });
         mutex.ReleaseMutex();
     }
 
     /// <summary>
-    /// Returns all information to preview
+    /// Returns the formatted string for all the logged info so far. Filters by <paramref name="category"/> if not null
     /// </summary>
-    public static IEnumerable<KeyValuePair<string, string>> GetInfo()
-    {
-        if (IsDebug)
-        {
-            _ = mutex.WaitOne();
-            var res = infos.AsEnumerable();
-            mutex.ReleaseMutex();
-            return res;
-        }
-        else
-        {
-            return Enumerable.Empty<KeyValuePair<string, string>>();
-        }
-    }
-
-    public static string GetFormattedInfo()
+    /// <param name="category"></param>
+    /// <returns></returns>
+    public static string GetFormattedInfo(params string[] categories)
     {
         _ = mutex.WaitOne();
         string res = string.Empty;
 
         var entries = infos.ToList();
-        int keyMaxLength = infos.Count == 0 ? 0 : infos.Max((i) => i.Key.Length);
+        int keyMaxLength = infos.Count == 0 ? 0 : infos.Max((i) => i.Name.Length);
 
-        foreach (var entry in infos)
+        foreach (var entry in infos.Where(i => categories.Length == 0 || categories.Contains(i.Category)).OrderBy(i => i.Priority))
         {
-            res += $"{entry.Key.PadLeft(keyMaxLength, ' ')} = {entry.Value}";
+            res += $"{entry.Name.PadLeft(keyMaxLength, ' ')} = {entry.Value}\n";
         }
 
         mutex.ReleaseMutex();
         return res;
+    }
+
+    /// <summary>
+    /// Returns the current categories for all the stored entries
+    /// </summary>
+    public static string[] GetCategories()
+    {
+        HashSet<string> categories = new() { DEFAULT_CATEGORY };
+
+        categories.UnionWith(infos.Select(i => i.Category));
+
+        return categories.ToArray();
     }
 
     /// <summary>

@@ -2,6 +2,7 @@
 using ReactiveUI;
 using Retro_ML.Utils;
 using System;
+using System.Collections.Generic;
 using System.Threading;
 
 namespace Retro_ML.Application.ViewModels;
@@ -13,14 +14,41 @@ internal class DebugWindowViewModel : ViewModelBase, IDisposable
     private double timeSinceLastUpdate = 0;
 
     private int refreshRate = 10;
-    public int RefreshRate { get => refreshRate; set => this.RaiseAndSetIfChanged(ref refreshRate, value); }
+    public int RefreshRate
+    {
+        get => refreshRate;
+        set
+        {
+            this.RaiseAndSetIfChanged(ref refreshRate, value);
+            IsRefreshVisible = value == 0;
+        }
+    }
 
     private string debugText = "";
     public string DebugText { get => debugText; set => this.RaiseAndSetIfChanged(ref debugText, value); }
 
+    private string[] categories;
+    public string[] Categories { get => categories; set => this.RaiseAndSetIfChanged(ref categories, value); }
+
+    private List<string> selectedCategories;
+    public List<string> SelectedCategories
+    {
+        get => selectedCategories;
+        set
+        {
+            this.RaiseAndSetIfChanged(ref selectedCategories, value);
+            Refresh();
+        }
+    }
+
+    private bool isRefreshVisible;
+    public bool IsRefreshVisible { get => isRefreshVisible; set => this.RaiseAndSetIfChanged(ref isRefreshVisible, value); }
+
     public DebugWindowViewModel()
     {
         _ = sem.WaitOne();
+        categories = Array.Empty<string>();
+        selectedCategories = new();
         new Thread(RefreshLoop).Start();
     }
 
@@ -43,6 +71,12 @@ internal class DebugWindowViewModel : ViewModelBase, IDisposable
         DebugText = string.Empty;
     }
 
+    public void Refresh()
+    {
+        Categories = DebugInfo.GetCategories();
+        DebugText = DebugInfo.GetFormattedInfo(selectedCategories.ToArray());
+    }
+
     public void Dispose()
     {
         shouldStop = true;
@@ -55,11 +89,15 @@ internal class DebugWindowViewModel : ViewModelBase, IDisposable
     {
         while (!shouldStop)
         {
+            DebugInfo.AddInfo("prio -1", "val-1", "prios", -1);
+            DebugInfo.AddInfo("priority -20", "val-2", "prios", -20);
+            DebugInfo.AddInfo("prio 3", "val-3", "prios", 3);
+            DebugInfo.AddInfo("prio 1", "val-4", "prios", 1);
             Thread.Sleep(TimeSpan.FromSeconds(sleepTime));
             timeSinceLastUpdate += sleepTime;
             if (timeSinceLastUpdate >= 1.0 / RefreshRate)
             {
-                DebugText = DebugInfo.GetFormattedInfo();
+                Refresh();
                 timeSinceLastUpdate = 0;
             }
         }
