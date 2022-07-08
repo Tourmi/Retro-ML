@@ -2,6 +2,7 @@
 using Retro_ML.Configuration;
 using Retro_ML.Game;
 using Retro_ML.Neural.Memory;
+using Retro_ML.Utils;
 using System.Diagnostics;
 using System.Net.Sockets;
 
@@ -133,6 +134,7 @@ namespace Retro_ML.Emulator
         {
             arduinoPreviewer?.SendInput(input.ToArduinoBytes());
             SendCommand(Commands.SEND_INPUT, input.GetString());
+            DebugInfo.AddInfo("Input sent to emulator", input.GetString());
         }
 
         public void Dispose()
