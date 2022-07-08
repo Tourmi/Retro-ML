@@ -34,17 +34,19 @@ internal class SM64DataFetcher : IDataFetcher
     {
         frameCache.Clear();
         internalClock.NextFrame();
-
-        DebugInfo.AddInfo("Mario X Pos", GetMarioX().ToString(), "Mario");
-        DebugInfo.AddInfo("Mario Y Pos", GetMarioY().ToString(), "Mario");
-        DebugInfo.AddInfo("Mario Z Pos", GetMarioZ().ToString(), "Mario");
-        DebugInfo.AddInfo("Mario X Speed", GetMarioXSpeed().ToString(), "Mario");
-        DebugInfo.AddInfo("Mario Y Speed", GetMarioYSpeed().ToString(), "Mario");
-        DebugInfo.AddInfo("Mario Z Speed", GetMarioZSpeed().ToString(), "Mario");
-        DebugInfo.AddInfo("Mario Horizontal Speed", GetMarioHorizontalSpeed().ToString(), "Mario");
-        DebugInfo.AddInfo("Mario Ground Offset", GetMarioGroundOffset().ToString(), "Mario");
-        DebugInfo.AddInfo("Coin Count", GetCoinCount().ToString(), "Collected", priority: 1);
-        DebugInfo.AddInfo("Star Count", GetStarCount().ToString(), "Collected", priority: 1);
+        int currPrio = 1;
+        DebugInfo.AddInfo("Mario X Pos", GetMarioX().ToString(), "Mario", currPrio++);
+        DebugInfo.AddInfo("Mario Y Pos", GetMarioY().ToString(), "Mario", currPrio++);
+        DebugInfo.AddInfo("Mario Z Pos", GetMarioZ().ToString(), "Mario", currPrio++);
+        DebugInfo.AddInfo("Mario X Speed", GetMarioXSpeed().ToString(), "Mario", currPrio++);
+        DebugInfo.AddInfo("Mario Y Speed", GetMarioYSpeed().ToString(), "Mario", currPrio++);
+        DebugInfo.AddInfo("Mario Z Speed", GetMarioZSpeed().ToString(), "Mario", currPrio++);
+        DebugInfo.AddInfo("Mario Horizontal Speed", GetMarioHorizontalSpeed().ToString(), "Mario", currPrio++);
+        DebugInfo.AddInfo("Mario Ground Offset", GetMarioGroundOffset().ToString(), "Mario", currPrio++);
+        DebugInfo.AddInfo("Mario Health", GetMarioHealth().ToString(), "Mario", currPrio++);
+        DebugInfo.AddInfo("Mario Cap Status", Convert.ToString(GetMarioCapFlags(), 2).PadLeft(16, '0').Insert(8, " "), "Mario", currPrio++);
+        DebugInfo.AddInfo("Coin Count", GetCoinCount().ToString(), "Collected", currPrio++);
+        DebugInfo.AddInfo("Star Count", GetStarCount().ToString(), "Collected", currPrio++);
 
         InitFrameCache();
     }
@@ -68,7 +70,9 @@ internal class SM64DataFetcher : IDataFetcher
     public float GetMarioYSpeed() => ReadFloat(Mario.YSpeed);
     public float GetMarioZSpeed() => ReadFloat(Mario.ZSpeed);
     public float GetMarioHorizontalSpeed() => ReadFloat(Mario.HorizontalSpeed);
-    public float GetMarioGroundOffset() => ReadByte(Mario.GroundOffset);
+    public ushort GetMarioCapFlags() => (ushort)ReadULong(Mario.HatFlags);
+    public byte GetMarioHealth() => ReadByte(Mario.Health);
+    public sbyte GetMarioGroundOffset() => (sbyte)ReadByte(Mario.GroundOffset);
     public ushort GetCoinCount() => (ushort)ReadULong(Mario.Coins);
     public ushort GetStarCount() => (ushort)ReadULong(Progress.StarCount);
 
@@ -213,6 +217,16 @@ internal class SM64DataFetcher : IDataFetcher
     {
         List<AddressData> toRead = new()
         {
+            Mario.XPos,
+            Mario.YPos,
+            Mario.ZPos,
+            Mario.XSpeed,
+            Mario.YSpeed,
+            Mario.ZSpeed,
+            Mario.HorizontalSpeed,
+            Mario.Coins,
+            Mario.HatFlags,
+            Progress.StarCount
         };
 
         _ = Read(toRead.ToArray());

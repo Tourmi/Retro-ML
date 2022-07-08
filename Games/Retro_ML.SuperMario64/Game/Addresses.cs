@@ -75,11 +75,22 @@ internal static class Addresses
         /// <summary>
         /// Mario's current hat flags
         /// <code>
-        /// ?? - Regular cap
-        /// ?? - no cap
-        /// ?? - vanish cap
-        /// ?? - wings cap
-        /// ?? - metal cap
+        /// bit  0 : On head? Regular cap?
+        /// bit  1 : Vanish
+        /// bit  2 : Metal
+        /// bit  3 : Wing
+        /// bit  4 : On head?
+        /// bit  5 : In hand?
+        /// bit  6 : 
+        /// bit  7 : 
+        /// bit  8 : Starts at 0, set to 1 when mario jumps
+        /// bit  9 : 
+        /// bit 10 : 
+        /// bit 11 : 
+        /// bit 12 : 
+        /// bit 13 : 
+        /// bit 14 : 
+        /// bit 15 : 
         /// </code>
         /// </summary>
         public static readonly AddressData HatFlags = new(0x8033B176, 2);
