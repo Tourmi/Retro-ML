@@ -2,6 +2,7 @@
 using Retro_ML.Emulator;
 using Retro_ML.Game;
 using Retro_ML.SuperMario64.Configuration;
+using Retro_ML.SuperMario64.Game.Data;
 using Retro_ML.Utils;
 using static Retro_ML.SuperMario64.Game.Addresses;
 
@@ -12,6 +13,8 @@ namespace Retro_ML.SuperMario64.Game;
 /// </summary>
 internal class SM64DataFetcher : IDataFetcher
 {
+    private const ushort COLLISION_TRI_SIZE = 0x30;
+
     private readonly IEmulatorAdapter emulator;
     private readonly Dictionary<uint, byte[]> frameCache;
     private readonly Dictionary<uint, byte[]> levelCache;
@@ -75,6 +78,28 @@ internal class SM64DataFetcher : IDataFetcher
     public sbyte GetMarioGroundOffset() => (sbyte)ReadByte(Mario.GroundOffset);
     public ushort GetCoinCount() => (ushort)ReadULong(Mario.Coins);
     public ushort GetStarCount() => (ushort)ReadULong(Progress.StarCount);
+
+    public ushort GetStaticTriangleCount() => (ushort)ReadULong(Collision.StaticTriangleCount);
+    public ushort GetTriangleCount() => (ushort)ReadULong(Collision.TotalTriangleCount);
+    public ushort GetDynamicTriangleCount() => (ushort)(GetTriangleCount() - GetStaticTriangleCount());
+
+    /// <summary>
+    /// Returns the level's static triangles
+    /// </summary>
+    public IEnumerable<CollisionTri> GetStaticTris()
+    {
+        ushort staticTriCount = GetStaticTriangleCount();
+        uint pointer = (uint)ReadULong(Collision.TrianglesListPointer);
+        var bytes = Read(new AddressData(pointer, (ushort)(staticTriCount * COLLISION_TRI_SIZE), AddressData.CacheDurations.Level));
+
+        var tris = new List<CollisionTri>();
+        for (int i = 0; i < bytes.Length; i += COLLISION_TRI_SIZE)
+        {
+            tris.Add(new(bytes[i..(i + COLLISION_TRI_SIZE)]));
+        }
+
+        return tris;
+    }
 
     /// <summary>
     /// Reads a single byte from the emulator's memory
