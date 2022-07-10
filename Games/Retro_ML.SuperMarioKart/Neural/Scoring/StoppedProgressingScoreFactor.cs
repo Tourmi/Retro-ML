@@ -32,19 +32,16 @@ namespace Retro_ML.SuperMarioKart.Neural.Scoring
 
         public object this[string fieldName]
         {
-            get
+            get => fieldName switch
             {
-                return fieldName switch
-                {
-                    nameof(MaxTimeWithoutProgress) => MaxTimeWithoutProgress,
-                    _ => 0,
-                };
-            }
+                nameof(MaxTimeWithoutProgress) => MaxTimeWithoutProgress,
+                _ => 0,
+            };
             set
             {
                 switch (fieldName)
                 {
-                    case nameof(MaxTimeWithoutProgress): MaxTimeWithoutProgress = (int)value; break;
+                    case nameof(MaxTimeWithoutProgress): MaxTimeWithoutProgress = (double)value; break;
                 }
             }
         }
