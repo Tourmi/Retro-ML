@@ -124,11 +124,16 @@ internal class SM64DataFetcher : IDataFetcher
         return value;
     }
 
+    /// <summary>
+    /// Reads 4 bytes from the address into a float number.
+    /// </summary>
+    /// <param name="addressData"></param>
+    /// <returns></returns>
     private float ReadFloat(AddressData addressData)
     {
         var bytes = Read(addressData);
         //We need to reverse the bytes if the current system is little endian
-        if (BitConverter.IsLittleEndian) bytes = bytes.Reverse().ToArray();
+        if (BitConverter.IsLittleEndian) Array.Reverse(bytes);
 
         return BitConverter.ToSingle(bytes);
     }
