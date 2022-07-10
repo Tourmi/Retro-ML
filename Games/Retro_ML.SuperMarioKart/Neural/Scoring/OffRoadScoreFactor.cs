@@ -38,19 +38,16 @@ internal class OffRoadScoreFactor : IScoreFactor
 
     public object this[string fieldName]
     {
-        get
+        get => fieldName switch
         {
-            return fieldName switch
-            {
-                nameof(StopAfter) => StopAfter,
-                _ => 0,
-            };
-        }
+            nameof(StopAfter) => StopAfter,
+            _ => 0,
+        };
         set
         {
             switch (fieldName)
             {
-                case nameof(StopAfter): StopAfter = (int)value; break;
+                case nameof(StopAfter): StopAfter = (double)value; break;
             }
         }
     }
