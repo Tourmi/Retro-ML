@@ -27,6 +27,10 @@ function read_memory(addr, count)
     return memory.read_bytes_as_array(addr, count)
 end
 
+function write_memory(addr, value)
+    memory.writebyte(addr, value)
+end
+
 function parseCommand(cmd)
     if string.find(cmd, "exit ") then
         okay()
@@ -73,6 +77,15 @@ function parseCommand(cmd)
             end
         end
         
+        okay()
+        return
+    end
+    if string.find(cmd, "write_memory ") then
+        local updated_cmd = string.sub(cmd, 14)
+        local space_index = string.find(updated_cmd, " ")
+        local addr = string.sub(updated_cmd, 1, space_index)
+        local value = string.sub(updated_cmd, space_index + 1)
+        write_memory(tonumber(addr), tonumber(value))    
         okay()
         return
     end

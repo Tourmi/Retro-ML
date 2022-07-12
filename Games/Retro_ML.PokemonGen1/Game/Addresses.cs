@@ -12,7 +12,7 @@ internal static class Addresses
     {
         public enum CacheDurations
         {
-            Frame,
+            NoCache,
             Turn,
             Battle
         }
@@ -31,6 +31,24 @@ internal static class Addresses
         public bool IsBigEndian;
     }
 
+    /// <summary>
+    /// When equals to 9: Fight is selected
+    /// </summary>
+    public static readonly AddressData FightCursor = new(0xCC26, cacheDuration: AddressData.CacheDurations.NoCache);
+
+    public static class WildEncounters
+    {
+        public static readonly AddressData Encounter1 = new(0xD889);
+        public static readonly AddressData Encounter2 = new(0xD88B);
+        public static readonly AddressData Encounter3 = new(0xD88D);
+        public static readonly AddressData Encounter4 = new(0xD88F);
+        public static readonly AddressData Encounter5 = new(0xD891);
+        public static readonly AddressData Encounter6 = new(0xD893);
+        public static readonly AddressData Encounter7 = new(0xD895);
+        public static readonly AddressData Encounter8 = new(0xD897);
+        public static readonly AddressData Encounter9 = new(0xD899);
+        public static readonly AddressData Encounter10 = new(0xD89B);
+    }
 
     public static class PlayerPokemons
     {
@@ -51,11 +69,16 @@ internal static class Addresses
 
     public static class CurrentPokemon
     {
-        public static readonly AddressData CurrentHP = new(0xD015, 2, isBigEndian:true);
+        public static readonly AddressData CurrentHP = new(0xD015, 2, AddressData.CacheDurations.NoCache, isBigEndian: true);
 
         public static readonly AddressData StatusEffect = new(0xD018);
 
-        public static readonly AddressData MaxHP = new(0xD023, 2, isBigEndian:true);
+        public static readonly AddressData MaxHP = new(0xD023, 2, isBigEndian: true);
+
+        /// <summary>
+        /// Each byte represents one move's current PP
+        /// </summary>
+        public static readonly AddressData MovesCurrentPP = new(0xD02D, 4);
 
         /// <summary>
         /// Types Summary 
@@ -127,12 +150,16 @@ internal static class Addresses
 
         public static readonly AddressData SelectedMovePower = new(0xCFD4);
 
+        public static readonly AddressData Move1ID = new(0xD01C);
+        public static readonly AddressData Move2ID = new(0xD01D);
+        public static readonly AddressData Move3ID = new(0xD01E);
+        public static readonly AddressData Move4ID = new(0xD01F);
 
     }
 
     public static class OpposingPokemon
     {
-        public static readonly AddressData CurrentHP = new(0xCFE6, 2, isBigEndian: true);
+        public static readonly AddressData CurrentHP = new(0xCFE6, 2, AddressData.CacheDurations.NoCache, isBigEndian: true);
 
         public static readonly AddressData MaxHP = new(0xCFF4, 2, isBigEndian: true);
 
@@ -187,6 +214,8 @@ internal static class Addresses
         /// 
         /// </summary>
         public static readonly AddressData StatusEffect = new(0xCFE9);
+
+        public static readonly AddressData PokemonIDToLoad = new(0xCFD8);
 
     }
 }

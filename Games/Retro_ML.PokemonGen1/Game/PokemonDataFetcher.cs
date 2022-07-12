@@ -16,10 +16,10 @@ internal class PokemonDataFetcher : IDataFetcher
 {
     private const int MAXIMUM_SLEEP_COUNTER = 7;
 
-    private bool IsPokemonYellow = true;
+    public bool IsPokemonYellow { get; private set; } = true;
 
     private readonly IEmulatorAdapter emulator;
-    private readonly Dictionary<uint, byte[]> frameCache;
+    private readonly Dictionary<uint, byte[]> fakeCache;
     private readonly Dictionary<uint, byte[]> turnCache;
     private readonly Dictionary<uint, byte[]> battleCache;
     private readonly PokemonPluginConfig pluginConfig;
@@ -28,7 +28,7 @@ internal class PokemonDataFetcher : IDataFetcher
     public PokemonDataFetcher(IEmulatorAdapter emulator, NeuralConfig neuralConfig, PokemonPluginConfig pluginConfig)
     {
         this.emulator = emulator;
-        frameCache = new();
+        fakeCache = new();
         turnCache = new();
         battleCache = new();
         this.pluginConfig = pluginConfig;
@@ -40,7 +40,7 @@ internal class PokemonDataFetcher : IDataFetcher
     /// </summary>
     public void NextFrame()
     {
-        frameCache.Clear();
+        fakeCache.Clear();
         internalClock.NextFrame();
 
         InitFrameCache();
@@ -51,7 +51,7 @@ internal class PokemonDataFetcher : IDataFetcher
     /// </summary>
     public void NextState()
     {
-        frameCache.Clear();
+        fakeCache.Clear();
 
         IsPokemonYellow = false;
         IsPokemonYellow = (ReadSingle(PlayerPokemons.EndOfList) != 0x0);
@@ -63,13 +63,23 @@ internal class PokemonDataFetcher : IDataFetcher
 
     public byte GetOpposingPokemonStatusEffect() => ReadSingle(OpposingPokemon.StatusEffect);
     public double GetOpposingPokemonSleep() => (ReadSingle(OpposingPokemon.StatusEffect) & 0b0000_0111) / (double)MAXIMUM_SLEEP_COUNTER;
-    public bool GetOpposingPokemonParalysis() => ReadSingle(OpposingPokemon.StatusEffect) == 64;
+    public bool GetOpposingPokemonParalysis() => (ReadSingle(OpposingPokemon.StatusEffect) & 0b0100_0000) != 0;
+    public bool GetOpposingPokemonFrozen() => (ReadSingle(OpposingPokemon.StatusEffect) & 0b0010_0000) != 0;
+    public bool GetOpposingPokemonBurned() => (ReadSingle(OpposingPokemon.StatusEffect) & 0b0001_0000) != 0;
+    public bool GetOpposingPokemonPoisoned() => (ReadSingle(OpposingPokemon.StatusEffect) & 0b0000_1000) != 0;
     public bool IsSuperEffective() => GetMultiplier() >= 2;
+    public bool IsNotVeryEffective() => GetMultiplier() < 1;
     public bool IsSTAB() => ReadSingle(CurrentPokemon.SelectedMoveType) == ReadSingle(CurrentPokemon.Type1) || ReadSingle(CurrentPokemon.SelectedMoveType) == ReadSingle(CurrentPokemon.Type2);
     public double OpposingCurrentHP() => ReadULong(OpposingPokemon.CurrentHP) / ReadULong(OpposingPokemon.MaxHP);
-    public bool WonFight() => ReadSingle(OpposingPokemon.CurrentHP) == 0;
-    public bool LostFight() => ReadSingle(CurrentPokemon.CurrentHP) == 0;
+    public bool WonFight() => ReadULong(OpposingPokemon.CurrentHP) == 0;
+    public bool LostFight() => ReadULong(CurrentPokemon.CurrentHP) == 0;
     public double SelectedMovePower() => ReadSingle(CurrentPokemon.SelectedMovePower) / 170.0;
+    public bool Move1Exists() => ReadSingle(CurrentPokemon.Move1ID) != 0;
+    public bool Move2Exists() => ReadSingle(CurrentPokemon.Move2ID) != 0;
+    public bool Move3Exists() => ReadSingle(CurrentPokemon.Move3ID) != 0;
+    public bool Move4Exists() => ReadSingle(CurrentPokemon.Move4ID) != 0;
+    public bool IsFightOptionSelected() => ReadSingle(FightCursor) == 9;
+    public byte GetMoveCurrentPP(int index) => Read(CurrentPokemon.MovesCurrentPP)[index];
 
     public double GetMultiplier()
     {
@@ -215,13 +225,20 @@ internal class PokemonDataFetcher : IDataFetcher
     /// </summary>
     /// <param name="addressData"></param>
     /// <returns></returns>
-    private Dictionary<uint, byte[]> GetCacheToUse(AddressData addressData) => addressData.CacheDuration switch
+    private Dictionary<uint, byte[]> GetCacheToUse(AddressData addressData)
     {
-        AddressData.CacheDurations.Frame => frameCache,
-        AddressData.CacheDurations.Turn => turnCache,
-        AddressData.CacheDurations.Battle => battleCache,
-        _ => frameCache,
-    };
+        if(addressData.CacheDuration == AddressData.CacheDurations.NoCache)
+        {
+            fakeCache.Clear();
+        }
+        return addressData.CacheDuration switch
+        {
+            AddressData.CacheDurations.NoCache => fakeCache,
+            AddressData.CacheDurations.Turn => turnCache,
+            AddressData.CacheDurations.Battle => battleCache,
+            _ => fakeCache,
+        };
+    }
 
     private void InitFrameCache()
     {
