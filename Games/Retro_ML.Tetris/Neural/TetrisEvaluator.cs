@@ -2,6 +2,7 @@
 using Retro_ML.Emulator;
 using Retro_ML.Neural;
 using Retro_ML.Neural.Scoring;
+using Retro_ML.Tetris.Configuration;
 using SharpNeat.BlackBox;
 
 namespace Retro_ML.Tetris.Neural;
@@ -19,14 +20,21 @@ internal class TetrisEvaluator : DefaultEvaluator
 
     protected override void DoSaveState(IBlackBox<double> phenome, Score score, string state)
     {
-        emulator!.LoadState(Path.GetFullPath(state));
-        WaitThenStart();
-        emulator.NextFrame();
-        dataFetcher!.NextState();
+        for (int i = 0; i < ((TetrisPluginConfig)appConfig.GamePluginConfig!).NbAttempts; i++)
+        {
+            if (ShouldStop)
+            {
+                break;
+            }
+            emulator!.LoadState(Path.GetFullPath(state));
+            WaitThenStart();
+            emulator.NextFrame();
+            dataFetcher!.NextState();
 
-        DoEvaluationLoop(phenome, score);
+            DoEvaluationLoop(phenome, score);
 
-        score.LevelDone();
+            score.LevelDone();
+        }
     }
 
     private void WaitThenStart()
