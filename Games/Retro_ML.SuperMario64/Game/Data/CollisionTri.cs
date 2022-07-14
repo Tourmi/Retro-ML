@@ -1,4 +1,10 @@
-﻿namespace Retro_ML.SuperMario64.Game.Data;
+﻿using Retro_ML.Utils.Game.Geometry3D;
+
+namespace Retro_ML.SuperMario64.Game.Data;
+
+/// <summary>
+/// Struct representing a single collision triangle in SM64 memory.
+/// </summary>
 internal struct CollisionTri
 {
     public byte SurfaceType { get; private set; }
@@ -70,6 +76,12 @@ internal struct CollisionTri
 
         AssociatedObjectAddress = GetUint(bytes[offset..(offset + 4)]);
     }
+
+    public bool IsGround => NormalY > 0.01;
+    public bool IsCeiling => NormalY < -0.01;
+    public bool IsWall => !IsGround && !IsCeiling;
+
+    public Triangle Triangle => new(new(Vertex1X, Vertex1Y, Vertex1Z), new(Vertex2X, Vertex2Y, Vertex2Z), new(Vertex3X, Vertex3Y, Vertex3Z), new(NormalX, NormalY, NormalZ));
 
     private static short GetShort(byte[] bytes)
     {

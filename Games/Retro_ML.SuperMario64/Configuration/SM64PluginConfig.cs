@@ -6,6 +6,7 @@ using Retro_ML.Neural.Scoring;
 using Retro_ML.SuperMario64.Game;
 using Retro_ML.SuperMario64.Neural.Scoring;
 using Retro_ML.Utils;
+using Retro_ML.Utils.Game;
 
 namespace Retro_ML.SuperMario64.Configuration;
 
@@ -13,6 +14,7 @@ internal class SM64PluginConfig : IGamePluginConfig
 {
     private static readonly bool[] DEFAULT_ENABLED_STATES = new bool[]
     {
+        true, //collision
         false, //clock
         true, //bias
 
@@ -36,8 +38,11 @@ internal class SM64PluginConfig : IGamePluginConfig
 
     public FieldInfo[] Fields => new FieldInfo[]
     {
-        new IntegerFieldInfo(nameof(ViewDistance), "View distance", 1, 8, 1, "Distance the AI can see around itself"),
-        new IntegerChoiceFieldInfo(nameof(Raycount), "Raycast count", new int[] { 4, 8, 16, 32, 64 }, "Amount of vision rays to cast around Mario"),
+        new IntegerFieldInfo(nameof(ViewDistance), "View distance", 1, 10_000, 100, "Distance the AI can see around itself"),
+        new IntegerChoiceFieldInfo(nameof(SolidVerticalRays), "Solid Vertical Rays", new int[] { 1, 3, 5, 7, 9, 11, 13, 15 }, "How many rows of rays to throw for solid tris"),
+        new IntegerFieldInfo(nameof(SolidVerticalViewAngle), "Solid Vertical View Angle", 1, 180, 15, "Vertical angle at which the AI can see solid tris"),
+        new IntegerChoiceFieldInfo(nameof(SolidHorizontalRays), "Solid Horizontal Rays", new int[] { 1, 3, 5, 7, 9, 11, 13, 15 }, "How many column of rays to throw for solid tris"),
+        new IntegerFieldInfo(nameof(SolidHorizontalViewAngle), "Solid Horizontal View Angle", 1, 360, 15, "Horizontal angle at which the AI can see solid tris"),
         new IntegerFieldInfo(nameof(InternalClockTickLength), "Internal Clock Tick Length (Frames)", 1, 3600, 1, "Length of a single tick for the internal clock"),
         new IntegerChoiceFieldInfo(nameof(InternalClockLength), "Internal Clock Length", new int[] {1,2,3,4,5,6,7,8,16 }, "Amount of nodes for the internal clock"),
         new IntegerFieldInfo(nameof(FrameSkip), "Frames to skip", 0, 15, 1, "Amount of frames to skip for every AI evaluation"),
@@ -48,7 +53,10 @@ internal class SM64PluginConfig : IGamePluginConfig
         get => fieldName switch
         {
             nameof(ViewDistance) => ViewDistance,
-            nameof(Raycount) => Raycount,
+            nameof(SolidVerticalRays) => SolidVerticalRays,
+            nameof(SolidVerticalViewAngle) => SolidVerticalViewAngle,
+            nameof(SolidHorizontalRays) => SolidHorizontalRays,
+            nameof(SolidHorizontalViewAngle) => SolidHorizontalViewAngle,
             nameof(InternalClockLength) => InternalClockLength,
             nameof(InternalClockTickLength) => InternalClockTickLength,
             nameof(FrameSkip) => FrameSkip,
@@ -59,7 +67,10 @@ internal class SM64PluginConfig : IGamePluginConfig
             switch (fieldName)
             {
                 case nameof(ViewDistance): ViewDistance = (int)value; break;
-                case nameof(Raycount): Raycount = (int)value; break;
+                case nameof(SolidVerticalRays): SolidVerticalRays = (int)value; break;
+                case nameof(SolidVerticalViewAngle): SolidVerticalViewAngle = (int)value; break;
+                case nameof(SolidHorizontalRays): SolidHorizontalRays = (int)value; break;
+                case nameof(SolidHorizontalViewAngle): SolidHorizontalViewAngle = (int)value; break;
                 case nameof(InternalClockLength): InternalClockLength = (int)value; break;
                 case nameof(InternalClockTickLength): InternalClockTickLength = (int)value; break;
                 case nameof(FrameSkip): FrameSkip = (int)value; break;
@@ -70,11 +81,12 @@ internal class SM64PluginConfig : IGamePluginConfig
     /// <summary>
     /// How many tiles ahead we can see
     /// </summary>
-    public int ViewDistance { get; set; } = 8;
-    /// <summary>
-    /// The amount of rays to send out
-    /// </summary>
-    public int Raycount { get; set; } = 16;
+    public int ViewDistance { get; set; } = 500;
+
+    public int SolidVerticalRays { get; set; } = 5;
+    public int SolidVerticalViewAngle { get; set; } = 165;
+    public int SolidHorizontalRays { get; set; } = 5;
+    public int SolidHorizontalViewAngle { get; set; } = 180;
 
     /// <summary>
     /// The amount of inputs for the internal clock.
@@ -87,7 +99,7 @@ internal class SM64PluginConfig : IGamePluginConfig
     /// <summary>
     /// Skips this amount of frames for every neural network updates.
     /// </summary>
-    public int FrameSkip { get; set; } = 1;
+    public int FrameSkip { get; set; } = 5;
 
     public List<IScoreFactor> ScoreFactors { get; set; }
 
@@ -105,7 +117,10 @@ internal class SM64PluginConfig : IGamePluginConfig
         ScoreFactors = cfg.ScoreFactors;
 
         ViewDistance = cfg.ViewDistance;
-        Raycount = cfg.Raycount;
+        SolidVerticalRays = cfg.SolidVerticalRays;
+        SolidVerticalViewAngle = cfg.SolidVerticalViewAngle;
+        SolidHorizontalRays = cfg.SolidHorizontalRays;
+        SolidHorizontalViewAngle = cfg.SolidHorizontalViewAngle;
         InternalClockLength = cfg.InternalClockLength;
         InternalClockTickLength = cfg.InternalClockTickLength;
         FrameSkip = cfg.FrameSkip;
@@ -118,6 +133,18 @@ internal class SM64PluginConfig : IGamePluginConfig
             neuralConfig.EnabledStates = DEFAULT_ENABLED_STATES;
         neuralConfig.InputNodes.Clear();
 
+        neuralConfig.InputNodes.Add(new InputNode(
+            "Solid collision",
+            neuralConfig.EnabledStates[enabledIndex++],
+            (dataFetcher) => Raycast3D.GetRayDistances(SolidVerticalRays,
+                                                       SolidHorizontalRays,
+                                                       SolidVerticalViewAngle / 360f,
+                                                       SolidHorizontalViewAngle / 360f,
+                                                       ViewDistance,
+                                                       ((SM64DataFetcher)dataFetcher).GetMarioForwardRay(),
+                                                       ((SM64DataFetcher)dataFetcher).GetStaticCollision()),
+            SolidHorizontalRays,
+            SolidVerticalRays));
         neuralConfig.InputNodes.Add(new InputNode("Internal Clock", neuralConfig.EnabledStates[enabledIndex++], (dataFetcher) => ((SM64DataFetcher)dataFetcher).GetInternalClockState(), Math.Min(8, InternalClockLength), Math.Max(1, InternalClockLength / 8)));
         neuralConfig.InputNodes.Add(new InputNode("Bias", neuralConfig.EnabledStates[enabledIndex++], (dataFetcher) => true));
 

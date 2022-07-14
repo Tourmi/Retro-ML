@@ -141,6 +141,10 @@ internal static class Addresses
         /// Mario's current horizontal speed, as a float
         /// </summary>
         public static readonly AddressData HorizontalSpeed = new(0x8033B1C4, 4);
+        /// <summary>
+        /// Mario's current facing angle.
+        /// </summary>
+        public static readonly AddressData FacingAngle = new(0x8033B19E, 2);
     }
 
     /// <summary>

@@ -4,6 +4,7 @@ using Retro_ML.Game;
 using Retro_ML.SuperMario64.Configuration;
 using Retro_ML.SuperMario64.Game.Data;
 using Retro_ML.Utils;
+using Retro_ML.Utils.Game.Geometry3D;
 using static Retro_ML.SuperMario64.Game.Addresses;
 
 namespace Retro_ML.SuperMario64.Game;
@@ -20,12 +21,16 @@ internal class SM64DataFetcher : IDataFetcher
     private readonly Dictionary<uint, byte[]> levelCache;
     private readonly SM64PluginConfig pluginConfig;
     private readonly InternalClock internalClock;
+    private readonly List<IRaytracable> solidCollisionCache;
+
+    private uint prevTriListPtr;
 
     public SM64DataFetcher(IEmulatorAdapter emulator, NeuralConfig neuralConfig, SM64PluginConfig pluginConfig)
     {
         this.emulator = emulator;
         frameCache = new();
         levelCache = new();
+        solidCollisionCache = new();
         this.pluginConfig = pluginConfig;
         internalClock = new InternalClock(pluginConfig.InternalClockTickLength, pluginConfig.InternalClockLength);
     }
@@ -46,10 +51,13 @@ internal class SM64DataFetcher : IDataFetcher
         DebugInfo.AddInfo("Mario Z Speed", GetMarioZSpeed().ToString(), "Mario", currPrio++);
         DebugInfo.AddInfo("Mario Horizontal Speed", GetMarioHorizontalSpeed().ToString(), "Mario", currPrio++);
         DebugInfo.AddInfo("Mario Ground Offset", GetMarioGroundOffset().ToString(), "Mario", currPrio++);
+        DebugInfo.AddInfo("Mario Facing Angle", GetMarioFacingAngle().ToString(), "Mario", currPrio++);
         DebugInfo.AddInfo("Mario Health", GetMarioHealth().ToString(), "Mario", currPrio++);
         DebugInfo.AddInfo("Mario Cap Status", Convert.ToString(GetMarioCapFlags(), 2).PadLeft(16, '0').Insert(8, " "), "Mario", currPrio++);
         DebugInfo.AddInfo("Coin Count", GetCoinCount().ToString(), "Collected", currPrio++);
         DebugInfo.AddInfo("Star Count", GetStarCount().ToString(), "Collected", currPrio++);
+
+        DebugInfo.AddInfo("Forward", GetMarioForwardRay().ToString(), "Test", currPrio++);
 
         InitFrameCache();
     }
@@ -73,6 +81,8 @@ internal class SM64DataFetcher : IDataFetcher
     public float GetMarioYSpeed() => ReadFloat(Mario.YSpeed);
     public float GetMarioZSpeed() => ReadFloat(Mario.ZSpeed);
     public float GetMarioHorizontalSpeed() => ReadFloat(Mario.HorizontalSpeed);
+    public ushort GetMarioFacingAngle() => (ushort)ReadULong(Mario.FacingAngle);
+    public float GetMarioFacingAngleRadian() => MathF.Tau * (-(GetMarioFacingAngle() / (float)ushort.MaxValue));
     public ushort GetMarioCapFlags() => (ushort)ReadULong(Mario.HatFlags);
     public byte GetMarioHealth() => ReadByte(Mario.Health);
     public sbyte GetMarioGroundOffset() => (sbyte)ReadByte(Mario.GroundOffset);
@@ -83,22 +93,38 @@ internal class SM64DataFetcher : IDataFetcher
     public ushort GetTriangleCount() => (ushort)ReadULong(Collision.TotalTriangleCount);
     public ushort GetDynamicTriangleCount() => (ushort)(GetTriangleCount() - GetStaticTriangleCount());
 
+    public Ray GetMarioForwardRay() => new(new(GetMarioX(), GetMarioY() + 40, GetMarioZ()), Vector.Origin.WithZ(1).RotateXZ(GetMarioFacingAngleRadian()));
+
     /// <summary>
     /// Returns the level's static triangles
     /// </summary>
-    public IEnumerable<CollisionTri> GetStaticTris()
+    public IEnumerable<IRaytracable> GetStaticCollision()
     {
         ushort staticTriCount = GetStaticTriangleCount();
         uint pointer = (uint)ReadULong(Collision.TrianglesListPointer);
-        var bytes = Read(new AddressData(pointer, (ushort)(staticTriCount * COLLISION_TRI_SIZE), AddressData.CacheDurations.Level));
 
-        var tris = new List<CollisionTri>();
-        for (int i = 0; i < bytes.Length; i += COLLISION_TRI_SIZE)
+        //TODO : also check if level changed, reset cache if so.
+        if (pointer != prevTriListPtr)
         {
-            tris.Add(new(bytes[i..(i + COLLISION_TRI_SIZE)]));
+            levelCache.Clear();
+            solidCollisionCache.Clear();
+
+            if (pointer == 0) return Enumerable.Empty<IRaytracable>();
+
+            var bytes = Read(new AddressData(pointer, (ushort)(staticTriCount * COLLISION_TRI_SIZE), AddressData.CacheDurations.Level));
+
+            var tris = new List<CollisionTri>();
+            for (int i = 0; i < bytes.Length; i += COLLISION_TRI_SIZE)
+            {
+                tris.Add(new(bytes[i..(i + COLLISION_TRI_SIZE)]));
+            }
+
+            prevTriListPtr = pointer;
+
+            solidCollisionCache.AddRange(tris.Select(s => (IRaytracable)s.Triangle));
         }
 
-        return tris;
+        return solidCollisionCache;
     }
 
     /// <summary>
@@ -131,7 +157,7 @@ internal class SM64DataFetcher : IDataFetcher
     /// <returns></returns>
     private float ReadFloat(AddressData addressData)
     {
-        var bytes = Read(addressData);
+        var bytes = Read(addressData).ToArray();
         //We need to reverse the bytes if the current system is little endian
         if (BitConverter.IsLittleEndian) Array.Reverse(bytes);
 
