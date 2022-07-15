@@ -9,9 +9,8 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace Retro_ML.PokemonGen1.Neural.Scoring;
-internal class WonFightScoreFactor : IScoreFactor
+internal class FightCanceledtScoreFactor : IScoreFactor
 {
-
     private bool shouldStop = false;
     private double currScore;
 
@@ -19,7 +18,7 @@ internal class WonFightScoreFactor : IScoreFactor
     {
     };
 
-    public WonFightScoreFactor()
+    public FightCanceledtScoreFactor()
     {
         ExtraFields = Array.Empty<ExtraField>();
     }
@@ -45,11 +44,11 @@ internal class WonFightScoreFactor : IScoreFactor
 
     public double ScoreMultiplier { get; set; }
 
-    public string Name => "Won Fight";
+    public string Name => "Fight Cancelled";
 
-    public string Tooltip => "Reward applied whenever the AI wins a fight";
+    public string Tooltip => "Reward applied whenever the fight is cancelled(ex: teleport)";
 
-    public bool CanBeDisabled => false;
+    public bool CanBeDisabled => true;
 
     public bool IsDisabled { get; set; }
 
@@ -64,7 +63,7 @@ internal class WonFightScoreFactor : IScoreFactor
 
     private void Update(PokemonDataFetcher dataFetcher)
     {
-        if (dataFetcher.WonFight())
+        if (!dataFetcher.InFight())
         {
             shouldStop = true;
             currScore += ScoreMultiplier;
@@ -78,7 +77,6 @@ internal class WonFightScoreFactor : IScoreFactor
 
     public IScoreFactor Clone()
     {
-        return new WonFightScoreFactor() { IsDisabled = IsDisabled, ScoreMultiplier = ScoreMultiplier, ExtraFields = ExtraFields };
+        return new FightCanceledtScoreFactor() { IsDisabled = IsDisabled, ScoreMultiplier = ScoreMultiplier, ExtraFields = ExtraFields };
     }
 }
-

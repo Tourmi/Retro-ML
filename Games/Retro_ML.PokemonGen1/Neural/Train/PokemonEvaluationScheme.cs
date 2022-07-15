@@ -16,7 +16,7 @@ internal class PokemonEvaluationScheme : IBlackBoxEvaluationScheme<double>
 
     public int OutputCount => appConfig.NeuralConfig.GetOutputCount();
 
-    public bool IsDeterministic => false; // Change if using random states
+    public bool IsDeterministic => true; // Change if using random states
 
     public IComparer<FitnessInfo> FitnessComparer => PrimaryFitnessInfoComparer.Singleton;
 

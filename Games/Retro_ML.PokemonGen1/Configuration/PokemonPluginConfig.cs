@@ -80,6 +80,11 @@ internal class PokemonPluginConfig : IGamePluginConfig
                 {
                     IsDisabled = false,
                     ScoreMultiplier = -5
+                },
+                new FightCanceledtScoreFactor()
+                {
+                    IsDisabled = false,
+                    ScoreMultiplier = -2
                 }
         };
     }
@@ -92,6 +97,7 @@ internal class PokemonPluginConfig : IGamePluginConfig
 
         ScoreFactors = cfg.ScoreFactors;
 
+        NbFights = cfg.NbFights;
         InternalClockLength = cfg.InternalClockLength;
         InternalClockTickLength = cfg.InternalClockTickLength;
     }

@@ -36,6 +36,11 @@ internal static class Addresses
     /// </summary>
     public static readonly AddressData FightCursor = new(0xCC26, cacheDuration: AddressData.CacheDurations.NoCache);
 
+    /// <summary>
+    /// if equals 0: Not in fight
+    /// </summary>
+    public static readonly AddressData GameState = new(0xC012);
+
     public static class WildEncounters
     {
         public static readonly AddressData Encounter1 = new(0xD889);
@@ -78,7 +83,7 @@ internal static class Addresses
         /// <summary>
         /// Each byte represents one move's current PP
         /// </summary>
-        public static readonly AddressData MovesCurrentPP = new(0xD02D, 4);
+        public static readonly AddressData MovesCurrentPP = new(0xD02D, 4, cacheDuration: AddressData.CacheDurations.NoCache);
 
         /// <summary>
         /// Types Summary 
@@ -101,7 +106,7 @@ internal static class Addresses
         /// <br>26 : Dragon</br>
         /// </code>
         /// </summary>
-        public static readonly AddressData SelectedMoveType = new(0xCFD5);
+        public static readonly AddressData SelectedMoveType = new(0xCFD5, cacheDuration: AddressData.CacheDurations.NoCache);
 
         /// <summary>
         /// Types Summary 
@@ -148,7 +153,7 @@ internal static class Addresses
         /// </summary>
         public static readonly AddressData Type2 = new(0xD01A);
 
-        public static readonly AddressData SelectedMovePower = new(0xCFD4);
+        public static readonly AddressData SelectedMovePower = new(0xCFD4, cacheDuration:AddressData.CacheDurations.NoCache);
 
         public static readonly AddressData Move1ID = new(0xD01C);
         public static readonly AddressData Move2ID = new(0xD01D);

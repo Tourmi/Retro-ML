@@ -48,7 +48,7 @@ internal class LostFightScoreFactor : IScoreFactor
 
     public string Tooltip => "Reward applied whenever the AI loses a fight";
 
-    public bool CanBeDisabled => true;
+    public bool CanBeDisabled => false;
 
     public bool IsDisabled { get; set; }
 

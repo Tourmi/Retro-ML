@@ -40,7 +40,7 @@ internal class PokemonDataFetcher : IDataFetcher
     /// </summary>
     public void NextFrame()
     {
-        fakeCache.Clear();
+        turnCache.Clear();
         internalClock.NextFrame();
 
         InitFrameCache();
@@ -51,7 +51,8 @@ internal class PokemonDataFetcher : IDataFetcher
     /// </summary>
     public void NextState()
     {
-        fakeCache.Clear();
+        battleCache.Clear();
+        turnCache.Clear();
 
         IsPokemonYellow = false;
         IsPokemonYellow = (ReadSingle(PlayerPokemons.EndOfList) != 0x0);
@@ -73,6 +74,7 @@ internal class PokemonDataFetcher : IDataFetcher
     public double OpposingCurrentHP() => ReadULong(OpposingPokemon.CurrentHP) / ReadULong(OpposingPokemon.MaxHP);
     public bool WonFight() => ReadULong(OpposingPokemon.CurrentHP) == 0;
     public bool LostFight() => ReadULong(CurrentPokemon.CurrentHP) == 0;
+    public bool InFight() => ReadSingle(GameState) != 0;
     public double SelectedMovePower() => ReadSingle(CurrentPokemon.SelectedMovePower) / 170.0;
     public bool Move1Exists() => ReadSingle(CurrentPokemon.Move1ID) != 0;
     public bool Move2Exists() => ReadSingle(CurrentPokemon.Move2ID) != 0;
