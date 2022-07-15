@@ -90,6 +90,15 @@ namespace Retro_ML.Application.ViewModels
             mainPageViewModel.IsEnabled = true;
         }
 
+        public static void OpenDebug()
+        {
+            if (DebugInfo.IsDebug)
+            {
+                var debugViewModel = new DebugWindowViewModel();
+                debugViewModel.ShowWindow(ViewLocator.GetMainWindow());
+            }
+        }
+
         public void ErrorManagementThread()
         {
             while (true)

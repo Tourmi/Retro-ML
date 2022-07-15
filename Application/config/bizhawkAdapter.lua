@@ -131,6 +131,7 @@ function parseCommand(cmd)
             local close_index = string.find(updated_cmd, "%)")
             local sub_cmd = string.sub(updated_cmd, open_index + 1, close_index - 1)
             local inputs = {}
+            local analog_inputs = {}
             if string.find(sub_cmd, "A") then
                 inputs.A = true 
             end
@@ -199,21 +200,23 @@ function parseCommand(cmd)
                 local end_x = string.find(sub_cmd, ";", start_x)
                 local tilt_value = tonumber(string.sub(sub_cmd, start_x + 2, end_x - 1))
 
-                inputs["Tilt X"] = tilt_value
+                analog_inputs["X Axis"] = tilt_value
             end
             if string.find(sub_cmd, "Jy") then
                 local start_y = string.find(sub_cmd, "Jy")
                 local end_y = string.find(sub_cmd, ";", start_y)
                 local tilt_value = tonumber(string.sub(sub_cmd, start_y + 2, end_y - 1))
                 
-                inputs["Tilt Y"] = tilt_value
+                analog_inputs["Y Axis"] = tilt_value
             end
 
             local player_number = tonumber(string.sub(updated_cmd, 2, 2))
             if player_number == 0 then
                 joypad.set(inputs)
+                joypad.setanalog(analog_inputs)
             else
                 joypad.set(inputs, player_number)
+                joypad.setanalog(analog_inputs, player_number)
             end
 
             updated_cmd = string.sub(updated_cmd, close_index + 1)

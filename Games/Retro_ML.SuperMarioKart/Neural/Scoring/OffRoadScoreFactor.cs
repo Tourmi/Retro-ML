@@ -3,93 +3,86 @@ using Retro_ML.Game;
 using Retro_ML.Neural.Scoring;
 using Retro_ML.SuperMarioKart.Game;
 
-namespace Retro_ML.SuperMarioKart.Neural.Scoring
+namespace Retro_ML.SuperMarioKart.Neural.Scoring;
+
+internal class OffRoadScoreFactor : IScoreFactor
 {
-    internal class OffRoadScoreFactor : IScoreFactor
+    public const string STOP_AFTER = "Stop after";
+
+    private bool shouldStop = false;
+    private double currScore;
+    private int framesOffroad;
+
+    public string Name => "Offroad";
+
+    public string Tooltip => "Reward applied for every frame the driver spends offroad";
+
+    public bool CanBeDisabled => true;
+
+    public bool IsDisabled { get; set; }
+
+    public bool ShouldStop => shouldStop;
+
+    public double ScoreMultiplier { get; set; }
+    public ExtraField[] ExtraFields { get; set; }
+
+    public FieldInfo[] Fields => new FieldInfo[]
     {
-        public const string STOP_AFTER = "Stop after";
+         new DoubleFieldInfo(nameof(StopAfter), "Stop after", 0, double.MaxValue, 0.5, "Stops the training on the current racetrack after the AI spends this amount of seconds offroad consecutively")
+    };
 
-        private bool shouldStop = false;
-        private double currScore;
-        private int framesOffroad;
+    public OffRoadScoreFactor()
+    {
+        ExtraFields = Array.Empty<ExtraField>();
+    }
 
-        public string Name => "Offroad";
-
-        public string Tooltip => "Reward applied for every frame the driver spends offroad";
-
-        public bool CanBeDisabled => true;
-
-        public bool IsDisabled { get; set; }
-
-        public bool ShouldStop => shouldStop;
-
-        public double ScoreMultiplier { get; set; }
-        public ExtraField[] ExtraFields { get; set; }
-
-        public FieldInfo[] Fields => new FieldInfo[]
+    public object this[string fieldName]
+    {
+        get => fieldName switch
         {
-             new DoubleFieldInfo(nameof(StopAfter), "Stop after", 0, double.MaxValue, 0.5, "Stops the training on the current racetrack after the AI spends this amount of seconds offroad consecutively")
+            nameof(StopAfter) => StopAfter,
+            _ => 0,
         };
-
-        public OffRoadScoreFactor()
+        set
         {
-            ExtraFields = new ExtraField[]
+            switch (fieldName)
             {
-                new ExtraField(STOP_AFTER, 5)
-            };
-        }
-
-        public object this[string fieldName]
-        {
-            get
-            {
-                return fieldName switch
-                {
-                    nameof(StopAfter) => StopAfter,
-                    _ => 0,
-                };
-            }
-            set
-            {
-                switch (fieldName)
-                {
-                    case nameof(StopAfter): StopAfter = (int)value; break;
-                }
+                case nameof(StopAfter): StopAfter = (double)value; break;
             }
         }
+    }
 
-        public double StopAfter { get; set; } = 5;
+    public double StopAfter { get; set; } = 5;
 
-        public double GetFinalScore() => currScore;
+    public double GetFinalScore() => currScore;
 
-        public void LevelDone() => shouldStop = false;
+    public void LevelDone() => shouldStop = false;
 
-        public void Update(IDataFetcher dataFetcher)
+    public void Update(IDataFetcher dataFetcher)
+    {
+        Update((SMKDataFetcher)dataFetcher);
+    }
+
+    private void Update(SMKDataFetcher dataFetcher)
+    {
+        if (dataFetcher.IsOffroad())
         {
-            Update((SMKDataFetcher)dataFetcher);
+            currScore += ScoreMultiplier / 60.0;
+            framesOffroad++;
+        }
+        else
+        {
+            framesOffroad = 0;
         }
 
-        private void Update(SMKDataFetcher dataFetcher)
+        if (framesOffroad >= StopAfter * 60.0)
         {
-            if (dataFetcher.IsOffroad())
-            {
-                currScore += ScoreMultiplier / 60.0;
-                framesOffroad++;
-            }
-            else
-            {
-                framesOffroad = 0;
-            }
-
-            if (framesOffroad >= StopAfter * 60.0)
-            {
-                shouldStop = true;
-            }
+            shouldStop = true;
         }
+    }
 
-        public IScoreFactor Clone()
-        {
-            return new OffRoadScoreFactor() { IsDisabled = IsDisabled, ScoreMultiplier = ScoreMultiplier, ExtraFields = ExtraFields, StopAfter = StopAfter };
-        }
+    public IScoreFactor Clone()
+    {
+        return new OffRoadScoreFactor() { IsDisabled = IsDisabled, ScoreMultiplier = ScoreMultiplier, ExtraFields = ExtraFields, StopAfter = StopAfter };
     }
 }
