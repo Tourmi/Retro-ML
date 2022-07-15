@@ -39,7 +39,7 @@ internal static class Addresses
     /// <summary>
     /// if equals 0: Not in fight
     /// </summary>
-    public static readonly AddressData GameState = new(0xC012);
+    public static readonly AddressData GameState = new(0xC012, cacheDuration: AddressData.CacheDurations.NoCache);
 
     public static class WildEncounters
     {
@@ -79,6 +79,14 @@ internal static class Addresses
         public static readonly AddressData StatusEffect = new(0xD018);
 
         public static readonly AddressData MaxHP = new(0xD023, 2, isBigEndian: true);
+
+        public static readonly AddressData Attack = new(0xD025, 2, isBigEndian: true);
+
+        public static readonly AddressData Defense = new(0xD027, 2, isBigEndian: true);
+
+        public static readonly AddressData Speed = new(0xD029, 2, isBigEndian: true);
+
+        public static readonly AddressData Special = new(0xD02B, 2, isBigEndian: true);
 
         /// <summary>
         /// Each byte represents one move's current PP
@@ -153,7 +161,7 @@ internal static class Addresses
         /// </summary>
         public static readonly AddressData Type2 = new(0xD01A);
 
-        public static readonly AddressData SelectedMovePower = new(0xCFD4, cacheDuration:AddressData.CacheDurations.NoCache);
+        public static readonly AddressData SelectedMovePower = new(0xCFD4, cacheDuration: AddressData.CacheDurations.NoCache);
 
         public static readonly AddressData Move1ID = new(0xD01C);
         public static readonly AddressData Move2ID = new(0xD01D);
@@ -169,6 +177,14 @@ internal static class Addresses
         public static readonly AddressData MaxHP = new(0xCFF4, 2, isBigEndian: true);
 
         public static readonly AddressData Level = new(0xCFF3);
+
+        public static readonly AddressData Attack = new(0xCFF6, 2, isBigEndian: true);
+
+        public static readonly AddressData Defense = new(0xCFF8, 2, isBigEndian: true);
+
+        public static readonly AddressData Speed = new(0xCFFA, 2, isBigEndian: true);
+
+        public static readonly AddressData Special = new(0xCFFC, 2, isBigEndian: true);
 
         /// <summary>
         /// Types Summary 

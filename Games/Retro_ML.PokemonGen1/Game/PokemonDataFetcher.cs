@@ -15,6 +15,10 @@ namespace Retro_ML.PokemonGen1.Game;
 internal class PokemonDataFetcher : IDataFetcher
 {
     private const int MAXIMUM_SLEEP_COUNTER = 7;
+    private const int MAXIMUM_ATTACK_STAT = 366;
+    private const int MAXIMUM_DEFENSE_STAT = 458;
+    private const int MAXIMUM_SPEED_STAT = 378;
+    private const int MAXIMUM_SPECIAL_STAT = 406;
 
     public bool IsPokemonYellow { get; private set; } = true;
 
@@ -71,7 +75,15 @@ internal class PokemonDataFetcher : IDataFetcher
     public bool IsSuperEffective() => GetMultiplier() >= 2;
     public bool IsNotVeryEffective() => GetMultiplier() < 1;
     public bool IsSTAB() => ReadSingle(CurrentPokemon.SelectedMoveType) == ReadSingle(CurrentPokemon.Type1) || ReadSingle(CurrentPokemon.SelectedMoveType) == ReadSingle(CurrentPokemon.Type2);
-    public double OpposingCurrentHP() => ReadULong(OpposingPokemon.CurrentHP) / ReadULong(OpposingPokemon.MaxHP);
+    public double OpposingCurrentHP() => ReadULong(OpposingPokemon.CurrentHP) / (double)ReadULong(OpposingPokemon.MaxHP);
+    public double GetAttack() => ReadULong(CurrentPokemon.Attack) / (double)MAXIMUM_ATTACK_STAT;
+    public double GetDefense() => ReadULong(CurrentPokemon.Defense) / (double)MAXIMUM_DEFENSE_STAT;
+    public double GetSpeed() => ReadULong(CurrentPokemon.Speed) / (double)MAXIMUM_SPEED_STAT;
+    public double GetSpecial() => ReadULong(CurrentPokemon.Special) / (double)MAXIMUM_SPECIAL_STAT;
+    public double GetOpposingAttack() => ReadULong(OpposingPokemon.Attack) / (double)MAXIMUM_ATTACK_STAT;
+    public double GetOpposingDefense() => ReadULong(OpposingPokemon.Defense) / (double)MAXIMUM_DEFENSE_STAT;
+    public double GetOpposingSpeed() => ReadULong(OpposingPokemon.Speed) / (double)MAXIMUM_SPEED_STAT;
+    public double GetOpposingSpecial() => ReadULong(OpposingPokemon.Special) / (double)MAXIMUM_SPECIAL_STAT;
     public bool WonFight() => ReadULong(OpposingPokemon.CurrentHP) == 0;
     public bool LostFight() => ReadULong(CurrentPokemon.CurrentHP) == 0;
     public bool InFight() => ReadSingle(GameState) != 0;
@@ -229,7 +241,7 @@ internal class PokemonDataFetcher : IDataFetcher
     /// <returns></returns>
     private Dictionary<uint, byte[]> GetCacheToUse(AddressData addressData)
     {
-        if(addressData.CacheDuration == AddressData.CacheDurations.NoCache)
+        if (addressData.CacheDuration == AddressData.CacheDurations.NoCache)
         {
             fakeCache.Clear();
         }

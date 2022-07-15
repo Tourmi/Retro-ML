@@ -41,12 +41,14 @@ internal class PokemonEvaluator : DefaultEvaluator
 
             WriteRandomEncounterAddresses();
 
-            //while (!df.InFight())
-            //{
-            //    emulator.NextFrames(10,false);
-            //}
-            //PressB();
+            while (!df.InFight())
+            {
+                emulator.NextFrames(10, false);
+            }
+            PressB();
 
+            //Reset dataFetcher cache
+            dataFetcher.NextState();
             emulator.NextFrame();
 
             DoEvaluationLoop(phenome, score);
@@ -114,8 +116,8 @@ internal class PokemonEvaluator : DefaultEvaluator
 
     private void SkipThroughTurn()
     {
-        //while (!df.IsFightOptionSelected() && !df.LostFight() && !df.WonFight() && df.InFight())
-        while (!df.IsFightOptionSelected() && !df.LostFight() && !df.WonFight())
+        //while (!df.IsFightOptionSelected() && !df.LostFight() && !df.WonFight())
+        while (!df.IsFightOptionSelected() && !df.LostFight() && !df.WonFight() && df.InFight())
         {
             PressB(10, hold: true);
             emulator.NextFrames(10, false);
