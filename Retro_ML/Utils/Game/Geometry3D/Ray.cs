@@ -1,8 +1,6 @@
 ﻿namespace Retro_ML.Utils.Game.Geometry3D;
 public struct Ray
 {
-    private const float EPSILON = 0.00001f;
-
     public readonly Vector P;
     public readonly Vector Direction;
 
@@ -15,6 +13,18 @@ public struct Ray
     {
         P = p;
         Direction = dir;
+
+        cachedInverseDirection = null;
+    }
+
+    private Vector? cachedInverseDirection;
+    public Vector InverseDirection
+    {
+        get
+        {
+            if (!cachedInverseDirection.HasValue) cachedInverseDirection = Direction.Inverse();
+            return cachedInverseDirection.Value;
+        }
     }
 
     public Ray RotateVertically(float radAngle) => new(P, Direction.RotateVertically(radAngle).Normalized());

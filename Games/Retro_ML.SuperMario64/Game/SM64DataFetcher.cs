@@ -57,8 +57,6 @@ internal class SM64DataFetcher : IDataFetcher
         DebugInfo.AddInfo("Coin Count", GetCoinCount().ToString(), "Collected", currPrio++);
         DebugInfo.AddInfo("Star Count", GetStarCount().ToString(), "Collected", currPrio++);
 
-        DebugInfo.AddInfo("Forward", GetMarioForwardRay().ToString(), "Test", currPrio++);
-
         InitFrameCache();
     }
 
