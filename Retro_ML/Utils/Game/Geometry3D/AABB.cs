@@ -11,7 +11,7 @@ public struct AABB : IRaytracable
     public AABB(Vector position, Vector size)
     {
         Position = position;
-        Size = size;
+        Size = size.Absolute();
 
         MinCorner = position - (Size / 2f);
         MaxCorner = position + (Size / 2f);

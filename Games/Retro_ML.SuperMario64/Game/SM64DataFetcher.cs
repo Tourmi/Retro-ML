@@ -86,6 +86,7 @@ internal class SM64DataFetcher : IDataFetcher
     public sbyte GetMarioGroundOffset() => (sbyte)ReadByte(Mario.GroundOffset);
     public ushort GetCoinCount() => (ushort)ReadULong(Mario.Coins);
     public ushort GetStarCount() => (ushort)ReadULong(Progress.StarCount);
+    public uint GetBehaviourBankStart() => (uint)ReadULong(GameObjects.BehaviourBankStartAddress);
 
     public ushort GetStaticTriangleCount() => (ushort)ReadULong(Collision.StaticTriangleCount);
     public ushort GetTriangleCount() => (ushort)ReadULong(Collision.TotalTriangleCount);
@@ -125,6 +126,39 @@ internal class SM64DataFetcher : IDataFetcher
         return solidCollisionCache;
     }
 
+    public IEnumerable<IRaytracable> GetObjectHitboxes()
+    {
+        var actives = ReadMultiple(GameObjects.Active, GameObjects.SingleGameObject, GameObjects.AllGameObjects).ToArray();
+        uint activeCount = (uint)Array.IndexOf(actives, 0);
+        uint bankStart = GetBehaviourBankStart();
+
+        uint totalBytes = GameObjects.SingleGameObject.Length * activeCount;
+        var addressesToRead = new AddressData[]
+        {
+            GameObjects.BehaviourAddress,
+            GameObjects.XPos,
+            GameObjects.YPos,
+            GameObjects.ZPos,
+            GameObjects.HitboxRadius,
+            GameObjects.HitboxHeight,
+            GameObjects.HitboxDownOffset
+        };
+        var bytesPerObject = (int)addressesToRead.Sum(a => a.Length);
+
+        var addresses = GetCalculatedAddresses(totalBytes, GameObjects.SingleGameObject.Length, addressesToRead);
+
+        var objectsBytes = Read(addresses.ToArray());
+        List<GameObject> objects = new();
+        for (int i = 0; i < objectsBytes.Length; i += bytesPerObject)
+        {
+            objects.Add(new GameObject(objectsBytes[i..(i + bytesPerObject)], bankStart));
+        }
+
+        var behaviours = ReadMultiple(GameObjects.BehaviourAddress, GameObjects.SingleGameObject, GameObjects.AllGameObjects).Select(ToULong).ToArray();
+
+        return objects.Where(o => o.IsEnemy()).Select(o => (IRaytracable)o.AABB);
+    }
+
     /// <summary>
     /// Reads a single byte from the emulator's memory
     /// </summary>
@@ -137,9 +171,10 @@ internal class SM64DataFetcher : IDataFetcher
     /// </summary>
     /// <param name="bytes"></param>
     /// <returns></returns>
-    private ulong ReadULong(AddressData addressData)
+    private ulong ReadULong(AddressData addressData) => ToULong(Read(addressData));
+
+    private static ulong ToULong(byte[] bytes)
     {
-        var bytes = Read(addressData);
         ulong value = 0;
         for (int i = 0; i < bytes.Length && i < 8; i++)
         {

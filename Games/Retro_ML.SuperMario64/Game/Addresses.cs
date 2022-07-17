@@ -150,12 +150,56 @@ internal static class Addresses
     /// <summary>
     /// Addresses used by in-game objects, such as signs, goombas, elevators, stars, etc.
     /// </summary>
-    public static class Object
+    public static class GameObjects
     {
         /// <summary>
-        /// Number of currently loaded objects
+        /// Where the object list starts in memory
         /// </summary>
-        public static readonly AddressData ObjectNumber = new(0x8033D270, 4);
+        public static readonly AddressData AllGameObjects = new(0x8033D488, 0x260 * 240);
+        /// <summary>
+        /// Size of a single object struct
+        /// </summary>
+        public static readonly AddressData SingleGameObject = new(AllGameObjects.Address, 0x260);
+        /// <summary>
+        /// The object's behaviour script address. Can be used to identify the type of object.
+        /// </summary>
+        public static readonly AddressData BehaviourAddress = new(SingleGameObject.Address + 0x20C, 4);
+        /// <summary>
+        /// Where all of the object behaviours start in memory
+        /// </summary>
+        public static readonly AddressData BehaviourBankStartAddress = new(0x8033B400 + 0x13 * 4, 4);
+        /// <summary>
+        /// ushort value that's not equal to 0 if active
+        /// </summary>
+        public static readonly AddressData Active = new(SingleGameObject.Address + 0x74);
+        /// <summary>
+        /// 32 bit float representing the object's X position
+        /// </summary>
+        public static readonly AddressData XPos = new(SingleGameObject.Address + 0xA0, 4);
+        /// <summary>
+        /// 32 bit float representing the object's Y position
+        /// </summary>
+        public static readonly AddressData YPos = new(SingleGameObject.Address + 0xA0, 4);
+        /// <summary>
+        /// 32 bit float representing the object's Z position
+        /// </summary>
+        public static readonly AddressData ZPos = new(SingleGameObject.Address + 0xA0, 4);
+        /// <summary>
+        /// 32 bit float representing the object's cylinder hitbox radius
+        /// </summary>
+        public static readonly AddressData HitboxRadius = new(SingleGameObject.Address + 0x1F8, 4);
+        /// <summary>
+        /// 32 bit float representing the object's cylinder hitbox height
+        /// </summary>
+        public static readonly AddressData HitboxHeight = new(SingleGameObject.Address + 0x1FC, 4);
+        /// <summary>
+        /// 32 bit float representing how far down to offset the object's hitbox cylinder.
+        /// </summary>
+        public static readonly AddressData HitboxDownOffset = new(SingleGameObject.Address + 0x208, 4);
+        /// <summary>
+        /// Which mission this star is for.
+        /// </summary>
+        public static readonly AddressData StarMissionIndex = new(SingleGameObject.Address + 0x188, 1);
     }
 
     /// <summary>

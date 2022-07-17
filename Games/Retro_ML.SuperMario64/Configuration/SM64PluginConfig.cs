@@ -15,6 +15,7 @@ internal class SM64PluginConfig : IGamePluginConfig
     private static readonly bool[] DEFAULT_ENABLED_STATES = new bool[]
     {
         true, //collision
+        true, //dangers
         false, //clock
         true, //bias
 
@@ -143,6 +144,18 @@ internal class SM64PluginConfig : IGamePluginConfig
                                                        ViewDistance,
                                                        ((SM64DataFetcher)dataFetcher).GetMarioForwardRay(),
                                                        ((SM64DataFetcher)dataFetcher).GetStaticCollision()),
+            SolidHorizontalRays,
+            SolidVerticalRays));
+        neuralConfig.InputNodes.Add(new InputNode(
+            "Danger",
+            neuralConfig.EnabledStates[enabledIndex++],
+            (dataFetcher) => Raycast3D.GetRayDistances(SolidVerticalRays,
+                                                       SolidHorizontalRays,
+                                                       SolidVerticalViewAngle / 360f,
+                                                       SolidHorizontalViewAngle / 360f,
+                                                       ViewDistance,
+                                                       ((SM64DataFetcher)dataFetcher).GetMarioForwardRay(),
+                                                       ((SM64DataFetcher)dataFetcher).GetObjectHitboxes()),
             SolidHorizontalRays,
             SolidVerticalRays));
         neuralConfig.InputNodes.Add(new InputNode("Internal Clock", neuralConfig.EnabledStates[enabledIndex++], (dataFetcher) => ((SM64DataFetcher)dataFetcher).GetInternalClockState(), Math.Min(8, InternalClockLength), Math.Max(1, InternalClockLength / 8)));

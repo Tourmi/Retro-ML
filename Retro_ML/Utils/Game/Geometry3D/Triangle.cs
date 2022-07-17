@@ -30,13 +30,6 @@ public struct Triangle : IRaytracable
 
     public float GetRaytrace(Ray ray)
     {
-        if (ray.Direction.X > 0 && MinX < ray.P.X) return float.NaN;
-        if (ray.Direction.X < 0 && MaxX > ray.P.X) return float.NaN;
-        if (ray.Direction.Y > 0 && MinY < ray.P.Y) return float.NaN;
-        if (ray.Direction.Y < 0 && MaxY > ray.P.Y) return float.NaN;
-        if (ray.Direction.Z > 0 && MinZ < ray.P.Z) return float.NaN;
-        if (ray.Direction.Z < 0 && MaxZ > ray.P.Z) return float.NaN;
-
         //return early if this ray is within 90 degrees of the triangle's normal, or almost parallel
         var dot = ray.Direction.Dot(Normal);
         if (dot > -EPSILON) return float.NaN;

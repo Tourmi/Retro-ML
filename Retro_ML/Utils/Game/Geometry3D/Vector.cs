@@ -30,6 +30,7 @@ public struct Vector
     public Vector WithXZ(float xVal, float zVal) => new(xVal, Y, zVal);
     public Vector WithYZ(float yVal, float zVal) => new(X, yVal, zVal);
     public Vector Inverse() => new(1f / X, 1f / Y, 1f / Z);
+    public Vector Absolute() => new(MathF.Abs(X), MathF.Abs(Y), MathF.Abs(Z));
 
     /// <summary>
     /// Rotates the vector vertically based on the given angle

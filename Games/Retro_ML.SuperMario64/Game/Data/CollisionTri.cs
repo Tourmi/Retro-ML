@@ -7,6 +7,7 @@ namespace Retro_ML.SuperMario64.Game.Data;
 /// </summary>
 internal struct CollisionTri
 {
+    private Triangle? cachedTriangle;
     public byte SurfaceType { get; private set; }
     public byte Flags { get; private set; }
     public byte Room { get; private set; }
@@ -75,13 +76,21 @@ internal struct CollisionTri
         offset += 4;
 
         AssociatedObjectAddress = GetUint(bytes[offset..(offset + 4)]);
+        cachedTriangle = null;
     }
 
     public bool IsGround => NormalY > 0.01;
     public bool IsCeiling => NormalY < -0.01;
     public bool IsWall => !IsGround && !IsCeiling;
 
-    public Triangle Triangle => new(new(Vertex1X, Vertex1Y, Vertex1Z), new(Vertex2X, Vertex2Y, Vertex2Z), new(Vertex3X, Vertex3Y, Vertex3Z), new(NormalX, NormalY, NormalZ));
+    public Triangle Triangle
+    {
+        get
+        {
+            if (!cachedTriangle.HasValue) cachedTriangle = new Triangle(new(Vertex1X, Vertex1Y, Vertex1Z), new(Vertex2X, Vertex2Y, Vertex2Z), new(Vertex3X, Vertex3Y, Vertex3Z), new(NormalX, NormalY, NormalZ));
+            return cachedTriangle.Value;
+        }
+    }
 
     private static short GetShort(byte[] bytes)
     {
