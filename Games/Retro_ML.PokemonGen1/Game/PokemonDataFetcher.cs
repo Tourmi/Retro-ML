@@ -72,6 +72,12 @@ internal class PokemonDataFetcher : IDataFetcher
     public bool GetOpposingPokemonFrozen() => (ReadSingle(OpposingPokemon.StatusEffect) & 0b0010_0000) != 0;
     public bool GetOpposingPokemonBurned() => (ReadSingle(OpposingPokemon.StatusEffect) & 0b0001_0000) != 0;
     public bool GetOpposingPokemonPoisoned() => (ReadSingle(OpposingPokemon.StatusEffect) & 0b0000_1000) != 0;
+    public byte GetStatusEffect() => ReadSingle(CurrentPokemon.StatusEffect);
+    public double GetSleep() => (ReadSingle(CurrentPokemon.StatusEffect) & 0b0000_0111) / (double)MAXIMUM_SLEEP_COUNTER;
+    public bool GetParalysis() => (ReadSingle(CurrentPokemon.StatusEffect) & 0b0100_0000) != 0;
+    public bool GetFrozen() => (ReadSingle(CurrentPokemon.StatusEffect) & 0b0010_0000) != 0;
+    public bool GetBurned() => (ReadSingle(CurrentPokemon.StatusEffect) & 0b0001_0000) != 0;
+    public bool GetPokemonPoisoned() => (ReadSingle(CurrentPokemon.StatusEffect) & 0b0000_1000) != 0;
     public bool IsSuperEffective() => GetMultiplier() >= 2;
     public bool IsNotVeryEffective() => GetMultiplier() < 1;
     public bool IsSTAB() => ReadSingle(CurrentPokemon.SelectedMoveType) == ReadSingle(CurrentPokemon.Type1) || ReadSingle(CurrentPokemon.SelectedMoveType) == ReadSingle(CurrentPokemon.Type2);
@@ -88,12 +94,15 @@ internal class PokemonDataFetcher : IDataFetcher
     public bool LostFight() => ReadULong(CurrentPokemon.CurrentHP) == 0;
     public bool InFight() => ReadSingle(GameState) != 0;
     public double SelectedMovePower() => ReadSingle(CurrentPokemon.SelectedMovePower) / 170.0;
-    public bool Move1Exists() => ReadSingle(CurrentPokemon.Move1ID) != 0;
-    public bool Move2Exists() => ReadSingle(CurrentPokemon.Move2ID) != 0;
-    public bool Move3Exists() => ReadSingle(CurrentPokemon.Move3ID) != 0;
-    public bool Move4Exists() => ReadSingle(CurrentPokemon.Move4ID) != 0;
-    public bool IsFightOptionSelected() => ReadSingle(FightCursor) == 9;
-    public byte GetMoveCurrentPP(int index) => Read(CurrentPokemon.MovesCurrentPP)[index];
+    public bool Move1Exists() => Read(CurrentPokemon.MoveIDs)[0] != 0;
+    public bool Move2Exists() => Read(CurrentPokemon.MoveIDs)[1] != 0;
+    public bool Move3Exists() => Read(CurrentPokemon.MoveIDs)[2] != 0;
+    public bool Move4Exists() => Read(CurrentPokemon.MoveIDs)[3] != 0;
+    public bool IsFightOptionSelected() => ReadSingle(FightCursor) == 193;
+    public byte GetMovePP(int index) => (byte)(Read(CurrentPokemon.MovesCurrentPP)[index] & 0b0011_1111);
+    public bool IsMoveDisabled(int index) => Read(CurrentPokemon.MoveIDs)[index] == ReadSingle(CurrentPokemon.DisabledMove);
+    public bool IsPlayerTrapped() => (ReadSingle(OpposingPokemon.BattleStatus) & 0b0010_0000) != 0;
+    public int GetMoveCursorIndex() => ReadSingle(MoveCursorIndex);
 
     public double GetMultiplier()
     {

@@ -32,14 +32,21 @@ internal static class Addresses
     }
 
     /// <summary>
-    /// When equals to 9: Fight is selected
+    /// When equals to 193: Fight is selected
     /// </summary>
-    public static readonly AddressData FightCursor = new(0xCC26, cacheDuration: AddressData.CacheDurations.NoCache);
+    public static readonly AddressData FightCursor = new(0xCC31, cacheDuration: AddressData.CacheDurations.NoCache);
 
     /// <summary>
-    /// if equals 0: Not in fight
+    ///  0: Not in fight
+    /// -1: lost
+    ///  1: wild battle
+    ///  2: trainer fight
     /// </summary>
-    public static readonly AddressData GameState = new(0xC012, cacheDuration: AddressData.CacheDurations.NoCache);
+    public static readonly AddressData GameState = new(0xD057, cacheDuration: AddressData.CacheDurations.NoCache);
+    //public static readonly AddressData GameState = new(0xC012, cacheDuration: AddressData.CacheDurations.NoCache);
+
+    public static readonly AddressData MoveCursorIndex = new(0xCC27, cacheDuration: AddressData.CacheDurations.NoCache);
+
 
     public static class WildEncounters
     {
@@ -87,6 +94,8 @@ internal static class Addresses
         public static readonly AddressData Speed = new(0xD029, 2, isBigEndian: true);
 
         public static readonly AddressData Special = new(0xD02B, 2, isBigEndian: true);
+
+        public static readonly AddressData DisabledMove = new(0xCCEF);
 
         /// <summary>
         /// Each byte represents one move's current PP
@@ -163,10 +172,12 @@ internal static class Addresses
 
         public static readonly AddressData SelectedMovePower = new(0xCFD4, cacheDuration: AddressData.CacheDurations.NoCache);
 
-        public static readonly AddressData Move1ID = new(0xD01C);
-        public static readonly AddressData Move2ID = new(0xD01D);
-        public static readonly AddressData Move3ID = new(0xD01E);
-        public static readonly AddressData Move4ID = new(0xD01F);
+        //public static readonly AddressData Move1ID = new(0xD01C);
+        //public static readonly AddressData Move2ID = new(0xD01D);
+        //public static readonly AddressData Move3ID = new(0xD01E);
+        //public static readonly AddressData Move4ID = new(0xD01F);
+
+        public static readonly AddressData MoveIDs = new(0xD01C, 4);
 
     }
 
@@ -237,6 +248,20 @@ internal static class Addresses
         public static readonly AddressData StatusEffect = new(0xCFE9);
 
         public static readonly AddressData PokemonIDToLoad = new(0xCFD8);
+
+        /// <summary>
+        ///<code>
+        ///bit 0 - Bide
+        ///bit 1 - Thrash / petal dance
+        ///bit 2 - Attacking multiple times(e.g. double kick)
+        ///bit 3 - Flinch
+        ///bit 4 - Charging up for attack
+        ///bit 5 - Using multi-turn move(e.g.wrap)
+        ///bit 6 - Invulnerable to normal attack(using fly/dig)
+        ///bit 7 - Confusion
+        ///</code>
+        /// </summary>
+        public static readonly AddressData BattleStatus = new(0xD067, cacheDuration: AddressData.CacheDurations.NoCache);
 
     }
 }

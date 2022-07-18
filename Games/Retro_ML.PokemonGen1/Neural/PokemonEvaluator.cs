@@ -4,6 +4,8 @@ using Retro_ML.Neural;
 using Retro_ML.Neural.Scoring;
 using Retro_ML.PokemonGen1.Configuration;
 using Retro_ML.PokemonGen1.Game;
+using Retro_ML.Utils;
+using Retro_ML.Utils.SharpNeat;
 using SharpNeat.BlackBox;
 using System;
 using System.Collections.Generic;
@@ -45,7 +47,7 @@ internal class PokemonEvaluator : DefaultEvaluator
             {
                 emulator.NextFrames(10, false);
             }
-            PressB();
+            SkipThroughTurn();
 
             //Reset dataFetcher cache
             dataFetcher.NextState();
@@ -64,10 +66,13 @@ internal class PokemonEvaluator : DefaultEvaluator
         //Open attack menu
         //Select move 1
         PressA(15);
-        while (selectedMove > 0)
+        if (df.GetSleep() > 0 || df.IsPlayerTrapped() || (df.GetMovePP(0), df.GetMovePP(1), df.GetMovePP(2), df.GetMovePP(3)) == (0, 0, 0, 0))
+        {
+            return;
+        }
+        while (df.GetMoveCursorIndex() != 1)
         {
             PressUp(15);
-            selectedMove--;
         }
 
         AddMoveScore(blackBox);
@@ -99,16 +104,19 @@ internal class PokemonEvaluator : DefaultEvaluator
 
     protected override void DoAIAction(IBlackBox<double> phenome)
     {
-        selectedMove = movesScores.ToList().IndexOf(movesScores.Max());
-
-        //use move with best score
-        int index = 0;
-        while (index != selectedMove)
+        if (movesScores.Any())
         {
-            PressDown(15);
-            index++;
+            selectedMove = movesScores.ToList().IndexOf(movesScores.Max());
+
+            //use move with best score
+            int index = 0;
+            while (index != selectedMove)
+            {
+                PressDown(15);
+                index++;
+            }
+            PressA(15);
         }
-        PressA(4);
 
         //wait until turn over
         SkipThroughTurn();
@@ -116,13 +124,13 @@ internal class PokemonEvaluator : DefaultEvaluator
 
     private void SkipThroughTurn()
     {
-        //while (!df.IsFightOptionSelected() && !df.LostFight() && !df.WonFight())
         while (!df.IsFightOptionSelected() && !df.LostFight() && !df.WonFight() && df.InFight())
         {
             PressB(10, hold: true);
             emulator.NextFrames(10, false);
         }
-        emulator.NextFrames(5, false);
+        emulator.NextFrames(15, false);
+        PressB(5);
     }
 
     private void Press(string inputStr, int waitAfter = 1, bool hold = false)
@@ -143,7 +151,7 @@ internal class PokemonEvaluator : DefaultEvaluator
 
     private void AddMoveScore(IBlackBox<double> blackBox)
     {
-        if (df.GetMoveCurrentPP(movesScores.Count) == 0)
+        if (df.GetMovePP(movesScores.Count) == 0 || df.IsMoveDisabled(movesScores.Count))
         {
             movesScores.Add(double.NegativeInfinity);
             return;
@@ -151,6 +159,8 @@ internal class PokemonEvaluator : DefaultEvaluator
         blackBox!.ResetState();
         inputSetter.SetInputs(blackBox.InputVector);
         blackBox.Activate();
+
+        emulator.NetworkUpdated(SharpNeatUtils.VectorToArray(blackBox.InputVector), SharpNeatUtils.VectorToArray(blackBox.OutputVector));
 
         movesScores.Add(blackBox.OutputVector[0]);
     }
