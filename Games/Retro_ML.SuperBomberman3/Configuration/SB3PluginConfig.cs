@@ -11,9 +11,23 @@ namespace Retro_ML.SuperBomberman3.Configuration
 {
     internal class SB3PluginConfig : IGamePluginConfig
     {
+        //Enemy count can vary from 1 to 4. We trained using 3 enemies.
+        private const int enemyCount = 3;
+
         private static readonly bool[] DEFAULT_ENABLED_STATES = new bool[]
         {
-            true, //Player Position
+            true, //Tile Map
+            true, //Dangers
+            true, //Goodies
+
+            true, //Player X Pos
+            true, //Player Y Pos
+            true, //Enemies X Distance
+            true, //Enemies Y Distance
+
+            true, //Extra bomb
+            true, //Explosion Expander
+            true, //Accelerator
 
             false, //Internal Clock
             true, //Bias
@@ -98,7 +112,18 @@ namespace Retro_ML.SuperBomberman3.Configuration
             }
             neuralConfig.InputNodes.Clear();
 
-            neuralConfig.InputNodes.Add(new InputNode("Bomberman Position", neuralConfig.EnabledStates[enabledIndex++], (dataFetcher) => ((SB3DataFetcher)dataFetcher).GetBomberManPositionInLevel(), (int) SB3DataFetcher.LEVEL_WIDTH, (int) SB3DataFetcher.LEVEL_HEIGHT));
+            neuralConfig.InputNodes.Add(new InputNode("Tile Map", neuralConfig.EnabledStates[enabledIndex++], (dataFetcher) => ((SB3DataFetcher)dataFetcher).DrawTiles(), (int)SB3DataFetcher.DESIRED_LEVEL_WIDTH, (int)SB3DataFetcher.DESIRED_LEVEL_HEIGHT));
+            neuralConfig.InputNodes.Add(new InputNode("Dangers", neuralConfig.EnabledStates[enabledIndex++], (dataFetcher) => ((SB3DataFetcher)dataFetcher).DrawDangers(), (int)SB3DataFetcher.DESIRED_LEVEL_WIDTH, (int)SB3DataFetcher.DESIRED_LEVEL_HEIGHT));
+            neuralConfig.InputNodes.Add(new InputNode("Goodies", neuralConfig.EnabledStates[enabledIndex++], (dataFetcher) => ((SB3DataFetcher)dataFetcher).DrawGoodies(), (int)SB3DataFetcher.DESIRED_LEVEL_WIDTH, (int)SB3DataFetcher.DESIRED_LEVEL_HEIGHT));
+
+            neuralConfig.InputNodes.Add(new InputNode("Player X", neuralConfig.EnabledStates[enabledIndex++], (dataFetcher) => ((SB3DataFetcher)dataFetcher).GetPlayerXPositionNormalized()));
+            neuralConfig.InputNodes.Add(new InputNode("Player Y", neuralConfig.EnabledStates[enabledIndex++], (dataFetcher) => ((SB3DataFetcher)dataFetcher).GetPlayerYPositionNormalized()));
+            neuralConfig.InputNodes.Add(new InputNode("Enemies X Distance", neuralConfig.EnabledStates[enabledIndex++], (dataFetcher) => ((SB3DataFetcher)dataFetcher).GetEnemiesXDistanceToThePlayer(enemyCount), enemyCount , 1));
+            neuralConfig.InputNodes.Add(new InputNode("Enemies Y Distance", neuralConfig.EnabledStates[enabledIndex++], (dataFetcher) => ((SB3DataFetcher)dataFetcher).GetEnemiesYDistanceToThePlayer(enemyCount), enemyCount, 1));
+
+            neuralConfig.InputNodes.Add(new InputNode("Extra bomb", neuralConfig.EnabledStates[enabledIndex++], (dataFetcher) => ((SB3DataFetcher)dataFetcher).GetPlayerExtraBombPowerUpLevelNormalized()));
+            neuralConfig.InputNodes.Add(new InputNode("Explosion Expander", neuralConfig.EnabledStates[enabledIndex++], (dataFetcher) => ((SB3DataFetcher)dataFetcher).GetPlayerExplosionExpanderPowerUpLevelNormalized()));
+            neuralConfig.InputNodes.Add(new InputNode("Accelerator", neuralConfig.EnabledStates[enabledIndex++], (dataFetcher) => ((SB3DataFetcher)dataFetcher).GetPlayerAcceleratorPowerUpLevelNormalized()));
 
             neuralConfig.InputNodes.Add(new InputNode("Internal Clock", neuralConfig.EnabledStates[enabledIndex++], (dataFetcher) => ((SB3DataFetcher)dataFetcher).GetInternalClockState(), Math.Min(8, InternalClockLength), Math.Max(1, InternalClockLength / 8)));
             neuralConfig.InputNodes.Add(new InputNode("Bias", neuralConfig.EnabledStates[enabledIndex++], (dataFetcher) => true));
