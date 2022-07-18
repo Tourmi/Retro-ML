@@ -179,11 +179,11 @@ internal static class Addresses
         /// <summary>
         /// 32 bit float representing the object's Y position
         /// </summary>
-        public static readonly AddressData YPos = new(SingleGameObject.Address + 0xA0, 4);
+        public static readonly AddressData YPos = new(SingleGameObject.Address + 0xA4, 4);
         /// <summary>
         /// 32 bit float representing the object's Z position
         /// </summary>
-        public static readonly AddressData ZPos = new(SingleGameObject.Address + 0xA0, 4);
+        public static readonly AddressData ZPos = new(SingleGameObject.Address + 0xA8, 4);
         /// <summary>
         /// 32 bit float representing the object's cylinder hitbox radius
         /// </summary>

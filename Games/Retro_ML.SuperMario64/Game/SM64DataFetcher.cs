@@ -126,10 +126,15 @@ internal class SM64DataFetcher : IDataFetcher
         return solidCollisionCache;
     }
 
-    public IEnumerable<IRaytracable> GetObjectHitboxes()
+    public IEnumerable<IRaytracable> GetEnemyHitboxes() => GetObjects().Where(o => o.IsEnemy()).Select(o => (IRaytracable)o.AABB);
+
+    public IEnumerable<IRaytracable> GetGoodieHitboxes() => GetObjects().Where(o => o.IsGoodie()).Select(o => (IRaytracable)o.AABB);
+
+    public IEnumerable<GameObject> GetObjects()
     {
         var actives = ReadMultiple(GameObjects.Active, GameObjects.SingleGameObject, GameObjects.AllGameObjects).ToArray();
-        uint activeCount = (uint)Array.IndexOf(actives, 0);
+        byte activeCount = (byte)Array.IndexOf(actives, (byte)0);
+        if (activeCount > 240) activeCount = 240;
         uint bankStart = GetBehaviourBankStart();
 
         uint totalBytes = GameObjects.SingleGameObject.Length * activeCount;
@@ -154,9 +159,7 @@ internal class SM64DataFetcher : IDataFetcher
             objects.Add(new GameObject(objectsBytes[i..(i + bytesPerObject)], bankStart));
         }
 
-        var behaviours = ReadMultiple(GameObjects.BehaviourAddress, GameObjects.SingleGameObject, GameObjects.AllGameObjects).Select(ToULong).ToArray();
-
-        return objects.Where(o => o.IsEnemy()).Select(o => (IRaytracable)o.AABB);
+        return objects;
     }
 
     /// <summary>

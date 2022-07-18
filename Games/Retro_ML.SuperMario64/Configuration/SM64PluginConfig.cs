@@ -16,6 +16,7 @@ internal class SM64PluginConfig : IGamePluginConfig
     {
         true, //collision
         true, //dangers
+        true, //goodies
         false, //clock
         true, //bias
 
@@ -147,7 +148,7 @@ internal class SM64PluginConfig : IGamePluginConfig
             SolidHorizontalRays,
             SolidVerticalRays));
         neuralConfig.InputNodes.Add(new InputNode(
-            "Danger",
+            "Dangers",
             neuralConfig.EnabledStates[enabledIndex++],
             (dataFetcher) => Raycast3D.GetRayDistances(SolidVerticalRays,
                                                        SolidHorizontalRays,
@@ -155,7 +156,19 @@ internal class SM64PluginConfig : IGamePluginConfig
                                                        SolidHorizontalViewAngle / 360f,
                                                        ViewDistance,
                                                        ((SM64DataFetcher)dataFetcher).GetMarioForwardRay(),
-                                                       ((SM64DataFetcher)dataFetcher).GetObjectHitboxes()),
+                                                       ((SM64DataFetcher)dataFetcher).GetEnemyHitboxes()),
+            SolidHorizontalRays,
+            SolidVerticalRays));
+        neuralConfig.InputNodes.Add(new InputNode(
+            "Goodies",
+            neuralConfig.EnabledStates[enabledIndex++],
+            (dataFetcher) => Raycast3D.GetRayDistances(SolidVerticalRays,
+                                                       SolidHorizontalRays,
+                                                       SolidVerticalViewAngle / 360f,
+                                                       SolidHorizontalViewAngle / 360f,
+                                                       ViewDistance,
+                                                       ((SM64DataFetcher)dataFetcher).GetMarioForwardRay(),
+                                                       ((SM64DataFetcher)dataFetcher).GetGoodieHitboxes()),
             SolidHorizontalRays,
             SolidVerticalRays));
         neuralConfig.InputNodes.Add(new InputNode("Internal Clock", neuralConfig.EnabledStates[enabledIndex++], (dataFetcher) => ((SM64DataFetcher)dataFetcher).GetInternalClockState(), Math.Min(8, InternalClockLength), Math.Max(1, InternalClockLength / 8)));
