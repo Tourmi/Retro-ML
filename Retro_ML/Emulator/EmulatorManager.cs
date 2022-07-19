@@ -49,8 +49,7 @@ namespace Retro_ML.Emulator
         {
             this.trainingMode = trainingMode;
 
-            IPHostEntry ipHostInfo = Dns.GetHostEntry(Dns.GetHostName());
-            ipAddress = ipHostInfo.AddressList.Last();
+            ipAddress = IPAddress.Parse("127.0.0.1");
             IPEndPoint localEndPoint = new(ipAddress, SOCKET_PORT);
 
             server = new Socket(ipAddress.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
