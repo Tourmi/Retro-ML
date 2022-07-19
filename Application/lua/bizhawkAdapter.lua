@@ -255,7 +255,7 @@ function loop()
 end
 
 socket_client = socket.tcp()
-socket_client:connect("192.168.0.192", 11000)
+socket_client:connect("127.0.0.1", 11000)
 
 client.gettool("luaconsole").Hide()
 loop()
