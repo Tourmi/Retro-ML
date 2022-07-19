@@ -11,7 +11,6 @@ namespace Retro_ML.SuperBomberman3.Game
     /// </summary>
     internal class SB3DataFetcher : IDataFetcher
     {
-        private const uint METATILE_SIZE = 0x10;
         public const uint DESIRED_LEVEL_WIDTH = 0xD;
         public const uint DESIRED_LEVEL_HEIGHT = 0xB;
         public const uint LEVEL_TILES_WIDTH = 0x10;
@@ -21,8 +20,11 @@ namespace Retro_ML.SuperBomberman3.Game
         private const uint MAX_X_POS = 0xD0;
         private const uint MAX_Y_POS = 0xB0;
         private const uint MAX_ACCELERATOR = 0x100;
-        private const uint MAX_BOMB = 0xA;
-        private const uint MAX_EXPLOSION_EXPANDER = 0xA;
+        private const uint MAX_BOMB = 0x9;
+        private const uint MIN_EXPLOSION_EXPANDER = 0x02;
+        private const uint MAX_EXPLOSION_EXPANDER = 0x09;
+        private const uint MAX_BOMB_TIMER = 0x95;
+        private const uint MIN_BOMB_TIMER = 0x01;
 
         private readonly IEmulatorAdapter emulator;
         private readonly Dictionary<uint, byte[]> frameCache;
@@ -38,21 +40,33 @@ namespace Retro_ML.SuperBomberman3.Game
         }
 
         public bool[,] GetInternalClockState() => internalClock.GetStates();
-        public byte[] GetBomberMansXPos() => Read(PlayersAddresses.XPos);
-        public byte[] GetBomberMansYPos() => Read(PlayersAddresses.YPos);
+        public byte[] GetPlayerXPos() => Read(PlayersAddresses.XPos);
+        public byte[] GetPlayerYPos() => Read(PlayersAddresses.YPos);
         public byte[] GetTiles() => Read(GameAddresses.Tiles);
+        public byte[] GetBombsPos() => Read(GameAddresses.BombsPosition);
+        public byte[] GetBombsTimer() => Read(GameAddresses.BombsTimer);
         public double GetPlayerXPositionNormalized() => GetXPositionNormalized(0);
         public double GetPlayerYPositionNormalized() => GetYPositionNormalized(0);
+        public double GetClosestPowerupXPosNormalized() => GetClosestPowerUp().Item1;
+        public double GetClosestPowerupYPosNormalized() => GetClosestPowerUp().Item2;
         public byte GetPlayerAFKTimer() => ReadSingle(PlayersAddresses.AFKTimer);
         public byte GetPlayerExtraBombPowerUpLevel() => ReadSingle(PowerupsAddresses.ExtraBomb);
         public byte GetPlayerExplosionExpanderPowerUpLevel() => ReadSingle(PowerupsAddresses.ExplosionExpander);
         public byte GetPlayerAcceleratorPowerUpLevel() => ReadSingle(PowerupsAddresses.Accelerator);
-        public double GetPlayerExtraBombPowerUpLevelNormalized() => GetPlayerExtraBombPowerUpLevel() / (double) MAX_BOMB;
-        public double GetPlayerExplosionExpanderPowerUpLevelNormalized() => GetPlayerExplosionExpanderPowerUpLevel() / (double) MAX_EXPLOSION_EXPANDER;
+        public double GetPlayerExtraBombPowerUpLevelNormalized() => GetPlayerExtraBombPowerUpLevel() / (double)MAX_BOMB;
+        public double GetPlayerExplosionExpanderPowerUpLevelNormalized() => GetPlayerExplosionExpanderPowerUpLevel() / (double)(MAX_EXPLOSION_EXPANDER - MIN_EXPLOSION_EXPANDER);
         public double GetPlayerAcceleratorPowerUpLevelNormalized() => GetPlayerAcceleratorPowerUpLevel() / (double)MAX_ACCELERATOR;
         public bool GetPlayerLouiePowerUpState() => ReadSingle(PowerupsAddresses.Louie) == 0;
-        public bool GetPlayerPowerBombPowerUpState() => ReadSingle(PowerupsAddresses.PowerBomb) == 1;
-        public bool GetPlayerPowerGlovesPowerUpState() => ReadSingle(PowerupsAddresses.PowerGloves) == 1;
+        public bool IsLouieColourYellow() => GetPlayerLouiePowerUpState() ? ToUnsignedInteger(Read(PowerupsAddresses.LouieColours)) == 0x35F02DD : false;
+        public bool IsLouieColourBrown() => GetPlayerLouiePowerUpState() ? ToUnsignedInteger(Read(PowerupsAddresses.LouieColours)) == 0x35B2210D : false;
+        public bool IsLouieColourPink() => GetPlayerLouiePowerUpState() ? ToUnsignedInteger(Read(PowerupsAddresses.LouieColours)) == 0x7DFF695A : false;
+        public bool IsLouieColourGreen() => GetPlayerLouiePowerUpState() ? ToUnsignedInteger(Read(PowerupsAddresses.LouieColours)) == 0x1BE00AC : false;
+        public bool IsLouieColourBlue() => GetPlayerLouiePowerUpState() ? ToUnsignedInteger(Read(PowerupsAddresses.LouieColours)) == 0x7E805940 : false;
+        public bool GetPlayerKickPowerUpState() => (ReadSingle(PowerupsAddresses.BombermanUpgrade) & 0x02) != 0;
+        public bool GetPlayerGlovePowerUpState() => (ReadSingle(PowerupsAddresses.BombermanUpgrade) & 0x04) != 0;
+        public bool GetPlayerStickyBombPowerUpState() => (ReadSingle(PowerupsAddresses.BombermanUpgrade) & 0x20) != 0;
+        public bool GetPlayerPowerBombPowerUpState() => (ReadSingle(PowerupsAddresses.BombermanUpgrade) & 0x40) != 0;
+        public bool GetPlayerSkullPowerUpState() => ReadSingle(PowerupsAddresses.Skull) == 0x31;
 
         /// <summary>
         /// Needs to be called every frame to reset the memory cache
@@ -75,14 +89,24 @@ namespace Retro_ML.SuperBomberman3.Game
         }
 
         /// <summary>
-        /// Get X position normalized position in the level
+        /// Get X position normalized on the grid 
         /// </summary>
-        public double GetXPositionNormalized(int index) => (GetBomberMansXPos()[index] - MIN_X_POS) / (double)(MAX_X_POS - MIN_X_POS);
+        public double GetXPositionNormalized(int pos) => (pos - MIN_X_POS) / (double)(MAX_X_POS - MIN_X_POS);
 
         /// <summary>
-        /// Get Y position normalized position in the level
+        /// Get Y position normalized on the grid
         /// </summary>
-        public double GetYPositionNormalized(int index) => (GetBomberMansYPos()[index] - MIN_Y_POS) / (double)(MAX_Y_POS - MIN_Y_POS);
+        public double GetYPositionNormalized(int pos) => (pos - MIN_Y_POS) / (double)(MAX_Y_POS - MIN_Y_POS);
+
+        /// <summary>
+        /// Get bomb timer normalized
+        /// </summary>
+        public double GetBombTimerNormalized(byte timer) => 1.0 - (timer / (double)(MAX_BOMB_TIMER - MIN_BOMB_TIMER));
+
+        /// <summary>
+        /// Convert Bomb coordinate varying from 17 to 189 to 2d grid coordinate varying from 0 to 13 (horizontally) and from 0 to 11 (vertically)
+        /// </summary>
+        public Tuple<uint, uint> ToGridPos(uint coord) => new Tuple<uint, uint>(((coord - 1) / (DESIRED_LEVEL_WIDTH + 3)) - 1, (coord % (DESIRED_LEVEL_WIDTH + 3)) - 1);
 
         /// <summary>
         /// Return an array of double representing normalized horizontal distance between the player and every enemies 
@@ -93,10 +117,11 @@ namespace Retro_ML.SuperBomberman3.Game
             double[,] result = new double[enemyCount, 1];
 
             double playerXPosInLevel = GetPlayerXPositionNormalized();
+            byte[] enemyXPos = GetPlayerXPos();
 
-            for (int enemy = 0 ; enemy < enemyCount; enemy++)
+            for (int enemy = 0; enemy < enemyCount; enemy++)
             {
-                double enemyXPosInLevel = GetXPositionNormalized(enemy + 1);
+                double enemyXPosInLevel = GetXPositionNormalized(enemyXPos[enemy + 1]);
                 result[enemy, 0] = enemyXPosInLevel - playerXPosInLevel;
             }
 
@@ -112,10 +137,11 @@ namespace Retro_ML.SuperBomberman3.Game
             double[,] result = new double[enemyCount, 1];
 
             double playerYPosInLevel = GetPlayerYPositionNormalized();
+            byte[] enemyYPos = GetPlayerYPos();
 
             for (int enemy = 0; enemy < enemyCount; enemy++)
             {
-                double enemyYPosInLevel = GetYPositionNormalized(enemy + 1);
+                double enemyYPosInLevel = GetYPositionNormalized(enemyYPos[enemy + 1]);
                 result[enemy, 0] = enemyYPosInLevel - playerYPosInLevel;
             }
 
@@ -153,13 +179,26 @@ namespace Retro_ML.SuperBomberman3.Game
         {
             double[,] result = new double[DESIRED_LEVEL_HEIGHT, DESIRED_LEVEL_WIDTH];
             byte[] tiles = GetTiles();
+            byte[] bombsPos = GetBombsPos();
+            byte[] bombsTimers = GetBombsTimer();
 
+            //Draw Bombs
+            for (int bombsIndex = 0; bombsIndex < bombsPos.Length; bombsIndex++)
+            {
+                if (bombsTimers[bombsIndex] != 0)
+                {
+                    var bombPos = ToGridPos(bombsPos[bombsIndex]);
+                    var bombTimer = GetBombTimerNormalized(bombsTimers[bombsIndex]);
+                    result[bombPos.Item1, bombPos.Item2] = bombTimer;
+                }
+            }
+
+            //Draw explosions
             for (int i = 0; i < DESIRED_LEVEL_HEIGHT; i++)
             {
                 for (int j = 0; j < DESIRED_LEVEL_WIDTH; j++)
                 {
-                    //Is a bomb or part of an explosion
-                    if (tiles[(i * LEVEL_TILES_WIDTH) + (j + 1)] == 0x24 || tiles[(i * LEVEL_TILES_WIDTH) + (j + 1)] == 0x05 || tiles[(i * LEVEL_TILES_WIDTH) + (j + 1)] == 0x07 || tiles[(i * LEVEL_TILES_WIDTH) + (j + 1)] == 0x50) result[i, j] = 1.0;
+                    if (tiles[(i * LEVEL_TILES_WIDTH) + (j + 1)] == 0x24 || tiles[(i * LEVEL_TILES_WIDTH) + (j + 1)] == 0x05 || tiles[(i * LEVEL_TILES_WIDTH) + (j + 1)] == 0x07) result[i, j] = 1.0;
                 }
             }
 
@@ -167,23 +206,41 @@ namespace Retro_ML.SuperBomberman3.Game
         }
 
         /// <summary>
-        /// Draw goodies that are mostly powerups.
+        /// Get the powerup that is the closest to the player on the grid using manhattan distance.
+        /// Values are normalized. IF there is no powerup present, the function will return a pair of (1.0, 1.0)
         /// </summary>
-        public double[,] DrawGoodies()
+        public Tuple<double, double> GetClosestPowerUp()
         {
-            double[,] result = new double[DESIRED_LEVEL_HEIGHT, DESIRED_LEVEL_WIDTH];
             byte[] tiles = GetTiles();
+            var playerXPos = GetPlayerXPos()[0];
+            var playerYPos = GetPlayerYPos()[0];
+            double closestX = 1.0;
+            double closestY = 1.0;
+            int closestDist = int.MaxValue;
 
             for (int i = 0; i < DESIRED_LEVEL_HEIGHT; i++)
             {
                 for (int j = 0; j < DESIRED_LEVEL_WIDTH; j++)
                 {
-                    //Is a bomb or part of an explosion
-                    if (tiles[(i * LEVEL_TILES_WIDTH) + (j + 1)] == 0x10) result[i, j] = 1.0;
+                    //If tile contains a powerup
+                    if (tiles[(i * LEVEL_TILES_WIDTH) + (j + 1)] == 0x10)
+                    {
+                        int powerupXPos = (int)(j * LEVEL_TILES_WIDTH) + (int)MIN_X_POS;
+                        int powerupYPos = (int)(i * LEVEL_TILES_HEIGHT) + (int)MIN_Y_POS;
+                        //If the powerup is the closest found to date
+                        var dist = Utils.MathUtils.ManhattanDistance(playerXPos, playerYPos, powerupXPos, powerupYPos);
+                        if (dist < closestDist)
+                        {
+                            closestDist = dist;
+                            closestX = (powerupXPos - playerXPos) / (double)MAX_X_POS;
+                            closestY = (powerupYPos - playerYPos) / (double)MAX_Y_POS;
+                        }
+
+                    }
                 }
             }
 
-            return result;
+            return new Tuple<double, double>(closestX, closestY);
         }
 
         private byte ReadSingle(AddressData addressData) => Read(addressData)[0];
@@ -279,6 +336,10 @@ namespace Retro_ML.SuperBomberman3.Game
             PowerupsAddresses.ExplosionExpander,
             PowerupsAddresses.Accelerator,
             PowerupsAddresses.ExtraBomb,
+            PowerupsAddresses.Louie,
+            PowerupsAddresses.LouieColours,
+            PowerupsAddresses.BombermanUpgrade,
+            PowerupsAddresses.Skull,
         };
             _ = Read(toRead.ToArray());
         }

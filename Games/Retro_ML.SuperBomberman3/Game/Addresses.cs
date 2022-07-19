@@ -42,6 +42,17 @@
             /// <code>
             /// </summary>
             public static readonly AddressData Tiles = new(0xDF2, 176);
+            /// <summary>
+            /// Represent bomb positions. 
+            /// In theory, there could be a max of 60 bombs if there is 5 players (? at least that's what it looks like in memory), but we should only need around 20 max in the worst-case scenario
+            /// Bomb positions vary from 17 to 189.
+            /// </summary>
+            public static readonly AddressData BombsPosition = new(0x16EF, 20);
+            /// <summary>
+            /// Represent the countdown remaining for a bomb explosion. Starts at 0x95 (149)
+            /// In theory, there could be a max of 60 bombs if there is 5 players (? at least that's what it looks like in memory), but we should only need around 20 max in the worst-case scenario
+            /// </summary>
+            public static readonly AddressData BombsTimer = new(0x16B3, 20);
         }
 
         public static class PlayersAddresses
@@ -58,7 +69,7 @@
             /// Players AFK timer, vary from 0 to 255. Only incerement when the player does not move.
             /// When reaching 255, player starts dancing. Useful for the StoppedMoving ScoreFactor.
             /// </summary>
-            public static readonly AddressData AFKTimer = new(0x1467, 5);
+            public static readonly AddressData AFKTimer = new(0x1467, 1);
         }
 
         public static class PowerupsAddresses
@@ -68,11 +79,25 @@
             /// </summary>
             public static readonly AddressData Louie = new(0x1244, 1);
             /// <summary>
-            /// Increases the range of explosions when bombs are detonated by one level. (Maximum ten)
+            /// Each colour of the Louie has a different ability that can use used by pressing the Y button on the control pad.
+            /// Colours are represented on 4 bytes.
+            /// /// <code>
+            /// 0x35F02DD = Yellow Louie: - He can kick the soft blocks in a straight line.
+            /// 0x1BE00AC = Green Louie: - He has a super speed burst ability.
+            /// 0x7E805940 = Blue Louie: - He can kick bombs over the blocks.
+            /// 0x35B2210D = Brown Louie: - He will lay a line of bombs equivalent of the number of bombs the player has.
+            /// 0x7DFF695A = Pink Louie: - He can jump over one block.
+            /// <code>
+            /// </summary>
+            public static readonly AddressData LouieColours = new(0x31BC, 4);
+            /// <summary>
+            /// Increases the range of explosions when bombs are detonated by one level. Value represent the range in tile.
+            /// Value starts at 2 and reach a maximum of 8
             /// </summary>
             public static readonly AddressData ExplosionExpander = new(0x144F, 1);
             /// <summary>
-            /// Increases the maximum number of bombs that can be laid on the ground by one. (Maximum ten)
+            /// Increases the maximum number of bombs that can be laid on the ground by one.
+            /// Value starts at 1 and reach a maximum of 9
             /// </summary>
             public static readonly AddressData ExtraBomb = new(0x48B9, 1);
             /// <summary>
@@ -80,25 +105,22 @@
             /// </summary>
             public static readonly AddressData Accelerator = new(0x1257, 1);
             /// <summary>
-            /// Allows bombs to be detonated by remote control by pressing B Button.
+            /// Represent every upgrade the player has. The upgrade are additive which means that a value of 0x06 = Kick + Glove.
+            /// A bomberman cannot hold both sticky and power bomb upgrade at the same time.
+            /// <code>
+            /// 0x02 = Kick: - Allows the ability to kick bombs by using Dpad. Pressing X Button or A Button stops the kicked bomb.
+            /// 0x04 = Glove: - It gives the player the ability to pick up, carry, and then throw bombs.
+            /// 0x20 = Slime Bomb: - Slime bomb will bounce on walls until they explode
+            /// 0x40 = Power Bomb: - Allow the 1st bomb planted to be a Power Bombs. Power Bombs will explode with the maximum range of explosion possible (8 tiles)
+            /// <code>
             /// </summary>
-            public static readonly AddressData RemoteControl = new(0x1257, 1);
+            public static readonly AddressData BombermanUpgrade = new(0x48D1, 1);
             /// <summary>
-            /// Allows the ability to kick bombs by using Dpad. Pressing X Button or A Button stops the kicked bomb.
+            ///This is a special battle item that has various effects. Some of the effects are actually quite useful where as others are bad.
+            ///You can get rid of the skull by collecting an item or by passing it onto another opponent by touching them.The skull can't be destroyed; instead it'll bounce to another square when hit by a bomb blast.
+            ///When the flag is set to 0x31, the skull effect is active.
             /// </summary>
-            public static readonly AddressData Kick = new(0x48D1, 1);
-            /// <summary>
-            /// Allows the ability to punch bombs and send them flying with Y Button or L Button.
-            /// </summary>
-            public static readonly AddressData BoxingGlove = new(0x1257, 1);
-            /// <summary>
-            /// Power Bombs will explode with a maximum Fire range
-            /// </summary>
-            public static readonly AddressData PowerBomb = new(0x1237, 1);
-            /// <summary>
-            /// It gives the player the ability to pick up, carry, and then throw bombs.
-            /// </summary>
-            public static readonly AddressData PowerGloves = new(0x1437, 1);
+            public static readonly AddressData Skull = new(0x3B6, 1);
         }
     }
 }

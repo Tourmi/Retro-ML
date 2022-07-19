@@ -18,16 +18,28 @@ namespace Retro_ML.SuperBomberman3.Configuration
         {
             true, //Tile Map
             true, //Dangers
-            true, //Goodies
 
             true, //Player X Pos
             true, //Player Y Pos
             true, //Enemies X Distance
             true, //Enemies Y Distance
+            true, //Closest Powerup X Distance
+            true, //Closest Powerup Y Distance
 
-            true, //Extra bomb
-            true, //Explosion Expander
-            true, //Accelerator
+            true, //Extra bomb level
+            true, //Explosion Expander level
+            true, //Accelerator level
+            true, //Has Kick
+            true, //Has Glove
+            true, //Has Sticky Bomb
+            true, //Has Power Bomb
+            true, //On a Louie
+            true, //Yellow Louie
+            true, //Brown Louie
+            true, //Pink Louie
+            true, //Green Louie
+            true, //Blue Louie
+            true, //Has Skull
 
             false, //Internal Clock
             true, //Bias
@@ -114,17 +126,28 @@ namespace Retro_ML.SuperBomberman3.Configuration
 
             neuralConfig.InputNodes.Add(new InputNode("Tile Map", neuralConfig.EnabledStates[enabledIndex++], (dataFetcher) => ((SB3DataFetcher)dataFetcher).DrawTiles(), (int)SB3DataFetcher.DESIRED_LEVEL_WIDTH, (int)SB3DataFetcher.DESIRED_LEVEL_HEIGHT));
             neuralConfig.InputNodes.Add(new InputNode("Dangers", neuralConfig.EnabledStates[enabledIndex++], (dataFetcher) => ((SB3DataFetcher)dataFetcher).DrawDangers(), (int)SB3DataFetcher.DESIRED_LEVEL_WIDTH, (int)SB3DataFetcher.DESIRED_LEVEL_HEIGHT));
-            neuralConfig.InputNodes.Add(new InputNode("Goodies", neuralConfig.EnabledStates[enabledIndex++], (dataFetcher) => ((SB3DataFetcher)dataFetcher).DrawGoodies(), (int)SB3DataFetcher.DESIRED_LEVEL_WIDTH, (int)SB3DataFetcher.DESIRED_LEVEL_HEIGHT));
 
             neuralConfig.InputNodes.Add(new InputNode("Player X", neuralConfig.EnabledStates[enabledIndex++], (dataFetcher) => ((SB3DataFetcher)dataFetcher).GetPlayerXPositionNormalized()));
             neuralConfig.InputNodes.Add(new InputNode("Player Y", neuralConfig.EnabledStates[enabledIndex++], (dataFetcher) => ((SB3DataFetcher)dataFetcher).GetPlayerYPositionNormalized()));
             neuralConfig.InputNodes.Add(new InputNode("Enemies X Distance", neuralConfig.EnabledStates[enabledIndex++], (dataFetcher) => ((SB3DataFetcher)dataFetcher).GetEnemiesXDistanceToThePlayer(enemyCount), enemyCount , 1));
             neuralConfig.InputNodes.Add(new InputNode("Enemies Y Distance", neuralConfig.EnabledStates[enabledIndex++], (dataFetcher) => ((SB3DataFetcher)dataFetcher).GetEnemiesYDistanceToThePlayer(enemyCount), enemyCount, 1));
+            neuralConfig.InputNodes.Add(new InputNode("Closest Powerup X Distance", neuralConfig.EnabledStates[enabledIndex++], (dataFetcher) => ((SB3DataFetcher)dataFetcher).GetClosestPowerupXPosNormalized()));
+            neuralConfig.InputNodes.Add(new InputNode("Closest Powerup Y Distance", neuralConfig.EnabledStates[enabledIndex++], (dataFetcher) => ((SB3DataFetcher)dataFetcher).GetClosestPowerupYPosNormalized()));
 
-            neuralConfig.InputNodes.Add(new InputNode("Extra bomb", neuralConfig.EnabledStates[enabledIndex++], (dataFetcher) => ((SB3DataFetcher)dataFetcher).GetPlayerExtraBombPowerUpLevelNormalized()));
-            neuralConfig.InputNodes.Add(new InputNode("Explosion Expander", neuralConfig.EnabledStates[enabledIndex++], (dataFetcher) => ((SB3DataFetcher)dataFetcher).GetPlayerExplosionExpanderPowerUpLevelNormalized()));
-            neuralConfig.InputNodes.Add(new InputNode("Accelerator", neuralConfig.EnabledStates[enabledIndex++], (dataFetcher) => ((SB3DataFetcher)dataFetcher).GetPlayerAcceleratorPowerUpLevelNormalized()));
-
+            neuralConfig.InputNodes.Add(new InputNode("Extra bomb level", neuralConfig.EnabledStates[enabledIndex++], (dataFetcher) => ((SB3DataFetcher)dataFetcher).GetPlayerExtraBombPowerUpLevelNormalized()));
+            neuralConfig.InputNodes.Add(new InputNode("Explosion Expander level ", neuralConfig.EnabledStates[enabledIndex++], (dataFetcher) => ((SB3DataFetcher)dataFetcher).GetPlayerExplosionExpanderPowerUpLevelNormalized()));
+            neuralConfig.InputNodes.Add(new InputNode("Accelerator level", neuralConfig.EnabledStates[enabledIndex++], (dataFetcher) => ((SB3DataFetcher)dataFetcher).GetPlayerAcceleratorPowerUpLevelNormalized()));
+            neuralConfig.InputNodes.Add(new InputNode("Has Kick", neuralConfig.EnabledStates[enabledIndex++], (dataFetcher) => ((SB3DataFetcher)dataFetcher).GetPlayerKickPowerUpState()));
+            neuralConfig.InputNodes.Add(new InputNode("Has Gloves", neuralConfig.EnabledStates[enabledIndex++], (dataFetcher) => ((SB3DataFetcher)dataFetcher).GetPlayerGlovePowerUpState()));
+            neuralConfig.InputNodes.Add(new InputNode("Has Sticky Bomb", neuralConfig.EnabledStates[enabledIndex++], (dataFetcher) => ((SB3DataFetcher)dataFetcher).GetPlayerStickyBombPowerUpState()));
+            neuralConfig.InputNodes.Add(new InputNode("Has Power Bomb", neuralConfig.EnabledStates[enabledIndex++], (dataFetcher) => ((SB3DataFetcher)dataFetcher).GetPlayerPowerBombPowerUpState()));
+            neuralConfig.InputNodes.Add(new InputNode("On a Louie", neuralConfig.EnabledStates[enabledIndex++], (dataFetcher) => ((SB3DataFetcher)dataFetcher).GetPlayerLouiePowerUpState()));
+            neuralConfig.InputNodes.Add(new InputNode("Yellow Louie", neuralConfig.EnabledStates[enabledIndex++], (dataFetcher) => ((SB3DataFetcher)dataFetcher).IsLouieColourYellow()));
+            neuralConfig.InputNodes.Add(new InputNode("Brown Louie", neuralConfig.EnabledStates[enabledIndex++], (dataFetcher) => ((SB3DataFetcher)dataFetcher).IsLouieColourBrown()));
+            neuralConfig.InputNodes.Add(new InputNode("Pink Louie", neuralConfig.EnabledStates[enabledIndex++], (dataFetcher) => ((SB3DataFetcher)dataFetcher).IsLouieColourPink()));
+            neuralConfig.InputNodes.Add(new InputNode("Green Louie", neuralConfig.EnabledStates[enabledIndex++], (dataFetcher) => ((SB3DataFetcher)dataFetcher).IsLouieColourGreen()));
+            neuralConfig.InputNodes.Add(new InputNode("Blue Louie", neuralConfig.EnabledStates[enabledIndex++], (dataFetcher) => ((SB3DataFetcher)dataFetcher).IsLouieColourBlue()));
+            neuralConfig.InputNodes.Add(new InputNode("Has Skull", neuralConfig.EnabledStates[enabledIndex++], (dataFetcher) => ((SB3DataFetcher)dataFetcher).GetPlayerSkullPowerUpState()));
             neuralConfig.InputNodes.Add(new InputNode("Internal Clock", neuralConfig.EnabledStates[enabledIndex++], (dataFetcher) => ((SB3DataFetcher)dataFetcher).GetInternalClockState(), Math.Min(8, InternalClockLength), Math.Max(1, InternalClockLength / 8)));
             neuralConfig.InputNodes.Add(new InputNode("Bias", neuralConfig.EnabledStates[enabledIndex++], (dataFetcher) => true));
 
