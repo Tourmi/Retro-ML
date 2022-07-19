@@ -12,7 +12,7 @@
         public const string EMULATOR_CONFIG = "config/bizhawkConfig.ini";
         public const string EMULATOR_PLAY_CONFIG = "config/bizhawkConfigPlayMode.ini";
         public const string SAVESTATES_DIR = "config\\SaveStates\\";
-        public const string EMULATOR_ADAPTER = "config/bizhawkAdapter.lua";
+        public const string EMULATOR_ADAPTER = "lua/bizhawkAdapter.lua";
         public const string SHARPNEAT_CONFIG = "config/sharpNeatConfig.json";
         public const string APP_CONFIG = "config/appConfig.json";
         public const string NEURAL_CONFIG_EXTENSION = "ncfg";

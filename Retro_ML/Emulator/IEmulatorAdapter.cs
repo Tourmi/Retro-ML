@@ -15,6 +15,13 @@ namespace Retro_ML.Emulator
         event Action<(int sourceNode, int targetNode, double weight)[][], int[]>? ChangedLinkedNetwork;
 
         /// <summary>
+        /// Write one byte at the given address
+        /// </summary>
+        /// <param name="addr"></param>
+        /// <param name="value"></param>
+        void WriteMemory(uint addr, byte value);
+
+        /// <summary>
         /// Reads the game memory at the given address
         /// </summary>
         /// <param name="addr"></param>

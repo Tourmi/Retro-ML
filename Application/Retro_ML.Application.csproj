@@ -67,7 +67,7 @@
 	  <None Update="config\appConfig.json">
 		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 	  </None>
-	  <None Update="config\bizhawkAdapter.lua">
+	  <None Update="lua\bizhawkAdapter.lua">
 	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 	  </None>
 	  <None Update="config\bizhawkConfig.ini">
@@ -80,6 +80,9 @@
 	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 	  </None>
 	  <None Update="config\sharpNeatConfig.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="lua\socket.lua">
 	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 	  </None>
 	  <None Update="Views\Components\MessageBox.xaml">
