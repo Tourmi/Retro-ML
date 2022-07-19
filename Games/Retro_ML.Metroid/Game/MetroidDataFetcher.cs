@@ -77,10 +77,17 @@ internal class MetroidDataFetcher : IDataFetcher
         frameCache.Clear();
         roomCache.Clear();
 
+        previousScrollX = 0;
+        previousScrollY = 0;
+        currentMapPosition = (0, 0);
+        wasSamusInDoor = false;
+
         navigator = new Navigator();
 
         internalClock.Reset();
         delayRoomCacheClearTimer = 5;
+
+        UpdateRealMapPosition();
     }
 
     public bool[,] GetInternalClockState() => internalClock.GetStates();
