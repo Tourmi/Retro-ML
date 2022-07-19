@@ -87,5 +87,15 @@
         {
             return Math.Max(Math.Abs(x1 - x2), Math.Abs(y1 - y2));
         }
+
+        /// <summary>
+        /// Returns the manhattan distance between two pairs of values.
+        /// </summary>
+        /// <param name="values"></param>
+        /// <returns></returns>
+        public static int ManhattanDistance(int x1, int y1, int x2, int y2)
+        {
+            return Math.Abs(x2 - x1) + Math.Abs(y2 - y1);
+        }
     }
 }
