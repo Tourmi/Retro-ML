@@ -24,8 +24,4 @@
 		</Reference>
 	</ItemGroup>
 
-	<ItemGroup>
-	  <Folder Include="Neural\Scoring\" />
-	</ItemGroup>
-
 </Project>

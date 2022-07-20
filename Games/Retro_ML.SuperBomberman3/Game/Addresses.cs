@@ -8,21 +8,14 @@
     {
         public struct AddressData
         {
-            public enum CacheTypes
-            {
-                Frame,
-            }
-
-            public AddressData(uint address, uint length, CacheTypes cacheTypes = CacheTypes.Frame)
+            public AddressData(uint address, uint length)
             {
                 Address = address;
                 Length = length;
-                CacheType = cacheTypes;
             }
 
             public uint Address;
             public uint Length;
-            public CacheTypes CacheType;
         }
 
         public static class GameAddresses
@@ -66,10 +59,14 @@
             /// </summary>
             public static readonly AddressData YPos = new(0x14F7, 5);
             /// <summary>
-            /// Players AFK timer, vary from 0 to 255. Only incerement when the player does not move.
+            /// Players idle timer, vary from 0 to 255. Only incerement when the player does not move.
             /// When reaching 255, player starts dancing. Useful for the StoppedMoving ScoreFactor.
             /// </summary>
-            public static readonly AddressData AFKTimer = new(0x1467, 1);
+            public static readonly AddressData IdleTimer = new(0x1467, 1);
+            /// <summary>
+            /// Number of bombs planted by the player
+            /// </summary>
+            public static readonly AddressData BombsPlanted = new(0x13D7, 1);
         }
 
         public static class PowerupsAddresses
