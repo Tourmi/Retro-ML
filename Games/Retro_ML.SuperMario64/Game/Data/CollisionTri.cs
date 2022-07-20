@@ -32,10 +32,12 @@ internal struct CollisionTri
 
     public uint AssociatedObjectAddress { get; private set; }
 
+    public bool Static { get; private set; }
+
     /// <summary>
     /// Creates a new SM64 collision triangle, using the 48 bytes given.
     /// </summary>
-    public CollisionTri(byte[] bytes)
+    public CollisionTri(byte[] bytes, bool isStatic = true)
     {
         SurfaceType = bytes[0x00];
         Flags = bytes[0x04];
@@ -77,6 +79,7 @@ internal struct CollisionTri
 
         AssociatedObjectAddress = GetUint(bytes[offset..(offset + 4)]);
         cachedTriangle = null;
+        Static = isStatic;
     }
 
     public bool IsGround => NormalY > 0.01;
@@ -87,7 +90,7 @@ internal struct CollisionTri
     {
         get
         {
-            if (!cachedTriangle.HasValue) cachedTriangle = new Triangle(new(Vertex1X, Vertex1Y, Vertex1Z), new(Vertex2X, Vertex2Y, Vertex2Z), new(Vertex3X, Vertex3Y, Vertex3Z), new(NormalX, NormalY, NormalZ));
+            if (!cachedTriangle.HasValue) cachedTriangle = new Triangle(new(Vertex1X, Vertex1Y, Vertex1Z), new(Vertex2X, Vertex2Y, Vertex2Z), new(Vertex3X, Vertex3Y, Vertex3Z), new(NormalX, NormalY, NormalZ), isStatic: Static);
             return cachedTriangle.Value;
         }
     }

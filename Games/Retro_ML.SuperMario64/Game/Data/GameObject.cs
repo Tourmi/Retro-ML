@@ -330,7 +330,7 @@ internal class GameObject
     {
         get
         {
-            if (!cachedAABB.HasValue) cachedAABB = new AABB(new(X, Y - DownOffset, Z), new(Radius * 2, Height, Radius * 2));
+            if (!cachedAABB.HasValue) cachedAABB = new AABB(new Vector(X, Y - DownOffset, Z), new Vector(Radius * 2, Height, Radius * 2), isStatic: false);
             return cachedAABB!.Value;
         }
     }

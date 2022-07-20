@@ -5,5 +5,21 @@ public interface IRaytracable
     /// Returns the distance at which the given <paramref name="ray"/> collides with this shape.
     /// Returns <see cref="float.NaN"/> if there is no collision
     /// </summary>
-    public float GetRaytrace(Ray ray);
+    float GetRaytrace(Ray ray);
+
+    float MinX { get; }
+    float MaxX { get; }
+    float MinY { get; }
+    float MaxY { get; }
+    float MinZ { get; }
+    float MaxZ { get; }
+
+    /// <summary>
+    /// Whether or not this object can move in the scene
+    /// </summary>
+    bool Static { get; }
+    /// <summary>
+    /// The bounding box of this object
+    /// </summary>
+    AABB AABB { get; }
 }

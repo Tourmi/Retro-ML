@@ -23,6 +23,7 @@ internal class SM64DataFetcher : IDataFetcher
     private readonly SM64PluginConfig pluginConfig;
     private readonly InternalClock internalClock;
     private readonly List<IRaytracable> solidCollisionCache;
+    private OctTree scene;
 
     private uint prevTriListPtr;
 
@@ -34,6 +35,7 @@ internal class SM64DataFetcher : IDataFetcher
         solidCollisionCache = new();
         this.pluginConfig = pluginConfig;
         internalClock = new InternalClock(pluginConfig.InternalClockTickLength, pluginConfig.InternalClockLength);
+        scene = InitNewScene();
     }
 
     /// <summary>
@@ -41,6 +43,9 @@ internal class SM64DataFetcher : IDataFetcher
     /// </summary>
     public void NextFrame()
     {
+        uint trisPointer = (uint)ReadULong(Collision.TrianglesListPointer);
+        prevTriListPtr = trisPointer;
+
         frameCache.Clear();
         internalClock.NextFrame();
         int currPrio = 1;
@@ -58,6 +63,13 @@ internal class SM64DataFetcher : IDataFetcher
         DebugInfo.AddInfo("Coin Count", GetCoinCount().ToString(), "Collected", currPrio++);
         DebugInfo.AddInfo("Star Count", GetStarCount().ToString(), "Collected", currPrio++);
 
+        if (HasLevelChanged())
+        {
+            _ = InitNewScene();
+        }
+        scene.Update();
+        scene.AddObjects(GetDynamicCollision().ToArray());
+
         InitFrameCache();
     }
 
@@ -67,9 +79,10 @@ internal class SM64DataFetcher : IDataFetcher
     public void NextState()
     {
         frameCache.Clear();
-        levelCache.Clear();
+        _ = InitNewScene();
 
         internalClock.Reset();
+        prevTriListPtr = (uint)ReadULong(Collision.TrianglesListPointer);
     }
 
     public bool[,] GetInternalClockState() => internalClock.GetStates();
@@ -95,22 +108,26 @@ internal class SM64DataFetcher : IDataFetcher
 
     public Ray GetMarioForwardRay() => new(new(GetMarioX(), GetMarioY() + 110, GetMarioZ()), Vector.Origin.WithZ(1).RotateXZ(GetMarioFacingAngleRadian()));
 
-    public IEnumerable<IRaytracable> GetCollision() => GetStaticCollision().Concat(GetDynamicCollision());
+    public IEnumerable<IRaytracable> GetCollision()
+    {
+        yield return scene;
+    }
+
+    public bool HasLevelChanged()
+    {
+        uint trisPointer = (uint)ReadULong(Collision.TrianglesListPointer);
+        return trisPointer != 0 && trisPointer != prevTriListPtr;
+    }
 
     /// <summary>
     /// Returns the level's static triangles
     /// </summary>
     public IEnumerable<IRaytracable> GetStaticCollision()
     {
-        ushort staticTriCount = GetStaticTriangleCount();
-        uint pointer = (uint)ReadULong(Collision.TrianglesListPointer);
-
-        //TODO : also check if level changed, reset cache if so.
-        if (pointer != prevTriListPtr)
+        if (!solidCollisionCache.Any())
         {
-            levelCache.Clear();
-            solidCollisionCache.Clear();
-
+            ushort staticTriCount = GetStaticTriangleCount();
+            uint pointer = (uint)ReadULong(Collision.TrianglesListPointer);
             if (pointer == 0) return Enumerable.Empty<IRaytracable>();
 
             var bytes = Read(new AddressData(pointer, (ushort)(staticTriCount * COLLISION_TRI_SIZE), AddressData.CacheDurations.Level));
@@ -121,11 +138,8 @@ internal class SM64DataFetcher : IDataFetcher
                 tris.Add(new(bytes[i..(i + COLLISION_TRI_SIZE)]));
             }
 
-            prevTriListPtr = pointer;
-
             solidCollisionCache.AddRange(tris.Select(s => (IRaytracable)s.Triangle));
         }
-
         return solidCollisionCache;
     }
 
@@ -145,7 +159,7 @@ internal class SM64DataFetcher : IDataFetcher
         var tris = new List<CollisionTri>();
         for (int i = 0; i < bytes.Length; i += COLLISION_TRI_SIZE)
         {
-            tris.Add(new(bytes[i..(i + COLLISION_TRI_SIZE)]));
+            tris.Add(new(bytes[i..(i + COLLISION_TRI_SIZE)], isStatic: false));
         }
 
         return tris.Select(t => (IRaytracable)t.Triangle);
@@ -185,6 +199,16 @@ internal class SM64DataFetcher : IDataFetcher
         }
 
         return objects;
+    }
+
+    private OctTree InitNewScene()
+    {
+        levelCache.Clear();
+        solidCollisionCache.Clear();
+
+        scene = new(new Vector(7005.25f, 7000.65f, -7005.85f), 32_000, 100f, 8, 2);
+        scene.AddObjects(GetStaticCollision().ToArray());
+        return scene;
     }
 
     /// <summary>

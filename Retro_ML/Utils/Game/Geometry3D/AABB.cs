@@ -8,14 +8,43 @@ public struct AABB : IRaytracable
     public readonly Vector MinCorner;
     public readonly Vector MaxCorner;
 
-    public AABB(Vector position, Vector size)
+    public float MinX => MinCorner.X;
+    public float MaxX => MaxCorner.X;
+    public float MinY => MinCorner.Y;
+    public float MaxY => MaxCorner.Y;
+    public float MinZ => MinCorner.Z;
+    public float MaxZ => MaxCorner.Z;
+    public bool Static { get; private set; }
+
+    AABB IRaytracable.AABB => this;
+
+    public AABB(Vector position, Vector size, bool isStatic = true)
     {
         Position = position;
         Size = size.Absolute();
 
-        MinCorner = position - (Size / 2f);
-        MaxCorner = position + (Size / 2f);
+        MinCorner = position - (0.5f * Size);
+        MaxCorner = position + (0.5f * Size);
+        Static = isStatic;
     }
+
+    public AABB(Vector position, float size, bool isStatic = true)
+    {
+        this.Position = position;
+        Size = new(MathF.Abs(size));
+
+        MinCorner = position - (0.5f * Size);
+        MaxCorner = position + (0.5f * Size);
+        Static = isStatic;
+    }
+
+    public bool FullyContains(AABB other) =>
+               MinX <= other.MinX
+            && MinY <= other.MinY
+            && MinZ <= other.MinZ
+            && MaxX >= other.MaxX
+            && MaxY >= other.MaxY
+            && MaxZ >= other.MaxZ;
 
     public float GetRaytrace(Ray ray)
     {

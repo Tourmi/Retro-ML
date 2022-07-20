@@ -125,11 +125,14 @@ public struct Vector
 
     public static Vector operator +(Vector a) => a;
     public static Vector operator +(Vector a, Vector b) => new(a.X + b.X, a.Y + b.Y, a.Z + b.Z);
-    public static Vector operator +(Vector a, float val) => a + new Vector(val);
+    public static Vector operator +(Vector a, float val) => new(a.X + val, a.Y + val, a.Z + val);
     public static Vector operator -(Vector a) => new(-a.X, -a.Y, -a.Z);
-    public static Vector operator -(Vector a, Vector b) => a + -b;
-    public static Vector operator -(Vector a, float val) => a - new Vector(val);
+    public static Vector operator -(Vector a, Vector b) => new(a.X - b.X, a.Y - b.Y, a.Z - b.Z);
+    public static Vector operator -(Vector a, float val) => new(a.X - val, a.Y - val, a.Z - val);
     public static Vector operator *(float val, Vector a) => new(a.X * val, a.Y * val, a.Z * val);
-    public static Vector operator /(Vector a, float val) => (1.0f / val) * a;
-
+    public static Vector operator /(Vector a, float val)
+    {
+        float inv = 1f / val;
+        return new(a.X * inv, a.Y * inv, a.Z * inv);
+    }
 }
