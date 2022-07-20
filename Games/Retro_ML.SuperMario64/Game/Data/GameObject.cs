@@ -39,8 +39,6 @@ internal class GameObject
         0x13002338, //sushi
         0x13002388, //sushi hitbox
         0x130023A4, //skull crate
-        0x13002568, //blue coin block
-        0x13002588, //blue coin block coin
         0x130026D4, //castle boo
         0x13002710, //cage boo
         0x13002768, //big balcony boo
@@ -126,6 +124,8 @@ internal class GameObject
         0x13002250, //cap/item/star block (offset 0x144 for contents)
         0x13002A20, //star?
         0x13003068, //yellow coin
+        0x13002568, //blue coin block
+        0x13002588, //blue coin block coin
         0x130030A4, //blue coin (accelerates away)
         0x130030D4, //blue coin (runs away)
         0x13003104, //blue coin

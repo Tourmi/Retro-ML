@@ -144,7 +144,7 @@ internal class SM64PluginConfig : IGamePluginConfig
                                                        SolidHorizontalViewAngle / 360f,
                                                        ViewDistance,
                                                        ((SM64DataFetcher)dataFetcher).GetMarioForwardRay(),
-                                                       ((SM64DataFetcher)dataFetcher).GetStaticCollision()),
+                                                       ((SM64DataFetcher)dataFetcher).GetCollision()),
             SolidHorizontalRays,
             SolidVerticalRays));
         neuralConfig.InputNodes.Add(new InputNode(

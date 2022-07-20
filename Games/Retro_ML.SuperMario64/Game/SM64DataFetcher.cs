@@ -15,6 +15,7 @@ namespace Retro_ML.SuperMario64.Game;
 internal class SM64DataFetcher : IDataFetcher
 {
     private const ushort COLLISION_TRI_SIZE = 0x30;
+    private const short MAXIMUM_VERTICAL_SPEED = 75;
 
     private readonly IEmulatorAdapter emulator;
     private readonly Dictionary<uint, byte[]> frameCache;
@@ -92,7 +93,9 @@ internal class SM64DataFetcher : IDataFetcher
     public ushort GetTriangleCount() => (ushort)ReadULong(Collision.TotalTriangleCount);
     public ushort GetDynamicTriangleCount() => (ushort)(GetTriangleCount() - GetStaticTriangleCount());
 
-    public Ray GetMarioForwardRay() => new(new(GetMarioX(), GetMarioY() + 40, GetMarioZ()), Vector.Origin.WithZ(1).RotateXZ(GetMarioFacingAngleRadian()));
+    public Ray GetMarioForwardRay() => new(new(GetMarioX(), GetMarioY() + 110, GetMarioZ()), Vector.Origin.WithZ(1).RotateXZ(GetMarioFacingAngleRadian()));
+
+    public IEnumerable<IRaytracable> GetCollision() => GetStaticCollision().Concat(GetDynamicCollision());
 
     /// <summary>
     /// Returns the level's static triangles
@@ -124,6 +127,28 @@ internal class SM64DataFetcher : IDataFetcher
         }
 
         return solidCollisionCache;
+    }
+
+    /// <summary>
+    /// Returns the level's dynamic collision triangles
+    /// </summary>
+    /// <returns></returns>
+    public IEnumerable<IRaytracable> GetDynamicCollision()
+    {
+        ushort staticTriCount = GetStaticTriangleCount();
+        ushort dynamicTriCount = GetDynamicTriangleCount();
+        uint pointer = (uint)ReadULong(Collision.TrianglesListPointer);
+
+        if (pointer == 0) return Enumerable.Empty<IRaytracable>();
+
+        var bytes = Read(new AddressData(pointer + (uint)(staticTriCount * COLLISION_TRI_SIZE), (ushort)(dynamicTriCount * COLLISION_TRI_SIZE), AddressData.CacheDurations.Frame));
+        var tris = new List<CollisionTri>();
+        for (int i = 0; i < bytes.Length; i += COLLISION_TRI_SIZE)
+        {
+            tris.Add(new(bytes[i..(i + COLLISION_TRI_SIZE)]));
+        }
+
+        return tris.Select(t => (IRaytracable)t.Triangle);
     }
 
     public IEnumerable<IRaytracable> GetEnemyHitboxes() => GetObjects().Where(o => o.IsEnemy()).Select(o => (IRaytracable)o.AABB);
