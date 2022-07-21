@@ -85,6 +85,7 @@ namespace Retro_ML.SuperBomberman3.Configuration
         }
 
         public int InternalClockLength { get; set; } = 4;
+
         /// <summary>
         /// The amount of frames before the clock moves to the next state.
         /// </summary>
@@ -103,6 +104,7 @@ namespace Retro_ML.SuperBomberman3.Configuration
             {
                 new IdleScoreFactor() { IsDisabled=false, ScoreMultiplier=-5 },
                 new PowerupScoreFactor() { IsDisabled=false, ScoreMultiplier=1 },
+                new EndRoundScoreFactor() { IsDisabled=false, ScoreMultiplier=100 },
             };
         }
 

@@ -53,11 +53,11 @@
             /// <summary>
             /// Players X pos in pixels. There can be 5 players in one game.
             /// </summary>
-            public static readonly AddressData XPos = new(0x14AF, 5);
+            public static readonly AddressData XPos = new(0x14AF, 4);
             /// <summary>
             /// Players Y pos in pixels. There can be 5 players in one game.
             /// </summary>
-            public static readonly AddressData YPos = new(0x14F7, 5);
+            public static readonly AddressData YPos = new(0x14F7, 4);
             /// <summary>
             /// Players idle timer, vary from 0 to 255. Only incerement when the player does not move.
             /// When reaching 255, player starts dancing. Useful for the StoppedMoving ScoreFactor.
@@ -67,6 +67,16 @@
             /// Number of bombs planted by the player
             /// </summary>
             public static readonly AddressData BombsPlanted = new(0x13D7, 1);
+            /// <summary>
+            /// Theses addresses are used as a sort of timer. The timer looks to be used to 3 purposes : 
+            /// 1 - When a player dies, a timer is started that represent the time left before his items are dropped on the ground.
+            /// 2 - When a player grab an egg, a timer is started associated with the mounting animation.
+            /// 3 - When a player gets damaged on a Louie, a timer is started associated with the dismounting animation.
+            /// Since I havent found a better flag / way to know when a player dies, I will use these addresses.
+            /// When a player dies, the value starts at 60 and decrease
+            /// *Temporary until better addresses are found*
+            /// </summary>
+            public static readonly AddressData DeathTimer = new(0x12CF, 4);
         }
 
         public static class PowerupsAddresses

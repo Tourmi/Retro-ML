@@ -31,11 +31,14 @@ namespace Retro_ML.SuperBomberman3.Game
         private readonly InternalClock internalClock;
 
         private byte[,] playableTilesCache;
+        private bool[] playersDead;
 
         public SB3DataFetcher(IEmulatorAdapter emulator, NeuralConfig neuralConfig, SB3PluginConfig pluginConfig)
         {
             this.emulator = emulator;
             frameCache = new();
+            playersDead = new bool[4];
+            Array.Fill(playersDead, false);
             playableTilesCache = new byte[DESIRED_LEVEL_HEIGHT, DESIRED_LEVEL_WIDTH];
             internalClock = new InternalClock(pluginConfig.InternalClockTickLength, pluginConfig.InternalClockLength);
         }
@@ -53,6 +56,7 @@ namespace Retro_ML.SuperBomberman3.Game
         public byte GetBombsPlanted() => ReadSingle(PlayersAddresses.BombsPlanted);
         public double GetBombsPlantedNormalized() => GetBombsPlanted() / (double)MAX_BOMB;
         public bool IsPlayerIdle() => ReadSingle(PlayersAddresses.IdleTimer) == 0xFF;
+        public byte[] GetPlayerDeathTimer() => Read(PlayersAddresses.DeathTimer);
         public byte GetPlayerExtraBombPowerUpLevel() => ReadSingle(PowerupsAddresses.ExtraBomb);
         public byte GetPlayerExplosionExpanderPowerUpLevel() => ReadSingle(PowerupsAddresses.ExplosionExpander);
         public byte GetPlayerAcceleratorPowerUpLevel() => ReadSingle(PowerupsAddresses.Accelerator);
@@ -70,6 +74,8 @@ namespace Retro_ML.SuperBomberman3.Game
         public bool GetPlayerSlimeBombPowerUpState() => (ReadSingle(PowerupsAddresses.BombermanUpgrade) & 0x20) != 0;
         public bool GetPlayerPowerBombPowerUpState() => (ReadSingle(PowerupsAddresses.BombermanUpgrade) & 0x40) != 0;
         public bool GetPlayerSkullPowerUpState() => ReadSingle(PowerupsAddresses.Skull) == 0x31;
+        public int GetNumbersOfPlayersAlive() => playersDead.Where(c => !c).Count();
+        public bool IsPlayerDead() => playersDead[0] == true;
 
         /// <summary>
         /// Needs to be called every frame to reset the memory cache
@@ -78,6 +84,7 @@ namespace Retro_ML.SuperBomberman3.Game
         {
             frameCache.Clear();
             MapPlayableTiles();
+            CheckPlayerDeathStatus();
             internalClock.NextFrame();
             InitFrameCache();
         }
@@ -88,6 +95,7 @@ namespace Retro_ML.SuperBomberman3.Game
         public void NextState()
         {
             frameCache.Clear();
+            Array.Fill(playersDead, false);
             MapPlayableTiles();
             internalClock.Reset();
         }
@@ -110,6 +118,27 @@ namespace Retro_ML.SuperBomberman3.Game
             }
 
             playableTilesCache = playableTiles;
+        }
+
+        /// <summary>
+        /// Check if a player is dead.
+        /// </summary>
+        public void CheckPlayerDeathStatus()
+        {
+            byte[] timers = GetPlayerDeathTimer();
+            
+            for (int playerIndex = 0; playerIndex < 4; playerIndex++)
+            {
+                //If player is not already flagged as dead
+                if (playersDead[playerIndex] != true)
+                {
+                    //If the timer associated with the player == 60 (0x3c), it means the player just died
+                    if (timers[playerIndex] == 0x3C)
+                    {
+                        playersDead[playerIndex] = true;
+                    }
+                }
+            }
         }
 
         /// <summary>
@@ -345,6 +374,7 @@ namespace Retro_ML.SuperBomberman3.Game
             PlayersAddresses.YPos,
             PlayersAddresses.IdleTimer,
             PlayersAddresses.BombsPlanted,
+            PlayersAddresses.DeathTimer,
             PowerupsAddresses.ExplosionExpander,
             PowerupsAddresses.Accelerator,
             PowerupsAddresses.ExtraBomb,
