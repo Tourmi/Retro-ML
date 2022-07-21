@@ -17,15 +17,28 @@ internal class PokemonPluginConfig : IGamePluginConfig
         true, //curr. move not very super effective
         true, //move power
         true, //stab
+        true, //Hp
         true, //Opp Hp.
         true, //Attack
         true, //Defense
         true, //Speed
         true, //Special
+        true, //att. modifier
+        true, //def. modifier
+        true, //speed modifier
+        true, //special modifier
+        true, //Acc. modifier
+        true, //evasion modifier
         true, //Opp. attack
         true, //Opp. defense
         true, //Opp. Speed
         true, //Opp. special
+        true, //opp. att. modifier
+        true, //opp. def. modifier
+        true, //opp. speed modifier
+        true, //opp. special modifier
+        true, //opp. Acc. modifier
+        true, //opp. evasion modifier
         true, //Ennemy Sleeping
         true, // Opp. paralyzed
         true, //Frozen
@@ -121,15 +134,28 @@ internal class PokemonPluginConfig : IGamePluginConfig
         neuralConfig.InputNodes.Add(new InputNode("Move not very effective", neuralConfig.EnabledStates[enabledIndex++], (dataFetcher) => ((PokemonDataFetcher)dataFetcher).IsNotVeryEffective()));
         neuralConfig.InputNodes.Add(new InputNode("Move Power", neuralConfig.EnabledStates[enabledIndex++], (dataFetcher) => ((PokemonDataFetcher)dataFetcher).SelectedMovePower()));
         neuralConfig.InputNodes.Add(new InputNode("STAB", neuralConfig.EnabledStates[enabledIndex++], (dataFetcher) => ((PokemonDataFetcher)dataFetcher).IsSTAB()));
+        neuralConfig.InputNodes.Add(new InputNode("HP", neuralConfig.EnabledStates[enabledIndex++], (dataFetcher) => ((PokemonDataFetcher)dataFetcher).CurrentHP()));
         neuralConfig.InputNodes.Add(new InputNode("Opponent HP", neuralConfig.EnabledStates[enabledIndex++], (dataFetcher) => ((PokemonDataFetcher)dataFetcher).OpposingCurrentHP()));
         neuralConfig.InputNodes.Add(new InputNode("Attack Stat", neuralConfig.EnabledStates[enabledIndex++], (dataFetcher) => ((PokemonDataFetcher)dataFetcher).GetAttack()));
         neuralConfig.InputNodes.Add(new InputNode("Defense Stat", neuralConfig.EnabledStates[enabledIndex++], (dataFetcher) => ((PokemonDataFetcher)dataFetcher).GetDefense()));
         neuralConfig.InputNodes.Add(new InputNode("Speed Stat", neuralConfig.EnabledStates[enabledIndex++], (dataFetcher) => ((PokemonDataFetcher)dataFetcher).GetSpeed()));
         neuralConfig.InputNodes.Add(new InputNode("Special Stat", neuralConfig.EnabledStates[enabledIndex++], (dataFetcher) => ((PokemonDataFetcher)dataFetcher).GetSpecial()));
+        neuralConfig.InputNodes.Add(new InputNode("Attack Modifier", neuralConfig.EnabledStates[enabledIndex++], (dataFetcher) => ((PokemonDataFetcher)dataFetcher).GetAttackModifier()));
+        neuralConfig.InputNodes.Add(new InputNode("Defense Modifier", neuralConfig.EnabledStates[enabledIndex++], (dataFetcher) => ((PokemonDataFetcher)dataFetcher).GetDefenseModifier()));
+        neuralConfig.InputNodes.Add(new InputNode("Speed Modifier", neuralConfig.EnabledStates[enabledIndex++], (dataFetcher) => ((PokemonDataFetcher)dataFetcher).GetSpeedModifier()));
+        neuralConfig.InputNodes.Add(new InputNode("Special Modifier", neuralConfig.EnabledStates[enabledIndex++], (dataFetcher) => ((PokemonDataFetcher)dataFetcher).GetSpecialModifier()));
+        neuralConfig.InputNodes.Add(new InputNode("Accuracy Modifier", neuralConfig.EnabledStates[enabledIndex++], (dataFetcher) => ((PokemonDataFetcher)dataFetcher).GetAccuracyModifier()));
+        neuralConfig.InputNodes.Add(new InputNode("Evasion Modifier", neuralConfig.EnabledStates[enabledIndex++], (dataFetcher) => ((PokemonDataFetcher)dataFetcher).GetEvasionModifier()));
         neuralConfig.InputNodes.Add(new InputNode("Opponent Attack Stat", neuralConfig.EnabledStates[enabledIndex++], (dataFetcher) => ((PokemonDataFetcher)dataFetcher).GetOpposingAttack()));
         neuralConfig.InputNodes.Add(new InputNode("Opponent Defense Stat", neuralConfig.EnabledStates[enabledIndex++], (dataFetcher) => ((PokemonDataFetcher)dataFetcher).GetOpposingDefense()));
         neuralConfig.InputNodes.Add(new InputNode("Opponent Speed Stat", neuralConfig.EnabledStates[enabledIndex++], (dataFetcher) => ((PokemonDataFetcher)dataFetcher).GetOpposingSpeed()));
         neuralConfig.InputNodes.Add(new InputNode("Opponent Special Stat", neuralConfig.EnabledStates[enabledIndex++], (dataFetcher) => ((PokemonDataFetcher)dataFetcher).GetOpposingSpecial()));
+        neuralConfig.InputNodes.Add(new InputNode("Opponent Attack Modifier", neuralConfig.EnabledStates[enabledIndex++], (dataFetcher) => ((PokemonDataFetcher)dataFetcher).GetOpposingAttackModifier()));
+        neuralConfig.InputNodes.Add(new InputNode("Opponent Defense Modifier", neuralConfig.EnabledStates[enabledIndex++], (dataFetcher) => ((PokemonDataFetcher)dataFetcher).GetOpposingDefenseModifier()));
+        neuralConfig.InputNodes.Add(new InputNode("Opponent Speed Modifier", neuralConfig.EnabledStates[enabledIndex++], (dataFetcher) => ((PokemonDataFetcher)dataFetcher).GetOpposingSpeedModifier()));
+        neuralConfig.InputNodes.Add(new InputNode("Opponent Special Modifier", neuralConfig.EnabledStates[enabledIndex++], (dataFetcher) => ((PokemonDataFetcher)dataFetcher).GetOpposingSpecialModifier()));
+        neuralConfig.InputNodes.Add(new InputNode("Opponent Accuracy Modifier", neuralConfig.EnabledStates[enabledIndex++], (dataFetcher) => ((PokemonDataFetcher)dataFetcher).GetOpposingAccuracyModifier()));
+        neuralConfig.InputNodes.Add(new InputNode("Opponent Evasion Modifier", neuralConfig.EnabledStates[enabledIndex++], (dataFetcher) => ((PokemonDataFetcher)dataFetcher).GetOpposingEvasionModifier()));
         neuralConfig.InputNodes.Add(new InputNode("Ennemy sleeping", neuralConfig.EnabledStates[enabledIndex++], (dataFetcher) => ((PokemonDataFetcher)dataFetcher).GetOpposingPokemonSleep()));
         neuralConfig.InputNodes.Add(new InputNode("Opponnent paralyzed", neuralConfig.EnabledStates[enabledIndex++], (dataFetcher) => ((PokemonDataFetcher)dataFetcher).GetOpposingPokemonParalysis()));
         neuralConfig.InputNodes.Add(new InputNode("Opponnent Frozen", neuralConfig.EnabledStates[enabledIndex++], (dataFetcher) => ((PokemonDataFetcher)dataFetcher).GetOpposingPokemonFrozen()));

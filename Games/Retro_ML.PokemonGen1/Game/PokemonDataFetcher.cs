@@ -81,6 +81,7 @@ internal class PokemonDataFetcher : IDataFetcher
     public bool IsSuperEffective() => GetMultiplier() >= 2;
     public bool IsNotVeryEffective() => GetMultiplier() < 1;
     public bool IsSTAB() => ReadSingle(CurrentPokemon.SelectedMoveType) == ReadSingle(CurrentPokemon.Type1) || ReadSingle(CurrentPokemon.SelectedMoveType) == ReadSingle(CurrentPokemon.Type2);
+    public double CurrentHP() => ReadULong(CurrentPokemon.CurrentHP) / (double)ReadULong(CurrentPokemon.MaxHP);
     public double OpposingCurrentHP() => ReadULong(OpposingPokemon.CurrentHP) / (double)ReadULong(OpposingPokemon.MaxHP);
     public double GetAttack() => ReadULong(CurrentPokemon.Attack) / (double)MAXIMUM_ATTACK_STAT;
     public double GetDefense() => ReadULong(CurrentPokemon.Defense) / (double)MAXIMUM_DEFENSE_STAT;
@@ -98,11 +99,24 @@ internal class PokemonDataFetcher : IDataFetcher
     public bool Move2Exists() => Read(CurrentPokemon.MoveIDs)[1] != 0;
     public bool Move3Exists() => Read(CurrentPokemon.MoveIDs)[2] != 0;
     public bool Move4Exists() => Read(CurrentPokemon.MoveIDs)[3] != 0;
-    public bool IsFightOptionSelected() => ReadSingle(FightCursor) == 193;
+    public bool IsFightOptionSelected() => (ReadSingle(FightCursor) == 193) && (ReadSingle(WokeUpDialog) != 192);
+    public bool IsOnAwakenDialog() => ReadSingle(WokeUpDialog) == 192;
     public byte GetMovePP(int index) => (byte)(Read(CurrentPokemon.MovesCurrentPP)[index] & 0b0011_1111);
     public bool IsMoveDisabled(int index) => Read(CurrentPokemon.MoveIDs)[index] == ReadSingle(CurrentPokemon.DisabledMove);
     public bool IsPlayerTrapped() => (ReadSingle(OpposingPokemon.BattleStatus) & 0b0010_0000) != 0;
     public int GetMoveCursorIndex() => ReadSingle(MoveCursorIndex);
+    public double GetAttackModifier() => (ReadSingle(CurrentPokemon.AttackModifier) - 7) / 6.0;
+    public double GetDefenseModifier() => (ReadSingle(CurrentPokemon.DefenseModifier) - 7) / 6.0;
+    public double GetSpeedModifier() => (ReadSingle(CurrentPokemon.SpeedModifier) - 7) / 6.0;
+    public double GetSpecialModifier() => (ReadSingle(CurrentPokemon.SpecialModifier) - 7) / 6.0;
+    public double GetAccuracyModifier() => (ReadSingle(CurrentPokemon.AccuracyModifier) - 7) / 6.0;
+    public double GetEvasionModifier() => (ReadSingle(CurrentPokemon.EvasionModifier) - 7) / 6.0;
+    public double GetOpposingAttackModifier() => (ReadSingle(OpposingPokemon.AttackModifier) - 7) / 6.0;
+    public double GetOpposingDefenseModifier() => (ReadSingle(OpposingPokemon.DefenseModifier) - 7) / 6.0;
+    public double GetOpposingSpeedModifier() => (ReadSingle(OpposingPokemon.SpeedModifier) - 7) / 6.0;
+    public double GetOpposingSpecialModifier() => (ReadSingle(OpposingPokemon.SpecialModifier) - 7) / 6.0;
+    public double GetOpposingAccuracyModifier() => (ReadSingle(OpposingPokemon.AccuracyModifier) - 7) / 6.0;
+    public double GetOpposingEvasionModifier() => (ReadSingle(OpposingPokemon.EvasionModifier) - 7) / 6.0;
 
     public double GetMultiplier()
     {

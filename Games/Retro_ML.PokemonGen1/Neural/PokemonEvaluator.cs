@@ -63,6 +63,12 @@ internal class PokemonEvaluator : DefaultEvaluator
     {
         movesScores.Clear();
 
+        while (df.IsOnAwakenDialog())
+        {
+            PressB(15, false);
+            emulator.NextFrames(15, false);
+        }
+
         //Open attack menu
         //Select move 1
         PressA(15);
@@ -70,6 +76,16 @@ internal class PokemonEvaluator : DefaultEvaluator
         {
             return;
         }
+
+        //Woke up/Freed from wrap
+        while (df.GetMoveCursorIndex() == 0)
+        {
+            PressB(15, true);
+            emulator.NextFrames(15, false);
+
+            PressA(15);
+        }
+
         while (df.GetMoveCursorIndex() != 1)
         {
             PressUp(15);
@@ -115,6 +131,10 @@ internal class PokemonEvaluator : DefaultEvaluator
                 PressDown(15);
                 index++;
             }
+
+            /*Wait a random amount of time(0-120 frames) so that the enemy pokemon does
+            not always do the same move when it is its turn*/
+            WaitRandomTime();
             PressA(15);
         }
 
@@ -178,7 +198,7 @@ internal class PokemonEvaluator : DefaultEvaluator
             randID = (byte)random.Next(1, MAX_POKEMON_ID);
         } while (missingNO.Contains(randID));
 
-        return randID;
+        return 38;
     }
 
     private void WriteRandomEncounterAddresses()
@@ -191,4 +211,8 @@ internal class PokemonEvaluator : DefaultEvaluator
         }
     }
 
+    private void WaitRandomTime()
+    {
+        emulator!.NextFrames(Random.Shared.Next(120), false);
+    }
 }

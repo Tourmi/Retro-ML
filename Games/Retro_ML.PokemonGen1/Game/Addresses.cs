@@ -17,7 +17,7 @@ internal static class Addresses
             Battle
         }
 
-        public AddressData(uint address, uint length = 1, CacheDurations cacheDuration = CacheDurations.Turn, bool isBigEndian = false)
+        public AddressData(uint address, uint length = 1, CacheDurations cacheDuration = CacheDurations.Turn, bool isBigEndian = false, bool hasOffset = true)
         {
             Address = address;
             Length = length;
@@ -47,6 +47,10 @@ internal static class Addresses
 
     public static readonly AddressData MoveCursorIndex = new(0xCC27, cacheDuration: AddressData.CacheDurations.NoCache);
 
+    /// <summary>
+    /// if equals 192: On woke up dialog
+    /// </summary>
+    public static readonly AddressData WokeUpDialog = new(0xDFE0, cacheDuration: AddressData.CacheDurations.NoCache);
 
     public static class WildEncounters
     {
@@ -95,7 +99,61 @@ internal static class Addresses
 
         public static readonly AddressData Special = new(0xD02B, 2, isBigEndian: true);
 
-        public static readonly AddressData DisabledMove = new(0xCCEF);
+        public static readonly AddressData DisabledMove = new(0xCCEE, hasOffset: false);
+
+        /// <summary>
+        /// <code>
+        /// 1-6  : Stat nerfed
+        /// 7    : No modifier
+        /// 7-13 : Stat buffed
+        /// </code>
+        /// </summary>
+        public static readonly AddressData AttackModifier = new(0xCD1A, hasOffset: false);
+
+        /// <summary>
+        /// <code>
+        /// 1-6  : Stat nerfed
+        /// 7    : No modifier
+        /// 7-13 : Stat buffed
+        /// </code>
+        /// </summary>
+        public static readonly AddressData DefenseModifier = new(0xCD1B, hasOffset: false);
+
+        /// <summary>
+        /// <code>
+        /// 1-6  : Stat nerfed
+        /// 7    : No modifier
+        /// 7-13 : Stat buffed
+        /// </code>
+        /// </summary>
+        public static readonly AddressData SpeedModifier = new(0xCD1C, hasOffset: false);
+
+        /// <summary>
+        /// <code>
+        /// 1-6  : Stat nerfed
+        /// 7    : No modifier
+        /// 7-13 : Stat buffed
+        /// </code>
+        /// </summary>
+        public static readonly AddressData SpecialModifier = new(0xCD1D, hasOffset: false);
+
+        /// <summary>
+        /// <code>
+        /// 1-6  : Stat nerfed
+        /// 7    : No modifier
+        /// 7-13 : Stat buffed
+        /// </code>
+        /// </summary>
+        public static readonly AddressData AccuracyModifier = new(0xCD1E, hasOffset: false);
+       
+        /// <summary>
+        /// <code>
+        /// 1-6  : Stat nerfed
+        /// 7    : No modifier
+        /// 7-13 : Stat buffed
+        /// </code>
+        /// </summary>
+        public static readonly AddressData EvasionModifier = new(0xCD1F, hasOffset: false);
 
         /// <summary>
         /// Each byte represents one move's current PP
@@ -196,6 +254,60 @@ internal static class Addresses
         public static readonly AddressData Speed = new(0xCFFA, 2, isBigEndian: true);
 
         public static readonly AddressData Special = new(0xCFFC, 2, isBigEndian: true);
+
+        /// <summary>
+        /// <code>
+        /// 1-6  : Stat nerfed
+        /// 7    : No modifier
+        /// 7-13 : Stat buffed
+        /// </code>
+        /// </summary>
+        public static readonly AddressData AttackModifier = new(0xCD2E, hasOffset: false);
+
+        /// <summary>
+        /// <code>
+        /// 1-6  : Stat nerfed
+        /// 7    : No modifier
+        /// 7-13 : Stat buffed
+        /// </code>
+        /// </summary>
+        public static readonly AddressData DefenseModifier = new(0xCD2F, hasOffset: false);
+
+        /// <summary>
+        /// <code>
+        /// 1-6  : Stat nerfed
+        /// 7    : No modifier
+        /// 7-13 : Stat buffed
+        /// </code>
+        /// </summary>
+        public static readonly AddressData SpeedModifier = new(0xCD30, hasOffset: false);
+
+        /// <summary>
+        /// <code>
+        /// 1-6  : Stat nerfed
+        /// 7    : No modifier
+        /// 7-13 : Stat buffed
+        /// </code>
+        /// </summary>
+        public static readonly AddressData SpecialModifier = new(0xCD31, hasOffset: false);
+
+        /// <summary>
+        /// <code>
+        /// 1-6  : Stat nerfed
+        /// 7    : No modifier
+        /// 7-13 : Stat buffed
+        /// </code>
+        /// </summary>
+        public static readonly AddressData AccuracyModifier = new(0xCD32, hasOffset: false);
+
+        /// <summary>
+        /// <code>
+        /// 1-6  : Stat nerfed
+        /// 7    : No modifier
+        /// 7-13 : Stat buffed
+        /// </code>
+        /// </summary>
+        public static readonly AddressData EvasionModifier = new(0xCD33, hasOffset: false);
 
         /// <summary>
         /// Types Summary 
