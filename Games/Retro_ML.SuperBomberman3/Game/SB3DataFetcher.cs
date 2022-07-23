@@ -372,7 +372,6 @@ namespace Retro_ML.SuperBomberman3.Game
             GameAddresses.Tiles,
             PlayersAddresses.XPos,
             PlayersAddresses.YPos,
-            PlayersAddresses.IdleTimer,
             PlayersAddresses.BombsPlanted,
             PlayersAddresses.DeathTimer,
             PowerupsAddresses.ExplosionExpander,
