@@ -16,6 +16,7 @@ internal class SM64DataFetcher : IDataFetcher
 {
     private const ushort COLLISION_TRI_SIZE = 0x30;
     private const short MAXIMUM_VERTICAL_SPEED = 75;
+    private const short MAXIMUM_HORIZONTAL_SPEED = 87;
 
     private readonly IEmulatorAdapter emulator;
     private readonly Dictionary<uint, byte[]> frameCache;
@@ -62,6 +63,7 @@ internal class SM64DataFetcher : IDataFetcher
         DebugInfo.AddInfo("Mario Cap Status", Convert.ToString(GetMarioCapFlags(), 2).PadLeft(16, '0').Insert(8, " "), "Mario", currPrio++);
         DebugInfo.AddInfo("Coin Count", GetCoinCount().ToString(), "Collected", currPrio++);
         DebugInfo.AddInfo("Star Count", GetStarCount().ToString(), "Collected", currPrio++);
+        DebugInfo.AddInfo("Camera horizontal angle", GetCameraHorizontalAngle().ToString(), "Camera", currPrio++);
 
         if (HasLevelChanged())
         {
@@ -89,18 +91,52 @@ internal class SM64DataFetcher : IDataFetcher
     public float GetMarioX() => ReadFloat(Mario.XPos);
     public float GetMarioY() => ReadFloat(Mario.YPos);
     public float GetMarioZ() => ReadFloat(Mario.ZPos);
+    public Vector GetMarioPos() => new(GetMarioX(), GetMarioY(), GetMarioZ());
     public float GetMarioXSpeed() => ReadFloat(Mario.XSpeed);
     public float GetMarioYSpeed() => ReadFloat(Mario.YSpeed);
     public float GetMarioZSpeed() => ReadFloat(Mario.ZSpeed);
+    public Vector GetMarioSpeed() => new(GetMarioXSpeed(), GetMarioYSpeed(), GetMarioZSpeed());
+    public ushort GetCameraHorizontalAngle() => (ushort)ReadULong(Camera.HorizontalAngle);
     public float GetMarioHorizontalSpeed() => ReadFloat(Mario.HorizontalSpeed);
     public ushort GetMarioFacingAngle() => (ushort)ReadULong(Mario.FacingAngle);
     public float GetMarioFacingAngleRadian() => MathF.Tau * (-(GetMarioFacingAngle() / (float)ushort.MaxValue));
     public ushort GetMarioCapFlags() => (ushort)ReadULong(Mario.HatFlags);
     public byte GetMarioHealth() => ReadByte(Mario.Health);
+    public double GetMarioNormalizedHealth() => GetMarioHealth() / 8.0;
     public sbyte GetMarioGroundOffset() => (sbyte)ReadByte(Mario.GroundOffset);
     public ushort GetCoinCount() => (ushort)ReadULong(Mario.Coins);
     public ushort GetStarCount() => (ushort)ReadULong(Progress.StarCount);
     public uint GetBehaviourBankStart() => (uint)ReadULong(GameObjects.BehaviourBankStartAddress);
+    public Vector GetMissionStarPos() => Vector.Origin;
+    public double[,] GetMissionStarDirection()
+    {
+        double[,] res = new double[1, 3];
+
+        var starPos = GetMissionStarPos();
+        var marioPos = GetMarioPos();
+        var dirr = (starPos - marioPos).Normalized();
+
+        res[0, 0] = dirr.X;
+        res[0, 1] = dirr.Y;
+        res[0, 2] = dirr.Z;
+
+        return res;
+    }
+
+    public double[,] GetMarioSpeeds()
+    {
+        var res = new double[1, 3];
+        var speed = GetMarioSpeed();
+
+        res[0, 0] = speed.X / (double)MAXIMUM_HORIZONTAL_SPEED;
+        res[0, 1] = speed.Y / (double)MAXIMUM_VERTICAL_SPEED;
+        res[0, 2] = speed.Z / (double)MAXIMUM_HORIZONTAL_SPEED;
+
+        return res;
+    }
+
+    public double GetMarioAngle() => (GetMarioFacingAngle() * 2d / ushort.MaxValue) - 1;
+    public double GetCameraAngle() => (GetCameraHorizontalAngle() * 2d / ushort.MaxValue) - 1;
 
     public ushort GetStaticTriangleCount() => (ushort)ReadULong(Collision.StaticTriangleCount);
     public ushort GetTriangleCount() => (ushort)ReadULong(Collision.TotalTriangleCount);
@@ -356,6 +392,11 @@ internal class SM64DataFetcher : IDataFetcher
 
     private void InitFrameCache()
     {
+        var staticTriCount = GetStaticTriangleCount();
+        var dynamicTrisCount = GetDynamicTriangleCount();
+        var actives = ReadMultiple(GameObjects.Active, GameObjects.SingleGameObject, GameObjects.AllGameObjects).ToArray();
+        byte activeCount = (byte)Array.IndexOf(actives, (byte)0);
+
         List<AddressData> toRead = new()
         {
             Mario.XPos,
@@ -367,8 +408,26 @@ internal class SM64DataFetcher : IDataFetcher
             Mario.HorizontalSpeed,
             Mario.Coins,
             Mario.HatFlags,
-            Progress.StarCount
+            Progress.StarCount,
+            Camera.HorizontalAngle,
+            Mario.FacingAngle,
+            new AddressData(Collision.TrianglesListPointer.Address + (uint)(staticTriCount * COLLISION_TRI_SIZE), (ushort)(dynamicTrisCount * COLLISION_TRI_SIZE), Collision.TrianglesListPointer.CacheDuration),
         };
+
+        uint totalBytes = GameObjects.SingleGameObject.Length * activeCount;
+        var addressesToRead = new AddressData[]
+        {
+            GameObjects.BehaviourAddress,
+            GameObjects.XPos,
+            GameObjects.YPos,
+            GameObjects.ZPos,
+            GameObjects.HitboxRadius,
+            GameObjects.HitboxHeight,
+            GameObjects.HitboxDownOffset
+        };
+        var bytesPerObject = (int)addressesToRead.Sum(a => a.Length);
+
+        toRead.AddRange(GetCalculatedAddresses(totalBytes, GameObjects.SingleGameObject.Length, addressesToRead));
 
         _ = Read(toRead.ToArray());
     }

@@ -6,8 +6,6 @@ namespace Retro_ML.SuperMario64.Neural.Scoring;
 
 internal class TimeTakenScoreFactor : IScoreFactor
 {
-    public const string MAXIMUM_TRAINING_TIME = "Maximum Training Time";
-
     private bool shouldStop = false;
     private double currScore;
     private int levelFrames = 0;
@@ -29,7 +27,6 @@ internal class TimeTakenScoreFactor : IScoreFactor
             nameof(MaximumTrainingTime) => MaximumTrainingTime,
             _ => 0,
         };
-
         set
         {
             switch (fieldName)

@@ -17,6 +17,11 @@ internal class SM64PluginConfig : IGamePluginConfig
         true, //collision
         true, //dangers
         true, //goodies
+        true, //mario angle
+        true, //mario speed
+        true, //camera angle
+        true, //mission star direction
+        false, //health
         false, //clock
         true, //bias
 
@@ -107,7 +112,11 @@ internal class SM64PluginConfig : IGamePluginConfig
 
     public SM64PluginConfig() => ScoreFactors = new List<IScoreFactor>()
     {
+        new DiedScoreFactor() { ScoreMultiplier = -100},
+        new StarScoreFactor() { ScoreMultiplier = 1000},
+        new DistanceToStarScoreFactor() { ScoreMultiplier = 1, IsDisabled = false },
         new TimeTakenScoreFactor() { ScoreMultiplier = -0.1, IsDisabled = false },
+        new CoinScoreFactor() { ScoreMultiplier = 10, IsDisabled = true},
     };
 
     public string Serialize() => JsonConvert.SerializeObject(this, SerializationUtils.JSON_CONFIG);
@@ -147,6 +156,7 @@ internal class SM64PluginConfig : IGamePluginConfig
                                                        ((SM64DataFetcher)dataFetcher).GetCollision()),
             SolidHorizontalRays,
             SolidVerticalRays));
+
         neuralConfig.InputNodes.Add(new InputNode(
             "Dangers",
             neuralConfig.EnabledStates[enabledIndex++],
@@ -159,6 +169,7 @@ internal class SM64PluginConfig : IGamePluginConfig
                                                        ((SM64DataFetcher)dataFetcher).GetEnemyHitboxes()),
             SolidHorizontalRays,
             SolidVerticalRays));
+
         neuralConfig.InputNodes.Add(new InputNode(
             "Goodies",
             neuralConfig.EnabledStates[enabledIndex++],
@@ -171,6 +182,12 @@ internal class SM64PluginConfig : IGamePluginConfig
                                                        ((SM64DataFetcher)dataFetcher).GetGoodieHitboxes()),
             SolidHorizontalRays,
             SolidVerticalRays));
+
+        neuralConfig.InputNodes.Add(new InputNode("Mario angle", neuralConfig.EnabledStates[enabledIndex++], (dataFetcher) => ((SM64DataFetcher)dataFetcher).GetMarioAngle()));
+        neuralConfig.InputNodes.Add(new InputNode("Mario speed", neuralConfig.EnabledStates[enabledIndex++], (dataFetcher) => ((SM64DataFetcher)dataFetcher).GetMarioSpeeds(), totalWidth: 3, totalHeight: 1));
+        neuralConfig.InputNodes.Add(new InputNode("Camera angle", neuralConfig.EnabledStates[enabledIndex++], (dataFetcher) => ((SM64DataFetcher)dataFetcher).GetCameraAngle()));
+        neuralConfig.InputNodes.Add(new InputNode("Mission star direction", neuralConfig.EnabledStates[enabledIndex++], (dataFetcher) => ((SM64DataFetcher)dataFetcher).GetMissionStarDirection(), totalWidth: 3, totalHeight: 1));
+        neuralConfig.InputNodes.Add(new InputNode("Health", neuralConfig.EnabledStates[enabledIndex++], (dataFetcher) => ((SM64DataFetcher)dataFetcher).GetMarioNormalizedHealth()));
         neuralConfig.InputNodes.Add(new InputNode("Internal Clock", neuralConfig.EnabledStates[enabledIndex++], (dataFetcher) => ((SM64DataFetcher)dataFetcher).GetInternalClockState(), Math.Min(8, InternalClockLength), Math.Max(1, InternalClockLength / 8)));
         neuralConfig.InputNodes.Add(new InputNode("Bias", neuralConfig.EnabledStates[enabledIndex++], (dataFetcher) => true));
 

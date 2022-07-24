@@ -253,6 +253,6 @@ internal static class Addresses
         /// <summary>
         /// Camera horizontal angle, as an unsigned short angle.
         /// </summary>
-        public static readonly AddressData HorizontalAngle = new(0x8033C6E4, 2);
+        public static readonly AddressData HorizontalAngle = new(0x8033C6E6, 2);
     }
 }
