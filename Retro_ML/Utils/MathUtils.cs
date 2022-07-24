@@ -79,6 +79,21 @@
         }
 
         /// <summary>
+        /// Returns a range with the given length
+        /// </summary>
+        /// <param name="start"></param>
+        /// <param name="length"></param>
+        /// <returns></returns>
+        public static Range GetRange(int start, int length) => new(start, start + length);
+        /// <summary>
+        /// Returns a range with the given length
+        /// </summary>
+        /// <param name="start"></param>
+        /// <param name="length"></param>
+        /// <returns></returns>
+        public static Range GetRange(uint start, uint length) => new((int)start, (int)(start + length));
+
+        /// <summary>
         /// Returns the maximum distance between two pairs of values.
         /// </summary>
         /// <param name="values"></param>
