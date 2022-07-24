@@ -6,6 +6,23 @@ namespace Retro_ML.SuperMario64.Game.Data;
 /// </summary>
 internal class GameObject
 {
+    private static readonly uint[] Coins = new uint[]
+    {
+        0x13000830, //blue coin
+        0x13000888, //boo coin
+        0x130008D0, //premature yellow coin ???
+        0x1300090C, //blue/yellow coin
+        0x13000940, //temporary coin
+        0x130009A4, //premature yellow coin ???
+        0x13003068, //yellow coin
+        0x13002588, //blue coin block coin
+        0x130030A4, //blue coin (accelerates away)
+        0x130030D4, //blue coin (runs away)
+        0x13003104, //blue coin
+        0x13003EAC, //red coin
+        0x1300091C, //coin
+    };
+
     private static readonly uint[] EnemyScripts = new uint[]
     {
         0x13000054, //Mr. I main body, subtype 1 == giant Mr. I
@@ -102,6 +119,7 @@ internal class GameObject
     };
     private static readonly uint[] GoodScripts = new uint[]
     {
+        0x1300091C, //coin
         0x130001CC, //Cap switch button
         0x130003BC, //air bubble
         0x13000708, //water shell

@@ -5,6 +5,7 @@ using Retro_ML.SuperMario64.Configuration;
 using Retro_ML.SuperMario64.Game.Data;
 using Retro_ML.Utils;
 using Retro_ML.Utils.Game.Geometry3D;
+using System.Diagnostics;
 using static Retro_ML.SuperMario64.Game.Addresses;
 
 namespace Retro_ML.SuperMario64.Game;
@@ -23,17 +24,17 @@ internal class SM64DataFetcher : IDataFetcher
     private readonly Dictionary<uint, byte[]> levelCache;
     private readonly SM64PluginConfig pluginConfig;
     private readonly InternalClock internalClock;
-    private readonly List<IRaytracable> solidCollisionCache;
     private OctTree scene;
 
-    private uint prevTriListPtr;
+    private byte prevAreaCode;
+    private byte currAreaCode;
+    private int loadTrisTimer;
 
     public SM64DataFetcher(IEmulatorAdapter emulator, NeuralConfig neuralConfig, SM64PluginConfig pluginConfig)
     {
         this.emulator = emulator;
         frameCache = new();
         levelCache = new();
-        solidCollisionCache = new();
         this.pluginConfig = pluginConfig;
         internalClock = new InternalClock(pluginConfig.InternalClockTickLength, pluginConfig.InternalClockLength);
         scene = InitNewScene();
@@ -44,12 +45,30 @@ internal class SM64DataFetcher : IDataFetcher
     /// </summary>
     public void NextFrame()
     {
-        uint trisPointer = (uint)ReadULong(Collision.TrianglesListPointer);
-        prevTriListPtr = trisPointer;
-
         frameCache.Clear();
         internalClock.NextFrame();
+
+        prevAreaCode = currAreaCode;
+        currAreaCode = GetAreaCode();
+
+        if (loadTrisTimer > 0)
+        {
+            loadTrisTimer--;
+            if (loadTrisTimer == 0)
+            {
+                _ = InitNewScene();
+            }
+        }
+
+        if (HasLevelChanged())
+        {
+
+
+            loadTrisTimer = 15;
+        }
+
         int currPrio = 1;
+        DebugInfo.AddInfo("Mario Action", GetMarioAction().ToString("X"), "Mario", currPrio++);
         DebugInfo.AddInfo("Mario X Pos", GetMarioX().ToString(), "Mario", currPrio++);
         DebugInfo.AddInfo("Mario Y Pos", GetMarioY().ToString(), "Mario", currPrio++);
         DebugInfo.AddInfo("Mario Z Pos", GetMarioZ().ToString(), "Mario", currPrio++);
@@ -64,11 +83,8 @@ internal class SM64DataFetcher : IDataFetcher
         DebugInfo.AddInfo("Coin Count", GetCoinCount().ToString(), "Collected", currPrio++);
         DebugInfo.AddInfo("Star Count", GetStarCount().ToString(), "Collected", currPrio++);
         DebugInfo.AddInfo("Camera horizontal angle", GetCameraHorizontalAngle().ToString(), "Camera", currPrio++);
+        DebugInfo.AddInfo("Area", GetAreaCode().ToString("X"), "Area", currPrio++);
 
-        if (HasLevelChanged())
-        {
-            _ = InitNewScene();
-        }
         scene.Update();
         scene.AddObjects(GetDynamicCollision().ToArray());
 
@@ -84,10 +100,12 @@ internal class SM64DataFetcher : IDataFetcher
         _ = InitNewScene();
 
         internalClock.Reset();
-        prevTriListPtr = (uint)ReadULong(Collision.TrianglesListPointer);
+        prevAreaCode = GetAreaCode();
+        currAreaCode = prevAreaCode;
     }
 
     public bool[,] GetInternalClockState() => internalClock.GetStates();
+    public uint GetMarioAction() => (uint)ReadULong(Mario.Action);
     public float GetMarioX() => ReadFloat(Mario.XPos);
     public float GetMarioY() => ReadFloat(Mario.YPos);
     public float GetMarioZ() => ReadFloat(Mario.ZPos);
@@ -108,6 +126,7 @@ internal class SM64DataFetcher : IDataFetcher
     public ushort GetStarCount() => (ushort)ReadULong(Progress.StarCount);
     public uint GetBehaviourBankStart() => (uint)ReadULong(GameObjects.BehaviourBankStartAddress);
     public Vector GetMissionStarPos() => Vector.Origin;
+    public byte GetAreaCode() => ReadByte(Area.CurrentID);
     public double[,] GetMissionStarDirection()
     {
         double[,] res = new double[1, 3];
@@ -138,9 +157,9 @@ internal class SM64DataFetcher : IDataFetcher
     public double GetMarioAngle() => (GetMarioFacingAngle() * 2d / ushort.MaxValue) - 1;
     public double GetCameraAngle() => (GetCameraHorizontalAngle() * 2d / ushort.MaxValue) - 1;
 
-    public ushort GetStaticTriangleCount() => (ushort)ReadULong(Collision.StaticTriangleCount);
-    public ushort GetTriangleCount() => (ushort)ReadULong(Collision.TotalTriangleCount);
-    public ushort GetDynamicTriangleCount() => (ushort)(GetTriangleCount() - GetStaticTriangleCount());
+    public short GetStaticTriangleCount() => (short)ReadULong(Collision.StaticTriangleCount);
+    public short GetTriangleCount() => (short)ReadULong(Collision.TotalTriangleCount);
+    public short GetDynamicTriangleCount() => (short)(GetTriangleCount() - GetStaticTriangleCount());
 
     public Ray GetMarioForwardRay() => new(new(GetMarioX(), GetMarioY() + 110, GetMarioZ()), Vector.Origin.WithZ(1).RotateXZ(GetMarioFacingAngleRadian()));
 
@@ -149,34 +168,32 @@ internal class SM64DataFetcher : IDataFetcher
         yield return scene;
     }
 
-    public bool HasLevelChanged()
-    {
-        uint trisPointer = (uint)ReadULong(Collision.TrianglesListPointer);
-        return trisPointer != 0 && trisPointer != prevTriListPtr;
-    }
+    public bool HasLevelChanged() => prevAreaCode == 0xFF && currAreaCode != prevAreaCode;
 
     /// <summary>
     /// Returns the level's static triangles
     /// </summary>
     public IEnumerable<IRaytracable> GetStaticCollision()
     {
-        if (!solidCollisionCache.Any())
+        if (GetAreaCode() == 0xFF) return Enumerable.Empty<IRaytracable>();
+
+        short staticTriCount = GetStaticTriangleCount();
+        if (staticTriCount <= 0) return Enumerable.Empty<IRaytracable>();
+        uint pointer = (uint)ReadULong(Collision.TrianglesListPointer);
+        if (pointer == 0) return Enumerable.Empty<IRaytracable>();
+
+        var bytes = Read(new AddressData(pointer, (uint)(staticTriCount * COLLISION_TRI_SIZE), AddressData.CacheDurations.Level));
+
+        var tris = new List<CollisionTri>();
+        Debug.WriteLine(bytes.Length);
+        Debug.WriteLine(staticTriCount);
+        Debug.WriteLine((ushort)(staticTriCount * COLLISION_TRI_SIZE));
+        for (int i = 0; i < bytes.Length; i += COLLISION_TRI_SIZE)
         {
-            ushort staticTriCount = GetStaticTriangleCount();
-            uint pointer = (uint)ReadULong(Collision.TrianglesListPointer);
-            if (pointer == 0) return Enumerable.Empty<IRaytracable>();
-
-            var bytes = Read(new AddressData(pointer, (ushort)(staticTriCount * COLLISION_TRI_SIZE), AddressData.CacheDurations.Level));
-
-            var tris = new List<CollisionTri>();
-            for (int i = 0; i < bytes.Length; i += COLLISION_TRI_SIZE)
-            {
-                tris.Add(new(bytes[i..(i + COLLISION_TRI_SIZE)]));
-            }
-
-            solidCollisionCache.AddRange(tris.Select(s => (IRaytracable)s.Triangle));
+            tris.Add(new(bytes[i..(i + COLLISION_TRI_SIZE)]));
         }
-        return solidCollisionCache;
+
+        return tris.Select(t => (IRaytracable)t.Triangle);
     }
 
     /// <summary>
@@ -185,8 +202,11 @@ internal class SM64DataFetcher : IDataFetcher
     /// <returns></returns>
     public IEnumerable<IRaytracable> GetDynamicCollision()
     {
-        ushort staticTriCount = GetStaticTriangleCount();
-        ushort dynamicTriCount = GetDynamicTriangleCount();
+        if (GetAreaCode() == 0xFF) return Enumerable.Empty<IRaytracable>();
+        if (loadTrisTimer > 0) return Enumerable.Empty<IRaytracable>();
+        short staticTriCount = GetStaticTriangleCount();
+        short dynamicTriCount = GetDynamicTriangleCount();
+        if (dynamicTriCount <= 0) return Enumerable.Empty<IRaytracable>();
         uint pointer = (uint)ReadULong(Collision.TrianglesListPointer);
 
         if (pointer == 0) return Enumerable.Empty<IRaytracable>();
@@ -207,13 +227,11 @@ internal class SM64DataFetcher : IDataFetcher
 
     public IEnumerable<GameObject> GetObjects()
     {
-        var actives = ReadMultiple(GameObjects.Active, GameObjects.SingleGameObject, GameObjects.AllGameObjects).ToArray();
-        byte activeCount = (byte)Array.IndexOf(actives, (byte)0);
-        if (activeCount > 240) activeCount = 240;
+        var actives = ReadMultiple(GameObjects.Active, GameObjects.SingleGameObject, GameObjects.AllGameObjects).Select(arr => arr[0]).ToList();
         uint bankStart = GetBehaviourBankStart();
 
-        uint totalBytes = GameObjects.SingleGameObject.Length * activeCount;
-        var addressesToRead = new AddressData[]
+        uint totalBytes = GameObjects.SingleGameObject.Length * (uint)actives.Count(a => a != 0);
+        var addressesToInclude = new AddressData[]
         {
             GameObjects.BehaviourAddress,
             GameObjects.XPos,
@@ -223,11 +241,19 @@ internal class SM64DataFetcher : IDataFetcher
             GameObjects.HitboxHeight,
             GameObjects.HitboxDownOffset
         };
-        var bytesPerObject = (int)addressesToRead.Sum(a => a.Length);
+        var bytesPerObject = (int)addressesToInclude.Sum(a => a.Length);
 
-        var addresses = GetCalculatedAddresses(totalBytes, GameObjects.SingleGameObject.Length, addressesToRead);
+        List<AddressData> addressesToRead = new();
+        for (int i = 0; i < actives.Count; i++)
+        {
+            if (actives[i] == 0) continue;
+            foreach (var addr in addressesToInclude)
+            {
+                addressesToRead.Add(new AddressData(addr.Address + ((uint)i) * GameObjects.SingleGameObject.Length, addr.Length));
+            }
+        }
 
-        var objectsBytes = Read(addresses.ToArray());
+        var objectsBytes = Read(addressesToRead.ToArray());
         List<GameObject> objects = new();
         for (int i = 0; i < objectsBytes.Length; i += bytesPerObject)
         {
@@ -239,8 +265,8 @@ internal class SM64DataFetcher : IDataFetcher
 
     private OctTree InitNewScene()
     {
+        frameCache.Clear();
         levelCache.Clear();
-        solidCollisionCache.Clear();
 
         scene = new(new Vector(7005.25f, 7000.65f, -7005.85f), 32_000, 100f, 8, 2);
         scene.AddObjects(GetStaticCollision().ToArray());

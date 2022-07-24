@@ -71,6 +71,10 @@ internal static class Addresses
     public static class Mario
     {
         /// <summary>
+        /// Mario's current status
+        /// </summary>
+        public static readonly AddressData Action = new(0x8033B17C, 4);
+        /// <summary>
         /// Mario's current hat flags
         /// <code>
         /// bit  0 : On head? Regular cap?
