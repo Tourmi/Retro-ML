@@ -19,18 +19,16 @@ internal static class Addresses
             Level
         }
 
-        public AddressData(uint address, uint length = 1, CacheDurations cacheDuration = CacheDurations.Frame, bool isPointer = false)
+        public AddressData(uint address, uint length = 1, CacheDurations cacheDuration = CacheDurations.Frame)
         {
             Address = address;
             Length = length;
             CacheDuration = cacheDuration;
-            IsPointer = isPointer;
         }
 
         public uint Address;
         public uint Length;
         public CacheDurations CacheDuration;
-        public bool IsPointer;
     }
 
     /// <summary>
@@ -220,7 +218,7 @@ internal static class Addresses
         /// Sorted by static, then dynamic triangles. 
         /// See <see cref="StaticTriangleCount"/> and <see cref="TotalTriangleCount"/> for this list's counts.
         /// </summary>
-        public static readonly AddressData TrianglesListPointer = new(0x8038EE9C, 4, isPointer: true);
+        public static readonly AddressData TrianglesListPointer = new(0x8038EE9C, 4);
 
         /// <summary>
         /// Where the static triangle partition starts. Triangles take up 0x30 bytes each. See <see cref="StaticTriangleCount"/> for triangle count.
