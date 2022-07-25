@@ -15,7 +15,6 @@ namespace Retro_ML.SuperBomberMan3.Neural.Scoring
         private double extraBombLevel;
         private double acceleratorLevel;
         private bool isOnALouie;
-        private bool hasSkull;
         private bool hasKick;
         private bool hasGlove;
         private bool hasSlimeBomb;
@@ -27,7 +26,6 @@ namespace Retro_ML.SuperBomberMan3.Neural.Scoring
             new DoubleFieldInfo(nameof(ExtraBombMultiplier), "Extra Bomb Multiplier", double.MinValue, double.MaxValue, 1, "Multiplier applied on top of the regular multiplier when the player grab an extra bomb powerup"),
             new DoubleFieldInfo(nameof(AcceleratorMultiplier), "Accelerator Multiplier", double.MinValue, double.MaxValue, 1, "Multiplier applied on top of the regular multiplier when the player grab an accelerator powerup"),
             new DoubleFieldInfo(nameof(LouieMultiplier), "Louie Multiplier", double.MinValue, double.MaxValue, 1, "Multiplier applied on top of the regular multiplier when the player grab an egg"),
-            new DoubleFieldInfo(nameof(SkullMultiplier), "Skull Multiplier", double.MinValue, double.MaxValue, 1, "Multiplier applied on top of the regular multiplier when the player grab a skull"),
             new DoubleFieldInfo(nameof(KickMultiplier), "Kick Multiplier", double.MinValue, double.MaxValue, 1, "Multiplier applied on top of the regular multiplier when the player grab a kick powerup"),
             new DoubleFieldInfo(nameof(GloveMultiplier), "Glove Multiplier", double.MinValue, double.MaxValue, 1, "Multiplier applied on top of the regular multiplier when the player grab a slime bomb powerup"),
             new DoubleFieldInfo(nameof(SlimeBombMultiplier), "Slime Bomb Multiplier", double.MinValue, double.MaxValue, 1, "Multiplier applied on top of the regular multiplier when the player grab a slime bomb powerup"),
@@ -49,7 +47,6 @@ namespace Retro_ML.SuperBomberMan3.Neural.Scoring
                     nameof(ExtraBombMultiplier) => ExtraBombMultiplier,
                     nameof(AcceleratorMultiplier) => AcceleratorMultiplier,
                     nameof(LouieMultiplier) => LouieMultiplier,
-                    nameof(SkullMultiplier) => SkullMultiplier,
                     nameof(KickMultiplier) => KickMultiplier,
                     nameof(GloveMultiplier) => GloveMultiplier,
                     nameof(SlimeBombMultiplier) => SlimeBombMultiplier,
@@ -65,7 +62,6 @@ namespace Retro_ML.SuperBomberMan3.Neural.Scoring
                     case nameof(ExtraBombMultiplier): ExtraBombMultiplier = (double)value; break;
                     case nameof(AcceleratorMultiplier): AcceleratorMultiplier = (double)value; break;
                     case nameof(LouieMultiplier): LouieMultiplier = (double)value; break;
-                    case nameof(SkullMultiplier): SkullMultiplier = (double)value; break;
                     case nameof(KickMultiplier): KickMultiplier = (double)value; break;
                     case nameof(GloveMultiplier): GloveMultiplier = (double)value; break;
                     case nameof(SlimeBombMultiplier): SlimeBombMultiplier = (double)value; break;
@@ -85,8 +81,6 @@ namespace Retro_ML.SuperBomberMan3.Neural.Scoring
         public double AcceleratorMultiplier { get; set; } = 2;
 
         public double LouieMultiplier { get; set; } = 10;
-
-        public double SkullMultiplier { get; set; } = -2;
 
         public double KickMultiplier { get; set; } = 5;
 
@@ -119,7 +113,6 @@ namespace Retro_ML.SuperBomberMan3.Neural.Scoring
             var explosionExpander = dataFetcher.GetPlayerExplosionExpanderPowerUpLevel();
             var accelerator = dataFetcher.GetPlayerAcceleratorPowerUpLevel();
             var louie = dataFetcher.GetPlayerLouiePowerUpState();
-            var skull = dataFetcher.GetPlayerSkullPowerUpState();
             var kick = dataFetcher.GetPlayerKickPowerUpState();
             var glove = dataFetcher.GetPlayerGlovePowerUpState();
             var slimeBomb = dataFetcher.GetPlayerSlimeBombPowerUpState();
@@ -132,7 +125,6 @@ namespace Retro_ML.SuperBomberMan3.Neural.Scoring
                 explosionExpanderLevel = explosionExpander;
                 acceleratorLevel = accelerator;
                 isOnALouie = louie;
-                hasSkull = skull;
                 hasKick = kick;
                 hasGlove = glove;
                 hasSlimeBomb = slimeBomb;
@@ -163,17 +155,6 @@ namespace Retro_ML.SuperBomberMan3.Neural.Scoring
                 currScore += ScoreMultiplier * LouieMultiplier;
             }
 
-            //Check for skull. Player can lose it and get it back multiple times.
-            if (hasSkull == false && skull == true)
-            {
-                currScore += ScoreMultiplier * SkullMultiplier;
-            }
-
-            if (hasSkull == true && skull == false)
-            {
-                currScore += ScoreMultiplier * -SkullMultiplier;
-            }
-
             //Check for kick. Once acquired, the player cant acquire another one or lose it.
             if (hasKick == false && kick == true)
             {
@@ -202,7 +183,6 @@ namespace Retro_ML.SuperBomberMan3.Neural.Scoring
             explosionExpanderLevel = explosionExpander;
             acceleratorLevel = accelerator;
             isOnALouie = louie;
-            hasSkull = skull;
             hasKick = kick;
             hasGlove = glove;
             hasSlimeBomb = slimeBomb;
@@ -217,7 +197,6 @@ namespace Retro_ML.SuperBomberMan3.Neural.Scoring
             extraBombLevel = 0.0;
             acceleratorLevel = 0.0;
             isOnALouie = false;
-            hasSkull = false;
             hasKick = false;
             hasGlove = false;
             hasSlimeBomb = false;
@@ -234,7 +213,6 @@ namespace Retro_ML.SuperBomberMan3.Neural.Scoring
                 ExtraBombMultiplier = ExtraBombMultiplier,
                 AcceleratorMultiplier = AcceleratorMultiplier,
                 LouieMultiplier = LouieMultiplier,
-                SkullMultiplier = SkullMultiplier,
                 KickMultiplier = KickMultiplier,
                 GloveMultiplier = GloveMultiplier,
                 SlimeBombMultiplier = SlimeBombMultiplier,

@@ -44,9 +44,10 @@ namespace Retro_ML.SuperBomberman3.Game
         }
 
         public bool[,] GetInternalClockState() => internalClock.GetStates();
+        public bool IsSuddenDeathActivated() => ReadSingle(GameAddresses.GameMinutesTimer) == 0x00 ?  true : false;
         public byte[] GetPlayerXPos() => Read(PlayersAddresses.XPos);
         public byte[] GetPlayerYPos() => Read(PlayersAddresses.YPos);
-        public byte[] GetTiles() => Read(GameAddresses.Tiles);
+        public byte[] GetTiles() => Read(GameAddresses.DynamicTiles);
         public byte[] GetBombsPos() => Read(GameAddresses.BombsPosition);
         public byte[] GetBombsTimer() => Read(GameAddresses.BombsTimer);
         public double GetPlayerXPositionNormalized() => GetXPositionNormalized(GetPlayerXPos()[0]);
@@ -73,7 +74,6 @@ namespace Retro_ML.SuperBomberman3.Game
         public bool GetPlayerGlovePowerUpState() => (ReadSingle(PowerupsAddresses.BombermanUpgrade) & 0x04) != 0;
         public bool GetPlayerSlimeBombPowerUpState() => (ReadSingle(PowerupsAddresses.BombermanUpgrade) & 0x20) != 0;
         public bool GetPlayerPowerBombPowerUpState() => (ReadSingle(PowerupsAddresses.BombermanUpgrade) & 0x40) != 0;
-        public bool GetPlayerSkullPowerUpState() => ReadSingle(PowerupsAddresses.Skull) == 0x31;
         public int GetNumbersOfPlayersAlive() => playersDead.Where(c => !c).Count();
         public bool IsPlayerDead() => playersDead[0] == true;
 
@@ -225,7 +225,7 @@ namespace Retro_ML.SuperBomberman3.Game
         }
 
         /// <summary>
-        /// Draw dangers ; bombs and explosions.
+        /// Draw dangers ; bombs, explosions, etc. Anything that can damage players.
         /// </summary>
         public double[,] DrawDangers()
         {
@@ -245,12 +245,12 @@ namespace Retro_ML.SuperBomberman3.Game
                 }
             }
 
-            //Draw Explosions
+            //Draw Explosions and other dangers
             for (int i = 0; i < DESIRED_LEVEL_HEIGHT; i++)
             {
                 for (int j = 0; j < DESIRED_LEVEL_WIDTH; j++)
                 {
-                    if (playableTilesCache[i, j] == 0x24 || playableTilesCache[i, j] == 0x05 || playableTilesCache[i, j] == 0x07) result[i, j] = 1.0;
+                    if (playableTilesCache[i, j] == 0x24 || playableTilesCache[i, j] == 0x05 || playableTilesCache[i, j] == 0x07 || playableTilesCache[i, j] == 0x04) result[i, j] = 1.0;
                 }
             }
 
@@ -369,7 +369,10 @@ namespace Retro_ML.SuperBomberman3.Game
         {
             List<AddressData> toRead = new()
         {
-            GameAddresses.Tiles,
+            GameAddresses.DynamicTiles,
+            GameAddresses.StaticTiles,
+            GameAddresses.BombsPosition,
+            GameAddresses.BombsTimer,
             PlayersAddresses.XPos,
             PlayersAddresses.YPos,
             PlayersAddresses.BombsPlanted,
@@ -380,7 +383,6 @@ namespace Retro_ML.SuperBomberman3.Game
             PowerupsAddresses.Louie,
             PowerupsAddresses.LouieColours,
             PowerupsAddresses.BombermanUpgrade,
-            PowerupsAddresses.Skull,
         };
             _ = Read(toRead.ToArray());
         }

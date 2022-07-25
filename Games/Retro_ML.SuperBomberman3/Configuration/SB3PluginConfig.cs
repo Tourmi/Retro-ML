@@ -40,14 +40,12 @@ namespace Retro_ML.SuperBomberman3.Configuration
             true, //Pink Louie
             true, //Green Louie
             true, //Blue Louie
-            true, //Has Skull
 
             false, //Internal Clock
             true, //Bias
 
             true, //A
-            true, //B
-            true, //Y
+            true, //X
             true, //Left
             true, //Right
             true, //Up
@@ -152,14 +150,12 @@ namespace Retro_ML.SuperBomberman3.Configuration
             neuralConfig.InputNodes.Add(new InputNode("Pink Louie", neuralConfig.EnabledStates[enabledIndex++], (dataFetcher) => ((SB3DataFetcher)dataFetcher).IsLouieColourPink()));
             neuralConfig.InputNodes.Add(new InputNode("Green Louie", neuralConfig.EnabledStates[enabledIndex++], (dataFetcher) => ((SB3DataFetcher)dataFetcher).IsLouieColourGreen()));
             neuralConfig.InputNodes.Add(new InputNode("Blue Louie", neuralConfig.EnabledStates[enabledIndex++], (dataFetcher) => ((SB3DataFetcher)dataFetcher).IsLouieColourBlue()));
-            neuralConfig.InputNodes.Add(new InputNode("Has Skull", neuralConfig.EnabledStates[enabledIndex++], (dataFetcher) => ((SB3DataFetcher)dataFetcher).GetPlayerSkullPowerUpState()));
             neuralConfig.InputNodes.Add(new InputNode("Internal Clock", neuralConfig.EnabledStates[enabledIndex++], (dataFetcher) => ((SB3DataFetcher)dataFetcher).GetInternalClockState(), Math.Min(8, InternalClockLength), Math.Max(1, InternalClockLength / 8)));
             neuralConfig.InputNodes.Add(new InputNode("Bias", neuralConfig.EnabledStates[enabledIndex++], (dataFetcher) => true));
 
             neuralConfig.OutputNodes.Clear();
             neuralConfig.OutputNodes.Add(new OutputNode("A", neuralConfig.EnabledStates[enabledIndex++]));
-            neuralConfig.OutputNodes.Add(new OutputNode("B", neuralConfig.EnabledStates[enabledIndex++]));
-            neuralConfig.OutputNodes.Add(new OutputNode("Y", neuralConfig.EnabledStates[enabledIndex++]));
+            neuralConfig.OutputNodes.Add(new OutputNode("X", neuralConfig.EnabledStates[enabledIndex++]));
             neuralConfig.OutputNodes.Add(new OutputNode("Left", neuralConfig.EnabledStates[enabledIndex++]));
             neuralConfig.OutputNodes.Add(new OutputNode("Right", neuralConfig.EnabledStates[enabledIndex++]));
             neuralConfig.OutputNodes.Add(new OutputNode("Up", neuralConfig.EnabledStates[enabledIndex++]));

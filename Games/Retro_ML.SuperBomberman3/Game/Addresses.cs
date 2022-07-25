@@ -21,7 +21,7 @@
         public static class GameAddresses
         {
             /// <summary>
-            /// Tile Map. 1 byte per tile, 176 tiles total
+            /// Dynamic Tile Map. 1 byte per tile, 176 tiles total. The tiles are dynamic.
             /// <code>
             /// 0x84 = undestructible (sudden death)
             /// 0x80 = undestructible
@@ -29,12 +29,19 @@
             /// 0x30 = destructible
             /// 0x10 = powerup
             /// 0x00 = free
+            /// 0x04 = big snowball
             /// 0x05 = explosion
             /// 0x07 = explosion
             /// 0x24 = explosion
             /// <code>
             /// </summary>
-            public static readonly AddressData Tiles = new(0xDF2, 176);
+            public static readonly AddressData DynamicTiles = new(0xDF2, 176);
+            /// <summary>
+            /// Static Tile Map. 1 byte per tile, 176 tiles total. The tiles are static and represent what the map should look like when loaded.
+            /// <code>
+            /// <code>
+            /// </summary>
+            public static readonly AddressData StaticTiles = new(0x2710, 176);
             /// <summary>
             /// Represent bomb positions. 
             /// In theory, there could be a max of 60 bombs if there is 5 players (? at least that's what it looks like in memory), but we should only need around 20 max in the worst-case scenario
@@ -42,10 +49,22 @@
             /// </summary>
             public static readonly AddressData BombsPosition = new(0x16EF, 20);
             /// <summary>
+            /// Represent the cart position in level 8. 
+            /// </summary>
+            public static readonly AddressData CartPosition = new(0x1695, 1);
+            /// <summary>
             /// Represent the countdown remaining for a bomb explosion. Starts at 0x95 (149)
             /// In theory, there could be a max of 60 bombs if there is 5 players (? at least that's what it looks like in memory), but we should only need around 20 max in the worst-case scenario
             /// </summary>
             public static readonly AddressData BombsTimer = new(0x16B3, 20);
+            /// <summary>
+            /// Represent the number of minutes on the timer.
+            /// </summary>
+            public static readonly AddressData GameMinutesTimer = new(0x17E4, 1);
+            /// <summary>
+            /// Represent the number of seconds on the timer.
+            /// </summary>
+            public static readonly AddressData GameSecondsTimer = new(0x17E3, 1);
         }
 
         public static class PlayersAddresses
@@ -122,12 +141,6 @@
             /// <code>
             /// </summary>
             public static readonly AddressData BombermanUpgrade = new(0x48D1, 1);
-            /// <summary>
-            ///This is a special battle item that has various effects. Some of the effects are actually quite useful where as others are bad.
-            ///You can get rid of the skull by collecting an item or by passing it onto another opponent by touching them.The skull can't be destroyed; instead it'll bounce to another square when hit by a bomb blast.
-            ///When the flag is set to 0x31, the skull effect is active.
-            /// </summary>
-            public static readonly AddressData Skull = new(0x3B6, 1);
         }
     }
 }
