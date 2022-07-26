@@ -96,7 +96,7 @@
             /// 2 - When a player grab an egg, a timer is started associated with the mounting animation.
             /// 3 - When a player gets damaged on a Louie, a timer is started associated with the dismounting animation.
             /// Since I havent found a better flag / way to know when a player dies, I will use these addresses.
-            /// When a player dies, the value starts at 60 and decrease
+            /// When a player dies, the value starts at 60 (59 for some players) and decrease
             /// *Temporary until better addresses are found*
             /// </summary>
             public static readonly AddressData DeathTimer = new(0x12CF, 4);

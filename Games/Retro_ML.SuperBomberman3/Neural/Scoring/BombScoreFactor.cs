@@ -93,7 +93,7 @@ namespace Retro_ML.SuperBomberMan3.Neural.Scoring
                 IsDisabled = IsDisabled,
                 EnemyEliminationMultiplier = EnemyEliminationMultiplier,
                 WallDestructiondMultiplier = WallDestructiondMultiplier,
-            }
+            };
         }
     }
 }

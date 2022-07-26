@@ -27,25 +27,22 @@ namespace Retro_ML.SuperBomberman3.Game
         private const uint MAX_EXPLOSION_EXPANDER = 0x09;
         private const uint MAX_BOMB_TIMER = 0x95;
         private const uint MIN_BOMB_TIMER = 0x01;
+        private const uint DEATH_TIMER_START = 0x3B;
         //Our savestates are using 2 mins round time. Can be changed
         private const uint MAX_ROUND_TIME = 0x78;
         //Number of frames counted after detonation
         private const uint NUM_EXPLOSION_FRAMES = 0x20;
-        //Number of frames counted from the plant to end of explosion
-        private const uint NUM_BOMB_FRAMES = 0xB5;
-        //Number of frames counted between the start of the explosion and the damage applied to the players
-        private const uint NUM_DAMAGE_PLAYER_FRAMES = 0x03;
-        //Number of frames counted between the start of the explosion and the damage applied to the structures
-        private const uint NUM_DAMAGE_STRUCT_FRAMES = 0x1F;
+        //Number of frames counted between the start of the explosion and the damage applied to the players for some models
+        private const uint NUM_DAMAGE_PLAYER_FRAMES = 0x04;
 
         private readonly IEmulatorAdapter emulator;
         private readonly Dictionary<uint, byte[]> frameCache;
         private readonly InternalClock internalClock;
 
-        private ulong frameCounter;
+        private int frameCounter;
         private byte[,] playableTilesCache;
-        private uint destructibleTilesRemaining;
-        private uint previousFrameDestructibleTilesRemaining;
+        private int destructibleTilesRemaining;
+        private int previousFrameDestructibleTilesRemaining;
         private int playersAliveCount;
         private int previousPlayersAliveCount;
         private bool[] playersDead;
@@ -139,8 +136,8 @@ namespace Retro_ML.SuperBomberman3.Game
             destructibleTilesRemaining = GetDestructibleTilesRemaining();
             MapPlayableTiles();
             CheckPlayerDeathStatus();
-            TrackBombPlanted();
             TrackBombExpired();
+            TrackBombPlanted();
             TrackBombExploded();
             previousPlayersAliveCount = playersAliveCount;
             previousFrameDestructibleTilesRemaining = destructibleTilesRemaining;
@@ -211,7 +208,7 @@ namespace Retro_ML.SuperBomberman3.Game
                 if (playersDead[playerIndex] != true)
                 {
                     //If the timer associated with the player == 60 (0x3c), it means the player just died
-                    if (timers[playerIndex] == 0x3C)
+                    if (timers[playerIndex] == DEATH_TIMER_START)
                     {
                         playersDead[playerIndex] = true;
                     }
@@ -346,7 +343,6 @@ namespace Retro_ML.SuperBomberman3.Game
         public void TrackBombPlanted()
         {
             byte[] bombsPos = GetBombsPos();
-            byte[] bombsTimers = GetBombsTimer();
             //Useful to know if the player has dropped a bomb as I havent found relevant addresses in game yet...
             var playerPos = PlayerToGridPos();
 
@@ -363,11 +359,11 @@ namespace Retro_ML.SuperBomberman3.Game
                         //If there was a free bomb index to assign (it should always be the case but its pretty muchimpossible to test what happens when there is more than 15+ bombs on the map...)
                         if (bombIndex != -1)
                         {
-                            uint bombTimer = bombsTimers[bombIndex];
+                            uint bombTimer = MAX_BOMB_TIMER;
                             bool isExpired = false;
                             uint setToExpire = (uint)(bombTimer + frameCounter + NUM_EXPLOSION_FRAMES);
                             uint setToKill = (uint)(bombTimer + frameCounter + NUM_DAMAGE_PLAYER_FRAMES);
-                            uint setToDestroy = (uint)(bombTimer + frameCounter + NUM_DAMAGE_STRUCT_FRAMES);
+                            uint setToDestroy = (uint)(bombTimer + frameCounter);
                             uint yTilePos = BombToGridPos(bombsPos[bombIndex]).Item1;
                             uint xTilePos = BombToGridPos(bombsPos[bombIndex]).Item2;
 
@@ -419,13 +415,13 @@ namespace Retro_ML.SuperBomberman3.Game
                     //If the bomb destroyed a destructible wall
                     if (!wallCheck && bomb.IsPlantedByPlayer && bomb.SetToDestroy == frameCounter && destructibleTilesRemaining < previousFrameDestructibleTilesRemaining)
                     {
-                        wallsDestroyed += (previousFrameDestructibleTilesRemaining - destructibleTilesRemaining);
+                        wallsDestroyed += previousFrameDestructibleTilesRemaining - destructibleTilesRemaining;
                         //With certain powerups, the player can plant many bombs at once, we already give it credits for all instances this way.
                         wallCheck = true;
                     }
 
-                    //If the player killed an enemy
-                    if (!killCheck && bomb.IsPlantedByPlayer && bomb.SetToKill == frameCounter && playersAliveCount < previousPlayersAliveCount)
+                    //If the player killed an enemy. Some bomberman models requires 1 more frame to start death animation
+                    if (!killCheck && bomb.IsPlantedByPlayer && (bomb.SetToKill == frameCounter || bomb.SetToKill == frameCounter + 1) && playersAliveCount < previousPlayersAliveCount)
                     {
                         enemiesEliminated += previousPlayersAliveCount - playersAliveCount;
                         //With certain powerups, the player can plant many bombs at once, we already give it credits for all instances this way.
