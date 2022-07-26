@@ -198,7 +198,7 @@ internal class PokemonEvaluator : DefaultEvaluator
             randID = (byte)random.Next(1, MAX_POKEMON_ID);
         } while (missingNO.Contains(randID));
 
-        return 38;
+        return randID;
     }
 
     private void WriteRandomEncounterAddresses()
