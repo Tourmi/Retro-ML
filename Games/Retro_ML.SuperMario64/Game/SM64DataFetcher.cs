@@ -5,7 +5,6 @@ using Retro_ML.SuperMario64.Configuration;
 using Retro_ML.SuperMario64.Game.Data;
 using Retro_ML.Utils;
 using Retro_ML.Utils.Game.Geometry3D;
-using System.Diagnostics;
 using static Retro_ML.SuperMario64.Game.Addresses;
 
 namespace Retro_ML.SuperMario64.Game;
@@ -76,7 +75,6 @@ internal class SM64DataFetcher : IDataFetcher
         DebugInfo.AddInfo("Mario Y Speed", GetMarioYSpeed().ToString(), "Mario", currPrio++);
         DebugInfo.AddInfo("Mario Z Speed", GetMarioZSpeed().ToString(), "Mario", currPrio++);
         DebugInfo.AddInfo("Mario Horizontal Speed", GetMarioHorizontalSpeed().ToString(), "Mario", currPrio++);
-        DebugInfo.AddInfo("Mario Ground Offset", GetMarioGroundOffset().ToString(), "Mario", currPrio++);
         DebugInfo.AddInfo("Mario Facing Angle", GetMarioFacingAngle().ToString(), "Mario", currPrio++);
         DebugInfo.AddInfo("Mario Health", GetMarioHealth().ToString(), "Mario", currPrio++);
         DebugInfo.AddInfo("Mario Cap Status", Convert.ToString(GetMarioCapFlags(), 2).PadLeft(16, '0').Insert(8, " "), "Mario", currPrio++);
@@ -121,20 +119,24 @@ internal class SM64DataFetcher : IDataFetcher
     public ushort GetMarioCapFlags() => (ushort)ReadULong(Mario.HatFlags);
     public byte GetMarioHealth() => ReadByte(Mario.Health);
     public double GetMarioNormalizedHealth() => GetMarioHealth() / 8.0;
-    public sbyte GetMarioGroundOffset() => (sbyte)ReadByte(Mario.GroundOffset);
     public ushort GetCoinCount() => (ushort)ReadULong(Mario.Coins);
     public ushort GetStarCount() => (ushort)ReadULong(Progress.StarCount);
     public uint GetBehaviourBankStart() => (uint)ReadULong(GameObjects.BehaviourBankStartAddress);
-    public Vector GetMissionStarPos() => Vector.Origin;
+    public Vector GetMissionStarDirr()
+    {
+        var stars = GetObjects().Where(o => o.IsStar()).ToList();
+        if (!stars.Any()) return Vector.NaN;
+        var marioPos = GetMarioPos();
+        var nearestStar = stars.OrderBy(s => (s.Pos - marioPos).SquaredLength).First();
+        return nearestStar.Pos - marioPos;
+    }
     public byte GetAreaCode() => ReadByte(Area.CurrentID);
     public double[,] GetMissionStarDirection()
     {
         double[,] res = new double[1, 3];
 
-        var starPos = GetMissionStarPos();
-        var marioPos = GetMarioPos();
-        var dirr = (starPos - marioPos).Normalized();
-
+        var dirr = GetMissionStarDirr().Normalized();
+        if (float.IsNaN(dirr.SquaredLength)) dirr = Vector.Origin;
         res[0, 0] = dirr.X;
         res[0, 1] = dirr.Y;
         res[0, 2] = dirr.Z;
@@ -185,9 +187,6 @@ internal class SM64DataFetcher : IDataFetcher
         var bytes = Read(new AddressData(pointer, (uint)(staticTriCount * COLLISION_TRI_SIZE), AddressData.CacheDurations.Level));
 
         var tris = new List<CollisionTri>();
-        Debug.WriteLine(bytes.Length);
-        Debug.WriteLine(staticTriCount);
-        Debug.WriteLine((ushort)(staticTriCount * COLLISION_TRI_SIZE));
         for (int i = 0; i < bytes.Length; i += COLLISION_TRI_SIZE)
         {
             tris.Add(new(bytes[i..(i + COLLISION_TRI_SIZE)]));

@@ -6,7 +6,7 @@ namespace Retro_ML.SuperMario64.Game.Data;
 /// </summary>
 internal class GameObject
 {
-    private static readonly uint[] Coins = new uint[]
+    private static readonly uint[] CoinScripts = new uint[]
     {
         0x13000830, //blue coin
         0x13000888, //boo coin
@@ -21,6 +21,16 @@ internal class GameObject
         0x13003104, //blue coin
         0x13003EAC, //red coin
         0x1300091C, //coin
+    };
+
+    private static readonly uint[] StarScripts = new uint[]
+    {
+        0x130007F8, //power star, offset 0x188 specifies mission
+        0x1300080C, //power star, offset 0x188 specifies mission
+        0x13002A20, //star?
+        0x13001714, //grand star
+        0x13003E3C, //star
+        0x13003E64, //star
     };
 
     private static readonly uint[] EnemyScripts = new uint[]
@@ -193,7 +203,7 @@ internal class GameObject
         0x13000F9C, //up-down 3-platforms
         0x13000FC8, //up-down mesh platform
         0x13001030, //tilting inverted pyramid platform
-        0x13001064, //springy staricase
+        0x13001064, //springy staircase
         0x130010D8, //rotating flame shooter platform
         0x13001318, //whomp fortress in-out tower platform
         0x13001340, //whomp fortress elevator tower platform
@@ -344,11 +354,14 @@ internal class GameObject
     public float Height { get; private set; }
     public float DownOffset { get; private set; }
 
+    public Vector Pos => new(X, Y - DownOffset, Z);
+    public Vector Size => new(Radius * 2, Height, Radius * 2);
+
     public AABB AABB
     {
         get
         {
-            if (!cachedAABB.HasValue) cachedAABB = new AABB(new Vector(X, Y - DownOffset, Z), new Vector(Radius * 2, Height, Radius * 2), isStatic: false);
+            if (!cachedAABB.HasValue) cachedAABB = new AABB(Pos, Size, isStatic: false);
             return cachedAABB!.Value;
         }
     }
@@ -366,10 +379,10 @@ internal class GameObject
         DownOffset = GetFloat(bytes[24..28]);
     }
 
-    public bool IsEnemy() => IsEnemy(BehaviourScript, bankStart);
-    public bool IsGoodie() => IsGoodie(BehaviourScript, bankStart);
+    public bool IsEnemy() => EnemyScripts.Contains(ToBankAddress(BehaviourScript, bankStart));
+    public bool IsGoodie() => GoodScripts.Contains(ToBankAddress(BehaviourScript, bankStart));
+    public bool IsStar() => StarScripts.Contains(ToBankAddress(BehaviourScript, bankStart));
 
-    public static bool IsEnemy(uint behaviourScript, uint bankStart) => EnemyScripts.Contains(ToBankAddress(behaviourScript, bankStart));
     public static bool IsGoodie(uint behaviourScript, uint bankStart) => GoodScripts.Contains(ToBankAddress(behaviourScript, bankStart));
     private static uint ToBankAddress(uint behaviourScript, uint bankStart) => ((uint)Math.Max((behaviourScript & ~0x8000_0000) - (long)bankStart, 0)) + 0x13000000;
     private static uint GetUint(byte[] bytes)

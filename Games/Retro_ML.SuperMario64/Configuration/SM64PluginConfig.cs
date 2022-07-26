@@ -112,9 +112,10 @@ internal class SM64PluginConfig : IGamePluginConfig
 
     public SM64PluginConfig() => ScoreFactors = new List<IScoreFactor>()
     {
-        new DiedScoreFactor() { ScoreMultiplier = -100},
+        new DiedScoreFactor() { ScoreMultiplier = -1000},
         new StarScoreFactor() { ScoreMultiplier = 1000},
         new DistanceToStarScoreFactor() { ScoreMultiplier = 1, IsDisabled = false },
+        new ExplorationScoreFactor() { ScoreMultiplier = 1, IsDisabled = false },
         new TimeTakenScoreFactor() { ScoreMultiplier = -0.1, IsDisabled = false },
         new CoinScoreFactor() { ScoreMultiplier = 10, IsDisabled = true},
     };

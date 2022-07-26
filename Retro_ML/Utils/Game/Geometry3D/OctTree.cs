@@ -70,12 +70,13 @@ public class OctTree : IRaytracable
     public float MinZ => aabb.MinZ;
     public float MaxZ => aabb.MaxZ;
     public bool Static => true;
+    public int Count { get; private set; }
 
     public bool HasChildren => childNodes.Any(cn => cn != null) || objects.Any();
 
     public float GetRaytrace(Ray ray)
     {
-        PrepareForRaycast();
+        PrepareTree();
 
         if (!HasChildren) return float.NaN;
 
@@ -103,11 +104,35 @@ public class OctTree : IRaytracable
         return float.IsFinite(currMin) ? currMin : float.NaN;
     }
 
+    public bool Contains(Vector p)
+    {
+        PrepareTree();
+
+        if (!HasChildren) return false;
+
+        foreach (var obj in objects)
+        {
+            if (obj.Contains(p)) return true;
+        }
+
+        for (int i = 0; i < 8; i++)
+        {
+            if (childNodes[i] == null) continue;
+            if (childNodes[i]!.Contains(p)) return true;
+        }
+
+        return false;
+    }
+
     /// <summary>
     /// Add this object to the OctTree
     /// </summary>
     /// <param name="obj"></param>
-    public void AddObject(IRaytracable obj) => pendingObjects.Enqueue(obj);
+    public void AddObject(IRaytracable obj)
+    {
+        pendingObjects.Enqueue(obj);
+        Count++;
+    }
 
     /// <summary>
     /// Add all the items to the OctTree
@@ -117,6 +142,7 @@ public class OctTree : IRaytracable
     {
         if (!pendingObjects.Any()) pendingObjects = new(objects);
         else foreach (var obj in objects) AddObject(obj);
+        Count += objects.Length;
     }
 
     /// <summary>
@@ -126,7 +152,13 @@ public class OctTree : IRaytracable
     {
         if (!built) return;
 
-        RemoveDynamic();
+        Count -= RemoveDynamic();
+        var currParent = parent;
+        while (currParent != null)
+        {
+            currParent.Count -= Count;
+            currParent = currParent.parent;
+        }
         if (pendingObjects.Any()) ProcessPending();
 
         UpdateCurrentLife();
@@ -176,7 +208,7 @@ public class OctTree : IRaytracable
     /// <summary>
     /// prepares this tree for raycasting
     /// </summary>
-    private void PrepareForRaycast()
+    private void PrepareTree()
     {
         if (built)
         {
@@ -294,7 +326,7 @@ public class OctTree : IRaytracable
         }
     }
 
-    private void RemoveDynamic() => objects.RemoveAll(o => !o.Static);
+    private int RemoveDynamic() => objects.RemoveAll(o => !o.Static);
 
     /// <summary>
     /// Creates an <see cref="OctTree"/> node if the given parameters are valid, null otherwise

@@ -123,6 +123,7 @@ public struct Vector
     public override string ToString() => $"\n{{\n    X:{X};\n    Y:{Y};\n    Z:{Z}\n}}";
 
     public static readonly Vector Origin = new(0);
+    public static readonly Vector NaN = new(float.NaN);
 
     public static Vector operator +(Vector a) => a;
     public static Vector operator +(Vector a, Vector b) => new(a.X + b.X, a.Y + b.Y, a.Z + b.Z);

@@ -6,6 +6,10 @@ public interface IRaytracable
     /// Returns <see cref="float.NaN"/> if there is no collision
     /// </summary>
     float GetRaytrace(Ray ray);
+    /// <summary>
+    /// Returns true if this object contains the given point
+    /// </summary>
+    bool Contains(Vector vector);
 
     float MinX { get; }
     float MaxX { get; }

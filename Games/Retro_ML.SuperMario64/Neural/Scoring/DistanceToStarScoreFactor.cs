@@ -59,10 +59,9 @@ internal class DistanceToStarScoreFactor : IScoreFactor
 
     private void Update(SM64DataFetcher df)
     {
-        var currPos = df.GetMarioPos();
-        var starPos = df.GetMissionStarPos();
-        var diff = starPos - currPos;
+        var diff = df.GetMissionStarDirr();
         var currDist = diff.Length;
+        if (!float.IsFinite(currDist)) return;
         if (!isInit)
         {
             prevDistance = currDist;

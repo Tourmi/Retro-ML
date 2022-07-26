@@ -68,6 +68,7 @@ public struct Triangle : IRaytracable
 
         return dist > EPSILON ? dist : float.NaN;
     }
+    public bool Contains(Vector p) => false;
 
     public override string ToString() => $"{{\nVertex1:{V1};\nVertex2:{V2};\nVertex3:{V3};\nNormal:{Normal}}}";
 }

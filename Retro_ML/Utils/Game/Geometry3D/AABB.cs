@@ -62,4 +62,12 @@ public struct AABB : IRaytracable
 
         return tmax < 0 || tmin > tmax ? float.NaN : tmin;
     }
+
+    public bool Contains(Vector p) =>
+           MinX <= p.X
+        && MinY <= p.Y
+        && MinZ <= p.Z
+        && MaxX >= p.X
+        && MaxY >= p.Y
+        && MaxZ >= p.Z;
 }
