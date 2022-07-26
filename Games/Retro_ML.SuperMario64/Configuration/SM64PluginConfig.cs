@@ -21,6 +21,8 @@ internal class SM64PluginConfig : IGamePluginConfig
         true, //mario speed
         true, //camera angle
         true, //mission star direction
+        true, //grounded
+        false, //swimming
         false, //health
         false, //clock
         true, //bias
@@ -188,6 +190,8 @@ internal class SM64PluginConfig : IGamePluginConfig
         neuralConfig.InputNodes.Add(new InputNode("Mario speed", neuralConfig.EnabledStates[enabledIndex++], (dataFetcher) => ((SM64DataFetcher)dataFetcher).GetMarioSpeeds(), totalWidth: 3, totalHeight: 1));
         neuralConfig.InputNodes.Add(new InputNode("Camera angle", neuralConfig.EnabledStates[enabledIndex++], (dataFetcher) => ((SM64DataFetcher)dataFetcher).GetCameraAngle()));
         neuralConfig.InputNodes.Add(new InputNode("Mission star direction", neuralConfig.EnabledStates[enabledIndex++], (dataFetcher) => ((SM64DataFetcher)dataFetcher).GetMissionStarDirection(), totalWidth: 3, totalHeight: 1));
+        neuralConfig.InputNodes.Add(new InputNode("Is Grounded", neuralConfig.EnabledStates[enabledIndex++], (dataFetcher) => ((SM64DataFetcher)dataFetcher).IsMarioGrounded()));
+        neuralConfig.InputNodes.Add(new InputNode("Is Swimming", neuralConfig.EnabledStates[enabledIndex++], (dataFetcher) => ((SM64DataFetcher)dataFetcher).IsMarioSwimming()));
         neuralConfig.InputNodes.Add(new InputNode("Health", neuralConfig.EnabledStates[enabledIndex++], (dataFetcher) => ((SM64DataFetcher)dataFetcher).GetMarioNormalizedHealth()));
         neuralConfig.InputNodes.Add(new InputNode("Internal Clock", neuralConfig.EnabledStates[enabledIndex++], (dataFetcher) => ((SM64DataFetcher)dataFetcher).GetInternalClockState(), Math.Min(8, InternalClockLength), Math.Max(1, InternalClockLength / 8)));
         neuralConfig.InputNodes.Add(new InputNode("Bias", neuralConfig.EnabledStates[enabledIndex++], (dataFetcher) => true));

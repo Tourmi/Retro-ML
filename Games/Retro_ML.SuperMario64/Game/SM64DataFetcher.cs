@@ -68,7 +68,7 @@ internal class SM64DataFetcher : IDataFetcher
         }
 
         int currPrio = 1;
-        DebugInfo.AddInfo("Mario Action", GetMarioAction().ToString("X"), "Mario", currPrio++);
+        DebugInfo.AddInfo("Mario Action", MarioActions.GetActionName(GetMarioAction()), "Mario", currPrio++);
         DebugInfo.AddInfo("Mario X Pos", GetMarioX().ToString(), "Mario", currPrio++);
         DebugInfo.AddInfo("Mario Y Pos", GetMarioY().ToString(), "Mario", currPrio++);
         DebugInfo.AddInfo("Mario Z Pos", GetMarioZ().ToString(), "Mario", currPrio++);
@@ -122,6 +122,8 @@ internal class SM64DataFetcher : IDataFetcher
     public double GetMarioNormalizedHealth() => GetMarioHealth() / 8.0;
     public ushort GetCoinCount() => (ushort)ReadULong(Mario.Coins);
     public ushort GetStarCount() => (ushort)ReadULong(Progress.StarCount);
+    public bool IsMarioGrounded() => MarioActions.IsGrounded(GetMarioAction());
+    public bool IsMarioSwimming() => MarioActions.IsSwimming(GetMarioAction());
     public uint GetBehaviourBankStart() => (uint)ReadULong(GameObjects.BehaviourBankStartAddress);
     public Vector GetMissionStarDirr()
     {

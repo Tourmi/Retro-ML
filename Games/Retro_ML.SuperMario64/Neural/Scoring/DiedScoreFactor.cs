@@ -2,6 +2,7 @@
 using Retro_ML.Game;
 using Retro_ML.Neural.Scoring;
 using Retro_ML.SuperMario64.Game;
+using Retro_ML.SuperMario64.Game.Data;
 
 namespace Retro_ML.SuperMario64.Neural.Scoring;
 internal class DiedScoreFactor : IScoreFactor
@@ -33,7 +34,7 @@ internal class DiedScoreFactor : IScoreFactor
     private void Update(SM64DataFetcher df)
     {
         var health = df.GetMarioHealth();
-        if (health == 0 || df.HasMarioFallenOff())
+        if (health == 0 || df.HasMarioFallenOff() || MarioActions.Died(df.GetMarioAction()))
         {
             currScore += ScoreMultiplier;
             shouldStop = true;
