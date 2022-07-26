@@ -33,7 +33,7 @@ internal class DiedScoreFactor : IScoreFactor
     private void Update(SM64DataFetcher df)
     {
         var health = df.GetMarioHealth();
-        if (health == 0)
+        if (health == 0 || df.HasMarioFallenOff())
         {
             currScore += ScoreMultiplier;
             shouldStop = true;

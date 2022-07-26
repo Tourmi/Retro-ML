@@ -39,7 +39,7 @@ internal struct CollisionTri
     /// </summary>
     public CollisionTri(byte[] bytes, bool isStatic = true)
     {
-        SurfaceType = bytes[0x00];
+        SurfaceType = bytes[0x01];
         Flags = bytes[0x04];
         Room = bytes[0x05];
 

@@ -28,6 +28,7 @@ internal class SM64DataFetcher : IDataFetcher
     private byte prevAreaCode;
     private byte currAreaCode;
     private int loadTrisTimer;
+    private float outOfBoundsHeight = short.MinValue;
 
     public SM64DataFetcher(IEmulatorAdapter emulator, NeuralConfig neuralConfig, SM64PluginConfig pluginConfig)
     {
@@ -162,6 +163,7 @@ internal class SM64DataFetcher : IDataFetcher
     public short GetStaticTriangleCount() => (short)ReadULong(Collision.StaticTriangleCount);
     public short GetTriangleCount() => (short)ReadULong(Collision.TotalTriangleCount);
     public short GetDynamicTriangleCount() => (short)(GetTriangleCount() - GetStaticTriangleCount());
+    public bool HasMarioFallenOff() => GetMarioPos().Y <= outOfBoundsHeight + 2000;
 
     public Ray GetMarioForwardRay() => new(new(GetMarioX(), GetMarioY() + 110, GetMarioZ()), Vector.Origin.WithZ(1).RotateXZ(GetMarioFacingAngleRadian()));
 
@@ -191,6 +193,8 @@ internal class SM64DataFetcher : IDataFetcher
         {
             tris.Add(new(bytes[i..(i + COLLISION_TRI_SIZE)]));
         }
+
+        outOfBoundsHeight = tris.Where(t => t.SurfaceType == 0x0A).Select(t => t.Vertex1Y).OrderBy(y => y).FirstOrDefault(short.MinValue);
 
         return tris.Select(t => (IRaytracable)t.Triangle);
     }
