@@ -88,6 +88,8 @@ namespace Retro_ML_TEST.Emulator
             }
         }
 
+        public void WriteMemory(uint addr, byte val) => SetMemory(addr, val);
+
         public int ReadMemoryCallCount = 0;
         public byte ReadMemory(uint addr)
         {
