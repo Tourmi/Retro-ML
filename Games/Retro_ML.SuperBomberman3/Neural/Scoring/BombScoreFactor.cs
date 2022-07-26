@@ -48,9 +48,9 @@ namespace Retro_ML.SuperBomberMan3.Neural.Scoring
 
         public double ScoreMultiplier { get; set; }
 
-        public double EnemyEliminationMultiplier { get; set; } = 1;
+        public double EnemyEliminationMultiplier { get; set; } = 25;
 
-        public double WallDestructiondMultiplier { get; set; } = 25;
+        public double WallDestructiondMultiplier { get; set; } = 1;
 
         public string Name => "Bomb score";
 
