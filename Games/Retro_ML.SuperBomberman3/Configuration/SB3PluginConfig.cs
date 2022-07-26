@@ -26,6 +26,7 @@ namespace Retro_ML.SuperBomberman3.Configuration
             true, //Closest Powerup X Distance
             true, //Closest Powerup Y Distance
             true, //Number of Bomb Planted
+            true, //Round Timer
 
             true, //Extra bomb level
             true, //Explosion Expander level
@@ -103,6 +104,7 @@ namespace Retro_ML.SuperBomberman3.Configuration
                 new IdleScoreFactor() { IsDisabled=false, ScoreMultiplier=-5 },
                 new PowerupScoreFactor() { IsDisabled=false, ScoreMultiplier=1 },
                 new EndRoundScoreFactor() { IsDisabled=false, ScoreMultiplier=100 },
+                new TimeTakenScoreFactor() { IsDisabled=false, ScoreMultiplier=0.25 },
             };
         }
 
@@ -136,6 +138,7 @@ namespace Retro_ML.SuperBomberman3.Configuration
             neuralConfig.InputNodes.Add(new InputNode("Closest Powerup X Distance", neuralConfig.EnabledStates[enabledIndex++], (dataFetcher) => ((SB3DataFetcher)dataFetcher).GetClosestPowerupXPosNormalized()));
             neuralConfig.InputNodes.Add(new InputNode("Closest Powerup Y Distance", neuralConfig.EnabledStates[enabledIndex++], (dataFetcher) => ((SB3DataFetcher)dataFetcher).GetClosestPowerupYPosNormalized()));
             neuralConfig.InputNodes.Add(new InputNode("Number Of Bomb Planted", neuralConfig.EnabledStates[enabledIndex++], (dataFetcher) => ((SB3DataFetcher)dataFetcher).GetBombsPlantedNormalized()));
+            neuralConfig.InputNodes.Add(new InputNode("Round Timer", neuralConfig.EnabledStates[enabledIndex++], (dataFetcher) => ((SB3DataFetcher)dataFetcher).GetRemainingRoundTimeNormalized()));
 
             neuralConfig.InputNodes.Add(new InputNode("Extra bomb level", neuralConfig.EnabledStates[enabledIndex++], (dataFetcher) => ((SB3DataFetcher)dataFetcher).GetPlayerExtraBombPowerUpLevelNormalized()));
             neuralConfig.InputNodes.Add(new InputNode("Explosion Expander level ", neuralConfig.EnabledStates[enabledIndex++], (dataFetcher) => ((SB3DataFetcher)dataFetcher).GetPlayerExplosionExpanderPowerUpLevelNormalized()));

@@ -50,7 +50,7 @@ namespace Retro_ML.SuperBomberMan3.Neural.Scoring
 
         public string Name => "Max idle frames";
 
-        public string Tooltip => "Penalize the ai if it stays idle and dont move for a certain amount of frames";
+        public string Tooltip => "Penalize the ai if it stays idle (do not move) for a certain amount of frames";
 
         public bool CanBeDisabled => true;
 
@@ -92,15 +92,14 @@ namespace Retro_ML.SuperBomberMan3.Neural.Scoring
                 idleFrames++;
             }
 
-            //Else reset the idle frames count and change oldPos to currentPos
+            //Else reset the idle frames count
             else
             {
                 idleFrames = 0;
-                previousXPos = xPos;
-                previousYPos = yPos;
             }
 
-
+            previousXPos = xPos;
+            previousYPos = yPos;
         }
 
         public void LevelDone()

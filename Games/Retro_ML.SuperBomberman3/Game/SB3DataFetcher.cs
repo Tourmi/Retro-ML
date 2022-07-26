@@ -25,6 +25,8 @@ namespace Retro_ML.SuperBomberman3.Game
         private const uint MAX_EXPLOSION_EXPANDER = 0x09;
         private const uint MAX_BOMB_TIMER = 0x95;
         private const uint MIN_BOMB_TIMER = 0x01;
+        //Our savestates are using 2 mins round time. Can be changed
+        private const uint MAX_ROUND_TIME = 0x78;
 
         private readonly IEmulatorAdapter emulator;
         private readonly Dictionary<uint, byte[]> frameCache;
@@ -76,6 +78,8 @@ namespace Retro_ML.SuperBomberman3.Game
         public bool GetPlayerPowerBombPowerUpState() => (ReadSingle(PowerupsAddresses.BombermanUpgrade) & 0x40) != 0;
         public int GetNumbersOfPlayersAlive() => playersDead.Where(c => !c).Count();
         public bool IsPlayerDead() => playersDead[0] == true;
+        public int GetRemainingRoundTime() => (ReadSingle(GameAddresses.GameMinutesTimer) * 60) + ReadSingle(GameAddresses.GameSecondsTimer);
+        public double GetRemainingRoundTimeNormalized() => GetRemainingRoundTime() / (double) MAX_ROUND_TIME;
 
         /// <summary>
         /// Needs to be called every frame to reset the memory cache
@@ -259,7 +263,7 @@ namespace Retro_ML.SuperBomberman3.Game
 
         /// <summary>
         /// Get the powerup that is the closest to the player on the grid using manhattan distance.
-        /// Values are normalized. If there is no powerup present, the function will return a pair of (1.0, 1.0)
+        /// Values are normalized. If there is no powerup present, the function will return a pair with values = (1.0, 1.0)
         /// </summary>
         public Tuple<double, double> GetClosestPowerUp()
         {
@@ -373,6 +377,9 @@ namespace Retro_ML.SuperBomberman3.Game
             GameAddresses.StaticTiles,
             GameAddresses.BombsPosition,
             GameAddresses.BombsTimer,
+            GameAddresses.DestructibleTilesRemaining,
+            GameAddresses.GameSecondsTimer,
+            GameAddresses.GameMinutesTimer,
             PlayersAddresses.XPos,
             PlayersAddresses.YPos,
             PlayersAddresses.BombsPlanted,

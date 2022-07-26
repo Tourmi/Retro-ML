@@ -21,7 +21,7 @@
         public static class GameAddresses
         {
             /// <summary>
-            /// Dynamic Tile Map. 1 byte per tile, 176 tiles total. The tiles are dynamic.
+            /// Dynamic Tile Map. 1 byte per tile, 176 tiles total.
             /// <code>
             /// 0x84 = undestructible (sudden death)
             /// 0x80 = undestructible
@@ -65,6 +65,10 @@
             /// Represent the number of seconds on the timer.
             /// </summary>
             public static readonly AddressData GameSecondsTimer = new(0x17E3, 1);
+            /// <summary>
+            /// Represent the number of destructible tiles left on the map.
+            /// </summary>
+            public static readonly AddressData DestructibleTilesRemaining = new(0x17E5, 1);
         }
 
         public static class PlayersAddresses
@@ -79,7 +83,7 @@
             public static readonly AddressData YPos = new(0x14F7, 4);
             /// <summary>
             /// Players idle timer, vary from 0 to 255. Only incerement when the player does not move.
-            /// When reaching 255, player starts dancing. Useful for the StoppedMoving ScoreFactor.
+            /// When reaching 255, player starts dancing.
             /// </summary>
             public static readonly AddressData IdleTimer = new(0x1467, 1);
             /// <summary>
