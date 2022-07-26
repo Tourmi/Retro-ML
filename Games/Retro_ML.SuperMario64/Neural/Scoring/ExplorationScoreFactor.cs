@@ -15,7 +15,8 @@ internal class ExplorationScoreFactor : IScoreFactor
     public FieldInfo[] Fields => new FieldInfo[]
     {
         new IntegerFieldInfo(nameof(MinimumDistance), "Distance to cross", 100, int.MaxValue, 100, "Distance in units that the AI should have traversed to get its reward"),
-        new DoubleFieldInfo(nameof(DistanceTimeout), "Exploration Timer", 0, double.PositiveInfinity, 1, "Seconds before timing out an AI that hasn't explored the level")
+        new DoubleFieldInfo(nameof(DistanceTimeout), "Exploration Timer", 0, double.PositiveInfinity, 1, "Seconds before timing out an AI that hasn't explored the level"),
+        new DoubleFieldInfo(nameof(EliminationMult), "Elimination multiplier", double.NegativeInfinity, double.PositiveInfinity, 1, "Reward multiplier applied when the AI stops exploring")
     };
 
     public ExplorationScoreFactor()
@@ -30,6 +31,7 @@ internal class ExplorationScoreFactor : IScoreFactor
         {
             nameof(MinimumDistance) => MinimumDistance,
             nameof(DistanceTimeout) => DistanceTimeout,
+            nameof(EliminationMult) => EliminationMult,
             _ => (object)0,
         };
 
@@ -39,11 +41,13 @@ internal class ExplorationScoreFactor : IScoreFactor
             {
                 case nameof(MinimumDistance): MinimumDistance = (int)value; break;
                 case nameof(DistanceTimeout): DistanceTimeout = (double)value; break;
+                case nameof(EliminationMult): EliminationMult = (double)value; break;
             }
         }
     }
 
-    public double DistanceTimeout { get; set; } = 5;
+    public double DistanceTimeout { get; set; } = 2;
+    public double EliminationMult { get; set; } = -1000;
     public int MinimumDistance { get; set; } = 1000;
     public bool ShouldStop => shouldStop;
     public double ScoreMultiplier { get; set; }
@@ -83,7 +87,8 @@ internal class ExplorationScoreFactor : IScoreFactor
 
     public void LevelDone()
     {
-        currScore += sceneVisited.Count;
+        currScore += sceneVisited.Count * ScoreMultiplier;
+        if (shouldStop) currScore += ScoreMultiplier * EliminationMult;
         shouldStop = false;
         framesWithoutProgress = 0;
         sceneVisited = InitTree();
