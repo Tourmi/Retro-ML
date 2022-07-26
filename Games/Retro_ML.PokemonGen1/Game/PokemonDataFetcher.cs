@@ -66,7 +66,6 @@ internal class PokemonDataFetcher : IDataFetcher
 
     public bool[,] GetInternalClockState() => internalClock.GetStates();
 
-    public byte GetOpposingPokemonStatusEffect() => ReadSingle(OpposingPokemon.StatusEffect);
     public double GetOpposingPokemonSleep() => (ReadSingle(OpposingPokemon.StatusEffect) & 0b0000_0111) / (double)MAXIMUM_SLEEP_COUNTER;
     public bool GetOpposingPokemonParalysis() => (ReadSingle(OpposingPokemon.StatusEffect) & 0b0100_0000) != 0;
     public bool GetOpposingPokemonFrozen() => (ReadSingle(OpposingPokemon.StatusEffect) & 0b0010_0000) != 0;
