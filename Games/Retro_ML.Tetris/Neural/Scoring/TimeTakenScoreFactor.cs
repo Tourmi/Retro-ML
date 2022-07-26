@@ -1,11 +1,6 @@
-﻿using Retro_ML.Game;
+﻿using Retro_ML.Configuration.FieldInformation;
+using Retro_ML.Game;
 using Retro_ML.Neural.Scoring;
-using Retro_ML.Configuration.FieldInformation;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Retro_ML.Tetris.Neural.Scoring
 {
@@ -44,7 +39,7 @@ namespace Retro_ML.Tetris.Neural.Scoring
             {
                 switch (fieldName)
                 {
-                    case nameof(MaximumLevelTime): MaximumLevelTime = (int)value; break;
+                    case nameof(MaximumLevelTime): MaximumLevelTime = (double)value; break;
                 }
             }
         }

@@ -1,10 +1,22 @@
-﻿continueLoop = true
+﻿local socket = require("socket")
+require("string")
+
+continueLoop = true
 
 function table_concat(t1,t2)
     for i=1,#t2 do
         t1[#t1+1] = t2[i]
     end
     return t1
+end
+
+function table_to_string(t)
+   local str = ""
+   for i=1,#t,100 do
+        local endidx = math.min(i + 99, #t)
+        str = str .. string.char(unpack(t, i, endidx))
+   end
+   return str
 end
 
 function str_to_bool(str)
@@ -14,8 +26,17 @@ function str_to_bool(str)
     return string.lower(str) == 'true'
 end
 
-function okay() 
-    comm.socketServerSendBytes({1})
+function okay()
+    send({48})
+end
+
+function send(bytes)
+    local tosend = table_to_string(bytes)
+    ok, err = socket_client:send(tosend)
+end
+
+function receive()
+    return socket_client:receive("*l")
 end
 
 function exit_emu(code)
@@ -92,7 +113,7 @@ function parseCommand(cmd)
     if string.find(cmd, "read_memory ") then
         local singleByte = read_memory(tonumber(string.sub(cmd, 13)), 1)[1]
         okay()
-        comm.socketServerSendBytes({singleByte})
+        send(singleByte)
         return
     end
     if string.find(cmd, "read_memory_range ") then
@@ -103,7 +124,7 @@ function parseCommand(cmd)
         local bytes = read_memory(tonumber(addr), tonumber(count))
         
         okay()
-        comm.socketServerSendBytes(bytes)
+        send(bytes)
         return
     end
     if string.find(cmd, "read_memory_ranges ") then
@@ -121,7 +142,7 @@ function parseCommand(cmd)
         end
 
         okay()
-        comm.socketServerSendBytes(bytes)
+        send(bytes)
         return
     end
     if string.find(cmd, "send_input ") then
@@ -228,10 +249,14 @@ end
 
 function loop()
     while continueLoop do
-        local cmd = comm.socketServerResponse()
+        local cmd = receive()
         parseCommand(cmd)
     end
 end
 
+socket_client = socket.tcp()
+socket_client:connect("127.0.0.1", 11000)
+
 client.gettool("luaconsole").Hide()
 loop()
+socket_client:close()
