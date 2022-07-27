@@ -67,8 +67,8 @@ internal class ExplorationScoreFactor : IScoreFactor
 
     private void Update(SM64DataFetcher df)
     {
+        if (!df.IsMarioGrounded()) return;
         var marioPos = df.GetMarioPos();
-
         if (sceneVisited.Contains(marioPos))
         {
             framesWithoutProgress++;

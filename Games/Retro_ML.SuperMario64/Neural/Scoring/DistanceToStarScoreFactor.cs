@@ -2,6 +2,7 @@
 using Retro_ML.Game;
 using Retro_ML.Neural.Scoring;
 using Retro_ML.SuperMario64.Game;
+using Retro_ML.Utils.Game.Geometry3D;
 
 namespace Retro_ML.SuperMario64.Neural.Scoring;
 internal class DistanceToStarScoreFactor : IScoreFactor
@@ -12,6 +13,7 @@ internal class DistanceToStarScoreFactor : IScoreFactor
     private float minDistance;
     private int noProgressFrames;
     private bool shouldStop;
+    private Vector starPos;
 
     public FieldInfo[] Fields => new FieldInfo[]
     {
@@ -59,16 +61,18 @@ internal class DistanceToStarScoreFactor : IScoreFactor
 
     private void Update(SM64DataFetcher df)
     {
-        var diff = df.GetMissionStarDirr();
-        var currDist = diff.Length;
-        if (!float.IsFinite(currDist)) return;
+        var currStarPos = df.GetMissionStarPos();
         if (!isInit)
         {
-            prevDistance = currDist;
-            minDistance = currDist;
+            if (!float.IsFinite(currStarPos.SquaredLength)) return;
+            starPos = currStarPos;
+            var initDist = (starPos - df.GetMarioPos()).Length;
+            prevDistance = initDist;
+            minDistance = initDist;
             isInit = true;
             noProgressFrames = 0;
         }
+        var currDist = (starPos - df.GetMarioPos()).Length;
 
         bool gotCloser = currDist < minDistance;
         bool gotFurther = currDist > prevDistance;

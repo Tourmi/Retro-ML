@@ -125,14 +125,15 @@ internal class SM64DataFetcher : IDataFetcher
     public bool IsMarioGrounded() => MarioActions.IsGrounded(GetMarioAction());
     public bool IsMarioSwimming() => MarioActions.IsSwimming(GetMarioAction());
     public uint GetBehaviourBankStart() => (uint)ReadULong(GameObjects.BehaviourBankStartAddress);
-    public Vector GetMissionStarDirr()
+    public Vector GetMissionStarPos()
     {
         var stars = GetObjects().Where(o => o.IsStar()).ToList();
         if (!stars.Any()) return Vector.NaN;
         var marioPos = GetMarioPos();
         var nearestStar = stars.OrderBy(s => (s.Pos - marioPos).SquaredLength).First();
-        return nearestStar.Pos - marioPos;
+        return nearestStar.Pos;
     }
+    public Vector GetMissionStarDirr() => GetMissionStarPos() - GetMarioPos();
     public byte GetAreaCode() => ReadByte(Area.CurrentID);
     public double[,] GetMissionStarDirection()
     {
