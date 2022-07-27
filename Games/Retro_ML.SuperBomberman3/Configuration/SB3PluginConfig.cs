@@ -105,7 +105,7 @@ namespace Retro_ML.SuperBomberman3.Configuration
                 new IdleScoreFactor() { IsDisabled=false, ScoreMultiplier=-5 },
                 new PowerupScoreFactor() { IsDisabled=false, ScoreMultiplier=1 },
                 new EndRoundScoreFactor() { IsDisabled=false, ScoreMultiplier=100 },
-                new TimeTakenScoreFactor() { IsDisabled=false, ScoreMultiplier=0.25 },
+                new TimeTakenScoreFactor() { IsDisabled=false, ScoreMultiplier=0.1 },
                 new BombScoreFactor() { IsDisabled=false, ScoreMultiplier=1 },
             };
         }
