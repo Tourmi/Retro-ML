@@ -31,7 +31,6 @@ public struct Vector
     public Vector WithYZ(float yVal, float zVal) => new(X, yVal, zVal);
     public Vector Inverse() => new(1f / X, 1f / Y, 1f / Z);
     public Vector Absolute() => new(MathF.Abs(X), MathF.Abs(Y), MathF.Abs(Z));
-    public bool IsFinite() => float.IsFinite(X) && float.IsFinite(Y) && float.IsFinite(Z);
 
     /// <summary>
     /// Rotates the vector vertically based on the given angle
@@ -40,8 +39,7 @@ public struct Vector
     /// <returns></returns>
     public Vector RotateVertically(float radAngle)
     {
-        if (MathF.Abs(X) + MathF.Abs(Z) < EPSILON)
-            return this;
+        if (MathF.Abs(X) + MathF.Abs(Z) < EPSILON) return NaN;
 
         var norm = WithY(0).Normalized();
         var dot = norm.X;
@@ -95,7 +93,12 @@ public struct Vector
     /// Returns a normalized <see cref="Vector"/>. If the vector's length is zero, returns default vector.
     /// </summary>
     /// <returns></returns>
-    public Vector Normalized() => (SquaredLength is 0f or (< 1 + EPSILON and > 1 - EPSILON)) ? this : this / Length;
+    public Vector Normalized() => SquaredLength switch
+    {
+        0f => NaN,
+        < 1 + EPSILON and > 1 - EPSILON => this,
+        _ => this / Length
+    };
 
     public float Length
     {
