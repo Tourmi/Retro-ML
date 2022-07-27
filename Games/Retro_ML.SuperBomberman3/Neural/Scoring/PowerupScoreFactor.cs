@@ -109,14 +109,14 @@ namespace Retro_ML.SuperBomberMan3.Neural.Scoring
 
         private void Update(SB3DataFetcher dataFetcher)
         {
-            var extraBomb = dataFetcher.GetPlayerExtraBombPowerUpLevel();
-            var explosionExpander = dataFetcher.GetPlayerExplosionExpanderPowerUpLevel();
-            var accelerator = dataFetcher.GetPlayerAcceleratorPowerUpLevel();
-            var louie = dataFetcher.GetPlayerLouiePowerUpState();
-            var kick = dataFetcher.GetPlayerKickPowerUpState();
-            var glove = dataFetcher.GetPlayerGlovePowerUpState();
-            var slimeBomb = dataFetcher.GetPlayerSlimeBombPowerUpState();
-            var powerBomb = dataFetcher.GetPlayerPowerBombPowerUpState();
+            var extraBomb = dataFetcher.GetMainPlayerExtraBombPowerUpLevel();
+            var explosionExpander = dataFetcher.GetMainPlayerExplosionExpanderPowerUpLevel();
+            var accelerator = dataFetcher.GetMainPlayerAcceleratorPowerUpLevel();
+            var louie = dataFetcher.IsMainPlayerOnLouie();
+            var kick = dataFetcher.GetMainPlayerKickUpgradeState();
+            var glove = dataFetcher.GetMainPlayerGloveUpgradeState();
+            var slimeBomb = dataFetcher.GetMainPlayerSlimeBombUpgradeState();
+            var powerBomb = dataFetcher.GetMainPlayerPowerBombUpgradeState();
 
             if (!isInited)
             {

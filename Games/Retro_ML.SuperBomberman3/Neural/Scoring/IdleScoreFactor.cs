@@ -67,8 +67,8 @@ namespace Retro_ML.SuperBomberMan3.Neural.Scoring
 
         private void Update(SB3DataFetcher dataFetcher)
         {
-            var xPos = dataFetcher.GetPlayerXPos()[0];
-            var yPos = dataFetcher.GetPlayerYPos()[0];
+            var xPos = dataFetcher.GetPlayersXPos()[0];
+            var yPos = dataFetcher.GetPlayersYPos()[0];
 
             if (!isInit)
             {

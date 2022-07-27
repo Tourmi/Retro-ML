@@ -71,8 +71,8 @@ namespace Retro_ML.SuperBomberMan3.Neural.Scoring
 
         private void Update(SB3DataFetcher dataFetcher)
         {
-            enemyEliminated = dataFetcher.GetEnemyEliminated();
-            wallsDestroyed = dataFetcher.GetWallsDestroyed();
+            enemyEliminated = dataFetcher.GetNumberOfEnemiesEliminated();
+            wallsDestroyed = dataFetcher.GetNumberOfWallsDestroyed();
         }
 
         public void LevelDone()

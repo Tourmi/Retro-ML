@@ -56,7 +56,7 @@ internal class TimeTakenScoreFactor : IScoreFactor
         }
 
         timeRemaining = dataFetcher.GetRemainingRoundTime();
-        hasLost = dataFetcher.IsPlayerDead();
+        hasLost = dataFetcher.IsMainPlayerDead();
     }
 
     public void LevelDone()
@@ -78,6 +78,6 @@ internal class TimeTakenScoreFactor : IScoreFactor
 
     public IScoreFactor Clone()
     {
-        return new TimeTakenScoreFactor() { IsDisabled = IsDisabled, ScoreMultiplier = ScoreMultiplier, ExtraFields = ExtraFields};
+        return new TimeTakenScoreFactor() { IsDisabled = IsDisabled, ScoreMultiplier = ScoreMultiplier, ExtraFields = ExtraFields };
     }
 }

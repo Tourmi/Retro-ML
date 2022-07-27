@@ -68,27 +68,26 @@ namespace Retro_ML.SuperBomberMan3.Neural.Scoring
 
         private void Update(SB3DataFetcher dataFetcher)
         {
-            //If the player lost the round
-            if (dataFetcher.IsPlayerDead())
+            //If the main player died before reaching a 1v1 scenario or lost the round in a 1v1 scenario at the end.
+            if ((dataFetcher.IsMainPlayerDead() && !dataFetcher.IsRoundOver()) || (dataFetcher.IsRoundOver() && dataFetcher.IsRoundLost()))
             {
                 currScore += ScoreMultiplier * DefeatMultiplier;
                 shouldStop = true;
             }
 
-            //If the player won the round
-            if (dataFetcher.GetNumbersOfPlayersAlive() == 1 && !dataFetcher.IsPlayerDead())
+            //If the main player won the round
+            if (dataFetcher.IsRoundOver() && dataFetcher.IsRoundWon())
             {
                 currScore += ScoreMultiplier * VictoryMultiplier;
                 shouldStop = true;
             }
 
-            //If the round is a draw
-            if (dataFetcher.GetNumbersOfPlayersAlive() == 0)
+            //If the round ended in a draw between the main player and an enemy
+            if (dataFetcher.IsRoundDraw())
             {
                 currScore += ScoreMultiplier * DrawMultiplier;
                 shouldStop = true;
             }
-
         }
 
         public void LevelDone()
