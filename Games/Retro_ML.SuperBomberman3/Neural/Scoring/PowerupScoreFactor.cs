@@ -74,21 +74,21 @@ namespace Retro_ML.SuperBomberMan3.Neural.Scoring
 
         public double ScoreMultiplier { get; set; }
 
-        public double ExplosionExpanderMultiplier { get; set; } = 1;
+        public double ExplosionExpanderMultiplier { get; set; } = 3;
 
-        public double ExtraBombMultiplier { get; set; } = 1;
+        public double ExtraBombMultiplier { get; set; } = 3;
 
-        public double AcceleratorMultiplier { get; set; } = 2;
+        public double AcceleratorMultiplier { get; set; } = 3;
 
-        public double LouieMultiplier { get; set; } = 10;
+        public double LouieMultiplier { get; set; } = 9;
 
-        public double KickMultiplier { get; set; } = 5;
+        public double KickMultiplier { get; set; } = 6;
 
-        public double GloveMultiplier { get; set; } = 5;
+        public double GloveMultiplier { get; set; } = 6;
 
-        public double SlimeBombMultiplier { get; set; } = 5;
+        public double SlimeBombMultiplier { get; set; } = 6;
 
-        public double PowerBombMultiplier { get; set; } = 5;
+        public double PowerBombMultiplier { get; set; } = 6;
 
         public string Name => "Powerup acquired";
 
