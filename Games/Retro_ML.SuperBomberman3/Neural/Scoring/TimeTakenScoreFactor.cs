@@ -62,6 +62,7 @@ internal class TimeTakenScoreFactor : IScoreFactor
     public void LevelDone()
     {
         shouldStop = false;
+        isInit = false;
 
         //If the player lost, reward him for surviving.
         if (hasLost)
