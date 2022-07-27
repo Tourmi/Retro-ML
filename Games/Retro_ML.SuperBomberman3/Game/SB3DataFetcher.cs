@@ -64,8 +64,8 @@ namespace Retro_ML.SuperBomberman3.Game
         private readonly InternalClock internalClock;
 
         private byte[,] playableTilesCache;
-        private int playersAliveCount;
-        private int previousPlayersAliveCount;
+        private int enemiesAliveCount;
+        private int previousEnemiesAliveCount;
         private int destructibleTilesRemaining;
         private int previousFrameDestructibleTilesRemaining;
         private bool[] playersAliveStatus;
@@ -84,8 +84,8 @@ namespace Retro_ML.SuperBomberman3.Game
             frameCounter = 0;
             destructibleTilesRemaining = 0;
             previousFrameDestructibleTilesRemaining = 0;
-            playersAliveCount = 0;
-            previousPlayersAliveCount = 0;
+            enemiesAliveCount = 0;
+            previousEnemiesAliveCount = 0;
             enemiesEliminated = 0;
             wallsDestroyed = 0;
 
@@ -441,9 +441,9 @@ namespace Retro_ML.SuperBomberman3.Game
                     }
 
                     //If the player killed an enemy. Some bomberman models requires 1 more frame to start death animation.
-                    if (!killCheck && bomb.IsPlantedByMainPlayer && (bomb.SetToDamagePlayers == frameCounter || bomb.SetToDamagePlayers == frameCounter + 1) && playersAliveCount < previousPlayersAliveCount)
+                    if (!killCheck && bomb.IsPlantedByMainPlayer && (bomb.SetToDamagePlayers == frameCounter || bomb.SetToDamagePlayers == frameCounter + 1) && enemiesAliveCount < previousEnemiesAliveCount && !IsMainPlayerDead())
                     {
-                        enemiesEliminated += previousPlayersAliveCount - playersAliveCount;
+                        enemiesEliminated += previousEnemiesAliveCount - enemiesAliveCount;
                         //With certain powerups, the player can plant many bombs at once, we already give it credits for all instances this way.
                         killCheck = true;
                     }
@@ -614,13 +614,13 @@ namespace Retro_ML.SuperBomberman3.Game
             internalClock.NextFrame();
             InitFrameCache();
             CheckPlayerDeathStatus();
-            playersAliveCount = GetNumberOfPlayersAlive();
+            enemiesAliveCount = IsMainPlayerDead() ? GetNumberOfPlayersAlive() : GetNumberOfPlayersAlive() - 1;
             destructibleTilesRemaining = GetDestructibleTilesRemaining();
             MapPlayableTiles();
             TrackBombExpired();
             TrackBombPlanted();
             TrackBombExploded();
-            previousPlayersAliveCount = playersAliveCount;
+            previousEnemiesAliveCount = enemiesAliveCount;
             previousFrameDestructibleTilesRemaining = destructibleTilesRemaining;
             frameCounter++;
         }
@@ -636,8 +636,8 @@ namespace Retro_ML.SuperBomberman3.Game
             frameCounter = 0;
             destructibleTilesRemaining = 0;
             previousFrameDestructibleTilesRemaining = 0;
-            playersAliveCount = 0;
-            previousPlayersAliveCount = 0;
+            enemiesAliveCount = 0;
+            previousEnemiesAliveCount = 0;
             enemiesEliminated = 0;
             wallsDestroyed = 0;
             Array.Fill(playersAliveStatus, true);
