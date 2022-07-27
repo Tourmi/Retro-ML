@@ -72,7 +72,7 @@ public class OctTree : IRaytracable
     public bool Static => true;
     public int Count { get; private set; }
 
-    public bool HasChildren => childNodes.Any(cn => cn != null) || objects.Any();
+    private bool HasChildren => childNodes.Any(cn => cn != null) || objects.Any();
 
     public float GetRaytrace(Ray ray)
     {
@@ -150,13 +150,14 @@ public class OctTree : IRaytracable
     /// </summary>
     public void Update()
     {
-        if (!built) return;
+        PrepareTree();
 
-        Count -= RemoveDynamic();
+        var removed = RemoveDynamic();
+        Count -= removed;
         var currParent = parent;
         while (currParent != null)
         {
-            currParent.Count -= Count;
+            currParent.Count -= removed;
             currParent = currParent.parent;
         }
         if (pendingObjects.Any()) ProcessPending();
