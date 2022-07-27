@@ -141,6 +141,7 @@ namespace Retro_ML.SuperBomberman3.Game
         public byte[] GetPlayersDeathTimer() => Read(PlayersAddresses.PlayersDeathTimer);
         public int GetNumberOfPlayersAlive() => playersAliveStatus.Where(c => c).Count();
         public bool IsMainPlayerDead() => playersAliveStatus[0] == false;
+        public bool IsPlayerDead(int index) => playersAliveStatus[index] == false;
         public bool IsRoundOver() => GetNumberOfPlayersAlive() == 1;
         public bool IsRoundWon() => IsRoundOver() && !IsMainPlayerDead();
         public bool IsRoundLost() => IsRoundOver() && IsMainPlayerDead();
@@ -220,7 +221,17 @@ namespace Retro_ML.SuperBomberman3.Game
             for (int enemy = 0; enemy < NUM_ENEMIES; enemy++)
             {
                 double enemyXPosInLevel = GetPlayerXPositionNormalized(enemyXPos[enemy + 1]);
-                result[enemy, 0] = enemyXPosInLevel - playerXPosInLevel;
+
+                //If the enemy is alive
+                if (!IsPlayerDead(enemy + 1))
+                {
+                    result[enemy, 0] = enemyXPosInLevel - playerXPosInLevel;
+                }
+                //If the enemy is dead
+                else if (IsPlayerDead(enemy + 1))
+                {
+                    result[enemy, 0] = 0.0;
+                }
             }
 
             return result;
@@ -239,7 +250,17 @@ namespace Retro_ML.SuperBomberman3.Game
             for (int enemy = 0; enemy < NUM_ENEMIES; enemy++)
             {
                 double enemyYPosInLevel = GetPlayerYPositionNormalized(enemyYPos[enemy + 1]);
-                result[enemy, 0] = enemyYPosInLevel - playerYPosInLevel;
+
+                //If the enemy is alive
+                if (!IsPlayerDead(enemy + 1))
+                {
+                    result[enemy, 0] = enemyYPosInLevel - playerYPosInLevel;
+                }
+                //If the enemy is dead
+                else if (IsPlayerDead(enemy + 1))
+                {
+                    result[enemy, 0] = 0.0;
+                }
             }
 
             return result;
@@ -619,7 +640,7 @@ namespace Retro_ML.SuperBomberman3.Game
             previousPlayersAliveCount = 0;
             enemiesEliminated = 0;
             wallsDestroyed = 0;
-            Array.Fill(playersAliveStatus, false);
+            Array.Fill(playersAliveStatus, true);
             Array.Fill(bombsPlantedIndex, false);
             bombsPlanted = new Bomb[MAX_BOMB_ON_MAP];
             for (int i = 0; i < MAX_BOMB_ON_MAP; i++)
