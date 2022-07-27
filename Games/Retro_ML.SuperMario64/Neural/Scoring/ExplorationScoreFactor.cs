@@ -10,6 +10,7 @@ internal class ExplorationScoreFactor : IScoreFactor
     private int framesWithoutProgress;
     private double currScore;
     private bool shouldStop;
+    private int spheresAddedWhileAirborn;
     public OctTree sceneVisited;
 
     public FieldInfo[] Fields => new FieldInfo[]
@@ -67,7 +68,8 @@ internal class ExplorationScoreFactor : IScoreFactor
 
     private void Update(SM64DataFetcher df)
     {
-        if (!df.IsMarioGrounded()) return;
+        bool isMarioGrounded = df.IsMarioGrounded();
+        if (isMarioGrounded) spheresAddedWhileAirborn = 0;
         var marioPos = df.GetMarioPos();
         if (sceneVisited.Contains(marioPos))
         {
@@ -77,6 +79,7 @@ internal class ExplorationScoreFactor : IScoreFactor
         {
             framesWithoutProgress = 0;
             sceneVisited.AddObject(new Sphere(marioPos, MinimumDistance));
+            if (isMarioGrounded) spheresAddedWhileAirborn++;
         }
 
         if (DistanceTimeout > 0 && framesWithoutProgress / 60f > DistanceTimeout)
@@ -87,11 +90,12 @@ internal class ExplorationScoreFactor : IScoreFactor
 
     public void LevelDone()
     {
-        currScore += sceneVisited.Count * ScoreMultiplier;
+        currScore += (sceneVisited.Count - spheresAddedWhileAirborn) * ScoreMultiplier;
         if (shouldStop) currScore += ScoreMultiplier * EliminationMult;
         shouldStop = false;
         framesWithoutProgress = 0;
         sceneVisited = InitTree();
+        spheresAddedWhileAirborn = 0;
     }
 
     public IScoreFactor Clone() => new ExplorationScoreFactor()
