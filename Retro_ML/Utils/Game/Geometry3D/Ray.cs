@@ -33,11 +33,4 @@ public struct Ray
     public Ray RotateYZ(float radAngle) => new(P, Direction.RotateYZ(radAngle).Normalized());
 
     public override string ToString() => $"{{\nPoint:{P};\nDirection:{Direction}}}";
-
-    public static Ray operator +(Ray a) => a;
-    public static Ray operator +(Ray a, Vector b) => new(a.P + b, a.Direction);
-    public static Ray operator -(Ray a) => new(-a.P, -a.Direction);
-    public static Ray operator -(Ray a, Vector b) => new(a.P - b, a.Direction);
-    public static Vector operator *(float b, Ray a) => a.P + b * a.Direction;
-    public static Vector operator /(Ray a, float b) => a.P + a.Direction / b;
 }

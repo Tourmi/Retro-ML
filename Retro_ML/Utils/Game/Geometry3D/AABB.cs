@@ -60,7 +60,7 @@ public struct AABB : IRaytracable
         var tmin = Max(Min(txmin, txmax), Min(tymin, tymax), Min(tzmin, tzmax));
         var tmax = Min(Max(txmin, txmax), Max(tymin, tymax), Max(tzmin, tzmax));
 
-        return tmax < 0 || tmin > tmax ? float.NaN : tmin;
+        return tmax < 0 || tmin > tmax ? float.NaN : tmin < 0 ? tmax : tmin;
     }
 
     public bool Contains(Vector p) =>

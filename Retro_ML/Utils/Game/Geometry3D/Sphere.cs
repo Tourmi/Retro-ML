@@ -20,7 +20,7 @@ public struct Sphere : IRaytracable
     public float MaxZ => Pos.Z + Radius;
     public bool Static => true;
 
-    public AABB AABB => new(Pos, Radius);
+    public AABB AABB => new(Pos, Radius * 2);
 
     public bool Contains(Vector point) => (point - Pos).SquaredLength <= RadiusSquared;
     public float GetRaytrace(Ray ray) => throw new NotImplementedException();
