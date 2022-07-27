@@ -12,7 +12,7 @@ internal class TimeTakenScoreFactor : IScoreFactor
     private int maxTime;
     private bool isInit;
     private int timeRemaining;
-    private bool hasLost;
+    private bool hasWon;
 
     public FieldInfo[] Fields => Array.Empty<FieldInfo>();
 
@@ -56,7 +56,7 @@ internal class TimeTakenScoreFactor : IScoreFactor
         }
 
         timeRemaining = dataFetcher.GetRemainingRoundTime();
-        hasLost = dataFetcher.IsMainPlayerDead();
+        hasWon = dataFetcher.IsRoundWon();
     }
 
     public void LevelDone()
@@ -64,16 +64,16 @@ internal class TimeTakenScoreFactor : IScoreFactor
         shouldStop = false;
         isInit = false;
 
-        //If the player lost, reward him for surviving.
-        if (hasLost)
-        {
-            currScore += ScoreMultiplier * (maxTime - timeRemaining);
-        }
-
         //If the player win, reward him for the win + encourage him to win in the shortest time possible
-        else
+        if (hasWon)
         {
             currScore += ScoreMultiplier * (maxTime + timeRemaining);
+        }
+
+        //Else, reward him for surviving.
+        else
+        {
+            currScore += ScoreMultiplier * (maxTime - timeRemaining);
         }
     }
 
