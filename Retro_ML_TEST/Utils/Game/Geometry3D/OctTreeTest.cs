@@ -23,7 +23,7 @@ internal class OctTreeTest
         defaultScene.AddObject(new AABB(new Vector(-100, -100, -100), 50f, isStatic: true));
         defaultScene.AddObject(new Triangle(new Vector(100, 150, -100), new Vector(150, 100, -100), new Vector(50, 100, -100), new Vector(0, 0, -1), isStatic: true));
 
-        defaultObjCount = 6;
+        defaultObjCount = 5;
     }
 
     [Test]
@@ -66,8 +66,7 @@ internal class OctTreeTest
     [Test]
     public void Contains()
     {
-        Assert.IsTrue(defaultScene.Contains(new Vector(100, 100, 100)), "Should be inside first AABB");
-        Assert.IsTrue(defaultScene.Contains(new Vector(-110, 105, -95)), "Should be inside sphere");
+        Assert.IsTrue(defaultScene.Contains(new Vector(100, 100, 100)), "Should be inside AABB #1");
         Assert.IsFalse(defaultScene.Contains(Vector.Origin), "No objects at the origin");
         Assert.IsFalse(defaultScene.Contains(Vector.NaN), "NaN vector should always be false");
     }
