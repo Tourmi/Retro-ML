@@ -7,7 +7,6 @@
 /// <br>Big thanks to </br>
 /// <br>- STROOP contributors <see href="https://github.com/SM64-TAS-ABC/STROOP"/></br>
 /// <br>- Hack64 <see href="https://hack64.net/wiki/doku.php?id=super_mario_64:ram_memory_map"/></br>
-/// <br>- SMWCentral <see href="https://www.smwcentral.net/?p=memorymap&amp;game=sm64&amp;region=ram"/></br>
 /// </summary>
 internal static class Addresses
 {
