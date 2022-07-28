@@ -9,7 +9,7 @@ Right now, the plugin only supports battle mode (there is a single player campai
 
 ## Special Thanks
 
-* [Gamefaqs](https://gamefaqs.gamespot.com/snes/564897-super-bomberman-3/faqs/32363): Special thanks to Bryan008. His item FAQ was super useful to scope every powerups and outputs.
+* [Bryan008](https://gamefaqs.gamespot.com/snes/564897-super-bomberman-3/faqs/32363): His item FAQ was super useful to scope every powerups and outputs.
 
 ## What's left to do / could be improved?
 
