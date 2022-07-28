@@ -20,8 +20,6 @@ internal class SM64DataFetcher : IDataFetcher
 
     private readonly IEmulatorAdapter emulator;
     private readonly Dictionary<uint, byte[]> frameCache;
-    private readonly Dictionary<uint, byte[]> levelCache;
-    private readonly SM64PluginConfig pluginConfig;
     private readonly InternalClock internalClock;
     private OctTree scene;
 
@@ -34,8 +32,6 @@ internal class SM64DataFetcher : IDataFetcher
     {
         this.emulator = emulator;
         frameCache = new();
-        levelCache = new();
-        this.pluginConfig = pluginConfig;
         internalClock = new InternalClock(pluginConfig.InternalClockTickLength, pluginConfig.InternalClockLength);
         scene = InitNewScene();
     }
@@ -189,7 +185,7 @@ internal class SM64DataFetcher : IDataFetcher
         uint pointer = (uint)ReadULong(Collision.TrianglesListPointer);
         if (pointer == 0) return Enumerable.Empty<IRaytracable>();
 
-        var bytes = Read(new AddressData(pointer, (uint)(staticTriCount * COLLISION_TRI_SIZE), AddressData.CacheDurations.Level));
+        var bytes = Read(new AddressData(pointer, (uint)(staticTriCount * COLLISION_TRI_SIZE)));
 
         var tris = new List<CollisionTri>();
         for (int i = 0; i < bytes.Length; i += COLLISION_TRI_SIZE)
@@ -217,7 +213,7 @@ internal class SM64DataFetcher : IDataFetcher
 
         if (pointer == 0) return Enumerable.Empty<IRaytracable>();
 
-        var bytes = Read(new AddressData(pointer + (uint)(staticTriCount * COLLISION_TRI_SIZE), (ushort)(dynamicTriCount * COLLISION_TRI_SIZE), AddressData.CacheDurations.Frame));
+        var bytes = Read(new AddressData(pointer + (uint)(staticTriCount * COLLISION_TRI_SIZE), (ushort)(dynamicTriCount * COLLISION_TRI_SIZE)));
         var tris = new List<CollisionTri>();
         for (int i = 0; i < bytes.Length; i += COLLISION_TRI_SIZE)
         {
@@ -272,7 +268,6 @@ internal class SM64DataFetcher : IDataFetcher
     private OctTree InitNewScene()
     {
         frameCache.Clear();
-        levelCache.Clear();
 
         scene = new(new Vector(7005.25f, 7000.65f, -7005.85f), 32_000, 100f, 8, 2);
         scene.AddObjects(GetStaticCollision().ToArray());
@@ -363,7 +358,7 @@ internal class SM64DataFetcher : IDataFetcher
         uint count = total.Length / offset.Length;
         for (int i = 0; i < count; i++)
         {
-            yield return new AddressData((uint)(addressData.Address + i * offset.Length), addressData.Length, addressData.CacheDuration);
+            yield return new AddressData((uint)(addressData.Address + i * offset.Length), addressData.Length);
         }
     }
 
@@ -415,12 +410,7 @@ internal class SM64DataFetcher : IDataFetcher
     /// </summary>
     /// <param name="addressData"></param>
     /// <returns></returns>
-    private Dictionary<uint, byte[]> GetCacheToUse(AddressData addressData) => addressData.CacheDuration switch
-    {
-        AddressData.CacheDurations.Frame => frameCache,
-        AddressData.CacheDurations.Level => levelCache,
-        _ => frameCache,
-    };
+    private Dictionary<uint, byte[]> GetCacheToUse(AddressData addressData) => frameCache;
 
     private void InitFrameCache()
     {
@@ -443,7 +433,7 @@ internal class SM64DataFetcher : IDataFetcher
             Progress.StarCount,
             Camera.HorizontalAngle,
             Mario.FacingAngle,
-            new AddressData(Collision.TrianglesListPointer.Address + (uint)(staticTriCount * COLLISION_TRI_SIZE), (ushort)(dynamicTrisCount * COLLISION_TRI_SIZE), Collision.TrianglesListPointer.CacheDuration),
+            new AddressData(Collision.TrianglesListPointer.Address + (uint)(staticTriCount * COLLISION_TRI_SIZE), (ushort)(dynamicTrisCount * COLLISION_TRI_SIZE)),
         };
 
         uint totalBytes = GameObjects.SingleGameObject.Length * activeCount;
@@ -473,7 +463,6 @@ internal class SM64DataFetcher : IDataFetcher
                 yield return new AddressData()
                 {
                     Address = baseAddresses[j].Address + i,
-                    CacheDuration = baseAddresses[j].CacheDuration,
                     Length = baseAddresses[j].Length
                 };
             }

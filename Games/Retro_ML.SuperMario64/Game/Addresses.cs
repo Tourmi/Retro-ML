@@ -13,22 +13,14 @@ internal static class Addresses
 {
     public struct AddressData
     {
-        public enum CacheDurations
-        {
-            Frame,
-            Level
-        }
-
-        public AddressData(uint address, uint length = 1, CacheDurations cacheDuration = CacheDurations.Frame)
+        public AddressData(uint address, uint length = 1)
         {
             Address = address;
             Length = length;
-            CacheDuration = cacheDuration;
         }
 
         public uint Address;
         public uint Length;
-        public CacheDurations CacheDuration;
     }
 
     /// <summary>
