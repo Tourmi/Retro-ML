@@ -150,4 +150,18 @@ internal class ScoreFactorsTest
         Assert.IsTrue(sf.ShouldStop);
         Assert.AreEqual(666, sf.GetFinalScore(), EPSILON);
     }
+
+    [Test]
+    public void ExplorationScoreFactor()
+    {
+        var sf = new ExplorationScoreFactor() { ScoreMultiplier = 1 }.Clone();
+        Assert.IsAssignableFrom<ExplorationScoreFactor>(sf);
+    }
+
+    [Test]
+    public void DistanceToStarScoreFactor()
+    {
+        var sf = new DistanceToStarScoreFactor() { ScoreMultiplier = 1 }.Clone();
+        Assert.IsAssignableFrom<DistanceToStarScoreFactor>(sf);
+    }
 }
