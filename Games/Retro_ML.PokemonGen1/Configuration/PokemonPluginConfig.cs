@@ -44,7 +44,6 @@ internal class PokemonPluginConfig : IGamePluginConfig
         true, //Frozen
         true, //Burned
         true, //Poisoned
-        false, //clock
         true, //bias
 
         true, //current move score
@@ -60,8 +59,6 @@ internal class PokemonPluginConfig : IGamePluginConfig
         get => fieldName switch
         {
             nameof(NbFights) => NbFights,
-            nameof(InternalClockLength) => InternalClockLength,
-            nameof(InternalClockTickLength) => InternalClockTickLength,
             _ => 0,
         };
         set
@@ -69,22 +66,11 @@ internal class PokemonPluginConfig : IGamePluginConfig
             switch (fieldName)
             {
                 case nameof(NbFights): NbFights = (int)value; break;
-                case nameof(InternalClockLength): InternalClockLength = (int)value; break;
-                case nameof(InternalClockTickLength): InternalClockTickLength = (int)value; break;
             }
         }
     }
 
     public int NbFights { get; set; } = 1;
-
-    /// <summary>
-    /// The amount of inputs for the internal clock.
-    /// </summary>
-    public int InternalClockLength { get; set; } = 4;
-    /// <summary>
-    /// The amount of frames before the clock moves to the next state.
-    /// </summary>
-    public int InternalClockTickLength { get; set; } = 15;
 
     public List<IScoreFactor> ScoreFactors { get; set; }
 
@@ -102,7 +88,7 @@ internal class PokemonPluginConfig : IGamePluginConfig
                     IsDisabled = false,
                     ScoreMultiplier = -5
                 },
-                new FightCanceledtScoreFactor()
+                new FightCanceledScoreFactor()
                 {
                     IsDisabled = false,
                     ScoreMultiplier = -2
@@ -119,8 +105,6 @@ internal class PokemonPluginConfig : IGamePluginConfig
         ScoreFactors = cfg.ScoreFactors;
 
         NbFights = cfg.NbFights;
-        InternalClockLength = cfg.InternalClockLength;
-        InternalClockTickLength = cfg.InternalClockTickLength;
     }
 
     public void InitNeuralConfig(NeuralConfig neuralConfig)
@@ -161,7 +145,6 @@ internal class PokemonPluginConfig : IGamePluginConfig
         neuralConfig.InputNodes.Add(new InputNode("Opponnent Frozen", neuralConfig.EnabledStates[enabledIndex++], (dataFetcher) => ((PokemonDataFetcher)dataFetcher).GetOpposingPokemonFrozen()));
         neuralConfig.InputNodes.Add(new InputNode("Opponnent Burned", neuralConfig.EnabledStates[enabledIndex++], (dataFetcher) => ((PokemonDataFetcher)dataFetcher).GetOpposingPokemonBurned()));
         neuralConfig.InputNodes.Add(new InputNode("Opponnent Poisoned", neuralConfig.EnabledStates[enabledIndex++], (dataFetcher) => ((PokemonDataFetcher)dataFetcher).GetOpposingPokemonPoisoned()));
-        neuralConfig.InputNodes.Add(new InputNode("Internal Clock", neuralConfig.EnabledStates[enabledIndex++], (dataFetcher) => ((PokemonDataFetcher)dataFetcher).GetInternalClockState(), Math.Min(8, InternalClockLength), Math.Max(1, InternalClockLength / 8)));
         neuralConfig.InputNodes.Add(new InputNode("Bias", neuralConfig.EnabledStates[enabledIndex++], (dataFetcher) => true));
 
         neuralConfig.OutputNodes.Clear();

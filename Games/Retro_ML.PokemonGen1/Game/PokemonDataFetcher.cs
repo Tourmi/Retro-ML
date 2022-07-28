@@ -14,20 +14,20 @@ namespace Retro_ML.PokemonGen1.Game;
 /// </summary>
 internal class PokemonDataFetcher : IDataFetcher
 {
-    private const int MAXIMUM_SLEEP_COUNTER = 7;
-    private const int MAXIMUM_ATTACK_STAT = 366;
-    private const int MAXIMUM_DEFENSE_STAT = 458;
-    private const int MAXIMUM_SPEED_STAT = 378;
-    private const int MAXIMUM_SPECIAL_STAT = 406;
+    public const int MAXIMUM_SLEEP_COUNTER = 7;
+    public const int MAXIMUM_ATTACK_STAT = 366;
+    public const int MAXIMUM_DEFENSE_STAT = 458;
+    public const int MAXIMUM_SPEED_STAT = 378;
+    public const int MAXIMUM_SPECIAL_STAT = 406;
+    public const int MAXIMUM_MOVE_POWER = 170;
 
-    public bool IsPokemonYellow { get; private set; } = true;
+    public bool IsPokemonYellow { get; private set; } = false;
 
     private readonly IEmulatorAdapter emulator;
     private readonly Dictionary<uint, byte[]> fakeCache;
     private readonly Dictionary<uint, byte[]> turnCache;
     private readonly Dictionary<uint, byte[]> battleCache;
     private readonly PokemonPluginConfig pluginConfig;
-    private readonly InternalClock internalClock;
 
     public PokemonDataFetcher(IEmulatorAdapter emulator, NeuralConfig neuralConfig, PokemonPluginConfig pluginConfig)
     {
@@ -36,7 +36,6 @@ internal class PokemonDataFetcher : IDataFetcher
         turnCache = new();
         battleCache = new();
         this.pluginConfig = pluginConfig;
-        internalClock = new InternalClock(pluginConfig.InternalClockTickLength, pluginConfig.InternalClockLength);
     }
 
     /// <summary>
@@ -45,7 +44,6 @@ internal class PokemonDataFetcher : IDataFetcher
     public void NextFrame()
     {
         turnCache.Clear();
-        internalClock.NextFrame();
 
         InitFrameCache();
     }
@@ -61,10 +59,7 @@ internal class PokemonDataFetcher : IDataFetcher
         IsPokemonYellow = false;
         IsPokemonYellow = (ReadSingle(PlayerPokemons.EndOfList) != 0x0);
 
-        internalClock.Reset();
     }
-
-    public bool[,] GetInternalClockState() => internalClock.GetStates();
 
     public double GetOpposingPokemonSleep() => (ReadSingle(OpposingPokemon.StatusEffect) & 0b0000_0111) / (double)MAXIMUM_SLEEP_COUNTER;
     public bool GetOpposingPokemonParalysis() => (ReadSingle(OpposingPokemon.StatusEffect) & 0b0100_0000) != 0;
@@ -76,7 +71,7 @@ internal class PokemonDataFetcher : IDataFetcher
     public bool GetParalysis() => (ReadSingle(CurrentPokemon.StatusEffect) & 0b0100_0000) != 0;
     public bool GetFrozen() => (ReadSingle(CurrentPokemon.StatusEffect) & 0b0010_0000) != 0;
     public bool GetBurned() => (ReadSingle(CurrentPokemon.StatusEffect) & 0b0001_0000) != 0;
-    public bool GetPokemonPoisoned() => (ReadSingle(CurrentPokemon.StatusEffect) & 0b0000_1000) != 0;
+    public bool GetPoisoned() => (ReadSingle(CurrentPokemon.StatusEffect) & 0b0000_1000) != 0;
     public bool IsSuperEffective() => GetMultiplier() >= 2;
     public bool IsNotVeryEffective() => GetMultiplier() < 1;
     public bool IsSTAB() => ReadSingle(CurrentPokemon.SelectedMoveType) == ReadSingle(CurrentPokemon.Type1) || ReadSingle(CurrentPokemon.SelectedMoveType) == ReadSingle(CurrentPokemon.Type2);
@@ -93,14 +88,14 @@ internal class PokemonDataFetcher : IDataFetcher
     public bool WonFight() => ReadULong(OpposingPokemon.CurrentHP) == 0;
     public bool LostFight() => ReadULong(CurrentPokemon.CurrentHP) == 0;
     public bool InFight() => ReadSingle(GameState) != 0;
-    public double SelectedMovePower() => ReadSingle(CurrentPokemon.SelectedMovePower) / 170.0;
+    public double SelectedMovePower() => ReadSingle(CurrentPokemon.SelectedMovePower) / (double)MAXIMUM_MOVE_POWER;
     public bool Move1Exists() => Read(CurrentPokemon.MoveIDs)[0] != 0;
     public bool Move2Exists() => Read(CurrentPokemon.MoveIDs)[1] != 0;
     public bool Move3Exists() => Read(CurrentPokemon.MoveIDs)[2] != 0;
     public bool Move4Exists() => Read(CurrentPokemon.MoveIDs)[3] != 0;
     public bool IsFightOptionSelected() => (ReadSingle(FightCursor) == 193) && (ReadSingle(WokeUpDialog) != 192);
     public bool IsOnAwakenDialog() => ReadSingle(WokeUpDialog) == 192;
-    public byte GetMovePP(int index) => (byte)(Read(CurrentPokemon.MovesCurrentPP)[index] & 0b0011_1111);
+    public byte GetMovePP(int index) => (byte)(Read(CurrentPokemon.MovesPP)[index] & 0b0011_1111);
     public bool IsMoveDisabled(int index) => Read(CurrentPokemon.MoveIDs)[index] == ReadSingle(CurrentPokemon.DisabledMove);
     public bool IsPlayerTrapped() => (ReadSingle(OpposingPokemon.BattleStatus) & 0b0010_0000) != 0;
     public int GetMoveCursorIndex() => ReadSingle(MoveCursorIndex);

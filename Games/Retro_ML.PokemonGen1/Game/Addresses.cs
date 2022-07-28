@@ -43,7 +43,6 @@ internal static class Addresses
     ///  2: trainer fight
     /// </summary>
     public static readonly AddressData GameState = new(0xD057, cacheDuration: AddressData.CacheDurations.NoCache);
-    //public static readonly AddressData GameState = new(0xC012, cacheDuration: AddressData.CacheDurations.NoCache);
 
     public static readonly AddressData MoveCursorIndex = new(0xCC27, cacheDuration: AddressData.CacheDurations.NoCache);
 
@@ -54,6 +53,9 @@ internal static class Addresses
 
     public static class WildEncounters
     {
+        /// <summary>
+        /// IDs of the pokemon you can encounter
+        /// </summary>
         public static readonly AddressData Encounter1 = new(0xD889);
         public static readonly AddressData Encounter2 = new(0xD88B);
         public static readonly AddressData Encounter3 = new(0xD88D);
@@ -79,6 +81,7 @@ internal static class Addresses
 
         /// <summary>
         /// Used to detect version of Pokemon
+        /// 0 : Pokemon Blue/Red
         /// </summary>
         public static readonly AddressData EndOfList = new(0xD16A);
     }
@@ -91,7 +94,7 @@ internal static class Addresses
 
         public static readonly AddressData MaxHP = new(0xD023, 2, isBigEndian: true);
 
-        public static readonly AddressData Attack = new(0xD025, 2, isBigEndian: true);
+        public static readonly AddressData Attack = new(0xD025, 2, AddressData.CacheDurations.NoCache, isBigEndian: true);
 
         public static readonly AddressData Defense = new(0xD027, 2, isBigEndian: true);
 
@@ -158,7 +161,7 @@ internal static class Addresses
         /// <summary>
         /// Each byte represents one move's current PP
         /// </summary>
-        public static readonly AddressData MovesCurrentPP = new(0xD02D, 4, cacheDuration: AddressData.CacheDurations.NoCache);
+        public static readonly AddressData MovesPP = new(0xD02D, 4, cacheDuration: AddressData.CacheDurations.NoCache);
 
         /// <summary>
         /// Types Summary 

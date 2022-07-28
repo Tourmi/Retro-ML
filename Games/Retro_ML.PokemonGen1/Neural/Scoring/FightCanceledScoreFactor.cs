@@ -9,7 +9,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace Retro_ML.PokemonGen1.Neural.Scoring;
-internal class FightCanceledtScoreFactor : IScoreFactor
+internal class FightCanceledScoreFactor : IScoreFactor
 {
     private bool shouldStop = false;
     private double currScore;
@@ -18,7 +18,7 @@ internal class FightCanceledtScoreFactor : IScoreFactor
     {
     };
 
-    public FightCanceledtScoreFactor()
+    public FightCanceledScoreFactor()
     {
         ExtraFields = Array.Empty<ExtraField>();
     }
@@ -77,6 +77,6 @@ internal class FightCanceledtScoreFactor : IScoreFactor
 
     public IScoreFactor Clone()
     {
-        return new FightCanceledtScoreFactor() { IsDisabled = IsDisabled, ScoreMultiplier = ScoreMultiplier, ExtraFields = ExtraFields };
+        return new FightCanceledScoreFactor() { IsDisabled = IsDisabled, ScoreMultiplier = ScoreMultiplier, ExtraFields = ExtraFields };
     }
 }
