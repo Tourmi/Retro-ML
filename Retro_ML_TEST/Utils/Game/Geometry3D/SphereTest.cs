@@ -41,5 +41,4 @@ internal class SphereTest
     }
     [Test]
     public void GetRaytrace() => Assert.Throws<NotImplementedException>(() => DEFAULT_SPHERE.GetRaytrace(new Ray()), "Update this test if this method is implemented");
-
 }

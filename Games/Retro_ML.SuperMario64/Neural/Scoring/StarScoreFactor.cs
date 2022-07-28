@@ -20,7 +20,7 @@ internal class StarScoreFactor : IScoreFactor
     public double ScoreMultiplier { get; set; }
 
     public string Name => "Stars collected";
-    public string Tooltip => "Reward applied for each coin collected by the AI. Collecting a star stops the current save state";
+    public string Tooltip => "Reward applied for each stars collected by the AI. Collecting a star stops the current save state";
 
     public bool CanBeDisabled => false;
 

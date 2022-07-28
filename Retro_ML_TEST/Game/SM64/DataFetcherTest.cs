@@ -40,10 +40,8 @@ internal class DataFetcherTest
 
     [Test]
     public void NextFrame() => Assert.DoesNotThrow(() => df!.NextFrame());
-
     [Test]
     public void NextState() => Assert.DoesNotThrow(() => df!.NextState());
-
     [Test]
     public void GetMarioAction() => TestUintFunction(Mario.Action, df!.GetMarioAction);
     [Test]

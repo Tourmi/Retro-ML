@@ -18,7 +18,6 @@ internal class RayTest
 
     [Test]
     public void InverseDirection() => VectorTest.AssertVectorEquals(new Vector(1, 2, 3).Normalized().Inverse(), new Ray(new(), new Vector(1, 2, 3).Normalized()).InverseDirection);
-
     [Test]
     public void RotateVertically() => AssertRayEquals(new Ray(new Vector(1, 2, 3), new Vector(4, 5, 6).Normalized().RotateVertically(MathF.Tau / 8)), new Ray(new Vector(1, 2, 3), new Vector(4, 5, 6).Normalized()).RotateVertically(MathF.Tau / 8));
     [Test]

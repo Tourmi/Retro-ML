@@ -38,6 +38,7 @@ internal class OctTreeTest
     public void MinZ() => Assert.AreEqual(-430f, defaultScene.MinZ, EPSILON);
     [Test]
     public void MaxZ() => Assert.AreEqual(570f, defaultScene.MaxZ, EPSILON);
+    
     [Test]
     public void AABB()
     {

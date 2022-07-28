@@ -35,6 +35,7 @@ internal class AABBTest
     public void MinCorner() => VectorTest.AssertVectorEquals(new(-1f, -0.5f, 0f), DEFAULT_AABB.MinCorner);
     [Test]
     public void MaxCorner() => VectorTest.AssertVectorEquals(new(3f, 4.5f, 6f), DEFAULT_AABB.MaxCorner);
+    
     [Test]
     public void FullyContains()
     {
@@ -46,6 +47,7 @@ internal class AABBTest
         Assert.IsFalse(DEFAULT_AABB.FullyContains(new AABB(new(1f, 2f, 3f), new Vector(3f, 5.5f, 3f))));
         Assert.IsFalse(DEFAULT_AABB.FullyContains(new AABB(new(1f, 2f, 3f), new Vector(4.5f, 4f, 3f))));
     }
+    
     [Test]
     public void Contains()
     {
@@ -57,6 +59,7 @@ internal class AABBTest
         Assert.IsFalse(DEFAULT_AABB.Contains(new(1, 5f, 3)));
         Assert.IsFalse(DEFAULT_AABB.Contains(new(1, 2, 6.5f)));
     }
+    
     [Test]
     public void GetRaytrace()
     {
@@ -77,5 +80,4 @@ internal class AABBTest
 
         Assert.IsNaN(DEFAULT_AABB.GetRaytrace(new Ray(new Vector(1, -10, 7), new Vector(0, 1, 0))));
     }
-
 }
