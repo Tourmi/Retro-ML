@@ -5,6 +5,7 @@ using Retro_ML.Neural.Memory;
 using Retro_ML.Utils;
 using System.Diagnostics;
 using System.Net.Sockets;
+using System.Text;
 
 namespace Retro_ML.Emulator
 {
@@ -126,15 +127,15 @@ namespace Retro_ML.Emulator
 
         public byte[] ReadMemory(params (uint addr, uint count)[] ranges)
         {
-            string commandParam = "";
+            StringBuilder s = new();
             uint totalCount = 0;
             foreach ((uint addr, uint count) in ranges)
             {
-                commandParam += $"{addr} {count};";
+                s.Append($"{addr} {count};");
                 totalCount += count;
             }
 
-            SendCommand(Commands.READ_MEMORY_RANGES, commandParam);
+            SendCommand(Commands.READ_MEMORY_RANGES, s.ToString());
             return Read(totalCount);
         }
 

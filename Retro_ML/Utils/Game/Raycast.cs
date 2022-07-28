@@ -1,4 +1,4 @@
-﻿namespace Retro_ML.Utils
+﻿namespace Retro_ML.Utils.Game
 {
     public static class Raycast
     {
@@ -29,7 +29,7 @@
                 //Left side
                 for (int i = 0; i < halfRayCount; i++)
                 {
-                    double angle = mulRad * (-i) + forwardAngle;
+                    double angle = mulRad * -i + forwardAngle;
                     if (angle < 0) angle += Math.Tau;
                     (double sin, double cos) = Math.SinCos(angle);
                     // We invert the cos, since a negative value actually is up.
@@ -65,9 +65,7 @@
             int raysPerRow = rayCount / OUTPUT_HEIGHT;
             var rays = precomputedRays[rayCount];
             if (forwardAngle != 0 || Math.Abs(angleRange - Math.Tau) > 0.001)
-            {
                 rays = GetRays(forwardAngle, angleRange, rayCount);
-            }
 
             for (int i = 0; i < OUTPUT_HEIGHT; i++)
             {

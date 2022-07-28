@@ -59,11 +59,19 @@ public static class DebugInfo
 
         foreach (var entry in entries.Where(i => categories.Length == 0 || categories.Contains(i.Category)))
         {
-            res += $"{entry.Name.PadLeft(keyMaxLength, ' ')} = {entry.Value}\n";
+            res += GetFormattedEntry(entry, keyMaxLength);
         }
 
         mutex.ReleaseMutex();
         return res;
+    }
+
+    private static string GetFormattedEntry(DebugInfoEntry entry, int leftPad)
+    {
+        leftPad += 3;
+        string left = $"{entry.Name} = ".PadLeft(leftPad, ' ');
+        string right = entry.Value.Replace("\n", "\n" + new String(' ', leftPad));
+        return left + right + "\n";
     }
 
     /// <summary>

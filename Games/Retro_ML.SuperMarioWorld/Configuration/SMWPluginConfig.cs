@@ -6,6 +6,7 @@ using Retro_ML.Neural.Scoring;
 using Retro_ML.SuperMarioWorld.Game;
 using Retro_ML.SuperMarioWorld.Neural.Scoring;
 using Retro_ML.Utils;
+using Retro_ML.Utils.Game;
 
 namespace Retro_ML.SuperMarioWorld.Configuration
 {
