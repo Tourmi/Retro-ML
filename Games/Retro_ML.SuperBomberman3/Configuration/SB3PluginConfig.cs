@@ -36,11 +36,7 @@ namespace Retro_ML.SuperBomberman3.Configuration
             true, //Has Sticky Bomb
             true, //Has Power Bomb
             true, //On a Louie
-            true, //Yellow Louie
-            true, //Brown Louie
-            true, //Pink Louie
-            true, //Green Louie
-            true, //Blue Louie
+            true, //Louie Colour
 
             false, //Internal Clock
             true, //Bias
@@ -105,7 +101,7 @@ namespace Retro_ML.SuperBomberman3.Configuration
                 new IdleScoreFactor() { IsDisabled=false, ScoreMultiplier=-5 },
                 new PowerupScoreFactor() { IsDisabled=false, ScoreMultiplier=1 },
                 new EndRoundScoreFactor() { IsDisabled=false, ScoreMultiplier=100 },
-                new TimeTakenScoreFactor() { IsDisabled=false, ScoreMultiplier=0.1 },
+                new TimeTakenScoreFactor() { IsDisabled=false, ScoreMultiplier=0.25 },
                 new BombScoreFactor() { IsDisabled=false, ScoreMultiplier=1 },
             };
         }
@@ -150,11 +146,7 @@ namespace Retro_ML.SuperBomberman3.Configuration
             neuralConfig.InputNodes.Add(new InputNode("Has Sticky Bomb", neuralConfig.EnabledStates[enabledIndex++], (dataFetcher) => ((SB3DataFetcher)dataFetcher).GetMainPlayerSlimeBombUpgradeState()));
             neuralConfig.InputNodes.Add(new InputNode("Has Power Bomb", neuralConfig.EnabledStates[enabledIndex++], (dataFetcher) => ((SB3DataFetcher)dataFetcher).GetMainPlayerPowerBombUpgradeState()));
             neuralConfig.InputNodes.Add(new InputNode("On a Louie", neuralConfig.EnabledStates[enabledIndex++], (dataFetcher) => ((SB3DataFetcher)dataFetcher).IsMainPlayerOnLouie()));
-            neuralConfig.InputNodes.Add(new InputNode("Yellow Louie", neuralConfig.EnabledStates[enabledIndex++], (dataFetcher) => ((SB3DataFetcher)dataFetcher).IsLouieColourYellow()));
-            neuralConfig.InputNodes.Add(new InputNode("Brown Louie", neuralConfig.EnabledStates[enabledIndex++], (dataFetcher) => ((SB3DataFetcher)dataFetcher).IsLouieColourBrown()));
-            neuralConfig.InputNodes.Add(new InputNode("Pink Louie", neuralConfig.EnabledStates[enabledIndex++], (dataFetcher) => ((SB3DataFetcher)dataFetcher).IsLouieColourPink()));
-            neuralConfig.InputNodes.Add(new InputNode("Green Louie", neuralConfig.EnabledStates[enabledIndex++], (dataFetcher) => ((SB3DataFetcher)dataFetcher).IsLouieColourGreen()));
-            neuralConfig.InputNodes.Add(new InputNode("Blue Louie", neuralConfig.EnabledStates[enabledIndex++], (dataFetcher) => ((SB3DataFetcher)dataFetcher).IsLouieColourBlue()));
+            neuralConfig.InputNodes.Add(new InputNode("Louie Colour", neuralConfig.EnabledStates[enabledIndex++], (dataFetcher) => ((SB3DataFetcher)dataFetcher).GetLouieColour()));
             neuralConfig.InputNodes.Add(new InputNode("Internal Clock", neuralConfig.EnabledStates[enabledIndex++], (dataFetcher) => ((SB3DataFetcher)dataFetcher).GetInternalClockState(), Math.Min(8, InternalClockLength), Math.Max(1, InternalClockLength / 8)));
             neuralConfig.InputNodes.Add(new InputNode("Bias", neuralConfig.EnabledStates[enabledIndex++], (dataFetcher) => true));
 

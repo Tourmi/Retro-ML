@@ -16,7 +16,7 @@ internal class SB3EvaluationScheme : IBlackBoxEvaluationScheme<double>
 
     public int OutputCount => appConfig.NeuralConfig.GetOutputCount();
 
-    public bool IsDeterministic => true; // Change if using random levels
+    public bool IsDeterministic => false; // Change if using random levels
 
     public IComparer<FitnessInfo> FitnessComparer => PrimaryFitnessInfoComparer.Singleton;
 

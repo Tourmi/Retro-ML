@@ -82,7 +82,7 @@ namespace Retro_ML.SuperBomberMan3.Neural.Scoring
                 shouldStop = true;
             }
 
-            //If the round ended in a draw between the main player and an enemy
+            //If the round ended in a draw between the main player and an enemy.
             if (dataFetcher.IsRoundDraw())
             {
                 currScore += ScoreMultiplier * DrawMultiplier;

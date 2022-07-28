@@ -78,21 +78,21 @@ namespace Retro_ML.SuperBomberMan3.Neural.Scoring
                 previousYPos = yPos;
             }
 
-            //If player has not moved compared to the last frame
+            //If player has not moved compared to the last frame.
             if (previousXPos == xPos && previousYPos == yPos)
             {
-                //Check if the max idle frame count is reached
+                //Check if the max idle frame count is reached.
                 if (idleFrames >= MaxIdleFrames)
                 {
                     currScore += ScoreMultiplier;
                     shouldStop = true;
                 }
 
-                //If not, increment the idle frames count
+                //If not, increment the idle frames count.
                 idleFrames++;
             }
 
-            //Else reset the idle frames count
+            //Else reset the idle frames count.
             else
             {
                 idleFrames = 0;

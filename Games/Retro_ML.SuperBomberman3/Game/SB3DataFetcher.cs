@@ -134,6 +134,7 @@ namespace Retro_ML.SuperBomberman3.Game
         public bool IsLouieColourPink() => IsMainPlayerOnLouie() ? ToUnsignedInteger(Read(PowerupsAddresses.MountedLouieColours)) == 0x7DFF695A : false;
         public bool IsLouieColourGreen() => IsMainPlayerOnLouie() ? ToUnsignedInteger(Read(PowerupsAddresses.MountedLouieColours)) == 0x1BE00AC : false;
         public bool IsLouieColourBlue() => IsMainPlayerOnLouie() ? ToUnsignedInteger(Read(PowerupsAddresses.MountedLouieColours)) == 0x7E805940 : false;
+        public double GetLouieColour() => IsLouieColourYellow() ? 0.2 : IsLouieColourBrown() ? 0.4 : IsLouieColourPink() ? 0.6 : IsLouieColourGreen() ? 0.8 : IsLouieColourBlue() ? 1.0 : 0;
         public bool GetMainPlayerKickUpgradeState() => (ReadSingle(PowerupsAddresses.BombermanUpgrade) & 0x02) != 0;
         public bool GetMainPlayerGloveUpgradeState() => (ReadSingle(PowerupsAddresses.BombermanUpgrade) & 0x04) != 0;
         public bool GetMainPlayerSlimeBombUpgradeState() => (ReadSingle(PowerupsAddresses.BombermanUpgrade) & 0x20) != 0;
@@ -185,22 +186,14 @@ namespace Retro_ML.SuperBomberman3.Game
         public void CheckPlayerDeathStatus()
         {
             byte[] timers = GetPlayersDeathTimer();
-            byte[] playersXPos = GetPlayersXPos();
 
             for (int playerIndex = 0; playerIndex < NUM_PLAYERS; playerIndex++)
             {
                 //If player is not already flagged as dead.
                 if (playersAliveStatus[playerIndex] != false)
                 {
-                    /*If the player position (X and / or Y... doesnt matter) == 0, it means that the player never loaded because X and Y min position is 16 (0x10).
-                    In this case, it means that the game is being played with less that the intended amount of players so we want to set the extra players slot as "dead".*/
-                    if (playersXPos[playerIndex] == 0)
-                    {
-                        playersAliveStatus[playerIndex] = false;
-                    }
-
                     //If the timer associated with the player == 59 (0x3B) or 60 (0x3C) for some players, it means the player just died.
-                    else if (timers[playerIndex] == DEATH_TIMER_START || timers[playerIndex] == DEATH_TIMER_START_2)
+                    if (timers[playerIndex] == DEATH_TIMER_START || timers[playerIndex] == DEATH_TIMER_START_2)
                     {
                         playersAliveStatus[playerIndex] = false;
                     }
@@ -440,7 +433,7 @@ namespace Retro_ML.SuperBomberman3.Game
                         wallCheck = true;
                     }
 
-                    //If the player killed an enemy. Some bomberman models requires 1 more frame to start death animation.
+                    //If the player killed an enemy. Some bomberman models requires 1 more frame to start death animation. Need to also check if the main player didnt kill himself.
                     if (!killCheck && bomb.IsPlantedByMainPlayer && (bomb.SetToDamagePlayers == frameCounter || bomb.SetToDamagePlayers == frameCounter + 1) && enemiesAliveCount < previousEnemiesAliveCount && !IsMainPlayerDead())
                     {
                         enemiesEliminated += previousEnemiesAliveCount - enemiesAliveCount;

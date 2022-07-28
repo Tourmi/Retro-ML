@@ -64,7 +64,7 @@ internal class TimeTakenScoreFactor : IScoreFactor
         shouldStop = false;
         isInit = false;
 
-        //If the player win, reward him for the win + encourage him to win in the shortest time possible
+        //If the player win, reward him for the win + encourage him to win in the shortest time possible.
         if (hasWon)
         {
             currScore += ScoreMultiplier * (maxTime + timeRemaining);
