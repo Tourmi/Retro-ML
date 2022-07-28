@@ -18,7 +18,6 @@ public static class DebugInfo
         public int Priority;
     }
 
-    private static bool isDebug = false;
     private static readonly Mutex mutex = new();
     private static readonly List<DebugInfoEntry> infos = new();
 
@@ -90,7 +89,9 @@ public static class DebugInfo
     {
         get
         {
-            isDebug = false;
+#pragma warning disable IDE0059 // Unnecessary assignment of a value
+            var isDebug = false;
+#pragma warning restore IDE0059 // Unnecessary assignment of a value
             Debug.Assert(isDebug = true);
             return isDebug;
         }
