@@ -7,6 +7,19 @@ To be noted that this plugin is compatible with the european version of the rom 
 
 Right now, the plugin only supports battle mode (there is a single player campaign mode) on stages 1-2-5-8-9. We uses 4 players and 2 minutes timers with other default options.
 
+## Special Thanks
+
+* [Gamefaqs](https://gamefaqs.gamespot.com/snes/564897-super-bomberman-3/faqs/32363): Special thanks to Bryan008. His item FAQ was super useful to scope every powerups and outputs.
+
+## What's left to do / could be improved?
+
+* **Find a better way to track bombs and explosions**
+  * Right now, if an enemy and the AI places a bomb on the same frame and the enemy bomb blow up a wall or another enemy, the AI will get credit for the kill / destruction. It should be possible knowing the AI / ennemies explosion expander level to associate dangerous positions on the map when a bomb is dropped. It should fix the problem but would compexify the dataFetcher.
+* **Continue to research ram addresses**
+  * Right now, many useful addresses in ram have been found. However, lots of work can still be done on this front in order to find better addresses to use. A good example would be the deathTimer addresses used to track when a player dies. There is probably a better addresse to use that keeps track of the number of player alive in the round, but I haven't been able to find it yet.
+* **Add support for unconventional map and assets**
+  * Right now, we only use the classic 11 x 13 playable tile map for our savestates, but some map uses 13 x 15 playable tiles. The dataFetcher needs to be modified in order to use those special maps. I also discovered that some maps uses special assets like teleporters that can be mapped using the staticTilesMap in the addresses. It would be nice to support these special assets.
+
 ## Configuration
 
 ### Plugin Configuration
@@ -67,22 +80,6 @@ Right now, the plugin only supports battle mode (there is a single player campai
   * `Right` : Move Right.
   * `Up` : Move Up.
   * `Down` : Move Down.
-
-## What's left to do / could be improved?
-
-* **Find a better way to track bombs and explosions**
-  * Right now, if an enemy and the AI places a bomb on the same frame and the enemy bomb blow up a wall or another enemy, the AI will get credit for the kill / destruction.
-  * It should be possible knowing the AI / ennemies explosion expander level to associate dangerous positions on the map when a bomb is dropped. It should fix the problem but would compexify the dataFetcher.
-* **Continue to research ram addresses**
-  * Right now, many useful addresses in ram have been found. However, lots of work can still be done on this front in order to find better addresses to use. A good example
-  * would be the deathTimer addresses used to track when a player dies. There is probably a better addresse to use that keeps track of the number of player alive in the round, but I haven't been able to find it yet.
-* **Add support for unconventional map and assets**
-  * Right now, we only use the classic 11 x 13 playable tile map for our savestates, but some map uses 13 x 15 playable tiles. The dataFetcher needs to be modified in order to use those special maps.
-  * I also discovered that some maps uses special assets like teleporters that can be mapped using the staticTilesMap in the addresses. It would be nice to support these special assets.
-
-## Credits
-
-* [Gamefaqs](https://gamefaqs.gamespot.com/snes/564897-super-bomberman-3/faqs/32363): Special thanks to Bryan008. His item FAQ was super useful to scope every powerups and outputs.
 
 
 
