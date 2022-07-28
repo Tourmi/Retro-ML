@@ -204,11 +204,11 @@ internal static class Addresses
         /// <summary>
         /// The amount of triangles in the current collision map (static + objects)
         /// </summary>
-        public static readonly AddressData TotalTriangleCount = new(0x80361170, 4);
+        public static readonly AddressData TotalTriangleCount = new(0x80361172, 2);
         /// <summary>
         /// Amount of triangle in the current static collision map
         /// </summary>
-        public static readonly AddressData StaticTriangleCount = new(0x80361178, 4);
+        public static readonly AddressData StaticTriangleCount = new(0x8036117A, 2);
         /// <summary>
         /// Pointer to the current level's triangle list. 
         /// Sorted by static, then dynamic triangles. 

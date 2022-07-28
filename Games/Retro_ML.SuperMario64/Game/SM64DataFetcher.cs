@@ -100,6 +100,7 @@ internal class SM64DataFetcher : IDataFetcher
     }
 
     public bool[,] GetInternalClockState() => internalClock.GetStates();
+
     public uint GetMarioAction() => (uint)ReadULong(Mario.Action);
     public float GetMarioX() => ReadFloat(Mario.XPos);
     public float GetMarioY() => ReadFloat(Mario.YPos);
@@ -112,15 +113,19 @@ internal class SM64DataFetcher : IDataFetcher
     public ushort GetCameraHorizontalAngle() => (ushort)ReadULong(Camera.HorizontalAngle);
     public float GetMarioHorizontalSpeed() => ReadFloat(Mario.HorizontalSpeed);
     public ushort GetMarioFacingAngle() => (ushort)ReadULong(Mario.FacingAngle);
-    public float GetMarioFacingAngleRadian() => MathF.Tau * (-(GetMarioFacingAngle() / (float)ushort.MaxValue));
     public ushort GetMarioCapFlags() => (ushort)ReadULong(Mario.HatFlags);
     public byte GetMarioHealth() => ReadByte(Mario.Health);
-    public double GetMarioNormalizedHealth() => GetMarioHealth() / 8.0;
     public ushort GetCoinCount() => (ushort)ReadULong(Mario.Coins);
     public ushort GetStarCount() => (ushort)ReadULong(Progress.StarCount);
+    public uint GetBehaviourBankStart() => (uint)ReadULong(GameObjects.BehaviourBankStartAddress);
+    public byte GetAreaCode() => ReadByte(Area.CurrentID);
+    public short GetStaticTriangleCount() => (short)ReadULong(Collision.StaticTriangleCount);
+    public short GetTriangleCount() => (short)ReadULong(Collision.TotalTriangleCount);
+
     public bool IsMarioGrounded() => MarioActions.IsGrounded(GetMarioAction());
     public bool IsMarioSwimming() => MarioActions.IsSwimming(GetMarioAction());
-    public uint GetBehaviourBankStart() => (uint)ReadULong(GameObjects.BehaviourBankStartAddress);
+    public float GetMarioFacingAngleRadian() => MathF.Tau * (-(GetMarioFacingAngle() / (float)ushort.MaxValue));
+    public double GetMarioNormalizedHealth() => GetMarioHealth() / 8.0;
     public Vector GetMissionStarPos()
     {
         var stars = GetObjects().Where(o => o.IsStar()).ToList();
@@ -130,7 +135,6 @@ internal class SM64DataFetcher : IDataFetcher
         return nearestStar.Pos;
     }
     public Vector GetMissionStarDirr() => GetMissionStarPos() - GetMarioPos();
-    public byte GetAreaCode() => ReadByte(Area.CurrentID);
     public double[,] GetMissionStarDirection()
     {
         double[,] res = new double[1, 3];
@@ -159,8 +163,6 @@ internal class SM64DataFetcher : IDataFetcher
     public double GetMarioAngle() => (GetMarioFacingAngle() * 2d / ushort.MaxValue) - 1;
     public double GetCameraAngle() => (GetCameraHorizontalAngle() * 2d / ushort.MaxValue) - 1;
 
-    public short GetStaticTriangleCount() => (short)ReadULong(Collision.StaticTriangleCount);
-    public short GetTriangleCount() => (short)ReadULong(Collision.TotalTriangleCount);
     public short GetDynamicTriangleCount() => (short)(GetTriangleCount() - GetStaticTriangleCount());
     public bool HasMarioFallenOff() => GetMarioPos().Y <= outOfBoundsHeight + 2000;
 
