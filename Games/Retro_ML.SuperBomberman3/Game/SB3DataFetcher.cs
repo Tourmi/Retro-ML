@@ -382,7 +382,7 @@ namespace Retro_ML.SuperBomberman3.Game
                             Bomb bomb = new(bombIndex, isExpired, yTilePos, xTilePos, setToExpire, setToKill, setToDestroy);
                             bombsPlanted[bombIndex] = bomb;
 
-                            //Is the bomb position is equal to the main player position, it means that he planted the bomb.
+                            //If the bomb position is equal to the main player position, it means that he planted the bomb.
                             if (BombToGridPos(bombsPos[bombIndex]).Equals(mainPlayerPos))
                             {
                                 bomb.IsPlantedByMainPlayer = true;
@@ -394,14 +394,14 @@ namespace Retro_ML.SuperBomberman3.Game
         }
 
         /// <summary>
-        /// Useful to keep track of the bombs that are expired in the table. Method called on each frames.
+        /// Useful to keep track of the bombs that are expired. Method called on each frames.
         /// </summary>
         public void TrackBombExpired()
         {
             foreach (Bomb bomb in bombsPlanted)
             {
                 //If the bomb is expired, we want to flag it and free its index.
-                if (bomb.SetToExpire == frameCounter)
+                if (bomb.SetToExpire <= frameCounter)
                 {
                     bomb.IsExpired = true;
                     FreeBombIndex(bomb.QueueBombIndex);
@@ -437,7 +437,7 @@ namespace Retro_ML.SuperBomberman3.Game
                     if (!killCheck && bomb.IsPlantedByMainPlayer && (bomb.SetToDamagePlayers == frameCounter || bomb.SetToDamagePlayers == frameCounter + 1) && enemiesAliveCount < previousEnemiesAliveCount && !IsMainPlayerDead())
                     {
                         enemiesEliminated += previousEnemiesAliveCount - enemiesAliveCount;
-                        //With certain powerups, the player can plant many bombs at once, we already give it credits for all instances this way.
+                        //With certain powerups, the player can plant many bombs at once, we already give it credits for all instances this way. We only need to check one main player bomb explosion per frames.
                         killCheck = true;
                     }
                 }
@@ -466,7 +466,6 @@ namespace Retro_ML.SuperBomberman3.Game
 
         /// <summary>
         /// Returns first free index in the bomb Queue. Needed to associate our bombs objects with an index in the game FIFO bomb queue.
-        /// Mimic the game FIFO queue.
         /// </summary>
         public int GetBombIndex()
         {
