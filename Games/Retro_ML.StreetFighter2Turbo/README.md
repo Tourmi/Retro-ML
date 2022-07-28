@@ -5,7 +5,7 @@ Training AIs to beat Street Fighter 2 Turbo fights automatically.
 
 ## Special Thanks
 
-* [johnlike728](https://gamefaqs.gamespot.com/snes/588701-street-fighter-ii-turbo/faqs/63633): Special thanks to johnlike728. His list helped to scope the range of attacks. 
+* [johnlike728](https://gamefaqs.gamespot.com/snes/588701-street-fighter-ii-turbo/faqs/63633): His list helped to scope the range of attacks.
 
 ## Configuration
 
