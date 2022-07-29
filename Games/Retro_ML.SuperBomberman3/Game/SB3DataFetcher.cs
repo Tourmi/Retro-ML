@@ -113,18 +113,18 @@ namespace Retro_ML.SuperBomberman3.Game
         public byte[] GetPlayersYPos() => Read(PlayersAddresses.PlayersYPos);
         public double GetPlayerXPositionNormalized(int pos) => (pos - MIN_X_POS) / (double)(MAX_X_POS - MIN_X_POS);
         public double GetPlayerYPositionNormalized(int pos) => (pos - MIN_Y_POS) / (double)(MAX_Y_POS - MIN_Y_POS);
-        public double GetMainPlayerXPositionNormalized() => GetPlayerXPositionNormalized(GetPlayersXPos()[0]);
-        public double GetMainPlayerYPositionNormalized() => GetPlayerYPositionNormalized(GetPlayersYPos()[0]);
+        public double GetMainPlayerXPositionNormalized() => GetPlayersXPos()[0] >= 0x10 ? GetPlayerXPositionNormalized(GetPlayersXPos()[0]) : 0.0;
+        public double GetMainPlayerYPositionNormalized() => GetPlayersYPos()[0] >= 0x10 ? GetPlayerYPositionNormalized(GetPlayersYPos()[0]) : 0.0;
         public byte[] GetBombsPos() => Read(GameAddresses.BombsPositions);
         public byte[] GetBombsTimer() => Read(GameAddresses.BombsTimers);
-        public double GetBombsTimerNormalized(byte timer) => 1.0 - (timer / (double)(MAX_BOMB_TIMER - MIN_BOMB_TIMER));
+        public double GetBombsTimerNormalized(byte timer) => 1.0 - (timer / (double) MAX_BOMB_TIMER);
         public byte GetMainPlayerBombsPlanted() => Read(PlayersAddresses.PlayersBombsPlantedCount)[0];
         public double GetMainPlayerBombsPlantedNormalized() => GetMainPlayerBombsPlanted() / (double)MAX_BOMB;
-        public double GetClosestPowerupToMainPlayerXPosNormalized() => GetClosestPowerUp().Item1;
-        public double GetClosestPowerupToMainPlayerYPosNormalized() => GetClosestPowerUp().Item2;
-        public byte GetMainPlayerExtraBombPowerUpLevel() => ReadSingle(PowerupsAddresses.ExtraBomb);
-        public byte GetMainPlayerExplosionExpanderPowerUpLevel() => ReadSingle(PowerupsAddresses.ExplosionExpander);
-        public byte GetMainPlayerAcceleratorPowerUpLevel() => ReadSingle(PowerupsAddresses.Accelerator);
+        public double GetClosestPowerupToMainPlayerXPosNormalized() => GetClosestPowerUp(playableTilesCache).Item1;
+        public double GetClosestPowerupToMainPlayerYPosNormalized() => GetClosestPowerUp(playableTilesCache).Item2;
+        public byte GetMainPlayerExtraBombPowerUpLevel() => Read(PowerupsAddresses.ExtraBomb)[0];
+        public byte GetMainPlayerExplosionExpanderPowerUpLevel() => Read(PowerupsAddresses.ExplosionExpander)[0];
+        public byte GetMainPlayerAcceleratorPowerUpLevel() => Read(PowerupsAddresses.Accelerator)[0];
         public double GetMainPlayerExtraBombPowerUpLevelNormalized() => GetMainPlayerExtraBombPowerUpLevel() / (double)MAX_BOMB;
         public double GetMainPlayerExplosionExpanderPowerUpLevelNormalized() => GetMainPlayerExplosionExpanderPowerUpLevel() / (double)(MAX_EXPLOSION_EXPANDER - MIN_EXPLOSION_EXPANDER);
         public double GetMainPlayerAcceleratorPowerUpLevelNormalized() => GetMainPlayerAcceleratorPowerUpLevel() / (double)MAX_ACCELERATOR;
@@ -317,8 +317,9 @@ namespace Retro_ML.SuperBomberman3.Game
         /// <summary>
         /// Get the powerup that is the closest to the player on the grid using manhattan distance.
         /// Values are normalized. If there is no powerup present, the function will return a pair with values = (1.0, 1.0)
+        /// Values are already normalized.
         /// </summary>
-        public Tuple<double, double> GetClosestPowerUp()
+        public Tuple<double, double> GetClosestPowerUp(byte[,] tilesCache)
         {
             var playerXPos = GetPlayersXPos()[0];
             var playerYPos = GetPlayersYPos()[0];
@@ -331,7 +332,7 @@ namespace Retro_ML.SuperBomberman3.Game
                 for (int j = 0; j < DESIRED_LEVEL_WIDTH; j++)
                 {
                     //If tile contains a powerup
-                    if (playableTilesCache[i, j] == 0x10)
+                    if (tilesCache[i, j] == 0x10)
                     {
                         int powerupXPos = (int)(j * TILES_WIDTH) + (int)MIN_X_POS;
                         int powerupYPos = (int)(i * TILES_HEIGHT) + (int)MIN_Y_POS;
@@ -341,6 +342,7 @@ namespace Retro_ML.SuperBomberman3.Game
                         if (dist < closestDist)
                         {
                             closestDist = dist;
+                            //Normalize values
                             closestX = (powerupXPos - playerXPos) / (double)(MAX_X_POS - MIN_X_POS);
                             closestY = (powerupYPos - playerYPos) / (double)(MAX_Y_POS - MIN_Y_POS);
                         }
