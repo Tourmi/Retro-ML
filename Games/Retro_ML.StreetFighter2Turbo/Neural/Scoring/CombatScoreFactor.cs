@@ -1,7 +1,7 @@
-﻿using Retro_ML.Game;
+﻿using Retro_ML.Configuration.FieldInformation;
+using Retro_ML.Game;
 using Retro_ML.Neural.Scoring;
 using Retro_ML.StreetFighter2Turbo.Game;
-using Retro_ML.Configuration.FieldInformation;
 
 namespace Retro_ML.StreetFighter2Turbo.Neural.Scoring
 {
@@ -15,11 +15,6 @@ namespace Retro_ML.StreetFighter2Turbo.Neural.Scoring
         {
             new DoubleFieldInfo(nameof(TimerInfluence), "Timer Influence", 0, 1, 0.01, "Percentage of the score attributed by the end round timer"),
         };
-
-        public CombatScoreFactor()
-        {
-            ExtraFields = Array.Empty<ExtraField>();
-        }
 
         public object this[string fieldName]
         {
@@ -53,8 +48,6 @@ namespace Retro_ML.StreetFighter2Turbo.Neural.Scoring
 
         public bool IsDisabled { get; set; }
 
-        public ExtraField[] ExtraFields { get; set; }
-
         public double GetFinalScore() => currScore;
 
         public void Update(IDataFetcher dataFetcher)
@@ -73,14 +66,11 @@ namespace Retro_ML.StreetFighter2Turbo.Neural.Scoring
             currScore += (currTimer * TimerInfluence + (1.0 - TimerInfluence)) * ScoreMultiplier * hpDelta;
         }
 
-        public IScoreFactor Clone()
+        public IScoreFactor Clone() => new CombatScoreFactor()
         {
-            return new CombatScoreFactor()
-            {
-                ScoreMultiplier = ScoreMultiplier,
-                IsDisabled = IsDisabled,
-                TimerInfluence = TimerInfluence,
-            };
-        }
+            ScoreMultiplier = ScoreMultiplier,
+            IsDisabled = IsDisabled,
+            TimerInfluence = TimerInfluence,
+        };
     }
 }

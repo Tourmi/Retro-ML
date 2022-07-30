@@ -20,11 +20,7 @@ internal class ExplorationScoreFactor : IScoreFactor
         new DoubleFieldInfo(nameof(EliminationMult), "Elimination multiplier", double.NegativeInfinity, double.PositiveInfinity, 1, "Reward multiplier applied when the AI stops exploring")
     };
 
-    public ExplorationScoreFactor()
-    {
-        ExtraFields = Array.Empty<ExtraField>();
-        sceneVisited = InitTree();
-    }
+    public ExplorationScoreFactor() => sceneVisited = InitTree();
 
     public object this[string fieldName]
     {
@@ -59,8 +55,6 @@ internal class ExplorationScoreFactor : IScoreFactor
     public bool CanBeDisabled => true;
 
     public bool IsDisabled { get; set; }
-
-    public ExtraField[] ExtraFields { get; set; }
 
     public double GetFinalScore() => currScore;
 

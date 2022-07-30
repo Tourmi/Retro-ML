@@ -21,8 +21,6 @@ internal class DistanceToStarScoreFactor : IScoreFactor
         new DoubleFieldInfo(nameof(DistanceTimeout), "Distance Timeout", 0, double.PositiveInfinity, 1, "Amount of time in seconds before timing out an AI that hasn't gotten closer to the star")
     };
 
-    public DistanceToStarScoreFactor() => ExtraFields = Array.Empty<ExtraField>();
-
     public object this[string fieldName]
     {
         get => fieldName switch
@@ -52,8 +50,6 @@ internal class DistanceToStarScoreFactor : IScoreFactor
     public bool CanBeDisabled => true;
 
     public bool IsDisabled { get; set; }
-
-    public ExtraField[] ExtraFields { get; set; }
 
     public double GetFinalScore() => currScore;
 

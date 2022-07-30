@@ -7,9 +7,6 @@ namespace Retro_ML.SuperMarioWorld.Neural.Scoring
 {
     internal class WonLevelScoreFactor : IScoreFactor
     {
-        private const string GOAL_MULT = "Goal Mult";
-        private const string KEY_MULT = "Key Mult";
-
         private bool shouldStop = false;
         private double currScore;
 
@@ -18,15 +15,6 @@ namespace Retro_ML.SuperMarioWorld.Neural.Scoring
              new DoubleFieldInfo(nameof(GoalMult), "Goal Multiplier", double.MinValue, double.MaxValue, 0.25, "Set to 0 or a negative value if you want to discourage finishing a level through the regular level ending"),
              new DoubleFieldInfo(nameof(KeyMult), "Key Multiplier", double.MinValue, double.MaxValue, 0.25, "Set to 0 or a negative value if you want to discourage finishing a level with a key"),
         };
-
-        public WonLevelScoreFactor()
-        {
-            ExtraFields = new ExtraField[]
-            {
-                new ExtraField(GOAL_MULT, 1.0),
-                new ExtraField(KEY_MULT, 1.0),
-            };
-        }
 
         public object this[string fieldName]
         {
@@ -63,8 +51,6 @@ namespace Retro_ML.SuperMarioWorld.Neural.Scoring
 
         public bool IsDisabled { get => false; set { } }
 
-        public ExtraField[] ExtraFields { get; set; }
-
         public double GetFinalScore() => currScore;
 
         public void Update(IDataFetcher dataFetcher)
@@ -92,7 +78,6 @@ namespace Retro_ML.SuperMarioWorld.Neural.Scoring
             return new WonLevelScoreFactor()
             {
                 ScoreMultiplier = ScoreMultiplier,
-                ExtraFields = ExtraFields,
                 GoalMult = GoalMult,
                 KeyMult = KeyMult
             };

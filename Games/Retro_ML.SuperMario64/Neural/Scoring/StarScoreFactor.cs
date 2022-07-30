@@ -13,8 +13,6 @@ internal class StarScoreFactor : IScoreFactor
 
     public FieldInfo[] Fields => Array.Empty<FieldInfo>();
 
-    public StarScoreFactor() => ExtraFields = Array.Empty<ExtraField>();
-
     public object this[string fieldName] { get => 0; set { } }
     public bool ShouldStop => shouldStop;
     public double ScoreMultiplier { get; set; }
@@ -25,8 +23,6 @@ internal class StarScoreFactor : IScoreFactor
     public bool CanBeDisabled => false;
 
     public bool IsDisabled { get; set; }
-
-    public ExtraField[] ExtraFields { get; set; }
 
     public double GetFinalScore() => currScore;
 

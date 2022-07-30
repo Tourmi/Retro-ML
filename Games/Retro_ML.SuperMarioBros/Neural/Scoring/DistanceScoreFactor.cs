@@ -1,7 +1,7 @@
-﻿using Retro_ML.Game;
+﻿using Retro_ML.Configuration.FieldInformation;
+using Retro_ML.Game;
 using Retro_ML.Neural.Scoring;
 using Retro_ML.SuperMarioBros.Game;
-using Retro_ML.Configuration.FieldInformation;
 
 namespace Retro_ML.SuperMarioBros.Neural.Scoring
 {
@@ -12,11 +12,6 @@ namespace Retro_ML.SuperMarioBros.Neural.Scoring
         private bool inited = false;
 
         public FieldInfo[] Fields => Array.Empty<FieldInfo>();
-
-        public DistanceScoreFactor()
-        {
-            ExtraFields = Array.Empty<ExtraField>();
-        }
 
         public object this[string fieldName]
         {
@@ -34,8 +29,6 @@ namespace Retro_ML.SuperMarioBros.Neural.Scoring
         public bool CanBeDisabled => true;
 
         public bool IsDisabled { get; set; }
-
-        public ExtraField[] ExtraFields { get; set; }
 
         public double GetFinalScore() => currScore;
 
@@ -76,8 +69,7 @@ namespace Retro_ML.SuperMarioBros.Neural.Scoring
             return new DistanceScoreFactor()
             {
                 IsDisabled = IsDisabled,
-                ScoreMultiplier = ScoreMultiplier,
-                ExtraFields = ExtraFields
+                ScoreMultiplier = ScoreMultiplier
             };
         }
     }

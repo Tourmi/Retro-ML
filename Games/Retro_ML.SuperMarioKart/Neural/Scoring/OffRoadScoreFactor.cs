@@ -7,8 +7,6 @@ namespace Retro_ML.SuperMarioKart.Neural.Scoring;
 
 internal class OffRoadScoreFactor : IScoreFactor
 {
-    public const string STOP_AFTER = "Stop after";
-
     private bool shouldStop = false;
     private double currScore;
     private int framesOffroad;
@@ -24,17 +22,11 @@ internal class OffRoadScoreFactor : IScoreFactor
     public bool ShouldStop => shouldStop;
 
     public double ScoreMultiplier { get; set; }
-    public ExtraField[] ExtraFields { get; set; }
 
     public FieldInfo[] Fields => new FieldInfo[]
     {
          new DoubleFieldInfo(nameof(StopAfter), "Stop after", 0, double.MaxValue, 0.5, "Stops the training on the current racetrack after the AI spends this amount of seconds offroad consecutively")
     };
-
-    public OffRoadScoreFactor()
-    {
-        ExtraFields = Array.Empty<ExtraField>();
-    }
 
     public object this[string fieldName]
     {
@@ -83,6 +75,6 @@ internal class OffRoadScoreFactor : IScoreFactor
 
     public IScoreFactor Clone()
     {
-        return new OffRoadScoreFactor() { IsDisabled = IsDisabled, ScoreMultiplier = ScoreMultiplier, ExtraFields = ExtraFields, StopAfter = StopAfter };
+        return new OffRoadScoreFactor() { IsDisabled = IsDisabled, ScoreMultiplier = ScoreMultiplier, StopAfter = StopAfter };
     }
 }

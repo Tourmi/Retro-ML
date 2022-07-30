@@ -20,11 +20,6 @@ internal class StoppedProgressingScoreFactor : IScoreFactor
          new DoubleFieldInfo(nameof(MaxTimeWithoutProgress), "Max time w/o progress", 1.0, double.MaxValue, 0.5, "The time in seconds before eliminating the AI for not making progress")
     };
 
-    public StoppedProgressingScoreFactor()
-    {
-        ExtraFields = Array.Empty<ExtraField>();
-    }
-
     public object this[string fieldName]
     {
         get => fieldName switch
@@ -53,8 +48,6 @@ internal class StoppedProgressingScoreFactor : IScoreFactor
     public bool CanBeDisabled => true;
 
     public bool IsDisabled { get; set; }
-
-    public ExtraField[] ExtraFields { get; set; }
 
     public double GetFinalScore() => currScore;
 
@@ -96,6 +89,6 @@ internal class StoppedProgressingScoreFactor : IScoreFactor
 
     public IScoreFactor Clone()
     {
-        return new StoppedProgressingScoreFactor() { IsDisabled = IsDisabled, ScoreMultiplier = ScoreMultiplier, ExtraFields = ExtraFields, MaxTimeWithoutProgress = MaxTimeWithoutProgress };
+        return new StoppedProgressingScoreFactor() { IsDisabled = IsDisabled, ScoreMultiplier = ScoreMultiplier, MaxTimeWithoutProgress = MaxTimeWithoutProgress };
     }
 }

@@ -12,8 +12,6 @@ internal class DiedScoreFactor : IScoreFactor
 
     public FieldInfo[] Fields => Array.Empty<FieldInfo>();
 
-    public DiedScoreFactor() => ExtraFields = Array.Empty<ExtraField>();
-
     public object this[string fieldName] { get => 0; set { } }
     public bool ShouldStop => shouldStop;
     public double ScoreMultiplier { get; set; }
@@ -24,8 +22,6 @@ internal class DiedScoreFactor : IScoreFactor
     public bool CanBeDisabled => false;
 
     public bool IsDisabled { get; set; }
-
-    public ExtraField[] ExtraFields { get; set; }
 
     public double GetFinalScore() => currScore;
 

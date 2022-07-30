@@ -6,8 +6,6 @@ namespace Retro_ML.Tetris.Neural.Scoring
 {
     internal class TimeTakenScoreFactor : IScoreFactor
     {
-        public const string MAXIMUM_LEVEL_TIME = "Maximum Level Time";
-
         private bool shouldStop = false;
         private double currScore;
         private int levelFrames = 0;
@@ -16,14 +14,6 @@ namespace Retro_ML.Tetris.Neural.Scoring
         {
              new DoubleFieldInfo(nameof(MaximumLevelTime), "Maximum Level Time", 1.0, double.MaxValue, 0.5, "Maximum time the current savestate can go on for, in seconds")
         };
-
-        public TimeTakenScoreFactor()
-        {
-            ExtraFields = new ExtraField[]
-            {
-                new(MAXIMUM_LEVEL_TIME, 600)
-            };
-        }
 
         public object this[string fieldName]
         {
@@ -57,8 +47,6 @@ namespace Retro_ML.Tetris.Neural.Scoring
 
         public bool IsDisabled { get; set; }
 
-        public ExtraField[] ExtraFields { get; set; }
-
         public double GetFinalScore() => currScore;
 
         public void Update(IDataFetcher dataFetcher)
@@ -79,7 +67,7 @@ namespace Retro_ML.Tetris.Neural.Scoring
 
         public IScoreFactor Clone()
         {
-            return new TimeTakenScoreFactor() { IsDisabled = IsDisabled, ScoreMultiplier = ScoreMultiplier, ExtraFields = ExtraFields, MaximumLevelTime = MaximumLevelTime };
+            return new TimeTakenScoreFactor() { IsDisabled = IsDisabled, ScoreMultiplier = ScoreMultiplier, MaximumLevelTime = MaximumLevelTime };
         }
     }
 }

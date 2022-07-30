@@ -30,14 +30,10 @@ internal class ProgressScoreFactor : IScoreFactor
     public double ScoreMultiplier { get; set; }
     public double MaximumTimeWithoutProgress { get; set; } = 10.0;
 
-    public ExtraField[] ExtraFields { get; set; }
-
     public FieldInfo[] Fields => new FieldInfo[]
     {
         new DoubleFieldInfo(nameof(MaximumTimeWithoutProgress), "Maximum time without progress", 0, double.MaxValue, 1.0, "Stops the current save state after this amount of consecutive seconds without any progress.")
     };
-
-    public ProgressScoreFactor() => ExtraFields = Array.Empty<ExtraField>();
 
     public object this[string fieldName]
     {

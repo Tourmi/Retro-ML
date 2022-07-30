@@ -21,11 +21,7 @@ internal class DiedScoreFactor : IScoreFactor
 
     public double ScoreMultiplier { get; set; }
 
-    public ExtraField[] ExtraFields { get; set; }
-
     public FieldInfo[] Fields => Array.Empty<FieldInfo>();
-
-    public DiedScoreFactor() => ExtraFields = Array.Empty<ExtraField>();
 
     public object this[string fieldName]
     {
