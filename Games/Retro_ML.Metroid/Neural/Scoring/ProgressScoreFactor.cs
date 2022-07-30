@@ -108,7 +108,7 @@ internal class ProgressScoreFactor : IScoreFactor
             {
                 var dirr = df.GetDirectionToNearestGoodTile();
                 navigationDirection[0, 0] = dirr[0, 0];
-                navigationDirection[0, 1] = dirr[0, 1];
+                navigationDirection[0, 1] = 0;
             }
         }
 
