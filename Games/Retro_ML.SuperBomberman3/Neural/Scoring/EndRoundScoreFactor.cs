@@ -16,12 +16,6 @@ namespace Retro_ML.SuperBomberMan3.Neural.Scoring
             new DoubleFieldInfo(nameof(VictoryMultiplier), "Victory Multiplier", double.MinValue, double.MaxValue, 1, "Multiplier applied on top of the regular multiplier in case of a victory"),
             new DoubleFieldInfo(nameof(DrawMultiplier), "Draw Multiplier", double.MinValue, double.MaxValue, 1, "Multiplier applied on top of the regular multiplier in case of a draw"),
        };
-
-        public EndRoundScoreFactor()
-        {
-            ExtraFields = Array.Empty<ExtraField>();
-        }
-
         public object this[string fieldName]
         {
             get
@@ -56,8 +50,6 @@ namespace Retro_ML.SuperBomberMan3.Neural.Scoring
         public bool CanBeDisabled => true;
 
         public bool IsDisabled { get; set; }
-
-        public ExtraField[] ExtraFields { get; set; }
 
         public double GetFinalScore() => currScore;
 

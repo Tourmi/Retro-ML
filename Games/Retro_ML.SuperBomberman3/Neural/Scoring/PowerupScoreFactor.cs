@@ -32,11 +32,6 @@ namespace Retro_ML.SuperBomberMan3.Neural.Scoring
             new DoubleFieldInfo(nameof(PowerBombMultiplier), "Power Bomb Multiplier", double.MinValue, double.MaxValue, 1, "Multiplier applied on top of the regular multiplier when the player grab a power bomb powerup"),
         };
 
-        public PowerupScoreFactor()
-        {
-            ExtraFields = Array.Empty<ExtraField>();
-        }
-
         public object this[string fieldName]
         {
             get
@@ -97,8 +92,6 @@ namespace Retro_ML.SuperBomberMan3.Neural.Scoring
         public bool CanBeDisabled => true;
 
         public bool IsDisabled { get; set; }
-
-        public ExtraField[] ExtraFields { get; set; }
 
         public double GetFinalScore() => currScore;
 

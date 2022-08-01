@@ -16,11 +16,6 @@ internal class TimeTakenScoreFactor : IScoreFactor
 
     public FieldInfo[] Fields => Array.Empty<FieldInfo>();
 
-    public TimeTakenScoreFactor()
-    {
-        ExtraFields = Array.Empty<ExtraField>();
-    }
-
     public object this[string fieldName]
     {
         get => 0;
@@ -37,8 +32,6 @@ internal class TimeTakenScoreFactor : IScoreFactor
     public bool CanBeDisabled => true;
 
     public bool IsDisabled { get; set; }
-
-    public ExtraField[] ExtraFields { get; set; }
 
     public double GetFinalScore() => currScore;
 
@@ -79,6 +72,6 @@ internal class TimeTakenScoreFactor : IScoreFactor
 
     public IScoreFactor Clone()
     {
-        return new TimeTakenScoreFactor() { IsDisabled = IsDisabled, ScoreMultiplier = ScoreMultiplier, ExtraFields = ExtraFields };
+        return new TimeTakenScoreFactor() { IsDisabled = IsDisabled, ScoreMultiplier = ScoreMultiplier };
     }
 }

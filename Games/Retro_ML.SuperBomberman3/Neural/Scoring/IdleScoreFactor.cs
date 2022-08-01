@@ -19,11 +19,6 @@ namespace Retro_ML.SuperBomberMan3.Neural.Scoring
             new DoubleFieldInfo(nameof(MaxIdleFrames), "Max idle frames", double.MinValue, double.MaxValue, 1, "Maximum amount of frames where the player can stay idle"),
         };
 
-        public IdleScoreFactor()
-        {
-            ExtraFields = Array.Empty<ExtraField>();
-        }
-
         public object this[string fieldName]
         {
             get
@@ -55,8 +50,6 @@ namespace Retro_ML.SuperBomberMan3.Neural.Scoring
         public bool CanBeDisabled => true;
 
         public bool IsDisabled { get; set; }
-
-        public ExtraField[] ExtraFields { get; set; }
 
         public double GetFinalScore() => currScore;
 
