@@ -14,7 +14,7 @@ Right now, the plugin only supports battle mode (there is a single player campai
 ## What's left to do / could be improved?
 
 * **Find a better way to track bombs and explosions**
-  * Right now, if an enemy and the AI places a bomb on the same frame and the enemy bomb blow up a wall or another enemy, the AI will get credit for the kill / destruction. It should be possible knowing the AI / ennemies explosion expander level to associate dangerous positions on the map when a bomb is dropped. It should fix the problem but would compexify the dataFetcher.
+  * Right now, if an enemy and the AI places a bomb on the same frame and the enemy bomb blows up a wall or another enemy, the AI will get credit for the kill / destruction. It should be possible knowing the AI / ennemies explosion expander level to keep track of the tiles each bombs are supposed to destroy when they explode. It should fix the problem but would compexify the dataFetcher.
 * **Continue to research ram addresses**
   * Right now, many useful addresses in ram have been found. However, lots of work can still be done on this front in order to find better addresses to use. A good example would be the deathTimer addresses used to track when a player dies. There is probably a better addresse to use that keeps track of the number of player alive in the round, but I haven't been able to find it yet.
 * **Add support for unconventional map and assets**

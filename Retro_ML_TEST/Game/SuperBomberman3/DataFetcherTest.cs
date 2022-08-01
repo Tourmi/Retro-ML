@@ -66,7 +66,7 @@ namespace Retro_ML_TEST.Game.SuperBomberman3
             mockEmulatorAdapter!.SetMemory(Addresses.GameAddresses.GameMinutesTimer.Address, 0x01);
             mockEmulatorAdapter!.SetMemory(Addresses.GameAddresses.GameSecondsTimer.Address, 0x05);
             dataFetcher!.NextFrame();
-            Assert.AreEqual((double) 65.0 / 120.0, dataFetcher!.GetRemainingRoundTimeNormalized());
+            Assert.AreEqual((double)65.0 / 120.0, dataFetcher!.GetRemainingRoundTimeNormalized());
         }
 
         [Test]
@@ -109,7 +109,7 @@ namespace Retro_ML_TEST.Game.SuperBomberman3
             int pos = 16;
             Assert.AreEqual(0.0, dataFetcher!.GetPlayerXPositionNormalized(pos));
             pos = 150;
-            Assert.AreEqual(134 / (double) (0xD0 - 0x10), dataFetcher!.GetPlayerXPositionNormalized(pos));
+            Assert.AreEqual(134 / (double)(0xD0 - 0x10), dataFetcher!.GetPlayerXPositionNormalized(pos));
         }
 
         [Test]
@@ -165,7 +165,7 @@ namespace Retro_ML_TEST.Game.SuperBomberman3
             timer = 0x95;
             Assert.AreEqual(0.0, dataFetcher!.GetBombsTimerNormalized(timer));
             timer = 0x30;
-            Assert.AreEqual(1.0 - (0x30 / (double) 0x95), dataFetcher!.GetBombsTimerNormalized(timer));
+            Assert.AreEqual(1.0 - (0x30 / (double)0x95), dataFetcher!.GetBombsTimerNormalized(timer));
         }
 
         [Test]
@@ -183,7 +183,7 @@ namespace Retro_ML_TEST.Game.SuperBomberman3
             Assert.AreEqual(0.0, dataFetcher!.GetMainPlayerBombsPlantedNormalized());
             mockEmulatorAdapter!.SetMemory(Addresses.PlayersAddresses.PlayersBombsPlantedCount.Address, new byte[] { 0x01, 0x01, 0x01, 0x01, 0x01 });
             dataFetcher!.NextFrame();
-            Assert.AreEqual(1 / (double) 9.0, dataFetcher!.GetMainPlayerBombsPlantedNormalized());
+            Assert.AreEqual(1 / (double)9.0, dataFetcher!.GetMainPlayerBombsPlantedNormalized());
         }
 
         [Test]
@@ -204,7 +204,7 @@ namespace Retro_ML_TEST.Game.SuperBomberman3
             mockEmulatorAdapter!.SetMemory(Addresses.PlayersAddresses.PlayersXPos.Address, new byte[] { 0x10, 0x00, 0x00, 0x00, 0x00 });
             mockEmulatorAdapter!.SetMemory(Addresses.PlayersAddresses.PlayersYPos.Address, new byte[] { 0x10, 0x00, 0x00, 0x00, 0x00 });
             dataFetcher!.NextFrame();
-            Assert.AreEqual(new Tuple<double, double>(0.0, 0x10 / (double) (0xB0 - 0x10)), dataFetcher!.GetClosestPowerUp(powerups2d));
+            Assert.AreEqual(new Tuple<double, double>(0.0, 0x10 / (double)(0xB0 - 0x10)), dataFetcher!.GetClosestPowerUp(powerups2d));
             mockEmulatorAdapter!.SetMemory(Addresses.PlayersAddresses.PlayersXPos.Address, new byte[] { 0xA0, 0x00, 0x00, 0x00, 0x00 });
             mockEmulatorAdapter!.SetMemory(Addresses.PlayersAddresses.PlayersYPos.Address, new byte[] { 0x10, 0x00, 0x00, 0x00, 0x00 });
             dataFetcher!.NextFrame();
@@ -271,7 +271,7 @@ namespace Retro_ML_TEST.Game.SuperBomberman3
             Assert.AreEqual(0, dataFetcher!.GetMainPlayerExtraBombPowerUpLevelNormalized());
             mockEmulatorAdapter!.SetMemory(Addresses.PowerupsAddresses.ExtraBomb.Address, new byte[] { 0x01, 0x01, 0x01, 0x01, 0x01 });
             dataFetcher!.NextFrame();
-            Assert.AreEqual(1.0 / (double) 9.0 , dataFetcher!.GetMainPlayerExtraBombPowerUpLevelNormalized());
+            Assert.AreEqual(1.0 / (double)9.0, dataFetcher!.GetMainPlayerExtraBombPowerUpLevelNormalized());
         }
 
         [Test]
@@ -280,7 +280,7 @@ namespace Retro_ML_TEST.Game.SuperBomberman3
             Assert.AreEqual(0, dataFetcher!.GetMainPlayerExplosionExpanderPowerUpLevelNormalized());
             mockEmulatorAdapter!.SetMemory(Addresses.PowerupsAddresses.ExplosionExpander.Address, new byte[] { 0x04, 0x04, 0x04, 0x04, 0x04 });
             dataFetcher!.NextFrame();
-            Assert.AreEqual(4.0 / (double) (9.0 - 2.0), dataFetcher!.GetMainPlayerExplosionExpanderPowerUpLevelNormalized());
+            Assert.AreEqual(4.0 / (double)(9.0 - 2.0), dataFetcher!.GetMainPlayerExplosionExpanderPowerUpLevelNormalized());
         }
 
         [Test]
@@ -289,7 +289,7 @@ namespace Retro_ML_TEST.Game.SuperBomberman3
             Assert.AreEqual(0, dataFetcher!.GetMainPlayerAcceleratorPowerUpLevelNormalized());
             mockEmulatorAdapter!.SetMemory(Addresses.PowerupsAddresses.Accelerator.Address, new byte[] { 0x01, 0x01, 0x01, 0x01, 0x01 });
             dataFetcher!.NextFrame();
-            Assert.AreEqual(1.0 / (double) 0x100, dataFetcher!.GetMainPlayerAcceleratorPowerUpLevelNormalized());
+            Assert.AreEqual(1.0 / (double)0x100, dataFetcher!.GetMainPlayerAcceleratorPowerUpLevelNormalized());
         }
 
         [Test]
@@ -437,6 +437,198 @@ namespace Retro_ML_TEST.Game.SuperBomberman3
             mockEmulatorAdapter!.SetMemory(Addresses.PlayersAddresses.PlayersDeathTimer.Address, new byte[] { 0x01, 0x01, 0x01, 0x01, 0x01 });
             dataFetcher!.NextFrame();
             Assert.AreEqual(new byte[] { 0x01, 0x01, 0x01, 0x01, 0x01 }, dataFetcher!.GetPlayersDeathTimer());
+        }
+
+        [Test]
+        public void CheckPlayerDeathStatus()
+        {
+            mockEmulatorAdapter!.SetMemory(Addresses.PlayersAddresses.PlayersDeathTimer.Address, new byte[] { 0x3B, 0x00, 0x3C, 0x00, 0x3C });
+            //The function CheckPlayerDeathStatus() gets called in NextFrame()
+            dataFetcher!.NextFrame();
+            Assert.IsTrue(dataFetcher!.IsPlayerDead(0));
+            Assert.IsTrue(dataFetcher!.IsPlayerDead(2));
+            Assert.IsFalse(dataFetcher!.IsPlayerDead(1));
+            Assert.IsFalse(dataFetcher!.IsPlayerDead(3));
+        }
+
+        [Test]
+        public void GetNumberOfPlayersAlive()
+        {
+            Assert.AreEqual(4, dataFetcher!.GetNumberOfPlayersAlive());
+            mockEmulatorAdapter!.SetMemory(Addresses.PlayersAddresses.PlayersDeathTimer.Address, new byte[] { 0x3C, 0x3C, 0x3C, 0x3C, 0x3C });
+            dataFetcher!.NextFrame();
+            Assert.AreEqual(0, dataFetcher!.GetNumberOfPlayersAlive());
+
+        }
+
+        [Test]
+        public void IsMainPlayerDead()
+        {
+            Assert.IsFalse(dataFetcher!.IsMainPlayerDead());
+            mockEmulatorAdapter!.SetMemory(Addresses.PlayersAddresses.PlayersDeathTimer.Address, new byte[] { 0x3C, 0x3C, 0x3C, 0x3C, 0x3C });
+            dataFetcher!.NextFrame();
+            Assert.IsTrue(dataFetcher!.IsMainPlayerDead());
+        }
+
+        [Test]
+        public void IsPlayerDead()
+        {
+            mockEmulatorAdapter!.SetMemory(Addresses.PlayersAddresses.PlayersDeathTimer.Address, new byte[] { 0x3B, 0x00, 0x3C, 0x00, 0x3C });
+            dataFetcher!.NextFrame();
+            Assert.IsTrue(dataFetcher!.IsPlayerDead(0));
+            Assert.IsTrue(dataFetcher!.IsPlayerDead(2));
+            Assert.IsFalse(dataFetcher!.IsPlayerDead(1));
+            Assert.IsFalse(dataFetcher!.IsPlayerDead(3));
+        }
+
+        [Test]
+        public void IsRoundOver()
+        {
+            Assert.IsFalse(dataFetcher!.IsRoundOver());
+            mockEmulatorAdapter!.SetMemory(Addresses.PlayersAddresses.PlayersDeathTimer.Address, new byte[] { 0x3B, 0x00, 0x3C, 0x00, 0x3C });
+            dataFetcher!.NextFrame();
+            Assert.IsFalse(dataFetcher!.IsRoundOver());
+            mockEmulatorAdapter!.SetMemory(Addresses.PlayersAddresses.PlayersDeathTimer.Address, new byte[] { 0x3B, 0x3C, 0x3C, 0x00, 0x3C });
+            dataFetcher!.NextFrame();
+            Assert.IsTrue(dataFetcher!.IsRoundOver());
+        }
+
+        [Test]
+        public void IsRoundWon()
+        {
+            Assert.IsFalse(dataFetcher!.IsRoundWon());
+            mockEmulatorAdapter!.SetMemory(Addresses.PlayersAddresses.PlayersDeathTimer.Address, new byte[] { 0x00, 0x00, 0x3C, 0x00, 0x3C });
+            dataFetcher!.NextFrame();
+            Assert.IsFalse(dataFetcher!.IsRoundWon());
+            mockEmulatorAdapter!.SetMemory(Addresses.PlayersAddresses.PlayersDeathTimer.Address, new byte[] { 0x00, 0x3C, 0x3C, 0x3C, 0x3C });
+            dataFetcher!.NextFrame();
+            Assert.IsTrue(dataFetcher!.IsRoundWon());
+        }
+
+        [Test]
+        public void IsRoundLost()
+        {
+            Assert.IsFalse(dataFetcher!.IsRoundLost());
+            mockEmulatorAdapter!.SetMemory(Addresses.PlayersAddresses.PlayersDeathTimer.Address, new byte[] { 0x00, 0x3C, 0x00, 0x00, 0x00 });
+            dataFetcher!.NextFrame();
+            Assert.IsFalse(dataFetcher!.IsRoundLost());
+            mockEmulatorAdapter!.SetMemory(Addresses.PlayersAddresses.PlayersDeathTimer.Address, new byte[] { 0x3C, 0x3C, 0x00, 0x3C, 0x3C });
+            dataFetcher!.NextFrame();
+            Assert.IsTrue(dataFetcher!.IsRoundLost());
+        }
+
+        [Test]
+        public void IsRoundDraw()
+        {
+            Assert.IsFalse(dataFetcher!.IsRoundDraw());
+            mockEmulatorAdapter!.SetMemory(Addresses.PlayersAddresses.PlayersDeathTimer.Address, new byte[] { 0x00, 0x3C, 0x00, 0x00, 0x00 });
+            dataFetcher!.NextFrame();
+            Assert.IsFalse(dataFetcher!.IsRoundDraw());
+            mockEmulatorAdapter!.SetMemory(Addresses.PlayersAddresses.PlayersDeathTimer.Address, new byte[] { 0x3C, 0x3C, 0x3C, 0x3C, 0x3C });
+            dataFetcher!.NextFrame();
+            Assert.IsTrue(dataFetcher!.IsRoundDraw());
+        }
+
+        [Test]
+        public void BombToGridPos()
+        {
+            Assert.AreEqual(new Tuple<uint, uint>(0, 0), dataFetcher!.BombToGridPos(17));
+            Assert.AreEqual(new Tuple<uint, uint>(7, 11), dataFetcher!.BombToGridPos(140));
+        }
+
+        [Test]
+        public void MainPlayerToGridPos()
+        {
+            mockEmulatorAdapter!.SetMemory(Addresses.PlayersAddresses.PlayersXPos.Address, 0x10);
+            mockEmulatorAdapter!.SetMemory(Addresses.PlayersAddresses.PlayersYPos.Address, 0x10);
+            dataFetcher!.NextFrame();
+            Assert.AreEqual(new Tuple<uint, uint>(0, 0), dataFetcher!.MainPlayerToGridPos());
+            mockEmulatorAdapter!.SetMemory(Addresses.PlayersAddresses.PlayersXPos.Address, 0x50);
+            mockEmulatorAdapter!.SetMemory(Addresses.PlayersAddresses.PlayersYPos.Address, 0x30);
+            dataFetcher!.NextFrame();
+            Assert.AreEqual(new Tuple<uint, uint>(2, 4), dataFetcher!.MainPlayerToGridPos());
+        }
+
+        [Test]
+        public void GetEnemiesXDistanceToThePlayer()
+        {
+            mockEmulatorAdapter!.SetMemory(Addresses.PlayersAddresses.PlayersXPos.Address, new byte[] { 0x50, 0x40, 0x10, 0x70, 0x00 });
+            dataFetcher!.NextFrame();
+            double[] tab = new double[] { (0x40 - 0x50) / (double)(0xD0 - 0x10), (0x10 - 0x50) / (double)(0xD0 - 0x10), (0x70 - 0x50) / (double)(0xD0 - 0x10) };
+            var tab2 = To2DArray(tab, 3, 1);
+            Assert.AreEqual(tab2[0, 0], dataFetcher!.GetEnemiesXDistanceToThePlayer()[0, 0], 0.0000001);
+            Assert.AreEqual(tab2[1, 0], dataFetcher!.GetEnemiesXDistanceToThePlayer()[1, 0], 0.0000001);
+            Assert.AreEqual(tab2[2, 0], dataFetcher!.GetEnemiesXDistanceToThePlayer()[2, 0], 0.0000001);
+        }
+
+        [Test]
+        public void GetEnemiesYDistanceToThePlayer()
+        {
+            mockEmulatorAdapter!.SetMemory(Addresses.PlayersAddresses.PlayersYPos.Address, new byte[] { 0x50, 0x40, 0x10, 0x70, 0x00 });
+            dataFetcher!.NextFrame();
+            double[] tab = new double[] { (0x40 - 0x50) / (double)(0xB0 - 0x10), (0x10 - 0x50) / (double)(0xB0 - 0x10), (0x70 - 0x50) / (double)(0xB0 - 0x10) };
+            var tab2 = To2DArray(tab, 3, 1);
+            Assert.AreEqual(tab2[0, 0], dataFetcher!.GetEnemiesYDistanceToThePlayer()[0, 0], 0.0000001);
+            Assert.AreEqual(tab2[1, 0], dataFetcher!.GetEnemiesYDistanceToThePlayer()[1, 0], 0.0000001);
+            Assert.AreEqual(tab2[2, 0], dataFetcher!.GetEnemiesYDistanceToThePlayer()[2, 0], 0.0000001);
+        }
+
+        [Test]
+        public void MapPlayableTiles()
+        {
+            //Not testing function using df's internal tile cache
+            Assert.DoesNotThrow(() => dataFetcher!.MapPlayableTiles());
+        }
+
+        [Test]
+        public void DrawTiles()
+        {
+            //Not testing function using df's internal tile cache
+            Assert.DoesNotThrow(() => dataFetcher!.DrawTiles());
+        }
+
+        [Test]
+        public void DrawDangers()
+        {
+            //Not testing function using df's internal tile cache
+            Assert.DoesNotThrow(() => dataFetcher!.DrawDangers());
+        }
+
+        [Test]
+        public void TrackBombPlanted()
+        {
+            //Not testing function using df's internal tile cache
+            Assert.DoesNotThrow(() => dataFetcher!.TrackBombPlanted());
+        }
+
+        [Test]
+        public void TrackBombExpired()
+        {
+            Assert.DoesNotThrow(() => dataFetcher!.TrackBombExpired());
+        }
+
+        [Test]
+        public void TrackBombExploded()
+        {
+            Assert.DoesNotThrow(() => dataFetcher!.TrackBombExploded());
+        }
+
+        [Test]
+        public void IsBombAlreadyTracked()
+        {
+            Assert.DoesNotThrow(() => dataFetcher!.IsBombAlreadyTracked(0, 0));
+        }
+
+        [Test]
+        public void GetBombIndex()
+        {
+            Assert.DoesNotThrow(() => dataFetcher!.TrackBombExploded());
+        }
+
+        [Test]
+        public void FreeBombIndex()
+        {
+            Assert.DoesNotThrow(() => dataFetcher!.FreeBombIndex(0));
         }
 
         private static T[,] To2DArray<T>(T[] input, int height, int width)

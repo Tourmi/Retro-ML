@@ -143,6 +143,7 @@ namespace Retro_ML.SuperBomberman3.Game
         public int GetNumberOfPlayersAlive() => playersAliveStatus.Where(c => c).Count();
         public bool IsMainPlayerDead() => playersAliveStatus[0] == false;
         public bool IsPlayerDead(int index) => playersAliveStatus[index] == false;
+        //By conventional means != draw
         public bool IsRoundOver() => GetNumberOfPlayersAlive() == 1;
         public bool IsRoundWon() => IsRoundOver() && !IsMainPlayerDead();
         public bool IsRoundLost() => IsRoundOver() && IsMainPlayerDead();

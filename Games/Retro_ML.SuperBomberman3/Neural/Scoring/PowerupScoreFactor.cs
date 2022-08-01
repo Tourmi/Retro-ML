@@ -146,7 +146,8 @@ namespace Retro_ML.SuperBomberMan3.Neural.Scoring
             //Check for accelerator. It can diminish.
             if (accelerator > acceleratorLevel)
             {
-                currScore += ScoreMultiplier * AcceleratorMultiplier * (accelerator - acceleratorLevel);
+                //Each level increases the value by 32
+                currScore += ScoreMultiplier * AcceleratorMultiplier * ((accelerator - acceleratorLevel) / 32);
             }
 
             //Check for louie. Player can lose it and get it back multiple times.
