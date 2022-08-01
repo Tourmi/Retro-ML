@@ -22,17 +22,11 @@ internal class CoinsScoreFactor : IScoreFactor
     public bool ShouldStop => false;
 
     public double ScoreMultiplier { get; set; }
-    public ExtraField[] ExtraFields { get; set; }
 
     public FieldInfo[] Fields => new FieldInfo[]
     {
          new DoubleFieldInfo(nameof(LosingCoinsMult), "Losing coins multiplier", double.MinValue, double.MaxValue, 0.25, "Multiplier to apply if the AI loses coins"),
     };
-
-    public CoinsScoreFactor()
-    {
-        ExtraFields = Array.Empty<ExtraField>();
-    }
 
     public object this[string fieldName]
     {
@@ -81,5 +75,5 @@ internal class CoinsScoreFactor : IScoreFactor
         }
     }
 
-    public IScoreFactor Clone() => new CoinsScoreFactor() { ScoreMultiplier = ScoreMultiplier, ExtraFields = ExtraFields, IsDisabled = IsDisabled, LosingCoinsMult = LosingCoinsMult };
+    public IScoreFactor Clone() => new CoinsScoreFactor() { ScoreMultiplier = ScoreMultiplier, IsDisabled = IsDisabled, LosingCoinsMult = LosingCoinsMult };
 }

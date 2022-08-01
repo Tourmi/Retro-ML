@@ -1,19 +1,12 @@
-﻿using Retro_ML.Game;
+﻿using Retro_ML.Configuration.FieldInformation;
+using Retro_ML.Game;
 using Retro_ML.Neural.Scoring;
 using Retro_ML.Tetris.Game;
-using Retro_ML.Configuration.FieldInformation;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Retro_ML.Tetris.Neural.Scoring
 {
     internal class HoleScoreFactor : IScoreFactor
     {
-        public const string NUMBER_OF_HOLES = "Number of holes permitted";
-
         private bool shouldStop = false;
         private double currScore;
         private int nbHoles;
@@ -22,14 +15,6 @@ namespace Retro_ML.Tetris.Neural.Scoring
         {
              new IntegerFieldInfo(nameof(NumberOfHoles), "Number of holes permitted", 0, 50, 1, "Stops the current level if the AI creates X holes"),
         };
-
-        public HoleScoreFactor()
-        {
-            ExtraFields = new ExtraField[]
-            {
-                new(NUMBER_OF_HOLES, 3)
-            };
-        }
 
         public object this[string fieldName]
         {
@@ -64,8 +49,6 @@ namespace Retro_ML.Tetris.Neural.Scoring
 
         public bool IsDisabled { get; set; }
 
-        public ExtraField[] ExtraFields { get; set; }
-
         public double GetFinalScore() => currScore;
 
         public void Update(IDataFetcher dataFetcher)
@@ -91,7 +74,7 @@ namespace Retro_ML.Tetris.Neural.Scoring
 
         public IScoreFactor Clone()
         {
-            return new HoleScoreFactor() { IsDisabled = IsDisabled, ScoreMultiplier = ScoreMultiplier, ExtraFields = ExtraFields, NumberOfHoles = NumberOfHoles };
+            return new HoleScoreFactor() { IsDisabled = IsDisabled, ScoreMultiplier = ScoreMultiplier, NumberOfHoles = NumberOfHoles };
         }
     }
 }

@@ -79,6 +79,21 @@
         }
 
         /// <summary>
+        /// Returns a range with the given length
+        /// </summary>
+        /// <param name="start"></param>
+        /// <param name="length"></param>
+        /// <returns></returns>
+        public static Range GetRange(int start, int length) => new(start, start + length);
+        /// <summary>
+        /// Returns a range with the given length
+        /// </summary>
+        /// <param name="start"></param>
+        /// <param name="length"></param>
+        /// <returns></returns>
+        public static Range GetRange(uint start, uint length) => new((int)start, (int)(start + length));
+
+        /// <summary>
         /// Returns the maximum distance between two pairs of values.
         /// </summary>
         /// <param name="values"></param>
@@ -97,5 +112,22 @@
         {
             return Math.Abs(x2 - x1) + Math.Abs(y2 - y1);
         }
+
+        public static float Max(float val1, float val2) => MathF.Max(val1, val2);
+        public static float Max(float val1, float val2, float val3) => Max(Max(val1, val2), val3);
+        public static float Max(params float[] vals) => vals.Length switch
+        {
+            0 => float.NaN,
+            1 => vals[0],
+            _ => Max(vals[0], Max(vals[1..]))
+        };
+        public static float Min(float val1, float val2) => MathF.Min(val1, val2);
+        public static float Min(float val1, float val2, float val3) => Min(Min(val1, val2), val3);
+        public static float Min(params float[] vals) => vals.Length switch
+        {
+            0 => float.NaN,
+            1 => vals[0],
+            _ => Min(vals[0], Min(vals[1..]))
+        };
     }
 }

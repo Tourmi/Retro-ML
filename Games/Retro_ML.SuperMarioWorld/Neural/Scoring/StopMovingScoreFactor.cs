@@ -25,11 +25,6 @@ namespace Retro_ML.SuperMarioWorld.Neural.Scoring
 
         public FieldInfo[] Fields => Array.Empty<FieldInfo>();
 
-        public StopMovingScoreFactor()
-        {
-            ExtraFields = Array.Empty<ExtraField>();
-        }
-
         public object this[string fieldName]
         {
             get
@@ -57,8 +52,6 @@ namespace Retro_ML.SuperMarioWorld.Neural.Scoring
         public bool CanBeDisabled => true;
 
         public bool IsDisabled { get; set; }
-
-        public ExtraField[] ExtraFields { get; set; }
 
         public double GetFinalScore() => currScore;
 

@@ -3,6 +3,11 @@ Plugin by Tourmi
 -------
 Training AIs to beat Super Mario Kart racetracks automatically, and even potentially beat Grand Prix mode.
 
+### Special Thanks
+* [MrL314](https://www.smwcentral.net/?p=viewthread&t=93458) : For their extremely useful RAM map, and their help with answering some questions about Super Mario Kart.
+* [SmkDan](https://smkdan.eludevisibility.org/smk.html) : Useful resource that was used for figuring out game obstacles.
+* [DataCrystal](https://datacrystal.romhacking.net/wiki/Super_Mario_Kart:RAM_map) : Some information for in-game memory addresses was acquired from this site instead of MrL314's RAM map.
+
 ## Configuration
 
 ### Plugin Configuration

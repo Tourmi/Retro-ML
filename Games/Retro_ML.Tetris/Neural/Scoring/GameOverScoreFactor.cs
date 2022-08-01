@@ -1,12 +1,7 @@
-﻿using Retro_ML.Game;
+﻿using Retro_ML.Configuration.FieldInformation;
+using Retro_ML.Game;
 using Retro_ML.Neural.Scoring;
 using Retro_ML.Tetris.Game;
-using Retro_ML.Configuration.FieldInformation;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Retro_ML.Tetris.Neural.Scoring
 {
@@ -16,11 +11,6 @@ namespace Retro_ML.Tetris.Neural.Scoring
         private double currScore;
 
         public FieldInfo[] Fields => Array.Empty<FieldInfo>();
-
-        public GameOverScoreFactor()
-        {
-            ExtraFields = Array.Empty<ExtraField>();
-        }
 
         public object this[string fieldName]
         {
@@ -50,7 +40,6 @@ namespace Retro_ML.Tetris.Neural.Scoring
         public bool ShouldStop => shouldStop;
 
         public double ScoreMultiplier { get; set; }
-        public ExtraField[] ExtraFields { get; set; }
 
         public double GetFinalScore() => currScore;
 
@@ -76,7 +65,7 @@ namespace Retro_ML.Tetris.Neural.Scoring
 
         public IScoreFactor Clone()
         {
-            return new GameOverScoreFactor() { ScoreMultiplier = ScoreMultiplier, ExtraFields = ExtraFields };
+            return new GameOverScoreFactor() { ScoreMultiplier = ScoreMultiplier };
         }
     }
 }

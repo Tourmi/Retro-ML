@@ -1,7 +1,7 @@
-﻿using Retro_ML.Game;
+﻿using Retro_ML.Configuration.FieldInformation;
+using Retro_ML.Game;
 using Retro_ML.Neural.Scoring;
 using Retro_ML.StreetFighter2Turbo.Game;
-using Retro_ML.Configuration.FieldInformation;
 
 namespace Retro_ML.StreetFighter2Turbo.Neural.Scoring
 {
@@ -17,11 +17,6 @@ namespace Retro_ML.StreetFighter2Turbo.Neural.Scoring
          {
              new IntegerFieldInfo(nameof(MaxInnactiveFrames), "Maximum inactive frames", 1, int.MaxValue, 1, "The maximum amount of consecutive frames where the AI isn't landing blows before stopping the current training."),
          };
-
-        public StopFightingScoreFactor()
-        {
-            ExtraFields = Array.Empty<ExtraField>();
-        }
 
         public object this[string fieldName]
         {
@@ -53,8 +48,6 @@ namespace Retro_ML.StreetFighter2Turbo.Neural.Scoring
         public bool CanBeDisabled => true;
 
         public bool IsDisabled { get; set; }
-
-        public ExtraField[] ExtraFields { get; set; }
 
         public double GetFinalScore() => currScore;
 

@@ -24,17 +24,11 @@ internal class LakituScoreFactor : IScoreFactor
     public bool ShouldStop => shouldStop;
 
     public double ScoreMultiplier { get; set; }
-    public ExtraField[] ExtraFields { get; set; }
 
     public FieldInfo[] Fields => new FieldInfo[]
     {
          new IntegerFieldInfo(nameof(StopAfterXFalls), "Stop after X falls", 0, int.MaxValue, 1, "Stops the current race if the AI falls off-track this amount of times"),
     };
-
-    public LakituScoreFactor()
-    {
-        ExtraFields = Array.Empty<ExtraField>();
-    }
 
     public object this[string fieldName]
     {
@@ -90,5 +84,5 @@ internal class LakituScoreFactor : IScoreFactor
         }
     }
 
-    public IScoreFactor Clone() => new LakituScoreFactor() { ScoreMultiplier = ScoreMultiplier, IsDisabled = IsDisabled, ExtraFields = ExtraFields, StopAfterXFalls = StopAfterXFalls };
+    public IScoreFactor Clone() => new LakituScoreFactor() { ScoreMultiplier = ScoreMultiplier, IsDisabled = IsDisabled, StopAfterXFalls = StopAfterXFalls };
 }

@@ -1,7 +1,7 @@
-﻿using Retro_ML.Game;
+﻿using Retro_ML.Configuration.FieldInformation;
+using Retro_ML.Game;
 using Retro_ML.Neural.Scoring;
 using Retro_ML.SuperMarioBros.Game;
-using Retro_ML.Configuration.FieldInformation;
 
 namespace Retro_ML.SuperMarioBros.Neural.Scoring
 {
@@ -11,11 +11,6 @@ namespace Retro_ML.SuperMarioBros.Neural.Scoring
         private double currScore;
 
         public FieldInfo[] Fields => Array.Empty<FieldInfo>();
-
-        public DiedScoreFactor()
-        {
-            ExtraFields = Array.Empty<ExtraField>();
-        }
 
         public object this[string fieldName]
         {
@@ -33,8 +28,6 @@ namespace Retro_ML.SuperMarioBros.Neural.Scoring
         public bool CanBeDisabled => false;
 
         public bool IsDisabled { get => false; set { } }
-
-        public ExtraField[] ExtraFields { get; set; }
 
         public double GetFinalScore() => currScore;
 

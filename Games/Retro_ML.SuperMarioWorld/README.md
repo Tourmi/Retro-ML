@@ -3,6 +3,10 @@ Plugin by Tourmi & Voltage98
 -------
 Training AIs to beat Super Mario World levels automatically.
 
+### Special Thanks
+* [SMWCentral](https://www.smwcentral.net/?p=memorymap&game=smw) : Most of the memory addresses came from this super useful memory map.
+* [HammerBrother](https://www.smwcentral.net/?p=section&a=details&id=21702) : The level layout in memory would have been really hard to figure out without their documents.
+
 ## Configuration
 
 ### Plugin Configuration

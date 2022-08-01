@@ -78,8 +78,8 @@ namespace Retro_ML.StreetFighter2Turbo.Game
         public bool IsPlayer2Blocking() => ReadSingle(Player2Addresses.Input) == 0x03;
         public bool IsPlayer1Staggered() => ReadSingle(Player1Addresses.State) == 0x14 || ReadSingle(Player1Addresses.State) == 0x0E;
         public bool IsPlayer2Staggered() => ReadSingle(Player2Addresses.State) == 0x14 || ReadSingle(Player2Addresses.State) == 0x0E;
-        public bool IsPlayer1Attacking() => ReadSingle(Player1Addresses.State) == 0x0A;
-        public bool IsPlayer2Attacking() => ReadSingle(Player2Addresses.State) == 0x0A;
+        public bool IsPlayer1Attacking() => ReadSingle(Player1Addresses.State) == 0x0A || ReadSingle(Player1Addresses.State) == 0x0C;
+        public bool IsPlayer2Attacking() => ReadSingle(Player2Addresses.State) == 0x0A || ReadSingle(Player2Addresses.State) == 0x0C;
         public bool IsPlayer1Punching() => IsPlayer1Attacking() ? ReadSingle(Player1Addresses.AttackType) == 0x00 : false;
         public bool IsPlayer2Punching() => IsPlayer2Attacking() ? ReadSingle(Player2Addresses.AttackType) == 0x00 : false;
         public bool IsPlayer1Kicking() => IsPlayer1Attacking() ? ReadSingle(Player1Addresses.AttackType) == 0x02 : false;

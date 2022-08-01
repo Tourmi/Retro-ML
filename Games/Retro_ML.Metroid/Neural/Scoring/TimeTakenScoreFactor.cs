@@ -6,8 +6,6 @@ namespace Retro_ML.Metroid.Neural.Scoring;
 
 internal class TimeTakenScoreFactor : IScoreFactor
 {
-    public const string MAXIMUM_TRAINING_TIME = "Maximum Training Time";
-
     private bool shouldStop = false;
     private double currScore;
     private int levelFrames = 0;
@@ -16,11 +14,6 @@ internal class TimeTakenScoreFactor : IScoreFactor
     {
          new DoubleFieldInfo(nameof(MaximumTrainingTime), "Maximum Training Time", 30.0, double.MaxValue, 1.0, "Stop the current save state after this amount of seconds.")
     };
-
-    public TimeTakenScoreFactor()
-    {
-        ExtraFields = Array.Empty<ExtraField>();
-    }
 
     public object this[string fieldName]
     {
@@ -53,8 +46,6 @@ internal class TimeTakenScoreFactor : IScoreFactor
     public bool CanBeDisabled => true;
 
     public bool IsDisabled { get; set; }
-
-    public ExtraField[] ExtraFields { get; set; }
 
     public double GetFinalScore() => currScore;
 

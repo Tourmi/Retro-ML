@@ -15,11 +15,6 @@ internal class CheckpointReachedScoreFactor : IScoreFactor
 
     public FieldInfo[] Fields => Array.Empty<FieldInfo>();
 
-    public CheckpointReachedScoreFactor()
-    {
-        ExtraFields = Array.Empty<ExtraField>();
-    }
-
     public object this[string fieldName] { get => 0; set { } }
 
     public bool ShouldStop => false;
@@ -32,8 +27,6 @@ internal class CheckpointReachedScoreFactor : IScoreFactor
     public bool CanBeDisabled => true;
 
     public bool IsDisabled { get; set; }
-
-    public ExtraField[] ExtraFields { get; set; }
 
     public double GetFinalScore() => currScore;
 

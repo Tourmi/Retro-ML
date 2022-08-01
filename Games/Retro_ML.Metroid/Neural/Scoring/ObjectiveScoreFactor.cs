@@ -28,8 +28,6 @@ internal class ObjectiveScoreFactor : IScoreFactor
     public double ItemMultiplier { get; set; } = 1.0;
     public bool StopOnObjectiveReached { get; set; } = false;
 
-    public ExtraField[] ExtraFields { get; set; }
-
     public FieldInfo[] Fields => new FieldInfo[]
     {
         new BoolFieldInfo(nameof(StopOnObjectiveReached), "Stop on objective reached", "Whether or not to stop the current save state once an objective is completed"),
@@ -37,8 +35,6 @@ internal class ObjectiveScoreFactor : IScoreFactor
         new DoubleFieldInfo(nameof(BossMultiplier), "Boss Multiplier", double.MinValue, double.MaxValue, 1.0, "Multiplier applied on top of the regular multiplier when a boss was killed."),
         new DoubleFieldInfo(nameof(DamagedBossMultiplier), "Damaged Boss Multiplier", double.MinValue, double.MaxValue, 1.0, "Multiplier applied on top of the regular multiplier for each point of damage a boss takes."),
     };
-
-    public ObjectiveScoreFactor() => ExtraFields = Array.Empty<ExtraField>();
 
     public object this[string fieldName]
     {

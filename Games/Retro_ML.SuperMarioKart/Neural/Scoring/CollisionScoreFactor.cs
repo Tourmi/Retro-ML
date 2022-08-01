@@ -24,17 +24,11 @@ internal class CollisionScoreFactor : IScoreFactor
     public bool ShouldStop => shouldStop;
 
     public double ScoreMultiplier { get; set; }
-    public ExtraField[] ExtraFields { get; set; }
 
     public FieldInfo[] Fields => new FieldInfo[]
     {
          new IntegerFieldInfo(nameof(StopAfterXCollisions), "Maximum collisions", 0, int.MaxValue, 1, "Stops the current race if the total collisions reach this number"),
     };
-
-    public CollisionScoreFactor()
-    {
-        ExtraFields = Array.Empty<ExtraField>();
-    }
 
     public object this[string fieldName]
     {
@@ -90,5 +84,5 @@ internal class CollisionScoreFactor : IScoreFactor
         }
     }
 
-    public IScoreFactor Clone() => new CollisionScoreFactor() { ScoreMultiplier = ScoreMultiplier, IsDisabled = IsDisabled, ExtraFields = ExtraFields, StopAfterXCollisions = StopAfterXCollisions };
+    public IScoreFactor Clone() => new CollisionScoreFactor() { ScoreMultiplier = ScoreMultiplier, IsDisabled = IsDisabled, StopAfterXCollisions = StopAfterXCollisions };
 }
