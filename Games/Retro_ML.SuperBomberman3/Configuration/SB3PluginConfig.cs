@@ -114,6 +114,7 @@ namespace Retro_ML.SuperBomberman3.Configuration
 
             InternalClockLength = cfg.InternalClockLength;
             InternalClockTickLength = cfg.InternalClockTickLength;
+            FrameSkip = cfg.FrameSkip;
             ScoreFactors = cfg.ScoreFactors;
         }
 
