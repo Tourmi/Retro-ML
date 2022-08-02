@@ -14,8 +14,6 @@ namespace Retro_ML.SuperBomberMan3.Neural;
 internal class SB3Evaluator : DefaultEvaluator
 {
     public SB3Evaluator(ApplicationConfig appConfig, IBlackBox<double> phenome, IEnumerable<string> saveStates, IEmulatorAdapter emulator) : base(appConfig, phenome, saveStates, emulator) { }
-    protected override int FrameSkip => ((SB3PluginConfig)gamePluginConfig).FrameSkip;
-    protected override bool FrameSkipShouldKeepControllerInputs => true;
     protected override void DoSaveState(IBlackBox<double> phenome, Score score, string state)
     {
         emulator!.LoadState(Path.GetFullPath(state));

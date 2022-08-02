@@ -54,7 +54,6 @@ namespace Retro_ML.SuperBomberman3.Configuration
         {
             new IntegerFieldInfo(nameof(InternalClockTickLength), "Internal Clock Tick Length (Frames)", 1, 3600, 1),
             new IntegerChoiceFieldInfo(nameof(InternalClockLength), "Internal Clock Length", new int[] {1,2,3,4,5,6,7,8,16 }),
-            new IntegerFieldInfo(nameof(FrameSkip), "Frames to skip", 0, 15, 1, "Amount of frames to skip for every AI evaluation"),
         };
 
         public object this[string fieldName]
@@ -65,7 +64,6 @@ namespace Retro_ML.SuperBomberman3.Configuration
                 {
                     nameof(InternalClockLength) => InternalClockLength,
                     nameof(InternalClockTickLength) => InternalClockTickLength,
-                    nameof(FrameSkip) => FrameSkip,
                     _ => 0,
                 };
             }
@@ -75,7 +73,6 @@ namespace Retro_ML.SuperBomberman3.Configuration
                 {
                     case nameof(InternalClockLength): InternalClockLength = (int)value; break;
                     case nameof(InternalClockTickLength): InternalClockTickLength = (int)value; break;
-                    case nameof(FrameSkip): FrameSkip = (int)value; break;
                 }
             }
         }
@@ -86,11 +83,6 @@ namespace Retro_ML.SuperBomberman3.Configuration
         /// The amount of frames before the clock moves to the next state.
         /// </summary>
         public int InternalClockTickLength { get; set; } = 2;
-
-        /// <summary>
-        /// Skips this amount of frames for every neural network updates.
-        /// </summary>
-        public int FrameSkip { get; set; } = 0;
 
         public List<IScoreFactor> ScoreFactors { get; set; }
 
@@ -114,7 +106,6 @@ namespace Retro_ML.SuperBomberman3.Configuration
 
             InternalClockLength = cfg.InternalClockLength;
             InternalClockTickLength = cfg.InternalClockTickLength;
-            FrameSkip = cfg.FrameSkip;
             ScoreFactors = cfg.ScoreFactors;
         }
 

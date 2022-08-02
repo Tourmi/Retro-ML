@@ -3,6 +3,7 @@ using Retro_ML.Configuration;
 using Retro_ML.SuperBomberman3.Configuration;
 using Retro_ML.SuperBomberman3.Game;
 using Retro_ML_TEST.Emulator;
+using Retro_ML.Utils;
 using System;
 
 namespace Retro_ML_TEST.Game.SuperBomberman3
@@ -200,15 +201,15 @@ namespace Retro_ML_TEST.Game.SuperBomberman3
                             0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
                             0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
                             0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 };
-            byte[,] powerups2d = To2DArray(powerups, 11, 13);
+            byte[,] powerups2d = MathUtils.To2DArray(powerups, 11, 13);
             mockEmulatorAdapter!.SetMemory(Addresses.PlayersAddresses.PlayersXPos.Address, new byte[] { 0x10, 0x00, 0x00, 0x00, 0x00 });
             mockEmulatorAdapter!.SetMemory(Addresses.PlayersAddresses.PlayersYPos.Address, new byte[] { 0x10, 0x00, 0x00, 0x00, 0x00 });
             dataFetcher!.NextFrame();
-            Assert.AreEqual(new Tuple<double, double>(0.0, 0x10 / (double)(0xB0 - 0x10)), dataFetcher!.GetClosestPowerUp(powerups2d));
+            Assert.AreEqual(ValueTuple.Create(0.0, 0x10 / (double)(0xB0 - 0x10)), dataFetcher!.GetClosestPowerUp(powerups2d));
             mockEmulatorAdapter!.SetMemory(Addresses.PlayersAddresses.PlayersXPos.Address, new byte[] { 0xA0, 0x00, 0x00, 0x00, 0x00 });
             mockEmulatorAdapter!.SetMemory(Addresses.PlayersAddresses.PlayersYPos.Address, new byte[] { 0x10, 0x00, 0x00, 0x00, 0x00 });
             dataFetcher!.NextFrame();
-            Assert.AreEqual(new Tuple<double, double>(0.25, 0.0), dataFetcher!.GetClosestPowerUp(powerups2d));
+            Assert.AreEqual(ValueTuple.Create(0.25, 0.0), dataFetcher!.GetClosestPowerUp(powerups2d));
             byte[] new_powerups = new byte[] { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
                             0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
                             0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
@@ -220,8 +221,8 @@ namespace Retro_ML_TEST.Game.SuperBomberman3
                             0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
                             0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
                             0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 };
-            byte[,] new_powerups2d = To2DArray(new_powerups, 11, 13);
-            Assert.AreEqual(new Tuple<double, double>(1.0, 1.0), dataFetcher!.GetClosestPowerUp(new_powerups2d));
+            byte[,] new_powerups2d = MathUtils.To2DArray(new_powerups, 11, 13);
+            Assert.AreEqual(ValueTuple.Create(1.0, 1.0), dataFetcher!.GetClosestPowerUp(new_powerups2d));
         }
 
         [Test]
@@ -532,8 +533,8 @@ namespace Retro_ML_TEST.Game.SuperBomberman3
         [Test]
         public void BombToGridPos()
         {
-            Assert.AreEqual(new Tuple<uint, uint>(0, 0), dataFetcher!.BombToGridPos(17));
-            Assert.AreEqual(new Tuple<uint, uint>(7, 11), dataFetcher!.BombToGridPos(140));
+            Assert.AreEqual(ValueTuple.Create(0,0), dataFetcher!.BombToGridPos(17));
+            Assert.AreEqual(ValueTuple.Create(7, 11), dataFetcher!.BombToGridPos(140));
         }
 
         [Test]
@@ -542,11 +543,11 @@ namespace Retro_ML_TEST.Game.SuperBomberman3
             mockEmulatorAdapter!.SetMemory(Addresses.PlayersAddresses.PlayersXPos.Address, 0x10);
             mockEmulatorAdapter!.SetMemory(Addresses.PlayersAddresses.PlayersYPos.Address, 0x10);
             dataFetcher!.NextFrame();
-            Assert.AreEqual(new Tuple<uint, uint>(0, 0), dataFetcher!.MainPlayerToGridPos());
+            Assert.AreEqual(ValueTuple.Create(0, 0), dataFetcher!.MainPlayerToGridPos());
             mockEmulatorAdapter!.SetMemory(Addresses.PlayersAddresses.PlayersXPos.Address, 0x50);
             mockEmulatorAdapter!.SetMemory(Addresses.PlayersAddresses.PlayersYPos.Address, 0x30);
             dataFetcher!.NextFrame();
-            Assert.AreEqual(new Tuple<uint, uint>(2, 4), dataFetcher!.MainPlayerToGridPos());
+            Assert.AreEqual(ValueTuple.Create(2, 4), dataFetcher!.MainPlayerToGridPos());
         }
 
         [Test]
@@ -555,10 +556,10 @@ namespace Retro_ML_TEST.Game.SuperBomberman3
             mockEmulatorAdapter!.SetMemory(Addresses.PlayersAddresses.PlayersXPos.Address, new byte[] { 0x50, 0x40, 0x10, 0x70, 0x00 });
             dataFetcher!.NextFrame();
             double[] tab = new double[] { (0x40 - 0x50) / (double)(0xD0 - 0x10), (0x10 - 0x50) / (double)(0xD0 - 0x10), (0x70 - 0x50) / (double)(0xD0 - 0x10) };
-            var tab2 = To2DArray(tab, 3, 1);
+            var tab2 = MathUtils.To2DArray(tab, 3, 1);
             Assert.AreEqual(tab2[0, 0], dataFetcher!.GetEnemiesXDistanceToThePlayer()[0, 0], 0.0000001);
-            Assert.AreEqual(tab2[1, 0], dataFetcher!.GetEnemiesXDistanceToThePlayer()[1, 0], 0.0000001);
-            Assert.AreEqual(tab2[2, 0], dataFetcher!.GetEnemiesXDistanceToThePlayer()[2, 0], 0.0000001);
+            Assert.AreEqual(tab2[1, 0], dataFetcher!.GetEnemiesXDistanceToThePlayer()[0, 1], 0.0000001);
+            Assert.AreEqual(tab2[2, 0], dataFetcher!.GetEnemiesXDistanceToThePlayer()[0, 2], 0.0000001);
         }
 
         [Test]
@@ -567,10 +568,10 @@ namespace Retro_ML_TEST.Game.SuperBomberman3
             mockEmulatorAdapter!.SetMemory(Addresses.PlayersAddresses.PlayersYPos.Address, new byte[] { 0x50, 0x40, 0x10, 0x70, 0x00 });
             dataFetcher!.NextFrame();
             double[] tab = new double[] { (0x40 - 0x50) / (double)(0xB0 - 0x10), (0x10 - 0x50) / (double)(0xB0 - 0x10), (0x70 - 0x50) / (double)(0xB0 - 0x10) };
-            var tab2 = To2DArray(tab, 3, 1);
+            var tab2 = MathUtils.To2DArray(tab, 3, 1);
             Assert.AreEqual(tab2[0, 0], dataFetcher!.GetEnemiesYDistanceToThePlayer()[0, 0], 0.0000001);
-            Assert.AreEqual(tab2[1, 0], dataFetcher!.GetEnemiesYDistanceToThePlayer()[1, 0], 0.0000001);
-            Assert.AreEqual(tab2[2, 0], dataFetcher!.GetEnemiesYDistanceToThePlayer()[2, 0], 0.0000001);
+            Assert.AreEqual(tab2[1, 0], dataFetcher!.GetEnemiesYDistanceToThePlayer()[0, 1], 0.0000001);
+            Assert.AreEqual(tab2[2, 0], dataFetcher!.GetEnemiesYDistanceToThePlayer()[0, 2], 0.0000001);
         }
 
         [Test]
@@ -629,21 +630,6 @@ namespace Retro_ML_TEST.Game.SuperBomberman3
         public void FreeBombIndex()
         {
             Assert.DoesNotThrow(() => dataFetcher!.FreeBombIndex(0));
-        }
-
-        private static T[,] To2DArray<T>(T[] input, int height, int width)
-        {
-            T[,] output = new T[height, width];
-
-            for (int i = 0; i < height; i++)
-            {
-                for (int j = 0; j < width; j++)
-                {
-                    output[i, j] = input[i * width + j];
-                }
-            }
-
-            return output;
         }
     }
 }

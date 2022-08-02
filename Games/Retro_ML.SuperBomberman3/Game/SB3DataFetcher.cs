@@ -120,8 +120,8 @@ namespace Retro_ML.SuperBomberman3.Game
         public double GetBombsTimerNormalized(byte timer) => 1.0 - (timer / (double) MAX_BOMB_TIMER);
         public byte GetMainPlayerBombsPlanted() => Read(PlayersAddresses.PlayersBombsPlantedCount)[0];
         public double GetMainPlayerBombsPlantedNormalized() => GetMainPlayerBombsPlanted() / (double)MAX_BOMB;
-        public double GetClosestPowerupToMainPlayerXPosNormalized() => GetClosestPowerUp(playableTilesCache).Item1;
-        public double GetClosestPowerupToMainPlayerYPosNormalized() => GetClosestPowerUp(playableTilesCache).Item2;
+        public double GetClosestPowerupToMainPlayerXPosNormalized() => GetClosestPowerUp(playableTilesCache).x;
+        public double GetClosestPowerupToMainPlayerYPosNormalized() => GetClosestPowerUp(playableTilesCache).y;
         public byte GetMainPlayerExtraBombPowerUpLevel() => Read(PowerupsAddresses.ExtraBomb)[0];
         public byte GetMainPlayerExplosionExpanderPowerUpLevel() => Read(PowerupsAddresses.ExplosionExpander)[0];
         public byte GetMainPlayerAcceleratorPowerUpLevel() => Read(PowerupsAddresses.Accelerator)[0];
