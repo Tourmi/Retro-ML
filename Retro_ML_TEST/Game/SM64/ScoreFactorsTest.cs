@@ -25,10 +25,10 @@ internal class ScoreFactorsTest
     [Test]
     public void TimeTakenScoreFactor()
     {
-        var sf = new TimeTakenScoreFactor() { ScoreMultiplier = -9, MaximumTrainingTime = 101 }.Clone();
+        var sf = new TimeTakenScoreFactor() { ScoreMultiplier = -9, MaximumTrainingTime = 12 }.Clone();
         Assert.IsAssignableFrom<TimeTakenScoreFactor>(sf);
 
-        for (int i = 0; i < 60.0 * 101 - 1; i++)
+        for (int i = 0; i < 60.0 * 12 - 1; i++)
         {
             df!.NextFrame();
             sf.Update(df);
@@ -39,9 +39,9 @@ internal class ScoreFactorsTest
         sf.Update(df);
         Assert.IsTrue(sf.ShouldStop);
         sf.LevelDone();
-        Assert.AreEqual(-9 * 101, sf.GetFinalScore(), 0.00001);
+        Assert.AreEqual(-9 * 12, sf.GetFinalScore(), 0.00001);
 
-        for (int i = 0; i < 60.0 * 101 - 1; i++)
+        for (int i = 0; i < 60.0 * 12 - 1; i++)
         {
             df!.NextFrame();
             sf.Update(df);
@@ -52,7 +52,7 @@ internal class ScoreFactorsTest
         sf.Update(df);
         Assert.IsTrue(sf.ShouldStop);
         sf.LevelDone();
-        Assert.AreEqual(-9 * 101 * 2, sf.GetFinalScore(), 0.00001);
+        Assert.AreEqual(-9 * 12 * 2, sf.GetFinalScore(), 0.00001);
     }
 
     [Test]
