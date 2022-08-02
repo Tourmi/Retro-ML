@@ -20,11 +20,9 @@ internal class PokemonEvaluator : DefaultEvaluator
     private int selectedMove;
     private PokemonDataFetcher df;
     private const int MAX_POKEMON_ID = 191;
-    private Random random;
 
     public PokemonEvaluator(ApplicationConfig appConfig, IBlackBox<double> phenome, IEnumerable<string> saveStates, IEmulatorAdapter emulator) : base(appConfig, phenome, saveStates, emulator)
     {
-        random = new Random();
         movesScores = new List<double>();
         df = (PokemonDataFetcher)dataFetcher;
     }
@@ -76,8 +74,6 @@ internal class PokemonEvaluator : DefaultEvaluator
         {
             return;
         }
-
-
         //Woke up/Freed from wrap
         while (df.GetMoveCursorIndex() == 0)
         {
@@ -201,7 +197,7 @@ internal class PokemonEvaluator : DefaultEvaluator
         byte randID;
         do
         {
-            randID = (byte)random.Next(1, MAX_POKEMON_ID);
+            randID = (byte)Random.Shared.Next(1, MAX_POKEMON_ID);
         } while (missingNO.Contains(randID));
 
         return randID;

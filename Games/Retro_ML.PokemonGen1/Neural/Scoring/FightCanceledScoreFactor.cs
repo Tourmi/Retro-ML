@@ -18,21 +18,9 @@ internal class FightCanceledScoreFactor : IScoreFactor
     {
     };
 
-    public object this[string fieldName]
-    {
-        get
-        {
-            return fieldName switch
-            {
-                _ => 0,
-            };
-        }
-        set
-        {
-            switch (fieldName)
-            {
-            }
-        }
+    public object this[string fieldName] { 
+        get => 0; 
+        set { } 
     }
 
     public bool ShouldStop => shouldStop;
@@ -43,9 +31,9 @@ internal class FightCanceledScoreFactor : IScoreFactor
 
     public string Tooltip => "Reward applied whenever the fight is cancelled(ex: teleport)";
 
-    public bool CanBeDisabled => true;
+    public bool CanBeDisabled => false;
 
-    public bool IsDisabled { get; set; }
+    public bool IsDisabled { get => false; set { } }
 
     public double GetFinalScore() => currScore;
 

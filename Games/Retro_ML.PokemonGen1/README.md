@@ -1,7 +1,9 @@
 ﻿# Pokemon Red/Blue/Yellow Plugin
 Plugin by Voltage
 -------
-Training AIs that learn how to win fights in Pokemon
+Training AIs that learn how to win fights in Pokemon Red/Blue/Yellow
+
+Note: The prepared savestates are only for Pokemon Yellow, not Red/Blue
 
 ### Special Thanks
 * [Data Crystal](https://datacrystal.romhacking.net/wiki/Pok%C3%A9mon_Red/Blue:RAM_map): Reference for in-game memory addresses.
@@ -18,8 +20,6 @@ Training AIs that learn how to win fights in Pokemon
 
 ### Objectives
 Note that for objectives, the term "Reward" also refers to negative rewards, or punishments.
-Turning off an objective also turns off its stop condition.
-
 * **Won Fight**
     * Reward applied when the AI wins a fight.
     * Should be a positive number.
@@ -27,7 +27,7 @@ Turning off an objective also turns off its stop condition.
     * Reward applied when the AI loses a fight.
     * Should be a negative number.
 * **Fight Cancelled**
-    * Reward the AI/enemy uses a move that cancels the fight(ex: Teleport, Whirlwind, Roar, etc.).
+    * Reward applied when the AI/enemy uses a move that cancels the fight(ex: Teleport, Whirlwind, Roar, etc.).
     * Should be a negative number if we want the AI to avoid to force the AI to fight or to stop the enemy pokemon from leaving the fight.
 
 ### Neural Configuration
