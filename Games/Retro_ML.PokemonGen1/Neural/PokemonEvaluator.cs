@@ -77,9 +77,15 @@ internal class PokemonEvaluator : DefaultEvaluator
             return;
         }
 
+
         //Woke up/Freed from wrap
         while (df.GetMoveCursorIndex() == 0)
         {
+            if (df.LostFight() || df.WonFight())
+            {
+                return;
+            }
+
             PressB(15, true);
             emulator.NextFrames(15, false);
 
