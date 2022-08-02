@@ -4,8 +4,8 @@ Plugin by Voltage
 Training AIs that learn how to win fights in Pokemon
 
 ### Special Thanks
-* [Data Crystal] (https://datacrystal.romhacking.net/wiki/Pok%C3%A9mon_Red/Blue:RAM_map & https://datacrystal.romhacking.net/wiki/Pok%C3%A9mon_Yellow:RAM_map) : Reference for in-game memory addresses.
-* [pokered contributors] (https://github.com/pret/pokered)
+* [Data Crystal](https://datacrystal.romhacking.net/wiki/Pok%C3%A9mon_Red/Blue:RAM_map): Reference for in-game memory addresses.
+* [pokered contributors](https://github.com/pret/pokered): For the Pokemon disassembly 
 
 ## Configuration
 
