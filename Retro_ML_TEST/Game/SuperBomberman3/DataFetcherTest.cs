@@ -205,11 +205,11 @@ namespace Retro_ML_TEST.Game.SuperBomberman3
             mockEmulatorAdapter!.SetMemory(Addresses.PlayersAddresses.PlayersXPos.Address, new byte[] { 0x10, 0x00, 0x00, 0x00, 0x00 });
             mockEmulatorAdapter!.SetMemory(Addresses.PlayersAddresses.PlayersYPos.Address, new byte[] { 0x10, 0x00, 0x00, 0x00, 0x00 });
             dataFetcher!.NextFrame();
-            Assert.AreEqual(ValueTuple.Create(0.0, 0x10 / (double)(0xB0 - 0x10)), dataFetcher!.GetClosestPowerUp(powerups2d));
+            Assert.AreEqual((0.0, 0x10 / (double)(0xB0 - 0x10)), dataFetcher!.GetClosestPowerUp(powerups2d));
             mockEmulatorAdapter!.SetMemory(Addresses.PlayersAddresses.PlayersXPos.Address, new byte[] { 0xA0, 0x00, 0x00, 0x00, 0x00 });
             mockEmulatorAdapter!.SetMemory(Addresses.PlayersAddresses.PlayersYPos.Address, new byte[] { 0x10, 0x00, 0x00, 0x00, 0x00 });
             dataFetcher!.NextFrame();
-            Assert.AreEqual(ValueTuple.Create(0.25, 0.0), dataFetcher!.GetClosestPowerUp(powerups2d));
+            Assert.AreEqual((0.25, 0.0), dataFetcher!.GetClosestPowerUp(powerups2d));
             byte[] new_powerups = new byte[] { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
                             0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
                             0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
@@ -222,7 +222,7 @@ namespace Retro_ML_TEST.Game.SuperBomberman3
                             0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
                             0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 };
             byte[,] new_powerups2d = MathUtils.To2DArray(new_powerups, 11, 13);
-            Assert.AreEqual(ValueTuple.Create(1.0, 1.0), dataFetcher!.GetClosestPowerUp(new_powerups2d));
+            Assert.AreEqual((1.0, 1.0), dataFetcher!.GetClosestPowerUp(new_powerups2d));
         }
 
         [Test]
@@ -533,8 +533,8 @@ namespace Retro_ML_TEST.Game.SuperBomberman3
         [Test]
         public void BombToGridPos()
         {
-            Assert.AreEqual(ValueTuple.Create(0,0), dataFetcher!.BombToGridPos(17));
-            Assert.AreEqual(ValueTuple.Create(7, 11), dataFetcher!.BombToGridPos(140));
+            Assert.AreEqual((0,0), dataFetcher!.BombToGridPos(17));
+            Assert.AreEqual((7, 11), dataFetcher!.BombToGridPos(140));
         }
 
         [Test]
@@ -543,11 +543,11 @@ namespace Retro_ML_TEST.Game.SuperBomberman3
             mockEmulatorAdapter!.SetMemory(Addresses.PlayersAddresses.PlayersXPos.Address, 0x10);
             mockEmulatorAdapter!.SetMemory(Addresses.PlayersAddresses.PlayersYPos.Address, 0x10);
             dataFetcher!.NextFrame();
-            Assert.AreEqual(ValueTuple.Create(0, 0), dataFetcher!.MainPlayerToGridPos());
+            Assert.AreEqual((0, 0), dataFetcher!.MainPlayerToGridPos());
             mockEmulatorAdapter!.SetMemory(Addresses.PlayersAddresses.PlayersXPos.Address, 0x50);
             mockEmulatorAdapter!.SetMemory(Addresses.PlayersAddresses.PlayersYPos.Address, 0x30);
             dataFetcher!.NextFrame();
-            Assert.AreEqual(ValueTuple.Create(2, 4), dataFetcher!.MainPlayerToGridPos());
+            Assert.AreEqual((2, 4), dataFetcher!.MainPlayerToGridPos());
         }
 
         [Test]
