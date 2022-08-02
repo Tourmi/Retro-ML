@@ -3,7 +3,7 @@ Plugin by Jaewongtongsoup
 -------
 Training AIs to beat Super Bomberman 3 on SNES
 
-To be noted that this plugin is compatible with the european version of the rom as I wasnt able to find a good US version. The compatibility is not assured with other rom versions.
+To be noted that this plugin is compatible with the PAL version of the game. The compatibility is not assured with other rom versions.
 
 Right now, the plugin only supports battle mode (there is a single player campaign mode) on stages 1-2-5-8-9. We uses 4 players and 2 minutes timers with other default options.
 
@@ -28,14 +28,11 @@ Right now, the plugin only supports battle mode (there is a single player campai
 * **Internal Clock Length**
   * The total amount of nodes the internal clock has.
   * The total time it takes for the clock to do a full cycle is equal to `2^Clock Length * Tick Length` frames.
-* **Frame Skip**
-  * Amount of frames to skip for every AI evaluation
-
 ### Objectives
 
 * **Bomb**
   * Points to attribute when the AI destroy walls or eliminate enemies with its bomb usage. These points are rewarded at the end of the round, it the AI dies or wins.
-  * The AI will be rewarded for every walls it destroys and every enemy it kills eliminates.
+  * The AI will be rewarded for every walls it destroys and every enemy it kills.
 * **End Round**
   * Points to attribute depending on the outcome of a round. Also influenced by a different multiplier for every outcome (Win, Lose, Draw)
 * **Idle**

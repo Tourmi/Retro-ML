@@ -16,7 +16,7 @@ namespace Retro_ML.SuperBomberMan3.Neural.Scoring
 
         public FieldInfo[] Fields => new FieldInfo[]
         {
-            new DoubleFieldInfo(nameof(MaxIdleFrames), "Max idle frames", double.MinValue, double.MaxValue, 1, "Maximum amount of frames where the player can stay idle"),
+            new IntegerFieldInfo(nameof(MaxIdleFrames), "Max idle frames", 0, int.MaxValue, 1, "Maximum amount of frames where the player can stay idle"),
         };
 
         public object this[string fieldName]
@@ -33,7 +33,7 @@ namespace Retro_ML.SuperBomberMan3.Neural.Scoring
             {
                 switch (fieldName)
                 {
-                    case nameof(MaxIdleFrames): MaxIdleFrames = (double)value; break;
+                    case nameof(MaxIdleFrames): MaxIdleFrames = (int)value; break;
                 }
             }
         }
@@ -41,7 +41,7 @@ namespace Retro_ML.SuperBomberMan3.Neural.Scoring
         public bool ShouldStop => shouldStop;
         public double ScoreMultiplier { get; set; }
 
-        public double MaxIdleFrames { get; set; } = 600;
+        public int MaxIdleFrames { get; set; } = 600;
 
         public string Name => "Max idle frames";
 

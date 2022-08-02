@@ -135,12 +135,12 @@ namespace Retro_ML.SuperBomberman3.Game
         public bool IsLouieColourGreen() => IsMainPlayerOnLouie() ? ToUnsignedInteger(Read(PowerupsAddresses.MountedLouieColours)) == 0x1BE00AC : false;
         public bool IsLouieColourBlue() => IsMainPlayerOnLouie() ? ToUnsignedInteger(Read(PowerupsAddresses.MountedLouieColours)) == 0x7E805940 : false;
         public double GetLouieColour() => IsLouieColourYellow() ? 0.2 : IsLouieColourBrown() ? 0.4 : IsLouieColourPink() ? 0.6 : IsLouieColourGreen() ? 0.8 : IsLouieColourBlue() ? 1.0 : 0;
-        public bool GetMainPlayerKickUpgradeState() => (ReadSingle(PowerupsAddresses.BombermanUpgrade) & 0x02) != 0;
-        public bool GetMainPlayerGloveUpgradeState() => (ReadSingle(PowerupsAddresses.BombermanUpgrade) & 0x04) != 0;
-        public bool GetMainPlayerSlimeBombUpgradeState() => (ReadSingle(PowerupsAddresses.BombermanUpgrade) & 0x20) != 0;
-        public bool GetMainPlayerPowerBombUpgradeState() => (ReadSingle(PowerupsAddresses.BombermanUpgrade) & 0x40) != 0;
+        public bool GetMainPlayerKickUpgradeState() => (ReadSingle(PowerupsAddresses.BombermanUpgrade) & 0b0000_0010) != 0;
+        public bool GetMainPlayerGloveUpgradeState() => (ReadSingle(PowerupsAddresses.BombermanUpgrade) & 0b0000_0100) != 0;
+        public bool GetMainPlayerSlimeBombUpgradeState() => (ReadSingle(PowerupsAddresses.BombermanUpgrade) & 0b0010_0000) != 0;
+        public bool GetMainPlayerPowerBombUpgradeState() => (ReadSingle(PowerupsAddresses.BombermanUpgrade) & 0b0100_0000) != 0;
         public byte[] GetPlayersDeathTimer() => Read(PlayersAddresses.PlayersDeathTimer);
-        public int GetNumberOfPlayersAlive() => playersAliveStatus.Where(c => c).Count();
+        public int GetNumberOfPlayersAlive() => playersAliveStatus.Count(isAlive => isAlive);
         public bool IsMainPlayerDead() => playersAliveStatus[0] == false;
         public bool IsPlayerDead(int index) => playersAliveStatus[index] == false;
         //By conventional means != draw
@@ -154,12 +154,12 @@ namespace Retro_ML.SuperBomberman3.Game
         /// <summary>
         /// Convert Bomb coordinate varying from 17 to 189 to 2d grid coordinate varying from 0 to 13 (horizontally) and from 0 to 11 (vertically).
         /// </summary>
-        public Tuple<uint, uint> BombToGridPos(uint coord) => new Tuple<uint, uint>(((coord - 1) / (DESIRED_LEVEL_WIDTH + 3)) - 1, (coord % (DESIRED_LEVEL_WIDTH + 3)) - 1);
+        public (uint x, uint y) BombToGridPos(uint coord) => (((coord - 1) / (DESIRED_LEVEL_WIDTH + 3)) - 1, (coord % (DESIRED_LEVEL_WIDTH + 3)) - 1);
 
         /// <summary>
         /// Convert the player coordinate to 2d grid coordinate.
         /// </summary>
-        public Tuple<uint, uint> MainPlayerToGridPos() => new Tuple<uint, uint>((GetPlayersYPos()[0] - MIN_Y_POS) / TILES_HEIGHT, (GetPlayersXPos()[0] - MIN_X_POS) / TILES_WIDTH);
+        public (uint x, uint y) MainPlayerToGridPos() => ((GetPlayersYPos()[0] - MIN_Y_POS) / TILES_HEIGHT, (GetPlayersXPos()[0] - MIN_X_POS) / TILES_WIDTH);
 
         /// <summary>
         /// The tile map that is read in memory is of size 176 (11 x 16 tiles). However, the playable area in the game is only 11 x 13.
@@ -207,7 +207,7 @@ namespace Retro_ML.SuperBomberman3.Game
         /// </summary>
         public double[,] GetEnemiesXDistanceToThePlayer()
         {
-            double[,] result = new double[NUM_ENEMIES, 1];
+            double[,] result = new double[1, NUM_ENEMIES];
 
             double playerXPosInLevel = GetMainPlayerXPositionNormalized();
             byte[] enemyXPos = GetPlayersXPos();
@@ -219,12 +219,12 @@ namespace Retro_ML.SuperBomberman3.Game
                 //If the enemy is alive
                 if (!IsPlayerDead(enemy + 1))
                 {
-                    result[enemy, 0] = enemyXPosInLevel - playerXPosInLevel;
+                    result[0, enemy] = enemyXPosInLevel - playerXPosInLevel;
                 }
                 //If the enemy is dead
-                else if (IsPlayerDead(enemy + 1))
+                else
                 {
-                    result[enemy, 0] = 0.0;
+                    result[0, enemy] = 0.0;
                 }
             }
 
@@ -236,7 +236,7 @@ namespace Retro_ML.SuperBomberman3.Game
         /// </summary>
         public double[,] GetEnemiesYDistanceToThePlayer()
         {
-            double[,] result = new double[NUM_ENEMIES, 1];
+            double[,] result = new double[1, NUM_ENEMIES];
 
             double playerYPosInLevel = GetMainPlayerYPositionNormalized();
             byte[] enemyYPos = GetPlayersYPos();
@@ -248,12 +248,12 @@ namespace Retro_ML.SuperBomberman3.Game
                 //If the enemy is alive
                 if (!IsPlayerDead(enemy + 1))
                 {
-                    result[enemy, 0] = enemyYPosInLevel - playerYPosInLevel;
+                    result[0, enemy] = enemyYPosInLevel - playerYPosInLevel;
                 }
                 //If the enemy is dead
-                else if (IsPlayerDead(enemy + 1))
+                else
                 {
-                    result[enemy, 0] = 0.0;
+                    result[0, enemy] = 0.0;
                 }
             }
 
@@ -320,7 +320,7 @@ namespace Retro_ML.SuperBomberman3.Game
         /// Values are normalized. If there is no powerup present, the function will return a pair with values = (1.0, 1.0)
         /// Values are already normalized.
         /// </summary>
-        public Tuple<double, double> GetClosestPowerUp(byte[,] tilesCache)
+        public (double x, double y) GetClosestPowerUp(byte[,] tilesCache)
         {
             var playerXPos = GetPlayersXPos()[0];
             var playerYPos = GetPlayersYPos()[0];
@@ -351,7 +351,7 @@ namespace Retro_ML.SuperBomberman3.Game
                 }
             }
 
-            return new Tuple<double, double>(closestX, closestY);
+            return (closestX, closestY);
         }
 
         /// <summary>
@@ -372,7 +372,7 @@ namespace Retro_ML.SuperBomberman3.Game
                         //Track the bomb.
                         int bombIndex = GetBombIndex();
 
-                        //If there was a free bomb index to assign (it should always be the case but its pretty much impossible to test what happens when there is more than 15+ bombs on the map...).
+                        //If there was a free bomb index to assign
                         if (bombIndex != -1)
                         {
                             bool isExpired = false;
@@ -385,7 +385,7 @@ namespace Retro_ML.SuperBomberman3.Game
                             Bomb bomb = new(bombIndex, isExpired, yTilePos, xTilePos, setToExpire, setToKill, setToDestroy);
                             bombsPlanted[bombIndex] = bomb;
 
-                            //If the bomb position is equal to the main player position, it means that he planted the bomb.
+                            //If the bomb position is equal to the main player position, assume that he planted the bomb.
                             if (BombToGridPos(bombsPos[bombIndex]).Equals(mainPlayerPos))
                             {
                                 bomb.IsPlantedByMainPlayer = true;
@@ -413,8 +413,8 @@ namespace Retro_ML.SuperBomberman3.Game
         }
 
         /// <summary>
-        /// Track Bomb exploded. We want to know if a bomb detonated by the main player killed an enemy of a (some) destructible walls.
-        /// Right now, the function doesnt check which bomb exactly killed an ennemy, so if the main player and enemy set a bomb at the exact same frame,
+        /// Track Bomb exploded. We want to know if a bomb detonated by the main player killed an enemy and/or destructible walls.
+        /// Right now, the function doesn't check which bomb exactly killed an enemy, so if the main player and enemy set a bomb at the exact same frame,
         /// and it killed an enemy, it will reward the kill to the main player. 
         /// This function needs to be called for every frames.
         /// </summary>
@@ -450,22 +450,7 @@ namespace Retro_ML.SuperBomberman3.Game
         /// <summary>
         /// Check if the bomb is already tracked and havent exploded yet.
         /// </summary>
-        public bool IsBombAlreadyTracked(uint y, uint x)
-        {
-            bool result = false;
-
-            foreach (Bomb bomb in bombsPlanted)
-            {
-                //Check if a bomb is already planted at the position. There cant be 2 bombs on the same tile which means that there cant be 2 bombs tracked at the same position.
-                if (bomb.XTilePos == x && bomb.YTilePos == y && bomb.IsExpired == false)
-                {
-                    result = true;
-                    break;
-                }
-            }
-
-            return result;
-        }
+        public bool IsBombAlreadyTracked(uint y, uint x) => bombsPlanted.Any(b => b.XTilePos == x && b.YTilePos == y && !b.IsExpired);
 
         /// <summary>
         /// Returns first free index in the bomb Queue. Needed to associate our bombs objects with an index in the game FIFO bomb queue.
@@ -579,24 +564,24 @@ namespace Retro_ML.SuperBomberman3.Game
         private void InitFrameCache()
         {
             List<AddressData> toRead = new()
-        {
-            GameAddresses.DynamicTiles,
-            GameAddresses.BombsPositions,
-            GameAddresses.BombsTimers,
-            GameAddresses.DestructibleTilesRemaining,
-            GameAddresses.GameSecondsTimer,
-            GameAddresses.GameMinutesTimer,
-            PlayersAddresses.PlayersXPos,
-            PlayersAddresses.PlayersYPos,
-            PlayersAddresses.PlayersBombsPlantedCount,
-            PlayersAddresses.PlayersDeathTimer,
-            PowerupsAddresses.ExplosionExpander,
-            PowerupsAddresses.Accelerator,
-            PowerupsAddresses.ExtraBomb,
-            PowerupsAddresses.IsOnLouie,
-            PowerupsAddresses.MountedLouieColours,
-            PowerupsAddresses.BombermanUpgrade,
-        };
+            {
+                GameAddresses.DynamicTiles,
+                GameAddresses.BombsPositions,
+                GameAddresses.BombsTimers,
+                GameAddresses.DestructibleTilesRemaining,
+                GameAddresses.GameSecondsTimer,
+                GameAddresses.GameMinutesTimer,
+                PlayersAddresses.PlayersXPos,
+                PlayersAddresses.PlayersYPos,
+                PlayersAddresses.PlayersBombsPlantedCount,
+                PlayersAddresses.PlayersDeathTimer,
+                PowerupsAddresses.ExplosionExpander,
+                PowerupsAddresses.Accelerator,
+                PowerupsAddresses.ExtraBomb,
+                PowerupsAddresses.IsOnLouie,
+                PowerupsAddresses.MountedLouieColours,
+                PowerupsAddresses.BombermanUpgrade,
+            };
             _ = Read(toRead.ToArray());
         }
 

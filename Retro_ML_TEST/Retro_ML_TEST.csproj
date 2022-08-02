@@ -28,7 +28,7 @@
     <ProjectReference Include="..\Games\Retro_ML.Tetris\Retro_ML.Tetris.csproj" />
     <ProjectReference Include="..\Games\Retro_ML.SuperMarioBros\Retro_ML.SuperMarioBros.csproj" />
     <ProjectReference Include="..\Games\Retro_ML.Metroid\Retro_ML.Metroid.csproj" />
-	<ProjectReference Include="..\Games\Retro_ML.SuperBomberman3\Retro_ML.SuperBomberman3.csproj" />
+    <ProjectReference Include="..\Games\Retro_ML.SuperBomberman3\Retro_ML.SuperBomberman3.csproj" />
     <ProjectReference Include="..\Retro_ML\Retro_ML.csproj" />
   </ItemGroup>
 
