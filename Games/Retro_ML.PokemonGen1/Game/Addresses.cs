@@ -23,12 +23,14 @@ internal static class Addresses
             Length = length;
             CacheDuration = cacheDuration;
             IsBigEndian = isBigEndian;
+            HasOffset = hasOffset;
         }
 
         public uint Address;
         public uint Length;
         public CacheDurations CacheDuration;
         public bool IsBigEndian;
+        public bool HasOffset;
     }
 
     /// <summary>

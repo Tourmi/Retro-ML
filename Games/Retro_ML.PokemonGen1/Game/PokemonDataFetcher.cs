@@ -44,8 +44,6 @@ internal class PokemonDataFetcher : IDataFetcher
     public void NextFrame()
     {
         turnCache.Clear();
-
-        InitFrameCache();
     }
 
     /// <summary>
@@ -171,26 +169,6 @@ internal class PokemonDataFetcher : IDataFetcher
     }
 
     /// <summary>
-    /// Reads into multiple groups of bytes according to the given offset and total byte sizes.
-    /// </summary>
-    /// <param name="addressData"></param>
-    /// <param name="offset"></param>
-    /// <param name="total"></param>
-    /// <returns></returns>
-    private IEnumerable<byte[]> ReadMultiple(AddressData addressData, AddressData offset, AddressData total)
-    {
-        var toRead = GetAddressesToRead(addressData, offset, total);
-        var result = Read(toRead.ToArray());
-        var bytesPerItem = addressData.Length;
-        for (long i = 0; i < result.Length; i += bytesPerItem)
-        {
-            var bytes = new byte[bytesPerItem];
-            Array.Copy(result, i, bytes, 0, bytesPerItem);
-            yield return bytes;
-        }
-    }
-
-    /// <summary>
     /// Returns the addresses to read when reading from a RAM Table
     /// </summary>
     /// <param name="addressData"></param>
@@ -271,16 +249,6 @@ internal class PokemonDataFetcher : IDataFetcher
         };
     }
 
-    private void InitFrameCache()
-    {
-        List<AddressData> toRead = new()
-        {
-
-        };
-
-        _ = Read(toRead.ToArray());
-    }
-
     private AddressData GetCorrectedAddress(AddressData address) => GetCorrectedAddresses(address)[0];
 
     private AddressData[] GetCorrectedAddresses(params AddressData[] addresses)
@@ -290,7 +258,9 @@ internal class PokemonDataFetcher : IDataFetcher
             AddressData[] newAddresses = new AddressData[addresses.Length];
             for (int i = 0; i < addresses.Length; i++)
             {
-                newAddresses[i] = new AddressData(addresses[i].Address - 1, addresses[i].Length, addresses[i].CacheDuration, addresses[i].IsBigEndian);
+                newAddresses[i] = addresses[i].HasOffset
+                    ? new AddressData(addresses[i].Address - 1, addresses[i].Length, addresses[i].CacheDuration, addresses[i].IsBigEndian)
+                    : addresses[i];
             }
             addresses = newAddresses;
         }
