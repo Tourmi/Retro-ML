@@ -2,6 +2,7 @@
 using Retro_ML.Emulator;
 using Retro_ML.Game;
 using Retro_ML.Neural.Scoring;
+using Retro_ML.Utils;
 using Retro_ML.Utils.SharpNeat;
 using SharpNeat.BlackBox;
 
@@ -24,6 +25,7 @@ public class DefaultEvaluator : IEvaluator
     {
         this.appConfig = appConfig;
         gamePluginConfig = appConfig.GamePluginConfig!;
+        VerifyScoreFactors(gamePluginConfig.ScoreFactors);
 
         this.phenome = phenome;
         this.saveStates = saveStates;
@@ -139,5 +141,18 @@ public class DefaultEvaluator : IEvaluator
     {
         emulator.SendInput(outputGetter!.GetControllerInput(phenome.OutputVector));
         emulator.NextFrames(FrameSkip + 1, FrameSkipShouldKeepControllerInputs);
+    }
+
+    protected virtual void VerifyScoreFactors(List<IScoreFactor> scoreFactors)
+    {
+        foreach (var sf in scoreFactors)
+        {
+            var clone = sf.Clone();
+
+            if (sf.GetType() != clone.GetType())
+            {
+                Exceptions.QueueException(new Exception($"Type: {sf.GetType()} did not match type {clone.GetType()} after cloning. The Objective will not work properly"));
+            }
+        }
     }
 }

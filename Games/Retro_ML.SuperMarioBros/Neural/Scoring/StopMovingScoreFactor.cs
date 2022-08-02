@@ -1,7 +1,7 @@
-﻿using Retro_ML.Game;
+﻿using Retro_ML.Configuration.FieldInformation;
+using Retro_ML.Game;
 using Retro_ML.Neural.Scoring;
 using Retro_ML.SuperMarioBros.Game;
-using Retro_ML.Configuration.FieldInformation;
 
 namespace Retro_ML.SuperMarioBros.Neural.Scoring
 {
@@ -19,11 +19,6 @@ namespace Retro_ML.SuperMarioBros.Neural.Scoring
              new IntegerFieldInfo(nameof(MaxImmobileFrames), "Max immobile frames", 1, int.MaxValue, 1),
              new IntegerFieldInfo(nameof(MaxImmobileFramesIfMoved), "Max immobiles frames when moved", 1, int.MaxValue, 1),
          };
-
-        public StopMovingScoreFactor()
-        {
-            ExtraFields = Array.Empty<ExtraField>();
-        }
 
         public object this[string fieldName]
         {
@@ -57,8 +52,6 @@ namespace Retro_ML.SuperMarioBros.Neural.Scoring
         public bool CanBeDisabled => true;
 
         public bool IsDisabled { get; set; }
-
-        public ExtraField[] ExtraFields { get; set; }
 
         public double GetFinalScore() => currScore;
 

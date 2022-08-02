@@ -43,9 +43,10 @@
             /// 0x02 when crouching
             /// 0x04 when jumping
             /// 0x0A when attacking
+            /// 0x0C when using a super attack
             /// 0x0E when hit
             /// 0x14 when staggered
-            /// <code>
+            /// </code>
             /// </summary>
             public static readonly AddressData State = new(0x503, 1);
             /// <summary>
@@ -99,9 +100,10 @@
             /// 0x02 when crouching
             /// 0x04 when jumping
             /// 0x0A when attacking
+            /// 0x0C when using a super attack
             /// 0x0E when hit
             /// 0x14 when staggered
-            /// <code>
+            /// </code>
             /// </summary>
             public static readonly AddressData State = new(0x703, 1);
             /// Player input

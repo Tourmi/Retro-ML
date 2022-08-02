@@ -1,19 +1,12 @@
-﻿using Retro_ML.Game;
+﻿using Retro_ML.Configuration.FieldInformation;
+using Retro_ML.Game;
 using Retro_ML.Neural.Scoring;
 using Retro_ML.Tetris.Game;
-using Retro_ML.Configuration.FieldInformation;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Retro_ML.Tetris.Neural.Scoring
 {
     internal class ColumnHeightScoreFactor : IScoreFactor
     {
-        internal const string HEIGHT_DIFFERENCE = "Height difference with median";
-
         private bool shouldStop = false;
         private double currScore;
         private bool inited;
@@ -26,14 +19,7 @@ namespace Retro_ML.Tetris.Neural.Scoring
              new IntegerFieldInfo(nameof(HeightDifference), "Maximum height difference from median", 1, 17, 1, "The difference between the max and median")
         };
 
-        public ColumnHeightScoreFactor()
-        {
-            prevColumnHeights = new int[10];
-            ExtraFields = new ExtraField[]
-            {
-                new(HEIGHT_DIFFERENCE, 5)
-            };
-        }
+        public ColumnHeightScoreFactor() => prevColumnHeights = new int[10];
 
         public object this[string fieldName]
         {
@@ -67,8 +53,6 @@ namespace Retro_ML.Tetris.Neural.Scoring
         public bool ShouldStop => shouldStop;
 
         public double ScoreMultiplier { get; set; }
-
-        public ExtraField[] ExtraFields { get; set; }
 
         public double GetFinalScore() => currScore;
 
@@ -108,7 +92,7 @@ namespace Retro_ML.Tetris.Neural.Scoring
 
         public IScoreFactor Clone()
         {
-            return new ColumnHeightScoreFactor() { IsDisabled = IsDisabled, ScoreMultiplier = ScoreMultiplier, ExtraFields = ExtraFields, HeightDifference = HeightDifference };
+            return new ColumnHeightScoreFactor() { IsDisabled = IsDisabled, ScoreMultiplier = ScoreMultiplier, HeightDifference = HeightDifference };
         }
     }
 }

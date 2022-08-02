@@ -10,122 +10,62 @@
     {
       "$type": "Retro_ML.SuperMarioWorld.Neural.Scoring.DiedScoreFactor, Retro_ML.SuperMarioWorld",
       "scoreMultiplier": -5,
-      "isDisabled": false,
-      "extraFields": []
+      "isDisabled": false
     },
     {
       "$type": "Retro_ML.SuperMarioWorld.Neural.Scoring.DistanceScoreFactor, Retro_ML.SuperMarioWorld",
       "scoreMultiplier": 1.0,
-      "isDisabled": false,
-      "extraFields": [
-        {
-          "name": "East Mult",
-          "value": 1.0
-        },
-        {
-          "name": "West Mult",
-          "value": 0.0
-        },
-        {
-          "name": "Up Mult",
-          "value": 0.05
-        },
-        {
-          "name": "Down Mult",
-          "value": 0.0
-        }
-      ]
+      "isDisabled": false
     },
     {
       "$type": "Retro_ML.SuperMarioWorld.Neural.Scoring.StopMovingScoreFactor, Retro_ML.SuperMarioWorld",
       "scoreMultiplier": -5,
-      "isDisabled": false,
-      "extraFields": []
+      "isDisabled": false
     },
     {
       "$type": "Retro_ML.SuperMarioWorld.Neural.Scoring.TimeTakenScoreFactor, Retro_ML.SuperMarioWorld",
       "scoreMultiplier": -10.0,
-      "isDisabled": false,
-      "extraFields": []
+      "isDisabled": false
     },
     {
       "$type": "Retro_ML.SuperMarioWorld.Neural.Scoring.SpeedScoreFactor, Retro_ML.SuperMarioWorld",
       "scoreMultiplier": 0.025,
-      "isDisabled": false,
-      "extraFields": [
-        {
-          "name": "Horizontal Mult",
-          "value": 1.0
-        },
-        {
-          "name": "Vertical Mult",
-          "value": 0.0
-        }
-      ]
+      "isDisabled": false
     },
     {
       "$type": "Retro_ML.SuperMarioWorld.Neural.Scoring.WonLevelScoreFactor, Retro_ML.SuperMarioWorld",
       "scoreMultiplier": 100.0,
-      "isDisabled": false,
-      "extraFields": [
-        {
-          "name": "Goal Mult",
-          "value": 1.0
-        },
-        {
-          "name": "Key Mult",
-          "value": 1.0
-        }
-      ]
+      "isDisabled": false
     },
     {
       "$type": "Retro_ML.SuperMarioWorld.Neural.Scoring.CoinsScoreFactor, Retro_ML.SuperMarioWorld",
       "scoreMultiplier": 1.0,
-      "isDisabled": true,
-      "extraFields": []
+      "isDisabled": true
     },
     {
       "$type": "Retro_ML.SuperMarioWorld.Neural.Scoring.YoshiCoinsScoreFactor, Retro_ML.SuperMarioWorld",
       "scoreMultiplier": 2.0,
-      "isDisabled": true,
-      "extraFields": []
+      "isDisabled": true
     },
     {
       "$type": "Retro_ML.SuperMarioWorld.Neural.Scoring.OneUpsScoreFactor, Retro_ML.SuperMarioWorld",
       "scoreMultiplier": 4.0,
-      "isDisabled": true,
-      "extraFields": []
+      "isDisabled": true
     },
     {
       "$type": "Retro_ML.SuperMarioWorld.Neural.Scoring.HighScoreScoreFactor, Retro_ML.SuperMarioWorld",
       "scoreMultiplier": 0.1,
-      "isDisabled": true,
-      "extraFields": []
+      "isDisabled": true
     },
     {
       "$type": "Retro_ML.SuperMarioWorld.Neural.Scoring.PowerUpScoreFactor, Retro_ML.SuperMarioWorld",
       "scoreMultiplier": 4.0,
-      "isDisabled": true,
-      "extraFields": [
-        {
-          "name": "Mushroom Mult",
-          "value": 1.0
-        },
-        {
-          "name": "Cape Mult",
-          "value": 2.0
-        },
-        {
-          "name": "Flower Mult",
-          "value": 2.0
-        }
-      ]
+      "isDisabled": true
     },
     {
       "$type": "Retro_ML.SuperMarioWorld.Neural.Scoring.TakenDamageScoreFactor, Retro_ML.SuperMarioWorld",
       "scoreMultiplier": -1.0,
-      "isDisabled": true,
-      "extraFields": []
+      "isDisabled": true
     }
   ]
 }

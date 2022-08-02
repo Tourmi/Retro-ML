@@ -3,7 +3,7 @@ using Retro_ML.Emulator;
 using Retro_ML.Game;
 using Retro_ML.SuperMarioKart.Configuration;
 using Retro_ML.SuperMarioKart.Game.Data;
-using Retro_ML.Utils;
+using Retro_ML.Utils.Game;
 using static Retro_ML.SuperMarioKart.Game.Addresses;
 
 namespace Retro_ML.SuperMarioKart.Game

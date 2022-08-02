@@ -3,6 +3,9 @@ Plugin by Tourmi
 -------
 Training AIs to progress through Metroid for the NES.
 
+### Special Thanks
+* [DataCrystal](https://datacrystal.romhacking.net/wiki/Metroid:RAM_map) : Most game memory addresses came from this RAM map.
+
 ## Configuration
 
 ### Plugin Configuration

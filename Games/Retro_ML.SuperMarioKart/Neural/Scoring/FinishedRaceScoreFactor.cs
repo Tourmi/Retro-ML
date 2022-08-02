@@ -21,17 +21,11 @@ internal class FinishedRaceScoreFactor : IScoreFactor
     public bool ShouldStop => shouldStop;
 
     public double ScoreMultiplier { get; set; }
-    public ExtraField[] ExtraFields { get; set; }
 
     public FieldInfo[] Fields => new FieldInfo[]
     {
          new DoubleFieldInfo(nameof(RankingMult), "Ranking multiplier", double.MinValue, double.MaxValue, 0.25, "Gives additional points in Grand Prix mode depending on the AI's placing at the end of the race"),
     };
-
-    public FinishedRaceScoreFactor()
-    {
-        ExtraFields = Array.Empty<ExtraField>();
-    }
 
     public object this[string fieldName]
     {
@@ -76,6 +70,6 @@ internal class FinishedRaceScoreFactor : IScoreFactor
 
     public IScoreFactor Clone()
     {
-        return new FinishedRaceScoreFactor() { ScoreMultiplier = ScoreMultiplier, ExtraFields = ExtraFields, RankingMult = RankingMult };
+        return new FinishedRaceScoreFactor() { ScoreMultiplier = ScoreMultiplier, RankingMult = RankingMult };
     }
 }

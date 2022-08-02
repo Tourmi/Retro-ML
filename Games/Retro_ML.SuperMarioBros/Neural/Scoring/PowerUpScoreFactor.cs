@@ -1,16 +1,12 @@
-﻿using Retro_ML.Game;
+﻿using Retro_ML.Configuration.FieldInformation;
+using Retro_ML.Game;
 using Retro_ML.Neural.Scoring;
 using Retro_ML.SuperMarioBros.Game;
-using Retro_ML.Configuration.FieldInformation;
 
 namespace Retro_ML.SuperMarioBros.Neural.Scoring
 {
     internal class PowerUpScoreFactor : IScoreFactor
     {
-        private const string MUSHROOM_MULT = "Mushroom Mult";
-        private const string FLOWER_MULT = "Flower Mult";
-        private const string STAR_MULT = "Star Mult";
-
         private double currScore;
         private byte prevPowerUp;
         private bool inited;
@@ -21,11 +17,6 @@ namespace Retro_ML.SuperMarioBros.Neural.Scoring
              new DoubleFieldInfo(nameof(FlowerMult), "Flower Mult", double.MinValue, double.MaxValue, 0.25),
              new DoubleFieldInfo(nameof(StarMult), "Star Mult", double.MinValue, double.MaxValue, 0.25),
         };
-
-        public PowerUpScoreFactor()
-        {
-            ExtraFields = Array.Empty<ExtraField>();
-        }
 
         public object this[string fieldName]
         {
@@ -65,8 +56,6 @@ namespace Retro_ML.SuperMarioBros.Neural.Scoring
 
         public bool IsDisabled { get; set; }
 
-        public ExtraField[] ExtraFields { get; set; }
-
         public double GetFinalScore() => currScore;
 
         public void Update(IDataFetcher dataFetcher)
@@ -101,9 +90,10 @@ namespace Retro_ML.SuperMarioBros.Neural.Scoring
 
         public IScoreFactor Clone()
         {
-            return new PowerUpScoreFactor() { 
-                IsDisabled = IsDisabled, 
-                ScoreMultiplier = ScoreMultiplier, 
+            return new PowerUpScoreFactor()
+            {
+                IsDisabled = IsDisabled,
+                ScoreMultiplier = ScoreMultiplier,
                 MushroomMult = MushroomMult,
                 FlowerMult = FlowerMult,
                 StarMult = StarMult

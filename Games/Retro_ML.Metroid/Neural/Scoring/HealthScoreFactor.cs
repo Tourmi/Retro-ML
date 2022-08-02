@@ -23,15 +23,11 @@ internal class HealthScoreFactor : IScoreFactor
     public double GainedHealthMultiplier { get; set; } = 1.0;
     public double LostHealthMultiplier { get; set; } = -1.0;
 
-    public ExtraField[] ExtraFields { get; set; }
-
     public FieldInfo[] Fields => new FieldInfo[]
     {
         new DoubleFieldInfo(nameof(LostHealthMultiplier), "Lost Health Multiplier", double.MinValue, double.MaxValue, 1.0, "Multiplier applied on top of regular multiplier. Should be negative."),
         new DoubleFieldInfo(nameof(GainedHealthMultiplier), "Gained Health Multiplier", double.MinValue, double.MaxValue, 1.0, "Multiplier applied on top of regular multiplier. Should be positive.")
     };
-
-    public HealthScoreFactor() => ExtraFields = Array.Empty<ExtraField>();
 
     public object this[string fieldName]
     {

@@ -15,11 +15,6 @@ internal class TimeTakenScoreFactor : IScoreFactor
          new DoubleFieldInfo(nameof(MaximumRaceTime), "Maximum Race Time", 30.0, double.MaxValue, 1.0, "Maximum time the race can take, in seconds")
     };
 
-    public TimeTakenScoreFactor()
-    {
-        ExtraFields = Array.Empty<ExtraField>();
-    }
-
     public object this[string fieldName]
     {
         get
@@ -52,8 +47,6 @@ internal class TimeTakenScoreFactor : IScoreFactor
 
     public bool IsDisabled { get; set; }
 
-    public ExtraField[] ExtraFields { get; set; }
-
     public double GetFinalScore() => currScore;
 
     public void Update(IDataFetcher dataFetcher)
@@ -74,6 +67,6 @@ internal class TimeTakenScoreFactor : IScoreFactor
 
     public IScoreFactor Clone()
     {
-        return new TimeTakenScoreFactor() { IsDisabled = IsDisabled, ScoreMultiplier = ScoreMultiplier, ExtraFields = ExtraFields, MaximumRaceTime = MaximumRaceTime };
+        return new TimeTakenScoreFactor() { IsDisabled = IsDisabled, ScoreMultiplier = ScoreMultiplier, MaximumRaceTime = MaximumRaceTime };
     }
 }

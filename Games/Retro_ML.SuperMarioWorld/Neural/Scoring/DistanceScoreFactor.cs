@@ -7,11 +7,6 @@ namespace Retro_ML.SuperMarioWorld.Neural.Scoring
 {
     internal class DistanceScoreFactor : IScoreFactor
     {
-        private const string EAST_DISTANCE = "East Mult";
-        private const string WEST_DISTANCE = "West Mult";
-        private const string UP_DISTANCE = "Up Mult";
-        private const string DOWN_DISTANCE = "Down Mult";
-
         private double currScore;
         private uint minYPosition = 0;
         private uint maxYPosition = 0;
@@ -27,17 +22,6 @@ namespace Retro_ML.SuperMarioWorld.Neural.Scoring
              new DoubleFieldInfo(nameof(UpDistance), "Up Mult", double.MinValue, double.MaxValue, 0.25, "Multiplier when the AI is moving up"),
              new DoubleFieldInfo(nameof(DownDistance), "Down Mult", double.MinValue, double.MaxValue, 0.25, "Multiplier when the AI is moving down")
         };
-
-        public DistanceScoreFactor()
-        {
-            ExtraFields = new ExtraField[]
-            {
-                new ExtraField(EAST_DISTANCE, 1.0),
-                new ExtraField(WEST_DISTANCE, 0.0),
-                new ExtraField(UP_DISTANCE, 0.5),
-                new ExtraField(DOWN_DISTANCE, 0.25)
-            };
-        }
 
         public object this[string fieldName]
         {
@@ -79,8 +63,6 @@ namespace Retro_ML.SuperMarioWorld.Neural.Scoring
         public bool CanBeDisabled => true;
 
         public bool IsDisabled { get; set; }
-
-        public ExtraField[] ExtraFields { get; set; }
 
         public double GetFinalScore() => currScore;
 
@@ -147,18 +129,14 @@ namespace Retro_ML.SuperMarioWorld.Neural.Scoring
             inited = false;
         }
 
-        public IScoreFactor Clone()
+        public IScoreFactor Clone() => new DistanceScoreFactor()
         {
-            return new DistanceScoreFactor()
-            {
-                IsDisabled = IsDisabled,
-                ScoreMultiplier = ScoreMultiplier,
-                ExtraFields = ExtraFields,
-                EastDistance = EastDistance,
-                WestDistance = WestDistance,
-                DownDistance = DownDistance,
-                UpDistance = UpDistance
-            };
-        }
+            IsDisabled = IsDisabled,
+            ScoreMultiplier = ScoreMultiplier,
+            EastDistance = EastDistance,
+            WestDistance = WestDistance,
+            DownDistance = DownDistance,
+            UpDistance = UpDistance
+        };
     }
 }

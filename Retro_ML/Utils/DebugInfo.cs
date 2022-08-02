@@ -18,7 +18,6 @@ public static class DebugInfo
         public int Priority;
     }
 
-    private static bool isDebug = false;
     private static readonly Mutex mutex = new();
     private static readonly List<DebugInfoEntry> infos = new();
 
@@ -60,11 +59,19 @@ public static class DebugInfo
 
         foreach (var entry in entries.Where(i => categories.Length == 0 || categories.Contains(i.Category)))
         {
-            res += $"{entry.Name.PadLeft(keyMaxLength, ' ')} = {entry.Value}\n";
+            res += GetFormattedEntry(entry, keyMaxLength);
         }
 
         mutex.ReleaseMutex();
         return res;
+    }
+
+    private static string GetFormattedEntry(DebugInfoEntry entry, int leftPad)
+    {
+        leftPad += 3;
+        string left = $"{entry.Name} = ".PadLeft(leftPad, ' ');
+        string right = entry.Value.Replace("\n", "\n" + new String(' ', leftPad));
+        return left + right + "\n";
     }
 
     /// <summary>
@@ -90,7 +97,9 @@ public static class DebugInfo
     {
         get
         {
-            isDebug = false;
+#pragma warning disable IDE0059 // Unnecessary assignment of a value
+            var isDebug = false;
+#pragma warning restore IDE0059 // Unnecessary assignment of a value
             Debug.Assert(isDebug = true);
             return isDebug;
         }
