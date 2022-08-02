@@ -19,11 +19,6 @@ internal class WonFightScoreFactor : IScoreFactor
     {
     };
 
-    public WonFightScoreFactor()
-    {
-        ExtraFields = Array.Empty<ExtraField>();
-    }
-
     public object this[string fieldName]
     {
         get
@@ -53,8 +48,6 @@ internal class WonFightScoreFactor : IScoreFactor
 
     public bool IsDisabled { get; set; }
 
-    public ExtraField[] ExtraFields { get; set; }
-
     public double GetFinalScore() => currScore;
 
     public void Update(IDataFetcher dataFetcher)
@@ -78,7 +71,7 @@ internal class WonFightScoreFactor : IScoreFactor
 
     public IScoreFactor Clone()
     {
-        return new WonFightScoreFactor() { IsDisabled = IsDisabled, ScoreMultiplier = ScoreMultiplier, ExtraFields = ExtraFields };
+        return new WonFightScoreFactor() { IsDisabled = IsDisabled, ScoreMultiplier = ScoreMultiplier };
     }
 }
 
