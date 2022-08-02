@@ -77,13 +77,19 @@ internal class PokemonEvaluator : DefaultEvaluator
         //Woke up/Freed from wrap
         while (df.GetMoveCursorIndex() == 0)
         {
-            if (df.LostFight() || df.WonFight())
+            if (df.LostFight() || df.WonFight() || !df.InFight())
             {
                 return;
             }
 
             PressB(15, true);
+
             emulator.NextFrames(15, false);
+
+            if (df.LostFight() || df.WonFight() || !df.InFight())
+            {
+                return;
+            }
 
             PressA(15);
         }
