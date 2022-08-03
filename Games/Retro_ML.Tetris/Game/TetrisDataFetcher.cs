@@ -161,33 +161,40 @@ namespace Retro_ML.Tetris.Game
         /// Returns the tiles being placed and their rotation
         /// </summary>
         /// <returns></returns>
-        public bool[,] GetCurrentBlock() => GetBlockForType(ReadSingle(CurrentBlock.Type));
+        public bool[,] GetCurrentBlockType() => GetBlockForType(ReadSingle(CurrentBlock.Type));
 
-        public bool[,] GetNextBlock() => GetBlockForType(ReadSingle(NextBlock.Type));
+        public bool[,] GetNextBlockType() => GetBlockForType(ReadSingle(NextBlock.Type));
 
-        private bool[,] GetBlockForType(byte blockType)
+        public bool[,] GetCurrentBlockRotation() => GetRotation(ReadSingle(CurrentBlock.Type));
+
+        public bool[,] GetNextBlockRotation() => GetRotation(ReadSingle(NextBlock.Type));
+
+        public bool[,] GetRotation(byte blockType)
         {
-            bool[,] block = new bool[7, 4];
+            bool[,] rotation = new bool[1,4];
 
-            if (blockType >= 7 * 4)
-            {
-                return block;
-            }
-
-            //If blockType is a square, set every rotation to true
             if (blockType / 4 == 0x3)
             {
-                block[3, 0] = true;
-                block[3, 1] = true;
-                block[3, 2] = true;
-                block[3, 3] = true;
+                rotation[0,0] = true;
+                rotation[0,1] = true;
+                rotation[0,2] = true;
+                rotation[0,3] = true;
             }
             else
             {
-                block[blockType / 4, blockType % 4] = true;
+                rotation[0, blockType % 4] = true;
             }
 
-            return block;
+            return rotation;
+        }
+
+        private bool[,] GetBlockForType(byte blockType)
+        {
+            bool[,] type = new bool[1,7];
+
+            type[0, blockType / 4] = true;
+
+            return type;
         }
 
         public int GetNumberOfHoles()
