@@ -15,7 +15,8 @@ namespace Retro_ML.Tetris.Configuration
         {
              new IntegerFieldInfo(nameof(VisibleRows), "Visible Rows", 4, 17, 1, "Number of rows the AI can see"),
              new IntegerFieldInfo(nameof(NbAttempts), "Number of Attempts", 1, 50, 1, "The number of attempts the AI will do for each save states selected"),
-             new BoolFieldInfo(nameof(UseNormalizedHeights), "Use Normalized Heights", "When this option is enabled, the AIs will be given the height of each columns normalized ")
+             new BoolFieldInfo(nameof(UseNormalizedHeights), "Use Normalized Heights", "When this option is enabled, the AIs will be given the height of each columns normalized "),
+             new IntegerFieldInfo(nameof(FrameSkip), "Frame Skip", 1, 20, 1,"")
         };
 
         public List<IScoreFactor> ScoreFactors { get; set; }
@@ -29,6 +30,7 @@ namespace Retro_ML.Tetris.Configuration
                     nameof(VisibleRows) => VisibleRows,
                     nameof(NbAttempts) => NbAttempts,
                     nameof(UseNormalizedHeights) => UseNormalizedHeights,
+                    nameof(FrameSkip) => FrameSkip,
                     _ => 0,
                 };
             }
@@ -39,6 +41,7 @@ namespace Retro_ML.Tetris.Configuration
                     case nameof(VisibleRows): VisibleRows = (int)value; break;
                     case nameof(NbAttempts): NbAttempts = (int)value; break;
                     case nameof(UseNormalizedHeights): UseNormalizedHeights = (bool)value; break;
+                    case nameof(FrameSkip): FrameSkip = (int)value; break;
                 }
             }
         }
@@ -46,6 +49,7 @@ namespace Retro_ML.Tetris.Configuration
         public int VisibleRows { get; set; } = 4;
         public int NbAttempts { get; set; } = 1;
         public bool UseNormalizedHeights { get; set; } = true;
+        public int FrameSkip { get; set; } = 1;
 
         public TetrisPluginConfig()
         {
@@ -87,6 +91,7 @@ namespace Retro_ML.Tetris.Configuration
             ScoreFactors = cfg.ScoreFactors;
             VisibleRows = cfg.VisibleRows;
             NbAttempts = cfg.NbAttempts;
+            FrameSkip = cfg.FrameSkip;
             UseNormalizedHeights = cfg.UseNormalizedHeights;
         }
 
@@ -94,9 +99,9 @@ namespace Retro_ML.Tetris.Configuration
         {
 
             int enabledIndex = 0;
-            if (neuralConfig.EnabledStates.Length != 15)
+            if (neuralConfig.EnabledStates.Length != 16)
             {
-                neuralConfig.EnabledStates = Enumerable.Repeat(true, 5 + 4).Concat(Enumerable.Repeat(false, 6)).ToArray();
+                neuralConfig.EnabledStates = Enumerable.Repeat(true, 6 + 4).Concat(Enumerable.Repeat(false, 6)).ToArray();
             }
 
             neuralConfig.InputNodes.Clear();
@@ -106,7 +111,8 @@ namespace Retro_ML.Tetris.Configuration
             else
                 neuralConfig.InputNodes.Add(new InputNode("Tiles", neuralConfig.EnabledStates[enabledIndex++], (dataFetcher) => ((TetrisDataFetcher)dataFetcher).GetSolidTiles(), 10, VisibleRows));
 
-            neuralConfig.InputNodes.Add(new InputNode("Current Block", neuralConfig.EnabledStates[enabledIndex++], (dataFetcher) => ((TetrisDataFetcher)dataFetcher).GetCurrentBlock(), 4, 7));
+            neuralConfig.InputNodes.Add(new InputNode("Current Block Type", neuralConfig.EnabledStates[enabledIndex++], (dataFetcher) => ((TetrisDataFetcher)dataFetcher).GetCurrentBlockType(), 7, 1));
+            neuralConfig.InputNodes.Add(new InputNode("Current Block Rotation", neuralConfig.EnabledStates[enabledIndex++], (dataFetcher) => ((TetrisDataFetcher)dataFetcher).GetCurrentBlockType(), 4, 1));
             neuralConfig.InputNodes.Add(new InputNode("Current Pos X", neuralConfig.EnabledStates[enabledIndex++], (dataFetcher) => ((TetrisDataFetcher)dataFetcher).GetPositionX()));
             neuralConfig.InputNodes.Add(new InputNode("Current Pos Y", neuralConfig.EnabledStates[enabledIndex++], (dataFetcher) => ((TetrisDataFetcher)dataFetcher).GetPositionY()));
             neuralConfig.InputNodes.Add(new InputNode("Bias", neuralConfig.EnabledStates[enabledIndex++], (dataFetcher) => true));

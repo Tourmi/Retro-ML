@@ -28,7 +28,7 @@ internal class TetrisEvaluator : DefaultEvaluator
             }
             emulator!.LoadState(Path.GetFullPath(state));
             WaitThenStart();
-            emulator.NextFrame();
+            emulator.NextFrames(((TetrisPluginConfig)appConfig.GamePluginConfig!).FrameSkip, false);
             dataFetcher!.NextState();
 
             DoEvaluationLoop(phenome, score);
