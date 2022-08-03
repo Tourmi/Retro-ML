@@ -15,7 +15,7 @@ internal class TetrisEvaluator : DefaultEvaluator
 {
     public TetrisEvaluator(ApplicationConfig appConfig, IBlackBox<double> phenome, IEnumerable<string> saveStates, IEmulatorAdapter emulator) : base(appConfig, phenome, saveStates, emulator) { }
 
-    protected override int FrameSkip => 1;
+    protected override int FrameSkip => ((TetrisPluginConfig)appConfig.GamePluginConfig!).FrameSkip;
     protected override bool FrameSkipShouldKeepControllerInputs => false;
 
     protected override void DoSaveState(IBlackBox<double> phenome, Score score, string state)
@@ -28,7 +28,7 @@ internal class TetrisEvaluator : DefaultEvaluator
             }
             emulator!.LoadState(Path.GetFullPath(state));
             WaitThenStart();
-            emulator.NextFrames(((TetrisPluginConfig)appConfig.GamePluginConfig!).FrameSkip, false);
+            emulator.NextFrame();
             dataFetcher!.NextState();
 
             DoEvaluationLoop(phenome, score);
