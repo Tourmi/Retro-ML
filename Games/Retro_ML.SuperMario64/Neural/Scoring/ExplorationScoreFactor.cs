@@ -73,7 +73,7 @@ internal class ExplorationScoreFactor : IScoreFactor
         {
             framesWithoutProgress = 0;
             sceneVisited.AddObject(new Sphere(marioPos, MinimumDistance));
-            if (isMarioGrounded) spheresAddedWhileAirborn++;
+            if (!isMarioGrounded) spheresAddedWhileAirborn++;
         }
 
         if (DistanceTimeout > 0 && framesWithoutProgress / 60f > DistanceTimeout)
