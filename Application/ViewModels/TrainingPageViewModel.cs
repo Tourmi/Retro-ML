@@ -63,13 +63,6 @@ namespace Retro_ML.Application.ViewModels
             set => this.RaiseAndSetIfChanged(ref canLoadTraining, value);
         }
 
-        private bool canOpenTrainingFolder = true;
-        public bool CanOpenTrainingFolder
-        {
-            get => canOpenTrainingFolder;
-            set => this.RaiseAndSetIfChanged(ref canOpenTrainingFolder, value);
-        }
-
         private NetworkViewModel? neuralNetwork;
         public NetworkViewModel? NeuralNetwork
         {
@@ -98,7 +91,6 @@ namespace Retro_ML.Application.ViewModels
             if (!CanStart) return;
             CanStart = false;
             CanLoadTraining = false;
-            CanOpenTrainingFolder = false;
             string appConfigJson = File.ReadAllText(DefaultPaths.APP_CONFIG);
             ApplicationConfig appConfig = ApplicationConfig.Deserialize(appConfigJson)!;
             IGamePlugin gamePlugin = appConfig.GetGamePlugin();
@@ -181,30 +173,7 @@ namespace Retro_ML.Application.ViewModels
             return false;
         }
 
-        public async void OpenTrainingFolder()
-        {
-            IsEnabled = false;
-
-            using (var process = new Process())
-            {
-                try
-                {
-                    process.StartInfo.FileName = "Explorer.exe";
-                    process.StartInfo.Arguments = Path.GetFullPath(".");
-                    process.EnableRaisingEvents = true;
-                    process.Start();
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine($"An error occurred trying to open FileExplorer on path \"{Path.GetFullPath(".")}\":\n{ex.Message}");
-                    return;
-                }
-
-                await process.WaitForExitAsync();
-            }
-
-            IsEnabled = true;
-        }
+        public void OpenTrainingFolder() => Process.Start("explorer.exe", Path.GetFullPath("."));
 
         public async void StopTraining(bool forceStop)
         {
@@ -229,7 +198,6 @@ namespace Retro_ML.Application.ViewModels
                 trainer?.StopTraining();
                 emulatorManager?.Clean();
                 CanStart = true;
-                CanOpenTrainingFolder = true;
                 CanLoadTraining = true;
                 CanForceStop = false;
             });
