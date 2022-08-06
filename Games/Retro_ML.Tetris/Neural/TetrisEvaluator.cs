@@ -22,11 +22,12 @@ internal class TetrisEvaluator : DefaultEvaluator
     {
         for (int i = 0; i < ((TetrisPluginConfig)appConfig.GamePluginConfig!).NbAttempts; i++)
         {
+            emulator!.LoadState(Path.GetFullPath(state));
+
             if (ShouldStop)
             {
                 break;
             }
-            emulator!.LoadState(Path.GetFullPath(state));
             WaitThenStart();
             emulator.NextFrame();
             dataFetcher!.NextState();

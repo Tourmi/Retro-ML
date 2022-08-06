@@ -31,11 +31,12 @@ internal class PokemonEvaluator : DefaultEvaluator
     {
         for (int i = 0; i < ((PokemonPluginConfig)appConfig.GamePluginConfig!).NbFights; i++)
         {
+            emulator.LoadState(Path.GetFullPath(state));
+
             if (ShouldStop)
             {
-                break;
+                return;
             }
-            emulator.LoadState(Path.GetFullPath(state));
 
             dataFetcher.NextState();
 
