@@ -26,7 +26,7 @@ internal class TetrisEvaluator : DefaultEvaluator
 
             if (ShouldStop)
             {
-                break;
+                return;
             }
             WaitThenStart();
             emulator.NextFrame();
