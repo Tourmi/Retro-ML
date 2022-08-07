@@ -11,6 +11,7 @@ using Retro_ML.Plugin;
 using Retro_ML.Utils;
 using System;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.IO;
 using System.IO.Compression;
 using System.Threading;
@@ -29,7 +30,7 @@ namespace Retro_ML.Application.ViewModels
         #region Strings
         public static string StartString => "Start Training";
         public static string StopString => "Stop Training";
-        public static string SavePopulationString => "Save population";
+        public static string OpenTrainingFolderString => "Open Training Folder";
         public static string LoadPopulationString => "Load population";
         public static string ExitString => "Return to main menu";
         #endregion
@@ -62,13 +63,6 @@ namespace Retro_ML.Application.ViewModels
             set => this.RaiseAndSetIfChanged(ref canLoadTraining, value);
         }
 
-        private bool canSaveTraining = false;
-        public bool CanSaveTraining
-        {
-            get => canSaveTraining;
-            set => this.RaiseAndSetIfChanged(ref canSaveTraining, value);
-        }
-
         private NetworkViewModel? neuralNetwork;
         public NetworkViewModel? NeuralNetwork
         {
@@ -97,7 +91,6 @@ namespace Retro_ML.Application.ViewModels
             if (!CanStart) return;
             CanStart = false;
             CanLoadTraining = false;
-            CanSaveTraining = false;
             string appConfigJson = File.ReadAllText(DefaultPaths.APP_CONFIG);
             ApplicationConfig appConfig = ApplicationConfig.Deserialize(appConfigJson)!;
             IGamePlugin gamePlugin = appConfig.GetGamePlugin();
@@ -180,25 +173,7 @@ namespace Retro_ML.Application.ViewModels
             return false;
         }
 
-        public async void SavePopulation()
-        {
-            IsEnabled = false;
-            SaveFileDialog fileDialog = new();
-            fileDialog.Filters.Add(new() { Name = "Population", Extensions = { "pop" } });
-            fileDialog.Directory = Path.GetFullPath(".");
-            fileDialog.InitialFileName = "population";
-
-            string? path = await fileDialog.ShowAsync(ViewLocator.GetMainWindow());
-
-            if (string.IsNullOrWhiteSpace(path))
-            {
-                IsEnabled = true;
-                return;
-            }
-
-            trainer!.SavePopulation(path);
-            IsEnabled = true;
-        }
+        public void OpenTrainingFolder() => Process.Start("explorer.exe", Path.GetFullPath("."));
 
         public async void StopTraining(bool forceStop)
         {
@@ -223,7 +198,6 @@ namespace Retro_ML.Application.ViewModels
                 trainer?.StopTraining();
                 emulatorManager?.Clean();
                 CanStart = true;
-                CanSaveTraining = true;
                 CanLoadTraining = true;
                 CanForceStop = false;
             });

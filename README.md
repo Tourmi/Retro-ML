@@ -18,6 +18,17 @@ git submodule update --init
 * Microsoft Visual C++ 2010 SP1 Runtime (x64) must be installed for Bizhawk to run
 * Microsoft Visual C++ Redistributable for Visual Studio 2015, 2017 and 2019
 
+## Available game plugins
+* [Super Mario World (SMW)](Games/Retro_ML.SuperMarioWorld)
+* [Super Mario Kart (SMK)](Games/Retro_ML.SuperMarioKart)
+* [Super Mario Bros (SMB)](Games/Retro_ML.SuperMarioBros)
+* [Tetris (Tetris)](Games/Retro_ML.Tetris)
+* [Metroid (Metroid)](Games/Retro_ML.Metroid)
+* [Street Fighter 2 Turbo (SF2T)](Games/Retro_ML.StreetFighter2Turbo)
+* [Pokemon Red/Blue/Yellow (PokemonGen1)](Games/Retro_ML.PokemonGen1)
+* [Super Bomberman 3 (SB3)](Games/Retro_ML.SuperBomberman3)
+* [Super Mario 64 (SM64)](Games/Retro_ML.SuperMario64)
+
 ## Building the dependencies
 Run these commands starting from the root of the repository. Alternatively, you may use the `build.bat` script.
 
@@ -35,12 +46,12 @@ call QuickTestBuildAndPackage.bat
 
 ## Building the application
 ```
-cd .\Application\
 dotnet build --configuration Release
+xcopy /e /i ".\Application\bin\Release\net6.0" ".\bin\"
 ```
 
 ## Running the application
-You may use the `run.bat` file to run the program, once the dependencies are built.
+You may use the `run.bat` file to run the program, once the `build.bat` script was run successfully.
 
 You will need to provide a ROM file in the configuration for the game you want to train on.
 
@@ -54,7 +65,7 @@ You will need to provide a ROM file in the configuration for the game you want t
 * **[Training Configuration](#configuration)**
 
 ### Training Page
-On this page, you can start training AIs, and supervise their progress. When starting a new training session, a folder will be created at the location of the app. The folder contains the current neural configuration, so that it can easily be loaded later on. It also contains the latest population file `current.pop`, so that training can be resumed. And it contains a `genomes/` folder, where the current best genome is saved, whenever it is improved.
+On this page, you can start training AIs, and supervise their progress. When starting a new training session, a folder will be created at the location of the executable, with a name similar to `SM64-20220708-180530`, depending on the chosen game and the current date and time. The folder contains the current neural configuration, so that it can easily be loaded later on, as well as the current game plugin configuration. It also contains the latest population file `current.pop`, so that training can be resumed later on. Finally, it contains a `genomes/` folder, where the  best genome is saved at each generation when it improved.
 
 The training page consists of the following tabs
 
@@ -69,16 +80,16 @@ The training page consists of the following tabs
   * Will immediately stop the training, if you do not wish to wait for the current generation to end. Note that the latest generation will be forfeit, and won't be saved or update the statistics.
 * **Load population**
   * Loads an existing population (xyz.pop) into the program. Allows to continue training a population after closing and reopening the application.
-* **Save population**
-  * Saves the population that's been trained to a file.
-* **Exit**
+* **Open Training Folder**
+  * Opens the path at which the training folders exist.
+* **Return to main menu**
   * Returns to the [main page](#main-page)
 
 #### Neural Network Tab
 ![Image of the training page's neural network tab](docs/training-neural.png)
 **Neural Network visualization**
 
-Shows the first emulator's neural network structure and values. Colored/white nodes are On, dark nodes are Off. The state of middle nodes is not represented. Magenta connections are negative connections, and green ones, positive.
+Shows the first emulator's neural network structure and values. Colored/white nodes are On/positive, grey nodes are Off/null, and black nodes are negative. The state of middle nodes is not represented. Magenta connections are negative connections, and green ones, positive.
 
 When the emulators finish booting, the emulator being represented will be the one that was booted first. The refresh rate of the preview will depend on the computer's performances, and having too many emulators running at once will affect it.
 
@@ -117,14 +128,16 @@ This tab shows a graph of the different stats mapped over the training generatio
 
 This page is used to make specific genomes play on specific levels, both of them being manually selected. It is a good way to check the abilities of a genome on levels that aren't part of its training-set, or even previewing the capabilities of the resulting genomes from a training session.
 
-* **Load Genome**
-  * Loads the genome to use for the play mode. Selecting a new genome while the play mode is running reloads the save state and starts it again using the new genome.
-* **Load save state**
-  * Loads the save state to use for the play mode. Selecting a new save state while the play mode is running will load it into the emulator right away.
+Note that, if loading multiple savestates and genomes, a single genome will be played on each savestates before switching to the next. Play mode will stop automatically once all genomes went through all savestates.
+
+* **Load genomes**
+  * Loads the genomes to use for the play mode. Selecting new genomes while the play mode is running reloads the first save state and starts it again using the new genomes.
+* **Load save states**
+  * Loads the save states to use for the play mode. Selecting new save states while the play mode is running will load them into the emulator right away.
 * **Start**
-  * Loads the save state and starts up the AI. Can only be started when a save state and a genome have been provided.
+  * Starts up the AIs with the given save states. Can only be started when save states and genomes have been provided.
 * **Stop**
-  * Stops the current AI from running.
+  * Stops the emulator execution.
 * **Exit**
   * Exits play mode. Only enabled once play mode has been stopped.
 
@@ -137,8 +150,9 @@ This page is used to make specific genomes play on specific levels, both of them
   * The path to the ROM file. Clicking the `Select ROM` button allows to select a new ROM.
 * **Game Plugin**
   * The game plugin to use for the ROM. The available plugins will be the ones present in the `./plugins/` folder.
+  * Below this dropdown will have the human-readable name for the selected Game plugin, as well as the console plugin it's using.
 * **Multithread**
-  * This is the amount of emulators which will be booted while training. It is recommended to not put this value higher than the amount of cores within your computer, as performance will be greatly affected. For the fastest training, at the cost of using up all of the CPU resources available, set to the exact amount of cores in your computer. Otherwise, set to a lower value.
+  * This is the amount of emulators which will be booted while training. It is recommended to not put this value higher than the amount of cores/thread within your computer, as performance will be greatly affected. For the fastest training, at the cost of using up all of the CPU resources available, set to the exact amount of cores in your computer. Otherwise, set to a lower value.
 * **Communication Port with Arduino**
   * Communication port with an Arduino that's connected to the PC. Should be left like it is if no arduinos are connected. Used so we can preview the inputs on an actual physical controller.
   * [See ./ArduinoSNESController](ArduinoSNESController)
@@ -146,6 +160,7 @@ This page is used to make specific genomes play on specific levels, both of them
   * By clicking the button, you can select the save states you want to use for training. At least one must be selected.
 
 #### Game Plugin
+![Image of the current game plugin menu](docs/config-plugin.png)  
 This tab's name changes to the current game's plugin name when a new plugin is loaded. The configuration on this page is unique for the currently loaded game plugin, so refer to the plugin's `README.md` for information on the different fields.
 
 #### Training

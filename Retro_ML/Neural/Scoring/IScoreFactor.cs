@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json;
-using Retro_ML.Game;
 using Retro_ML.Configuration.FieldInformation;
+using Retro_ML.Game;
 
 namespace Retro_ML.Neural.Scoring
 {
@@ -52,12 +52,6 @@ namespace Retro_ML.Neural.Scoring
         /// To be called when a level is over.
         /// </summary>
         void LevelDone();
-
-        /// <summary>
-        /// Name of any extra field this score factor has.
-        /// </summary>
-        [Obsolete("ExtraFields is deprecated")]
-        ExtraField[] ExtraFields { get; set; }
 
         /// <summary>
         /// The available fields for this score factor.

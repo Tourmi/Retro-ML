@@ -2,8 +2,10 @@
 using Retro_ML.Configuration;
 using Retro_ML.Game;
 using Retro_ML.Neural.Memory;
+using Retro_ML.Utils;
 using System.Diagnostics;
 using System.Net.Sockets;
+using System.Text;
 
 namespace Retro_ML.Emulator
 {
@@ -23,6 +25,7 @@ namespace Retro_ML.Emulator
             public const string LOAD_STATE = "load_state {0}";
             public const string NEXT_FRAME = "next_frame ";
             public const string NEXT_FRAMES = "next_frames {0} {1}";
+            public const string WRITE_MEMORY = "write_memory {0} {1}";
             public const string READ_MEMORY = "read_memory {0}";
             public const string READ_MEMORY_RANGE = "read_memory_range {0} {1}";
             public const string READ_MEMORY_RANGES = "read_memory_ranges {0}";
@@ -53,8 +56,8 @@ namespace Retro_ML.Emulator
                               IDataFetcherFactory dataFetcherFactory)
         {
             ProcessStartInfo startInfo = new(pathToEmulator);
-            startInfo.ArgumentList.Add($"--socket_port={socketPort}");
-            startInfo.ArgumentList.Add($"--socket_ip={socketIP}");
+            //startInfo.ArgumentList.Add($"--socket_port={socketPort}");
+            //startInfo.ArgumentList.Add($"--socket_ip={socketIP}");
             startInfo.ArgumentList.Add($"--lua={pathToLuaScript}");
             //startInfo.ArgumentList.Add($"--chromeless");
             startInfo.ArgumentList.Add($"--config={pathToBizhawkConfig}");
@@ -62,6 +65,8 @@ namespace Retro_ML.Emulator
             Process.Start(startInfo);
 
             client = server.Accept();
+            client.ReceiveBufferSize = 10_000_000;
+            client.SendBufferSize = 10_000_000;
             savestates = Directory.GetFiles(savestatesPath);
 
             dataFetcher = dataFetcherFactory.GetDataFetcher(config, this);
@@ -101,6 +106,11 @@ namespace Retro_ML.Emulator
             SendCommand(Commands.NEXT_FRAMES, frameCount, repeatInput);
         }
 
+        public void WriteMemory(uint addr, byte value)
+        {
+            SendCommand(Commands.WRITE_MEMORY, addr, value);
+        }
+
         public byte ReadMemory(uint addr)
         {
             SendCommand(Commands.READ_MEMORY, addr);
@@ -117,15 +127,15 @@ namespace Retro_ML.Emulator
 
         public byte[] ReadMemory(params (uint addr, uint count)[] ranges)
         {
-            string commandParam = "";
+            StringBuilder s = new();
             uint totalCount = 0;
             foreach ((uint addr, uint count) in ranges)
             {
-                commandParam += $"{addr} {count};";
+                s.Append($"{addr} {count};");
                 totalCount += count;
             }
 
-            SendCommand(Commands.READ_MEMORY_RANGES, commandParam);
+            SendCommand(Commands.READ_MEMORY_RANGES, s.ToString());
             return Read(totalCount);
         }
 
@@ -133,6 +143,7 @@ namespace Retro_ML.Emulator
         {
             arduinoPreviewer?.SendInput(input.ToArduinoBytes());
             SendCommand(Commands.SEND_INPUT, input.GetString());
+            DebugInfo.AddInfo("Input sent to emulator", input.GetString());
         }
 
         public void Dispose()
@@ -154,7 +165,7 @@ namespace Retro_ML.Emulator
         private void SendCommand(string command, params object[] args)
         {
             string newCommand = string.Format(command, args);
-            newCommand = newCommand.Length + " " + newCommand;
+            newCommand += "\n";
             client.Send(newCommand.Select(s => (byte)s).ToArray());
             if (waitForOkay)
             {
@@ -171,7 +182,11 @@ namespace Retro_ML.Emulator
         private byte[] Read(uint amount)
         {
             byte[] buffer = new byte[amount];
-            client.Receive(buffer, (int)amount, SocketFlags.None);
+            int received = 0;
+            while (received < amount)
+            {
+                received += client.Receive(buffer, received, (int)amount - received, SocketFlags.None);
+            }
 
             return buffer;
         }

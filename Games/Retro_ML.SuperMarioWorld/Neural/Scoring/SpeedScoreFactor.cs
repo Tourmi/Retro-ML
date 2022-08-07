@@ -7,9 +7,6 @@ namespace Retro_ML.SuperMarioWorld.Neural.Scoring
 {
     internal class SpeedScoreFactor : IScoreFactor
     {
-        private const string HORIZONTAL_MULT = "Horizontal Mult";
-        private const string VERTICAL_MULT = "Vertical Mult";
-
         private uint initialX = 0;
         private uint initialY = 0;
 
@@ -27,15 +24,6 @@ namespace Retro_ML.SuperMarioWorld.Neural.Scoring
              new DoubleFieldInfo(nameof(HorizontalMult), "Horizontal Multiplier", double.MinValue, double.MaxValue, 0.25),
              new DoubleFieldInfo(nameof(VerticalMult), "Vertical Multiplier", double.MinValue, double.MaxValue, 0.25),
         };
-
-        public SpeedScoreFactor()
-        {
-            ExtraFields = new ExtraField[]
-            {
-                new ExtraField(HORIZONTAL_MULT, 1.0),
-                new ExtraField(VERTICAL_MULT, 0.25),
-            };
-        }
 
         public object this[string fieldName]
         {
@@ -69,8 +57,6 @@ namespace Retro_ML.SuperMarioWorld.Neural.Scoring
         public bool IsDisabled { get; set; }
         public bool ShouldStop => false;
         public double ScoreMultiplier { get; set; }
-
-        public ExtraField[] ExtraFields { get; set; }
 
         public void Update(IDataFetcher dataFetcher)
         {
@@ -133,7 +119,6 @@ namespace Retro_ML.SuperMarioWorld.Neural.Scoring
         {
             IsDisabled = IsDisabled,
             ScoreMultiplier = ScoreMultiplier,
-            ExtraFields = ExtraFields,
             HorizontalMult = HorizontalMult,
             VerticalMult = VerticalMult
         };

@@ -8,7 +8,7 @@ namespace Retro_ML.Metroid.Neural.Train;
 
 internal class MetroidExperimentFactory : INeatExperimentFactory
 {
-    public string Id => "smk-experiment-factory";
+    public string Id => "metroid-experiment-factory";
 
     private readonly EmulatorManager emulatorManager;
     private readonly ApplicationConfig appConfig;

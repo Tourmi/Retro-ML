@@ -12,11 +12,6 @@ namespace Retro_ML.SuperMarioWorld.Neural.Scoring
 
         public FieldInfo[] Fields => Array.Empty<FieldInfo>();
 
-        public DiedScoreFactor()
-        {
-            ExtraFields = Array.Empty<ExtraField>();
-        }
-
         public object this[string fieldName]
         {
             get
@@ -45,8 +40,6 @@ namespace Retro_ML.SuperMarioWorld.Neural.Scoring
 
         public bool IsDisabled { get => false; set { } }
 
-        public ExtraField[] ExtraFields { get; set; }
-
         public double GetFinalScore() => currScore;
 
         public void Update(IDataFetcher dataFetcher)
@@ -71,7 +64,7 @@ namespace Retro_ML.SuperMarioWorld.Neural.Scoring
 
         public IScoreFactor Clone()
         {
-            return new DiedScoreFactor() { ScoreMultiplier = ScoreMultiplier, ExtraFields = ExtraFields };
+            return new DiedScoreFactor() { ScoreMultiplier = ScoreMultiplier };
         }
     }
 }

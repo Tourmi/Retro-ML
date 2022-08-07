@@ -3,6 +3,11 @@ Plugin by Jaewongtongsoup & Tourmi
 -------
 Training AIs to beat Super Mario Bros levels automatically.
 
+## Special Thanks
+
+* [DataCrystal](https://datacrystal.romhacking.net/wiki/Super_Mario_Bros.:RAM_map): RAM map for Super Mario Bros, helped alot since more than 90% of the addresses that I used were found on this source.
+* [1wErt3r](https://gist.github.com/1wErt3r/4048722): Thanks to user 1wErt3r, the complete dissasembly of the game was available on GitHub. Useful to find in-memory addresses that were lacking and improved overall understanding of the game.
+
 ## Configuration
 
 ### Plugin Configuration

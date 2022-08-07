@@ -62,10 +62,10 @@ namespace Retro_ML_TEST.Console
         public void GetString()
         {
             var input = new FamicomInput();
-            Assert.AreEqual("", input.GetString());
+            Assert.AreEqual("P1()", input.GetString());
 
             input.FromString("sSdurlBA");
-            Assert.AreEqual("ABlrudSs", input.GetString());
+            Assert.AreEqual("P1(ABlrudSs)", input.GetString());
         }
     }
 }

@@ -1,13 +1,11 @@
-﻿using Retro_ML.Game;
+﻿using Retro_ML.Configuration.FieldInformation;
+using Retro_ML.Game;
 using Retro_ML.Neural.Scoring;
-using Retro_ML.Configuration.FieldInformation;
 
 namespace Retro_ML.SuperMarioBros.Neural.Scoring
 {
     internal class TimeTakenScoreFactor : IScoreFactor
     {
-        public const string MAXIMUM_LEVEL_TIME = "Maximum Level Time";
-
         private bool shouldStop = false;
         private double currScore;
         private int levelFrames = 0;
@@ -17,13 +15,6 @@ namespace Retro_ML.SuperMarioBros.Neural.Scoring
              new DoubleFieldInfo(nameof(MaximumLevelTime), "Maximum Level Time", 60.0, double.MaxValue, 1.0)
         };
 
-        public TimeTakenScoreFactor()
-        {
-            ExtraFields = new ExtraField[]
-            {
-                new(MAXIMUM_LEVEL_TIME, 240)
-            };
-        }
         public object this[string fieldName]
         {
             get
@@ -56,8 +47,6 @@ namespace Retro_ML.SuperMarioBros.Neural.Scoring
 
         public bool IsDisabled { get; set; }
 
-        public ExtraField[] ExtraFields { get; set; }
-
         public double GetFinalScore() => currScore;
 
         public void Update(IDataFetcher dataFetcher)
@@ -78,7 +67,7 @@ namespace Retro_ML.SuperMarioBros.Neural.Scoring
 
         public IScoreFactor Clone()
         {
-            return new TimeTakenScoreFactor() { IsDisabled = IsDisabled, ScoreMultiplier = ScoreMultiplier,  MaximumLevelTime = MaximumLevelTime };
+            return new TimeTakenScoreFactor() { IsDisabled = IsDisabled, ScoreMultiplier = ScoreMultiplier, MaximumLevelTime = MaximumLevelTime };
         }
     }
 }

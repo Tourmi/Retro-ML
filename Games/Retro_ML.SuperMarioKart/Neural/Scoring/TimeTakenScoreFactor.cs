@@ -2,84 +2,71 @@
 using Retro_ML.Game;
 using Retro_ML.Neural.Scoring;
 
-namespace Retro_ML.SuperMarioKart.Neural.Scoring
+namespace Retro_ML.SuperMarioKart.Neural.Scoring;
+
+internal class TimeTakenScoreFactor : IScoreFactor
 {
-    internal class TimeTakenScoreFactor : IScoreFactor
+    private bool shouldStop = false;
+    private double currScore;
+    private int levelFrames = 0;
+
+    public FieldInfo[] Fields => new FieldInfo[]
     {
-        public const string MAXIMUM_RACE_TIME = "Maximum Race Time";
+         new DoubleFieldInfo(nameof(MaximumRaceTime), "Maximum Race Time", 30.0, double.MaxValue, 1.0, "Maximum time the race can take, in seconds")
+    };
 
-        private bool shouldStop = false;
-        private double currScore;
-        private int levelFrames = 0;
-
-        public FieldInfo[] Fields => new FieldInfo[]
+    public object this[string fieldName]
+    {
+        get
         {
-             new DoubleFieldInfo(nameof(MaximumRaceTime), "Maximum Race Time", 30.0, double.MaxValue, 1.0, "Maximum time the race can take, in seconds")
-        };
-
-        public TimeTakenScoreFactor()
-        {
-            ExtraFields = new ExtraField[]
+            return fieldName switch
             {
-                new(MAXIMUM_RACE_TIME, 240)
+                nameof(MaximumRaceTime) => MaximumRaceTime,
+                _ => 0,
             };
         }
-
-        public object this[string fieldName]
+        set
         {
-            get
+            switch (fieldName)
             {
-                return fieldName switch
-                {
-                    nameof(MaximumRaceTime) => MaximumRaceTime,
-                    _ => 0,
-                };
-            }
-            set
-            {
-                switch (fieldName)
-                {
-                    case nameof(MaximumRaceTime): MaximumRaceTime = (int)value; break;
-                }
+                case nameof(MaximumRaceTime): MaximumRaceTime = (double)value; break;
             }
         }
+    }
 
-        public double MaximumRaceTime { get; set; } = 240;
+    public double MaximumRaceTime { get; set; } = 240;
 
-        public bool ShouldStop => shouldStop;
-        public double ScoreMultiplier { get; set; }
+    public bool ShouldStop => shouldStop;
+    public double ScoreMultiplier { get; set; }
 
-        public string Name => "Time taken";
+    public string Name => "Time taken";
 
-        public string Tooltip => "Reward applied every second of the current race";
+    public string Tooltip => "Reward applied every second of the current race";
 
-        public bool CanBeDisabled => true;
+    public bool CanBeDisabled => true;
 
-        public bool IsDisabled { get; set; }
+    public bool IsDisabled { get; set; }
 
-        public ExtraField[] ExtraFields { get; set; }
+    public double GetFinalScore() => currScore;
 
-        public double GetFinalScore() => currScore;
-
-        public void Update(IDataFetcher dataFetcher)
+    public void Update(IDataFetcher dataFetcher)
+    {
+        levelFrames++;
+        currScore += ScoreMultiplier / 60.0;
+        if (levelFrames >= MaximumRaceTime * 60)
         {
-            levelFrames++;
-            currScore += ScoreMultiplier / 60.0;
-            if (levelFrames >= MaximumRaceTime * 60)
-            {
-                shouldStop = true;
-            }
+            shouldStop = true;
         }
+    }
 
-        public void LevelDone()
-        {
-            shouldStop = false;
-            levelFrames = 0;
-        }
+    public void LevelDone()
+    {
+        shouldStop = false;
+        levelFrames = 0;
+    }
 
-        public IScoreFactor Clone()
-        {
-            return new TimeTakenScoreFactor() { IsDisabled = IsDisabled, ScoreMultiplier = ScoreMultiplier, ExtraFields = ExtraFields, MaximumRaceTime = MaximumRaceTime };
-        }
+    public IScoreFactor Clone()
+    {
+        return new TimeTakenScoreFactor() { IsDisabled = IsDisabled, ScoreMultiplier = ScoreMultiplier, MaximumRaceTime = MaximumRaceTime };
     }
 }

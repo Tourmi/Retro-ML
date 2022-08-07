@@ -1,7 +1,7 @@
-﻿using Retro_ML.Game;
+﻿using Retro_ML.Configuration.FieldInformation;
+using Retro_ML.Game;
 using Retro_ML.Neural.Scoring;
 using Retro_ML.SuperMarioBros.Game;
-using Retro_ML.Configuration.FieldInformation;
 
 namespace Retro_ML.SuperMarioBros.Neural.Scoring
 {
@@ -12,11 +12,6 @@ namespace Retro_ML.SuperMarioBros.Neural.Scoring
         private double score;
 
         public FieldInfo[] Fields => Array.Empty<FieldInfo>();
-
-        public CoinsScoreFactor()
-        {
-            ExtraFields = Array.Empty<ExtraField>();
-        }
 
         public object this[string fieldName]
         {
@@ -34,8 +29,6 @@ namespace Retro_ML.SuperMarioBros.Neural.Scoring
         public bool ShouldStop => false;
 
         public double ScoreMultiplier { get; set; }
-
-        public ExtraField[] ExtraFields { get; set; }
 
         public void Update(IDataFetcher dataFetcher)
         {

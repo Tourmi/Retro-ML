@@ -3,6 +3,9 @@ Plugin by Voltage
 -------
 Training AIs that learn how to play Tetris
 
+### Special Thanks
+* [DataCrystal](https://datacrystal.romhacking.net/wiki/Tetris_(Game_Boy):RAM_map) : Some addresses in game memory were easier to find thanks to their RAM map.
+
 ## Configuration
 
 ### Plugin Configuration

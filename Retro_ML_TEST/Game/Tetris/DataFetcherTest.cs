@@ -40,45 +40,65 @@ namespace Retro_ML_TEST.Game.Tetris
         [Test]
         public void GetCurrentBlock()
         {
-            var expected = new bool[,]{ { true, false, false, false },
-                                        { false, false, false, false },
-                                        { false, false, false, false },
-                                        { false, false, false, false },
-                                        { false, false, false, false },
-                                        { false, false, false, false },
-                                        { false, false, false, false }};
+            var expected = new bool[,] { { true, false, false, false, false, false, false } };
 
-            Assert.AreEqual(expected, dataFetcher!.GetCurrentBlock());
+            Assert.AreEqual(expected, dataFetcher!.GetCurrentBlockType());
 
             mockEmulatorAdapter!.SetMemory(Addresses.CurrentBlock.Type.Address, 0x04);
 
-            expected[1, 0] = true;
+            expected[0, 1] = true;
             expected[0, 0] = false;
 
             dataFetcher.NextFrame();
-            Assert.AreEqual(expected, dataFetcher!.GetCurrentBlock());
+            Assert.AreEqual(expected, dataFetcher!.GetCurrentBlockType());
         }
 
         [Test]
         public void GetNextBlock()
         {
-            var expected = new bool[,]{ { true, false, false, false },
-                                        { false, false, false, false },
-                                        { false, false, false, false },
-                                        { false, false, false, false },
-                                        { false, false, false, false },
-                                        { false, false, false, false },
-                                        { false, false, false, false }};
+            var expected = new bool[,] { { true, false, false, false, false, false, false } };
 
-            Assert.AreEqual(expected, dataFetcher!.GetNextBlock());
+            Assert.AreEqual(expected, dataFetcher!.GetNextBlockType());
 
             mockEmulatorAdapter!.SetMemory(Addresses.NextBlock.Type.Address, 0x08);
 
-            expected[2, 0] = true;
+            expected[0, 2] = true;
             expected[0, 0] = false;
 
             dataFetcher.NextFrame();
-            Assert.AreEqual(expected, dataFetcher!.GetNextBlock());
+            Assert.AreEqual(expected, dataFetcher!.GetNextBlockType());
+        }
+
+        [Test]
+        public void GetCurrentBlockRotation()
+        {
+            var expected = new bool[,] { { true, false, false, false } };
+
+            Assert.AreEqual(expected, dataFetcher!.GetCurrentBlockRotation());
+
+            mockEmulatorAdapter!.SetMemory(Addresses.CurrentBlock.Type.Address, 0x06);
+
+            expected[0, 2] = true;
+            expected[0, 0] = false;
+
+            dataFetcher!.NextFrame();
+            Assert.AreEqual(expected, dataFetcher!.GetCurrentBlockRotation());
+        }
+
+        [Test]
+        public void GetNextBlockRotation()
+        {
+            var expected = new bool[,] { { true, false, false, false } };
+
+            Assert.AreEqual(expected, dataFetcher!.GetNextBlockRotation());
+
+            mockEmulatorAdapter!.SetMemory(Addresses.NextBlock.Type.Address, 0x09);
+
+            expected[0, 1] = true;
+            expected[0, 0] = false;
+
+            dataFetcher!.NextFrame();
+            Assert.AreEqual(expected, dataFetcher!.GetNextBlockRotation());
         }
 
         [Test]
