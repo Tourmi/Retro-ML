@@ -128,7 +128,7 @@ This tab shows a graph of the different stats mapped over the training generatio
 
 This page is used to make specific genomes play on specific levels, both of them being manually selected. It is a good way to check the abilities of a genome on levels that aren't part of its training-set, or even previewing the capabilities of the resulting genomes from a training session.
 
-Note that, if loading multiple savestates and genomes, a single genome will be played on each savestates before switching to the next. Play mode will stop automatically once all genomes when through all savestates.
+Note that, if loading multiple savestates and genomes, a single genome will be played on each savestates before switching to the next. Play mode will stop automatically once all genomes went through all savestates.
 
 * **Load genomes**
   * Loads the genomes to use for the play mode. Selecting new genomes while the play mode is running reloads the first save state and starts it again using the new genomes.
