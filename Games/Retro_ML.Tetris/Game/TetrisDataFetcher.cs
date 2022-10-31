@@ -18,10 +18,12 @@ internal class TetrisDataFetcher : IDataFetcher
 
     private double oldY;
 
-    private const int PLAY_WIDTH = 10;
+    public const int PLAY_WIDTH = 10;
     private const int PLAY_HEIGHT = 17;
-    private const int PLAY_OFFSET_X = 2;
+    public const int PLAY_OFFSET_X = 2;
     private const int PLAY_OFFSET_Y = 1;
+
+    public const int INITIAL_X_INDEX = 4;
 
     private const byte SOLID_TILES_START = 128;
     private const byte SOLID_TILES_END = 143;
@@ -61,10 +63,12 @@ internal class TetrisDataFetcher : IDataFetcher
     public uint GetDoubles() => ToUnsignedInteger(Read(Score.Double));
     public uint GetTriples() => ToUnsignedInteger(Read(Score.Triple));
     public uint GetTetrises() => ToUnsignedInteger(Read(Score.Tetris));
-    public bool IsGameOver() => ReadSingle(GameStatus) == 0x01 || ReadSingle(GameStatus) == 0x04 || ReadSingle(GameStatus) == 0x0D;
+    public bool IsGameOver() => ReadSingle(GameStatus) is 0x01 or 0x04 or 0x0D;
 
-    public double GetPositionX() => (ReadSingle(CurrentBlock.PosX) - 31) / 8 / 10.0;
-    public double GetPositionY() => (ReadSingle(CurrentBlock.PosY) - 24) / 8 / 17.0;
+    public int GetPositionXIndex() => (ReadSingle(CurrentBlock.PosX) - 31) / 8;
+    public double GetPositionX() => GetPositionXIndex() / (double)PLAY_WIDTH;
+    public int GetPositionYIndex() => (ReadSingle(CurrentBlock.PosY) - 24) / 8;
+    public double GetPositionY() => GetPositionYIndex() / (double)PLAY_HEIGHT;
 
     /// <summary>
     /// Returns the play area solid tiles 
@@ -256,32 +260,6 @@ internal class TetrisDataFetcher : IDataFetcher
                        int col, bool[,] visited)
     {
         return (row >= 0) && (row < PLAY_HEIGHT) && (col >= 0) && (col < PLAY_WIDTH) && (!M[row, col] && !visited[row, col]);
-    }
-
-    /// <summary>
-    /// Reads the Low and High bytes at the addresses specified in AddressData, and puts them together into ushorts, assuming little Endian.
-    /// </summary>
-    /// <param name="addressData"></param>
-    /// <returns></returns>
-    private ushort[] ReadLowHighBytes(AddressData addressData)
-    {
-        var cacheToUse = GetCacheToUse(addressData);
-        if (!cacheToUse.ContainsKey(addressData.Address))
-        {
-            cacheToUse[addressData.Address] = emulator.ReadMemory(addressData.Address, addressData.Length);
-        }
-        if (!cacheToUse.ContainsKey(addressData.HighByteAddress))
-        {
-            cacheToUse[addressData.HighByteAddress] = emulator.ReadMemory(addressData.HighByteAddress, addressData.Length);
-        }
-
-        var result = new ushort[addressData.Length];
-        for (int i = 0; i < addressData.Length; i++)
-        {
-            result[i] = (ushort)(cacheToUse[addressData.Address][i] + (cacheToUse[addressData.HighByteAddress][i] << 8));
-        }
-
-        return result;
     }
 
     /// <summary>
