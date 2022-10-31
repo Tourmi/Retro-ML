@@ -128,7 +128,7 @@ namespace Retro_ML.Configuration
             int count = 0;
             foreach (var output in OutputNodes)
             {
-                if (output.ShouldUse) count++;
+                if (output.ShouldUse) count += output.TotalWidth * output.TotalHeight;
             }
 
             count += ShortTermMemoryNodeCount;
