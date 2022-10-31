@@ -13,6 +13,7 @@ internal class TetrisPluginConfig : IGamePluginConfig
 {
     public FieldInfo[] Fields => new FieldInfo[]
     {
+        new BoolFieldInfo(nameof(UseControllerOutput), "Use Controller Outputs", "Whether or not the AI should use controller outputs, or wanted position/rotation"),
          new IntegerFieldInfo(nameof(VisibleRows), "Visible Rows", 4, 17, 1, "Number of rows the AI can see"),
          new IntegerFieldInfo(nameof(NbAttempts), "Number of Attempts", 1, 50, 1, "The number of attempts the AI will do for each save states selected"),
          new BoolFieldInfo(nameof(UseNormalizedHeights), "Use Normalized Heights", "When this option is enabled, the AIs will be given the height of each columns normalized "),
@@ -23,21 +24,20 @@ internal class TetrisPluginConfig : IGamePluginConfig
 
     public object this[string fieldName]
     {
-        get
+        get => fieldName switch
         {
-            return fieldName switch
-            {
-                nameof(VisibleRows) => VisibleRows,
-                nameof(NbAttempts) => NbAttempts,
-                nameof(UseNormalizedHeights) => UseNormalizedHeights,
-                nameof(FrameSkip) => FrameSkip,
-                _ => 0,
-            };
-        }
+            nameof(UseControllerOutput) => UseControllerOutput,
+            nameof(VisibleRows) => VisibleRows,
+            nameof(NbAttempts) => NbAttempts,
+            nameof(UseNormalizedHeights) => UseNormalizedHeights,
+            nameof(FrameSkip) => FrameSkip,
+            _ => 0,
+        };
         set
         {
             switch (fieldName)
             {
+                case nameof(UseControllerOutput): UseControllerOutput = (bool)value; break;
                 case nameof(VisibleRows): VisibleRows = (int)value; break;
                 case nameof(NbAttempts): NbAttempts = (int)value; break;
                 case nameof(UseNormalizedHeights): UseNormalizedHeights = (bool)value; break;
@@ -46,6 +46,7 @@ internal class TetrisPluginConfig : IGamePluginConfig
         }
     }
 
+    public bool UseControllerOutput { get; set; } = false;
     public int VisibleRows { get; set; } = 4;
     public int NbAttempts { get; set; } = 1;
     public bool UseNormalizedHeights { get; set; } = true;
@@ -92,16 +93,20 @@ internal class TetrisPluginConfig : IGamePluginConfig
         VisibleRows = cfg.VisibleRows;
         NbAttempts = cfg.NbAttempts;
         FrameSkip = cfg.FrameSkip;
+        UseControllerOutput = cfg.UseControllerOutput;
         UseNormalizedHeights = cfg.UseNormalizedHeights;
     }
 
     public void InitNeuralConfig(NeuralConfig neuralConfig)
     {
-
         int enabledIndex = 0;
-        if (neuralConfig.EnabledStates.Length != 16)
+        if (UseControllerOutput && neuralConfig.EnabledStates.Length != 16)
         {
             neuralConfig.EnabledStates = Enumerable.Repeat(true, 6 + 4).Concat(Enumerable.Repeat(false, 6)).ToArray();
+        }
+        else if (!UseControllerOutput && neuralConfig.EnabledStates.Length != 8)
+        {
+            neuralConfig.EnabledStates = Enumerable.Repeat(true, 2).Concat(Enumerable.Repeat(false, 3)).Concat(Enumerable.Repeat(true, 3)).ToArray();
         }
 
         neuralConfig.InputNodes.Clear();
@@ -118,15 +123,25 @@ internal class TetrisPluginConfig : IGamePluginConfig
         neuralConfig.InputNodes.Add(new InputNode("Bias", neuralConfig.EnabledStates[enabledIndex++], (dataFetcher) => true));
 
         neuralConfig.OutputNodes.Clear();
-        neuralConfig.OutputNodes.Add(new OutputNode("A", neuralConfig.EnabledStates[enabledIndex++]));
-        neuralConfig.OutputNodes.Add(new OutputNode("B", neuralConfig.EnabledStates[enabledIndex++])); ;
-        neuralConfig.OutputNodes.Add(new OutputNode("Left", neuralConfig.EnabledStates[enabledIndex++]));
-        neuralConfig.OutputNodes.Add(new OutputNode("Right", neuralConfig.EnabledStates[enabledIndex++]));
-        neuralConfig.OutputNodes.Add(new OutputNode("Up", neuralConfig.EnabledStates[enabledIndex++]));
-        neuralConfig.OutputNodes.Add(new OutputNode("Down", neuralConfig.EnabledStates[enabledIndex++]));
-        neuralConfig.OutputNodes.Add(new OutputNode("Left Shoulder", neuralConfig.EnabledStates[enabledIndex++]));
-        neuralConfig.OutputNodes.Add(new OutputNode("Right Shoulder", neuralConfig.EnabledStates[enabledIndex++]));
-        neuralConfig.OutputNodes.Add(new OutputNode("Start", neuralConfig.EnabledStates[enabledIndex++]));
-        neuralConfig.OutputNodes.Add(new OutputNode("Select", neuralConfig.EnabledStates[enabledIndex++]));
+
+        if (UseControllerOutput)
+        {
+            neuralConfig.OutputNodes.Add(new OutputNode("A", neuralConfig.EnabledStates[enabledIndex++]));
+            neuralConfig.OutputNodes.Add(new OutputNode("B", neuralConfig.EnabledStates[enabledIndex++])); ;
+            neuralConfig.OutputNodes.Add(new OutputNode("Left", neuralConfig.EnabledStates[enabledIndex++]));
+            neuralConfig.OutputNodes.Add(new OutputNode("Right", neuralConfig.EnabledStates[enabledIndex++]));
+            neuralConfig.OutputNodes.Add(new OutputNode("Up", neuralConfig.EnabledStates[enabledIndex++]));
+            neuralConfig.OutputNodes.Add(new OutputNode("Down", neuralConfig.EnabledStates[enabledIndex++]));
+            neuralConfig.OutputNodes.Add(new OutputNode("Left Shoulder", neuralConfig.EnabledStates[enabledIndex++]));
+            neuralConfig.OutputNodes.Add(new OutputNode("Right Shoulder", neuralConfig.EnabledStates[enabledIndex++]));
+            neuralConfig.OutputNodes.Add(new OutputNode("Start", neuralConfig.EnabledStates[enabledIndex++]));
+            neuralConfig.OutputNodes.Add(new OutputNode("Select", neuralConfig.EnabledStates[enabledIndex++]));
+        }
+        else
+        {
+            neuralConfig.OutputNodes.Add(new OutputNode("Position", TetrisDataFetcher.PLAY_WIDTH, 1));
+            neuralConfig.OutputNodes.Add(new OutputNode("Rotation", 4, 1));
+        }
+
     }
 }
