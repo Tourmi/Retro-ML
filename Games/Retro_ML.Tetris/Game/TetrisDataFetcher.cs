@@ -101,11 +101,9 @@ internal class TetrisDataFetcher : IDataFetcher
         double[,] normalizedHeights = new double[1, PLAY_WIDTH];
         var heights = GetColumnHeights();
 
-        int median = heights.OrderBy(i => i).ToArray()[PLAY_WIDTH / 2];
-
         for (int i = 0; i < heights.Length; i++)
         {
-            normalizedHeights[0, i] = (heights[i] - median) / (double)pluginConfig.VisibleRows;
+            normalizedHeights[0, i] = heights[i] / (double)PLAY_HEIGHT;
         }
 
         return normalizedHeights;
