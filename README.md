@@ -14,7 +14,7 @@ git submodule update --init
 
 ## Prerequisites
 * Must be on Windows
-* .NET SDK 6.0 or higher must be installed
+* .NET SDK 7.0 or higher must be installed
 * Microsoft Visual C++ 2010 SP1 Runtime (x64) must be installed for Bizhawk to run
 * Microsoft Visual C++ Redistributable for Visual Studio 2015, 2017 and 2019
 
