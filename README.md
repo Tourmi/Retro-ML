@@ -3,7 +3,7 @@ A project by Tourmi, Voltage98 & Jaewongtongsoup
 --------
 Training AIs that are able to get better at various games, as well as completing or optimizing various objectives
 
-[MIT License](LICENSE)
+[GPL License](LICENSE)
 
 ## When cloning
 It is important to either clone the repository recursively to include the submodules, or initialize the submodules after cloning, as they need to be built for the program compilation to actually work.
