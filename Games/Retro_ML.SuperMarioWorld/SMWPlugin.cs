@@ -7,9 +7,6 @@ using Retro_ML.Neural.Train;
 using Retro_ML.Plugin;
 using Retro_ML.SuperMarioWorld.Configuration;
 using Retro_ML.SuperMarioWorld.Game;
-using Retro_ML.SuperMarioWorld.Neural;
-using Retro_ML.SuperMarioWorld.Neural.Train;
-using SharpNeat.BlackBox;
 
 namespace Retro_ML.SuperMarioWorld;
 
@@ -22,8 +19,8 @@ public class SMWPlugin : IGamePlugin
     public string PluginConfigPath => "config/plugins/smw-config.json";
 
     public IDataFetcherFactory GetDataFetcherFactory() => new SMWDataFetcherFactory();
-    public INeuralPlayer GetNeuralPlayer(EmulatorManager emulatorManager, ApplicationConfig appConfig) => new SharpNeatPlayer(emulatorManager, appConfig);
-    public INeuralTrainer GetNeuralTrainer(EmulatorManager emulatorManager, ApplicationConfig appConfig) => new SMWTrainer(emulatorManager, appConfig);
-    public IEvaluator GetEvaluator(ApplicationConfig appConfig, object phenome, IEnumerable<string> saveStates, IEmulatorAdapter emulator) => new SMWEvaluator(appConfig, (IBlackBox<double>)phenome, saveStates, emulator);
+    public INeuralPlayer GetNeuralPlayer(EmulatorManager emulatorManager, ApplicationConfig appConfig) => new RetroMLNeatPlayer(emulatorManager, appConfig);
+    public INeuralTrainer GetNeuralTrainer(EmulatorManager emulatorManager, ApplicationConfig appConfig) => new RetroMLNeatTrainer(emulatorManager, appConfig);
+    public IEvaluator GetEvaluator(ApplicationConfig appConfig, IPhenomeWrapper phenome, IEnumerable<string> saveStates, EmulatorManager emulatorManager) => new RetroMLNeatEvaluator(appConfig, phenome, saveStates, emulatorManager);
     public IPluginConfig GetPluginConfig() => new SMWPluginConfig();
 }

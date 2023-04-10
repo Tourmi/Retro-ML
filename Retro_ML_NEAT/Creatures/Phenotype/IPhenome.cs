@@ -13,11 +13,11 @@ public interface IPhenome
     /// <summary>
     /// Input span of the phenome
     /// </summary>
-    public Span<double> Inputs { get; }
+    public ArraySegment<double> Inputs { get; }
     /// <summary>
     /// Output span of the phenome
     /// </summary>
-    public ReadOnlySpan<double> Outputs { get; }
+    public ArraySegment<double> Outputs { get; }
 
     /// <summary>
     /// Takes the given <see cref="Inputs"/> values and activates the phenome, storing the result in the <see cref="Outputs"/>

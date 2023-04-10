@@ -1,6 +1,4 @@
-﻿using SharpNeat.BlackBox;
-
-namespace Retro_ML.Neural.Memory;
+﻿namespace Retro_ML.Neural.Memory;
 /// <summary>
 /// Class that deals with a single creature's memory cells. They can be short term, long term, or permanent
 /// </summary>
@@ -24,7 +22,7 @@ public class NeuralMemory
     /// <summary>
     /// Commits to memory the current neural network output, depending on the <paramref name="nodes"/> states, starting from <paramref name="offset"/>
     /// </summary>
-    public void WriteMemory(IVector<double> nodes, int offset)
+    public void WriteMemory(INeuralWrapper nodes, int offset)
     {
         for (int i = 0; i < shortTerm.Length; i++)
         {
@@ -48,7 +46,7 @@ public class NeuralMemory
     /// <summary>
     /// Reads from the memory, into the given <paramref name="nodes"/>, starting from <paramref name="offset"/>
     /// </summary>
-    public void SetMemory(IVector<double> nodes, int offset)
+    public void SetMemory(INeuralWrapper nodes, int offset)
     {
         for (int i = 0; i < shortTerm.Length; i++)
         {

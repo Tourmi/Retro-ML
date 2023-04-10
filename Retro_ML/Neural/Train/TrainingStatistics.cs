@@ -1,60 +1,62 @@
-﻿namespace Retro_ML.Neural.Train
+﻿namespace Retro_ML.Neural.Train;
+
+/// <summary>
+/// Collection of stats for the training session.
+/// </summary>
+public class TrainingStatistics
 {
-    /// <summary>
-    /// Collection of stats for the training session.
-    /// </summary>
-    public class TrainingStatistics
+    public const string CURRENT_GEN = "Current generation";
+    public const string BEST_GENOME_FITNESS = "Best genome's fitness";
+    public const string BEST_GENOME_COMPLEXITY = "Best genome's complexity";
+    public const string MEAN_FITNESS = "Average fitness";
+    public const string MEAN_COMPLEXITY = "Average complexity";
+    public const string MAX_COMPLEXITY = "Maximum complexity";
+    public const string EVALS_PER_MINUTE = "Evaluations per minute";
+    public const string TOTAL_EVALUATIONS = "Total evaluations so far";
+    public const string SPECIES_COUNT = "Number of species";
+    public const string BEST_SPECIES_POPULATION = "Best species population";
+    public const string AVERAGE_SPECIES_POPULATION = "Average species population";
+
+    public struct Stat
     {
-        public const string CURRENT_GEN = "Current generation";
-        public const string BEST_GENOME_FITNESS = "Best genome's fitness";
-        public const string BEST_GENOME_COMPLEXITY = "Best genome's complexity";
-        public const string MEAN_FITNESS = "Average fitness";
-        public const string MEAN_COMPLEXITY = "Average complexity";
-        public const string MAX_COMPLEXITY = "Maximum complexity";
-        public const string EVALS_PER_MINUTE = "Evaluations per minute";
-        public const string TOTAL_EVALUATIONS = "Total evaluations so far";
+        public string Name { get; set; }
+        public double Value { get; set; }
+    }
 
-        public struct Stat
+    private readonly List<Stat> stats;
+
+    public TrainingStatistics()
+    {
+        stats = new();
+    }
+
+    /// <summary>
+    /// Adds the given stat to the stats collection
+    /// </summary>
+    /// <param name="name"></param>
+    /// <param name="value"></param>
+    public void AddStat(string name, double value)
+    {
+        stats.Add(new Stat()
         {
-            public string Name { get; set; }
-            public double Value { get; set; }
-        }
+            Name = name,
+            Value = value
+        });
+    }
 
-        private readonly List<Stat> stats;
+    /// <summary>
+    /// Returns the specified stat.
+    /// </summary>
+    /// <param name="name"></param>
+    /// <returns></returns>
+    public double GetStat(string name) => stats.Where(s => s.Name == name).Single().Value;
 
-        public TrainingStatistics()
-        {
-            stats = new();
-        }
-
-        /// <summary>
-        /// Adds the given stat to the stats collection
-        /// </summary>
-        /// <param name="name"></param>
-        /// <param name="value"></param>
-        public void AddStat(string name, double value)
-        {
-            stats.Add(new Stat()
-            {
-                Name = name,
-                Value = value
-            });
-        }
-
-        /// <summary>
-        /// Returns the specified stat.
-        /// </summary>
-        /// <param name="name"></param>
-        /// <returns></returns>
-        public double GetStat(string name) => stats.Where(s => s.Name == name).Single().Value;
-
-        /// <summary>
-        /// Returns all of the collected stats.
-        /// </summary>
-        /// <returns></returns>
-        public IEnumerable<Stat> GetStats()
-        {
-            return stats.AsEnumerable();
-        }
+    /// <summary>
+    /// Returns all of the collected stats.
+    /// </summary>
+    /// <returns></returns>
+    public IEnumerable<Stat> GetStats()
+    {
+        return stats.AsEnumerable();
     }
 }

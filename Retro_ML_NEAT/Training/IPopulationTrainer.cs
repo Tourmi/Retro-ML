@@ -24,5 +24,14 @@ public interface IPopulationTrainer
     /// Saves the population to the given filepath
     /// </summary>
     public void SavePopulation(string filepath);
-
+    /// <summary>
+    /// Saves the best genome to the given filepath
+    /// </summary>
+    /// <param name="filepath"></param>
+    public void SaveBestGenome(string filepath);
+    /// <summary>
+    /// Returns the current generation statistics
+    /// </summary>
+    /// <returns></returns>
+    public Statistics GetStatistics();
 }

@@ -7,9 +7,7 @@ using Retro_ML.Neural.Train;
 using Retro_ML.Plugin;
 using Retro_ML.SuperMarioBros.Configuration;
 using Retro_ML.SuperMarioBros.Game;
-using Retro_ML.SuperMarioBros.Neural;
 using Retro_ML.SuperMarioBros.Neural.Train;
-using SharpNeat.BlackBox;
 
 namespace Retro_ML.SuperMarioBros;
 
@@ -24,6 +22,6 @@ public class SMBPlugin : IGamePlugin
     public IDataFetcherFactory GetDataFetcherFactory() => new SMBDataFetcherFactory();
     public INeuralPlayer GetNeuralPlayer(EmulatorManager emulatorManager, ApplicationConfig appConfig) => new SharpNeatPlayer(emulatorManager, appConfig);
     public INeuralTrainer GetNeuralTrainer(EmulatorManager emulatorManager, ApplicationConfig appConfig) => new SMBTrainer(emulatorManager, appConfig);
-    public IEvaluator GetEvaluator(ApplicationConfig appConfig, object phenome, IEnumerable<string> saveStates, IEmulatorAdapter emulator) => new SMBEvaluator(appConfig, (IBlackBox<double>)phenome, saveStates, emulator);
+    public IEvaluator GetEvaluator(ApplicationConfig appConfig, IPhenomeWrapper phenome, IEnumerable<string> saveStates, EmulatorManager emulatorManager) => new BaseEvaluator(appConfig, phenome, saveStates, emulatorManager);
     public IPluginConfig GetPluginConfig() => new SMBPluginConfig();
 }

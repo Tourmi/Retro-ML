@@ -9,7 +9,6 @@ using Retro_ML.Neural;
 using Retro_ML.Neural.Play;
 using Retro_ML.Neural.Train;
 using Retro_ML.Plugin;
-using SharpNeat.BlackBox;
 
 namespace Retro_ML.Metroid;
 
@@ -24,6 +23,6 @@ internal class MetroidPlugin : IGamePlugin
     public IDataFetcherFactory GetDataFetcherFactory() => new MetroidDataFetcherFactory();
     public INeuralPlayer GetNeuralPlayer(EmulatorManager emulatorManager, ApplicationConfig appConfig) => new SharpNeatPlayer(emulatorManager, appConfig);
     public INeuralTrainer GetNeuralTrainer(EmulatorManager emulatorManager, ApplicationConfig appConfig) => new MetroidTrainer(emulatorManager, appConfig);
-    public IEvaluator GetEvaluator(ApplicationConfig appConfig, object phenome, IEnumerable<string> saveStates, IEmulatorAdapter emulator) => new MetroidEvaluator(appConfig, (IBlackBox<double>)phenome, saveStates, emulator);
+    public IEvaluator GetEvaluator(ApplicationConfig appConfig, IPhenomeWrapper phenome, IEnumerable<string> saveStates, EmulatorManager emulatorManager) => new MetroidEvaluator(appConfig, phenome, saveStates, emulatorManager);
     public IPluginConfig GetPluginConfig() => new MetroidPluginConfig();
 }

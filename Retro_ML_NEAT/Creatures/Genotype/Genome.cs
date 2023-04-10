@@ -44,15 +44,13 @@ internal class Genome : IGenome
             updateNeeded = false;
             for (int i = 0; i < ConnectionGenes.Length; i++)
             {
-                if (!ConnectionGenes[i].Enabled) continue;
-
-                var outputNode = ConnectionGenes[i].OutputNode;
                 var inputNode = ConnectionGenes[i].InputNode;
+                var outputNode = ConnectionGenes[i].OutputNode;
 
                 if (depths[outputNode] <= depths[inputNode])
                 {
                     depths[outputNode] = depths[inputNode] + 1;
-                    maximumLayer = depths[inputNode] + 1;
+                    maximumLayer = Math.Max(depths[inputNode] + 1, maximumLayer);
                     updateNeeded = true;
                 }
             }
@@ -101,6 +99,28 @@ internal class Genome : IGenome
         int totalCount = Math.Max(ConnectionGenes.Length, other.ConnectionGenes.Length);
         totalCount = totalCount >= minimumN ? totalCount : 1; //if N is not reached, each extra gene are way more important
         return (excessCount * excessMulti + disjointCount * disjointMulti) / totalCount + weightDiffs / commonCount * weightMulti;
+    }
+
+    public bool HasCycle()
+    {
+        for (int i = 0; i < InputNodeCount; i++)
+        {
+            if (CheckCycle(new(), i)) return true;
+        }
+        return false;
+    }
+
+    private bool CheckCycle(Stack<int> currentStack, int input)
+    {
+        if (currentStack.Contains(input)) return true;
+        currentStack.Push(input);
+
+        foreach (var connection in ConnectionGenes.Where(c => c.InputNode == input))
+        {
+            if (CheckCycle(currentStack, connection.OutputNode)) return true;
+        }
+        _ = currentStack.Pop();
+        return false;
     }
 
     public Genome Copy() => new()

@@ -33,15 +33,15 @@ internal sealed class Phenome : IPhenome
             activeConnections.Add(new() { Depth = nodesDepth[c.InputNode], InputNode = c.InputNode, OutputNode = c.OutputNode, Weight = c.Weight });
         }
 
-        connections = activeConnections.OrderBy(ac => ac.Depth).ToArray();
+        connections = activeConnections.OrderBy(ac => ac.Depth).ThenBy(ac => ac.InputNode).ToArray();
     }
 
     public int InputCount { get; }
     public int OutputCount { get; }
 
-    public Span<double> Inputs => nodeValues.AsSpan()[0..InputCount];
+    public ArraySegment<double> Inputs => new(nodeValues, 0, InputCount);
 
-    public ReadOnlySpan<double> Outputs => nodeValues.AsSpan()[InputCount..(InputCount + OutputCount)];
+    public ArraySegment<double> Outputs => new(nodeValues, InputCount, OutputCount);
 
     public void Activate()
     {
@@ -52,7 +52,7 @@ internal sealed class Phenome : IPhenome
             if (currLayer != curr.Depth)
             {
                 currLayer = curr.Depth;
-                ActivateLayer(currLayer, curr.InputNode);
+                ActivateLayer(currLayer, i);
             }
 
             nodeValues[curr.OutputNode] += nodeValues[curr.InputNode] * curr.Weight;
@@ -61,16 +61,15 @@ internal sealed class Phenome : IPhenome
         ActivateLayer(maximumDepth, InputCount);
     }
 
-    private void ActivateLayer(int depth, int firstNodeIndex)
+    private void ActivateLayer(int depth, int connectionIndex)
     {
         var activationFunction = depth == 0 ? inputFn : depth == maximumDepth ? outputFn : hiddenFn;
 
-        int currNode = firstNodeIndex;
-        while (currNode < nodesDepth.Length && nodesDepth[currNode] == depth)
+        while (connectionIndex < connections.Length && nodesDepth[connections[connectionIndex].InputNode] == depth)
         {
-            nodeValues[currNode] = activationFunction(nodeValues[currNode]);
+            nodeValues[connections[connectionIndex].InputNode] = activationFunction(nodeValues[connections[connectionIndex].InputNode]);
 
-            currNode++;
+            connectionIndex++;
         }
     }
 }

@@ -9,7 +9,6 @@ using Retro_ML.SuperBomberman3.Configuration;
 using Retro_ML.SuperBomberman3.Game;
 using Retro_ML.SuperBomberman3.Neural.Train;
 using Retro_ML.SuperBomberMan3.Neural;
-using SharpNeat.BlackBox;
 
 namespace Retro_ML.SuperBomberman3;
 
@@ -24,6 +23,6 @@ public class SB3Plugin : IGamePlugin
     public IDataFetcherFactory GetDataFetcherFactory() => new SB3DataFetcherFactory();
     public INeuralPlayer GetNeuralPlayer(EmulatorManager emulatorManager, ApplicationConfig appConfig) => new SharpNeatPlayer(emulatorManager, appConfig);
     public INeuralTrainer GetNeuralTrainer(EmulatorManager emulatorManager, ApplicationConfig appConfig) => new SB3Trainer(emulatorManager, appConfig);
-    public IEvaluator GetEvaluator(ApplicationConfig appConfig, object phenome, IEnumerable<string> saveStates, IEmulatorAdapter emulator) => new SB3Evaluator(appConfig, (IBlackBox<double>)phenome, saveStates, emulator);
+    public IEvaluator GetEvaluator(ApplicationConfig appConfig, IPhenomeWrapper phenome, IEnumerable<string> saveStates, EmulatorManager emulatorManager) => new SB3Evaluator(appConfig, phenome, saveStates, emulatorManager);
     public IPluginConfig GetPluginConfig() => new SB3PluginConfig();
 }

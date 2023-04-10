@@ -48,6 +48,7 @@ internal class GenomeReproductor
         while (count < config.ReproductionConfig.TargetPopulation)
         {
             yield return Mutate(baseGenome);
+            count++;
         }
     }
 
@@ -55,9 +56,12 @@ internal class GenomeReproductor
 
     public Genome Mutate(Genome toMutate)
     {
-        toMutate = MutateWeights(toMutate);
-        toMutate = MutateAddConnection(toMutate);
-        toMutate = MutateAddNode(toMutate);
+        for (int i = 0; i < config.ReproductionConfig.MutationIterations; i++)
+        {
+            toMutate = MutateWeights(toMutate);
+            toMutate = MutateAddConnection(toMutate);
+            toMutate = MutateAddNode(toMutate);
+        }
         return toMutate;
     }
 
@@ -100,10 +104,24 @@ internal class GenomeReproductor
             tries++;
 
             randomInput = random.RandomNode(nodeDepths, 0, maximumDepth - 1);
-            randomOutput = random.RandomNode(nodeDepths, randomInput, maximumDepth);
+            randomOutput = random.RandomNode(nodeDepths, Math.Max(nodeDepths[randomInput], 1), maximumDepth);
         }
 
-        return toMutate.WithGenes(copiedGenes.Append(new ConnectionGene() { Enabled = true, InnovationNumber = GetInnovationNumber(randomInput, randomOutput), InputNode = randomInput, OutputNode = randomOutput, Weight = RandomWeight() }));
+        var result = toMutate.WithGenes(copiedGenes.Append(new ConnectionGene()
+        {
+            Enabled = true,
+            InnovationNumber = GetInnovationNumber(randomInput, randomOutput),
+            InputNode = randomInput,
+            OutputNode = randomOutput,
+            Weight = RandomWeight()
+        }));
+
+        if (result.HasCycle())
+        {
+            return toMutate;
+        }
+
+        return result;
     }
 
     private Genome MutateAddNode(Genome toMutate)
@@ -117,19 +135,21 @@ internal class GenomeReproductor
         ConnectionGene splitInput = new() { InnovationNumber = GetInnovationNumber(chosenGeneToSplit.InputNode, nodeCount - 1), Enabled = true, InputNode = chosenGeneToSplit.InputNode, OutputNode = nodeCount - 1, Weight = chosenGeneToSplit.Weight };
         ConnectionGene splitOutput = new() { InnovationNumber = GetInnovationNumber(nodeCount - 1, chosenGeneToSplit.OutputNode), Enabled = true, InputNode = nodeCount - 1, OutputNode = chosenGeneToSplit.OutputNode, Weight = 1 };
 
-        return toMutate.WithGenes(copiedGenes.Append(splitInput).Append(splitOutput));
+        var result = toMutate.WithGenes(copiedGenes.Append(splitInput).Append(splitOutput));
+        result.TotalNodeCount = nodeCount;
+        return result;
     }
 
     public Genome Crossover(Genome best, Genome other)
     {
         var newGenes = new List<ConnectionGene>();
 
-        var bestGenes = best.ConnectionGenes;
-        var otherGenes = other.ConnectionGenes;
+        var bestGenes = best.ConnectionGenes.ToList();
+        var otherGenes = other.ConnectionGenes.ToList();
 
-        for (int i = 0, j = 0; i < best.ConnectionGenes.Length; i++, j++)
+        for (int i = 0, j = 0; i < bestGenes.Count; i++, j++)
         {
-            if (j >= otherGenes.Length)
+            if (j >= otherGenes.Count)
             {
                 newGenes.Add(bestGenes[i].Copy());
                 continue;

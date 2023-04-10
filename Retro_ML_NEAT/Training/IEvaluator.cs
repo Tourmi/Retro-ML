@@ -2,7 +2,7 @@
 
 namespace Retro_ML.NEAT.Training;
 
-public interface IEvaluator
+public interface IEvaluator : IDisposable
 {
     /// <summary>
     /// Evaluates a single phenome and returns its Fitness

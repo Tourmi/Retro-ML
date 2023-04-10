@@ -4,30 +4,22 @@ using Retro_ML.Neural;
 using Retro_ML.Neural.Scoring;
 using Retro_ML.PokemonGen1.Configuration;
 using Retro_ML.PokemonGen1.Game;
-using Retro_ML.Utils;
-using Retro_ML.Utils.SharpNeat;
-using SharpNeat.BlackBox;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Retro_ML.PokemonGen1.Neural;
-internal class PokemonEvaluator : DefaultEvaluator
+internal class PokemonEvaluator : BaseEvaluator
 {
     private List<double> movesScores;
     private int selectedMove;
     private PokemonDataFetcher df;
     private const int MAX_POKEMON_ID = 191;
 
-    public PokemonEvaluator(ApplicationConfig appConfig, IBlackBox<double> phenome, IEnumerable<string> saveStates, IEmulatorAdapter emulator) : base(appConfig, phenome, saveStates, emulator)
+    public PokemonEvaluator(ApplicationConfig appConfig, IPhenomeWrapper phenome, IEnumerable<string> saveStates, EmulatorManager emulatorManager) : base(appConfig, phenome, saveStates, emulatorManager)
     {
         movesScores = new List<double>();
         df = (PokemonDataFetcher)dataFetcher;
     }
 
-    protected override void DoSaveState(IBlackBox<double> phenome, Score score, string state)
+    protected override void DoSaveState(Score score, string state)
     {
         for (int i = 0; i < ((PokemonPluginConfig)appConfig.GamePluginConfig!).NbFights; i++)
         {
@@ -52,13 +44,13 @@ internal class PokemonEvaluator : DefaultEvaluator
             dataFetcher.NextState();
             emulator.NextFrame();
 
-            DoEvaluationLoop(phenome, score);
+            DoEvaluationLoop(score);
 
             score.LevelDone();
         }
     }
 
-    protected override void DoActivation(IBlackBox<double> blackBox)
+    protected override void DoActivation()
     {
         movesScores.Clear();
 
@@ -100,34 +92,34 @@ internal class PokemonEvaluator : DefaultEvaluator
             PressUp(15);
         }
 
-        AddMoveScore(blackBox);
+        AddMoveScore();
 
         if (((PokemonDataFetcher)dataFetcher).Move2Exists())
         {
             //Select move 2
             PressDown(15);
-            AddMoveScore(blackBox);
+            AddMoveScore();
         }
 
         if (((PokemonDataFetcher)dataFetcher).Move3Exists())
         {
             //Select move 3
             PressDown(15);
-            AddMoveScore(blackBox);
+            AddMoveScore();
         }
 
         if (((PokemonDataFetcher)dataFetcher).Move4Exists())
         {
             //Select move 4
             PressDown(15);
-            AddMoveScore(blackBox);
+            AddMoveScore();
         }
 
         //Go back to first move
         PressDown(15);
     }
 
-    protected override void DoAIAction(IBlackBox<double> phenome)
+    protected override void DoAIAction()
     {
         if (movesScores.Any())
         {
@@ -178,20 +170,20 @@ internal class PokemonEvaluator : DefaultEvaluator
 
     private void PressUp(int waitAfter = 1, bool hold = false) => Press("u", waitAfter, hold);
 
-    private void AddMoveScore(IBlackBox<double> blackBox)
+    private void AddMoveScore()
     {
         if (df.GetMovePP(movesScores.Count) == 0 || df.IsMoveDisabled(movesScores.Count))
         {
             movesScores.Add(double.NegativeInfinity);
             return;
         }
-        blackBox!.ResetState();
-        inputSetter.SetInputs(blackBox.InputVector);
-        blackBox.Activate();
+        phenome!.ResetState();
+        inputSetter.SetInputs(phenome.InputNodes);
+        phenome.Activate();
 
-        emulator.NetworkUpdated(SharpNeatUtils.VectorToArray(blackBox.InputVector), SharpNeatUtils.VectorToArray(blackBox.OutputVector));
+        emulator.NetworkUpdated(phenome.InputNodes.ToArray(), phenome.OutputNodes.ToArray());
 
-        movesScores.Add(blackBox.OutputVector[0]);
+        movesScores.Add(phenome.OutputNodes[0]);
     }
 
     private byte GetRandomPokemonID()

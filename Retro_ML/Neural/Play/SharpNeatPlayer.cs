@@ -1,6 +1,5 @@
 ﻿using Retro_ML.Configuration;
 using Retro_ML.Emulator;
-using Retro_ML.Plugin;
 using Retro_ML.Utils;
 using Retro_ML.Utils.SharpNeat;
 using SharpNeat.BlackBox;
@@ -11,123 +10,24 @@ using SharpNeat.NeuralNets.Double.ActivationFunctions;
 
 namespace Retro_ML.Neural.Play;
 
-public sealed class SharpNeatPlayer : INeuralPlayer
+public sealed class SharpNeatPlayer : BaseNeatPlayer
 {
-    public event Action? FinishedPlaying;
-
-    private readonly Semaphore syncSemaphore;
-    private readonly EmulatorManager emulatorManager;
-    private readonly IEmulatorAdapter emulator;
-    private readonly ApplicationConfig appConfig;
-    private readonly IGamePlugin gamePlugin;
-
     private MetaNeatGenome<double> metaGenome;
     private readonly List<IBlackBox<double>> blackBoxes;
-    private readonly List<string> states;
 
-    private IEvaluator? genomeEvaluator;
-
-    private bool shouldStop;
-
-    public bool IsPlaying { get; private set; }
-
-    public SharpNeatPlayer(EmulatorManager emulatorManager, ApplicationConfig appConfig)
+    public SharpNeatPlayer(EmulatorManager emulatorManager, ApplicationConfig appConfig) : base(emulatorManager, appConfig)
     {
         metaGenome = new MetaNeatGenome<double>(
                 inputNodeCount: appConfig.NeuralConfig.GetInputCount(),
                 outputNodeCount: appConfig.NeuralConfig.GetOutputCount(),
                 isAcyclic: true,
                 activationFn: new LeakyReLU());
-        this.emulatorManager = emulatorManager;
-        emulatorManager.Init(false);
-        emulator = emulatorManager.WaitOne();
-        syncSemaphore = new Semaphore(1, 1);
-
         blackBoxes = new();
-        states = new();
-        this.appConfig = appConfig;
-        gamePlugin = appConfig.GetGamePlugin();
     }
 
-    public bool LoadGenomes(string[] paths)
-    {
-        bool shouldRestart = IsPlaying;
-        StopPlaying();
+    protected override bool AreAnyGenomesLoaded() => blackBoxes.Any();
 
-        blackBoxes.Clear();
-        foreach (var path in paths.OrderBy(p => p))
-        {
-            if (!LoadGenome(path))
-            {
-                return false;
-            }
-        }
-
-        if (shouldRestart) StartPlaying();
-        return true;
-    }
-
-    public void LoadStates(string[] paths)
-    {
-        bool shouldRestart = IsPlaying;
-        StopPlaying();
-
-        states.Clear();
-
-        foreach (var path in paths)
-        {
-            LoadState(path);
-        }
-
-        if (shouldRestart) StartPlaying();
-    }
-
-    public void StartPlaying()
-    {
-        if (IsPlaying)
-        {
-            throw new InvalidOperationException("Already playing");
-        }
-        if (blackBoxes.Count == 0)
-        {
-            throw new InvalidOperationException("A genome wasn't loaded before playing");
-        }
-        if (states.Count == 0)
-        {
-            throw new InvalidOperationException("A save state wasn't loaded before playing");
-        }
-        IsPlaying = true;
-        shouldStop = false;
-
-        new Thread(Play).Start();
-    }
-
-    public void StopPlaying()
-    {
-        shouldStop = true;
-        if (genomeEvaluator != null)
-        {
-            genomeEvaluator.ShouldStop = true;
-        }
-        syncSemaphore.WaitOne();
-        syncSemaphore.Release();
-    }
-
-    private bool LoadGenome(string path)
-    {
-        if (!VerifyGenome(path))
-        {
-            Exceptions.QueueException(new Exception($"Could not load genome {path}. It uses a different Neural Configuration."));
-            return false;
-        }
-        var loader = NeatGenomeLoaderFactory.CreateLoaderDouble(metaGenome);
-
-        NeatGenomeDecoderAcyclic decoder = new();
-        blackBoxes.Add(decoder.Decode(loader.Load(path)));
-        return true;
-    }
-
-    private bool VerifyGenome(string path)
+    protected override bool VerifyGenome(string path)
     {
         string[] inputOutput = File.ReadLines(path).Where(l => !l.Trim().StartsWith("#") && !string.IsNullOrEmpty(l.Trim())).First().Trim().Split(null);
         int input = int.Parse(inputOutput[0]);
@@ -136,44 +36,23 @@ public sealed class SharpNeatPlayer : INeuralPlayer
         return input == metaGenome.InputNodeCount && output == metaGenome.OutputNodeCount;
     }
 
-    private void LoadState(string path)
+    protected override bool LoadGenome(string path)
     {
-        states.Add(Path.GetFullPath(path));
+        var loader = NeatGenomeLoaderFactory.CreateLoaderDouble(metaGenome);
+
+        NeatGenomeDecoderAcyclic decoder = new();
+        blackBoxes.Add(decoder.Decode(loader.Load(path)));
+        return true;
     }
 
-    /// <summary>
-    /// Play loop
-    /// </summary>
-    private void Play()
-    {
-        try
-        {
-            IsPlaying = true;
-            syncSemaphore.WaitOne();
-
-            DoPlayLoop();
-
-            syncSemaphore.Release();
-            IsPlaying = false;
-            if (!shouldStop) FinishedPlaying?.Invoke();
-        }
-        catch (Exception ex)
-        {
-            Exceptions.QueueException(new Exception($"An exception occured during play. Was the emulator window closed?\n{ex.Message}\n{ex.StackTrace}"));
-        }
-    }
-
-    /// <summary>
-    /// Goes through every savestates for every loaded black boxes
-    /// </summary>
-    private void DoPlayLoop()
+    protected override void DoPlayLoop()
     {
         var blackBoxesEnum = blackBoxes.GetEnumerator();
 
         while (!shouldStop && blackBoxesEnum.MoveNext())
         {
             UpdateNetwork(blackBoxesEnum.Current);
-            genomeEvaluator = gamePlugin.GetEvaluator(appConfig, blackBoxesEnum.Current, states, emulator);
+            genomeEvaluator = gamePlugin.GetEvaluator(appConfig, new PhenomeWrapper(blackBoxesEnum.Current), states, emulatorManager);
             _ = genomeEvaluator.Evaluate();
         }
     }
@@ -188,10 +67,5 @@ public sealed class SharpNeatPlayer : INeuralPlayer
         emulator.NetworkChanged(SharpNeatUtils.GetConnectionLayers(blackBox), outputMap);
     }
 
-    public void Dispose()
-    {
-        emulatorManager.FreeOne(emulator);
-
-        emulatorManager.Clean();
-    }
+    protected override void ClearGenomes() => blackBoxes.Clear();
 }

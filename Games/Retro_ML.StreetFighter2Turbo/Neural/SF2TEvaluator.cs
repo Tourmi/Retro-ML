@@ -1,16 +1,15 @@
 ﻿using Retro_ML.Configuration;
 using Retro_ML.Emulator;
-using Retro_ML.StreetFighter2Turbo.Configuration;
 using Retro_ML.Neural;
-using SharpNeat.BlackBox;
+using Retro_ML.StreetFighter2Turbo.Configuration;
 
 namespace Retro_ML.StreetFighter2Turbo.Neural;
-internal class SF2TEvaluator : DefaultEvaluator
+internal class SF2TEvaluator : BaseEvaluator
 {
     public SF2TEvaluator(ApplicationConfig appConfig,
-                                  IBlackBox<double> phenome,
+                                  IPhenomeWrapper phenome,
                                   IEnumerable<string> saveStates,
-                                  IEmulatorAdapter emulator) : base(appConfig, phenome, saveStates, emulator) { }
+                                  EmulatorManager emulatorManager) : base(appConfig, phenome, saveStates, emulatorManager) { }
 
     protected override int FrameSkip => ((SF2TPluginConfig)gamePluginConfig).FrameSkip;
     protected override bool FrameSkipShouldKeepControllerInputs => true;

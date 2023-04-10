@@ -1,4 +1,6 @@
-﻿namespace Retro_ML.NEAT.Configuration;
+﻿using Newtonsoft.Json;
+
+namespace Retro_ML.NEAT.Configuration;
 public class NEATConfiguration
 {
     public NEATConfiguration()
@@ -12,20 +14,24 @@ public class NEATConfiguration
     public Species SpeciesConfig { get; set; }
     public Genome GenomeConfig { get; set; }
 
+    public string Serialize() => JsonConvert.SerializeObject(this);
+    public static NEATConfiguration Deserialize(string json) => JsonConvert.DeserializeObject<NEATConfiguration>(json)!;
+
     public class Reproduction
     {
         public Reproduction()
         {
             TargetPopulation = 100;
-
-            CrossoverOdds = 0.1;
             EliteSpeciesCount = 2;
             EliteGenomeCount = 1;
 
-            RemoveRatio = 0.75;
+            PreReproductionRemoveRatio = 0.75;
 
+            CrossoverOdds = 0.1;
             GeneRemainsDisabledOdds = 0.5;
-            AdjustWeightsOdds = 0.8;
+
+            MutationIterations = 2;
+            AdjustWeightsOdds = 0.45;
             WeightPerturbationOdds = 0.9;
             WeightPerturbationPercentRange = 0.1;
             MaximumWeightAmplitude = 5.0;
@@ -38,11 +44,12 @@ public class NEATConfiguration
         public int EliteSpeciesCount { get; set; }
         public int EliteGenomeCount { get; set; }
 
-        public double RemoveRatio { get; set; }
+        public double PreReproductionRemoveRatio { get; set; }
 
         public double CrossoverOdds { get; set; }
         public double GeneRemainsDisabledOdds { get; set; }
 
+        public int MutationIterations { get; set; }
         public double AdjustWeightsOdds { get; set; }
         public double WeightPerturbationOdds { get; set; }
         public double WeightPerturbationPercentRange { get; set; }
@@ -55,10 +62,10 @@ public class NEATConfiguration
     {
         public Species()
         {
-            SpeciesMaxDelta = 10;
+            SpeciesMaxDelta = 1.75;
             DeltaExcessGenesWeight = 1;
             DeltaDisjointGenesWeight = 1;
-            MinimumGeneCountToNormalizeExcessDisjoint = 20;
+            MinimumGeneCountToNormalizeExcessDisjoint = 5;
             DeltaAverageWeightDifferenceWeight = 1;
 
             PruneAfterXGenerationsWithoutProgress = 20;
@@ -78,7 +85,7 @@ public class NEATConfiguration
         public Genome()
         {
             InputActivationFunction = "Linear";
-            HiddenActivationFunction = "ReLU";
+            HiddenActivationFunction = "LeakyReLU";
             OutputActivationFunction = "Tanh";
         }
 

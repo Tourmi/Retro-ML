@@ -11,6 +11,7 @@ internal class PopulationTrainer : IPopulationTrainer
     private readonly NEATConfiguration config;
     private readonly ExperimentSettings experiment;
     private readonly GenomeReproductor reproductor;
+    private readonly Statistics stats;
     private Population population;
     private Func<IEvaluator>? evaluatorGenerator;
 
@@ -20,6 +21,7 @@ internal class PopulationTrainer : IPopulationTrainer
         this.experiment = experiment;
         this.random = random;
         this.reproductor = new GenomeReproductor(configuration, experiment, random);
+        this.stats = new();
 
         population = new() { PopulationExperiment = experiment };
         IsInitialized = false;
@@ -37,6 +39,11 @@ internal class PopulationTrainer : IPopulationTrainer
     public void SavePopulation(string filepath)
     {
         File.WriteAllText(filepath, JsonConvert.SerializeObject(population));
+    }
+
+    public void SaveBestGenome(string filepath)
+    {
+        File.WriteAllText(filepath, JsonConvert.SerializeObject(population.AllGenomes.First()));
     }
     #endregion
 
@@ -73,6 +80,8 @@ internal class PopulationTrainer : IPopulationTrainer
         EvaluatePopulation();
         AdjustFitnesses();
         SortSpeciesAndGenomes();
+
+        stats.GenerationCount++;
     }
 
     private void SelectSpeciesRepresentatives()
@@ -87,14 +96,14 @@ internal class PopulationTrainer : IPopulationTrainer
     {
         foreach (var species in population.Species)
         {
-            int removeCount = (int)Math.Floor(species.Genomes.Count * config.ReproductionConfig.RemoveRatio);
+            int removeCount = (int)Math.Floor(species.Genomes.Count * config.ReproductionConfig.PreReproductionRemoveRatio);
             if (removeCount < 1 || species.Genomes.Count == 1) continue;
 
-            for (int i = removeCount; i < species.Genomes.Count;)
+            for (int i = 0; i < removeCount; i++)
             {
-                var g = species.Genomes[^i];
+                var g = species.Genomes.Last();
                 population.AllGenomes.Remove(g);
-                species.Genomes.RemoveAt(species.Genomes.Count - i);
+                species.Genomes.Remove(g);
             }
         }
     }
@@ -106,26 +115,42 @@ internal class PopulationTrainer : IPopulationTrainer
         var genomes = new List<Genome>();
         var adjustedFitnesses = population.Species.Select(s => s.AdjustedFitnessSum.Score).ToList();
         var totalAdjustedFitnesses = adjustedFitnesses.Sum();
+
+        var countPerSpecies = adjustedFitnesses.Select(f => (int)Math.Floor(f / totalAdjustedFitnesses * targetCount)).ToList();
+        targetCount -= countPerSpecies.Sum();
+
+        //Since we always round down the count per species, we need to pick some randomly to increase back to the target number
         while (targetCount > 0)
         {
-            var speciesToReproduce = random.PickRandomFromWeightedList(population.Species, adjustedFitnesses, totalAdjustedFitnesses);
-            var genomeToReproduce = random.PickRandomFromWeightedList(speciesToReproduce.Genomes, speciesToReproduce.Genomes.Select(g => g.AdjustedFitness.Score).ToList(), adjustedFitnesses[population.Species.IndexOf(speciesToReproduce)]);
+            int indexSpecies = random.PickRandomFromWeightedList(population.Species.Select((s, i) => i).ToList(), adjustedFitnesses, totalAdjustedFitnesses);
+            countPerSpecies[indexSpecies]++;
 
+            targetCount--;
+        }
+
+        var genomesToReproduce = countPerSpecies.SelectMany((s, i)
+            => Enumerable.Repeat(0, s)
+                         .Select(_ => random.PickRandomFromWeightedList(
+                             population.Species[i].Genomes,
+                             population.Species[i].Genomes.Select(g => g.AdjustedFitness.Score).ToList(),
+                             adjustedFitnesses[i])));
+
+        foreach (var genome in genomesToReproduce)
+        {
             if (random.NextDouble() < config.ReproductionConfig.CrossoverOdds)
             {
                 var otherSpeciesToReproduce = random.PickRandomFromWeightedList(population.Species, adjustedFitnesses, totalAdjustedFitnesses);
-                var otherGenomeToReproduce = random.PickRandomFromWeightedList(otherSpeciesToReproduce.Genomes, otherSpeciesToReproduce.Genomes.Select(g => g.AdjustedFitness.Score).ToList(), adjustedFitnesses[population.Species.IndexOf(otherSpeciesToReproduce)]);
+                var otherGenomeToReproduce = random.PickRandomFromWeightedList(otherSpeciesToReproduce.Genomes, otherSpeciesToReproduce.Genomes.Select(g => g.AdjustedFitness.Score).ToList(), otherSpeciesToReproduce.AdjustedFitnessSum.Score);
 
-                var (bestGenome, otherGenome) = genomeToReproduce.AdjustedFitness.CompareTo(otherGenomeToReproduce.AdjustedFitness) < 0 ? (otherGenomeToReproduce, genomeToReproduce) : (genomeToReproduce, otherGenomeToReproduce);
+                var (bestGenome, otherGenome) = genome.AdjustedFitness.CompareTo(otherGenomeToReproduce.AdjustedFitness) < 0 ? (otherGenomeToReproduce, genome) : (genome, otherGenomeToReproduce);
                 genomes.Add(reproductor.Crossover(bestGenome, otherGenome));
             }
             else
             {
-                genomes.Add(reproductor.Mutate(genomeToReproduce));
+                genomes.Add(reproductor.Mutate(genome));
             }
-
-            targetCount--;
         }
+
         return genomes;
     }
 
@@ -189,6 +214,7 @@ internal class PopulationTrainer : IPopulationTrainer
                 {
                     species.Genomes.Add(genome);
                     addedToSpecies = true;
+                    break;
                 }
             }
             if (!addedToSpecies)
@@ -208,7 +234,7 @@ internal class PopulationTrainer : IPopulationTrainer
         {
             var currGenome = population.AllGenomes[i];
 
-            var evaluator = evaluatorGenerator!();
+            using var evaluator = evaluatorGenerator!();
             var fitness = evaluator.Evaluate(currGenome.ToPhenome());
             currGenome.Fitness = fitness;
         });
@@ -220,7 +246,7 @@ internal class PopulationTrainer : IPopulationTrainer
         {
             species.GensSinceLastProgress++;
             double adjustedFitnessTotal = 0;
-            var genMaxFitness = new Fitness(double.MinValue);
+            var genMaxFitness = new Fitness(0);
             foreach (var genome in species.Genomes)
             {
                 genMaxFitness = Fitness.Max(genMaxFitness, genome.Fitness);
@@ -246,6 +272,25 @@ internal class PopulationTrainer : IPopulationTrainer
             species.SortGenomes();
         }
         population.AllGenomes = population.AllGenomes.OrderByDescending(g => g.Fitness).ToList();
+    }
+    #endregion
+
+    #region Stats
+    public Statistics GetStatistics()
+    {
+        stats.BestGenomeFitness = population.AllGenomes.FirstOrDefault()?.Fitness?.Score ?? 0;
+        stats.BestSpeciesAverageFitness = population.Species.FirstOrDefault()?.Genomes?.Select(g => g.Fitness.Score)?.DefaultIfEmpty(0)?.Average() ?? 0;
+        stats.AverageFitness = population.AllGenomes.Select(g => g.Fitness.Score).DefaultIfEmpty(0).Average();
+
+        stats.BestGenomeComplexity = population.AllGenomes.FirstOrDefault()?.ConnectionGenes?.Length ?? 0;
+        stats.AverageGenomeComplexity = population.AllGenomes.Select(g => g.ConnectionGenes.Length).DefaultIfEmpty(0).Average();
+        stats.MaximumGenomeComplexity = population.AllGenomes.Select(g => g.ConnectionGenes.Length).DefaultIfEmpty(0).Max();
+
+        stats.TotalSpecies = population.Species.Count;
+        stats.BestSpeciesPopulation = population.Species.FirstOrDefault()?.Genomes?.Count ?? 0;
+        stats.AverageSpeciesPopulation = population.Species.Select(s => s.Genomes.Count).DefaultIfEmpty(0).Average();
+
+        return stats;
     }
     #endregion
 }

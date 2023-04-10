@@ -4,7 +4,6 @@ using Retro_ML.Neural;
 using Retro_ML.Neural.Scoring;
 using Retro_ML.Tetris.Configuration;
 using Retro_ML.Tetris.Game;
-using SharpNeat.BlackBox;
 
 namespace Retro_ML.Tetris.Neural;
 
@@ -12,14 +11,14 @@ namespace Retro_ML.Tetris.Neural;
 /// This class takes care of the evaluation of a single AI.
 /// Since it has an internal state, it may not be used to evaluate multiple AIs at once on a single instance.
 /// </summary>
-internal class TetrisEvaluator : DefaultEvaluator
+internal class TetrisEvaluator : BaseEvaluator
 {
-    public TetrisEvaluator(ApplicationConfig appConfig, IBlackBox<double> phenome, IEnumerable<string> saveStates, IEmulatorAdapter emulator) : base(appConfig, phenome, saveStates, emulator) { }
+    public TetrisEvaluator(ApplicationConfig appConfig, IPhenomeWrapper phenome, IEnumerable<string> saveStates, EmulatorManager emulatorManager) : base(appConfig, phenome, saveStates, emulatorManager) { }
 
     protected override int FrameSkip => ((TetrisPluginConfig)appConfig.GamePluginConfig!).FrameSkip;
     protected override bool FrameSkipShouldKeepControllerInputs => false;
 
-    protected override void DoSaveState(IBlackBox<double> phenome, Score score, string state)
+    protected override void DoSaveState(Score score, string state)
     {
         for (int i = 0; i < ((TetrisPluginConfig)appConfig.GamePluginConfig!).NbAttempts; i++)
         {
@@ -33,22 +32,22 @@ internal class TetrisEvaluator : DefaultEvaluator
             emulator.NextFrame();
             dataFetcher!.NextState();
 
-            DoEvaluationLoop(phenome, score);
+            DoEvaluationLoop(score);
 
             score.LevelDone();
         }
     }
 
-    protected override void DoAIAction(IBlackBox<double> phenome)
+    protected override void DoAIAction()
     {
         if (((TetrisPluginConfig)appConfig.GamePluginConfig!).UseControllerOutput)
         {
-            base.DoAIAction(phenome);
+            base.DoAIAction();
         }
         else
         {
-            RotatePiece(phenome.OutputVector);
-            MovePiece(phenome.OutputVector);
+            RotatePiece(phenome!.OutputNodes);
+            MovePiece(phenome!.OutputNodes);
             PlacePiece();
         }
     }
@@ -68,7 +67,7 @@ internal class TetrisEvaluator : DefaultEvaluator
         }
     }
 
-    private void RotatePiece(IVector<double> outputs)
+    private void RotatePiece(INeuralWrapper outputs)
     {
         int bestRotationIndex = 0;
         double bestRotationValue = double.NegativeInfinity;
@@ -90,7 +89,7 @@ internal class TetrisEvaluator : DefaultEvaluator
         }
     }
 
-    private void MovePiece(IVector<double> outputs)
+    private void MovePiece(INeuralWrapper outputs)
     {
         int bestLocationIndex = 0;
         double bestLocationValue = double.NegativeInfinity;

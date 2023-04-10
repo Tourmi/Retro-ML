@@ -2,12 +2,11 @@
 using Retro_ML.Emulator;
 using Retro_ML.Neural;
 using Retro_ML.SuperMario64.Configuration;
-using SharpNeat.BlackBox;
 
 namespace Retro_ML.SuperMario64.Neural;
-internal class SM64Evaluator : DefaultEvaluator
+internal class SM64Evaluator : BaseEvaluator
 {
-    public SM64Evaluator(ApplicationConfig appConfig, IBlackBox<double> phenome, IEnumerable<string> saveStates, IEmulatorAdapter emulator) : base(appConfig, phenome, saveStates, emulator) { }
+    public SM64Evaluator(ApplicationConfig appConfig, IPhenomeWrapper phenome, IEnumerable<string> saveStates, EmulatorManager emulatorManager) : base(appConfig, phenome, saveStates, emulatorManager) { }
 
     protected override int FrameSkip => ((SM64PluginConfig)gamePluginConfig).FrameSkip;
     protected override bool FrameSkipShouldKeepControllerInputs => true;

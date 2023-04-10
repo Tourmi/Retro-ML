@@ -2,8 +2,6 @@
 using Retro_ML.Emulator;
 using Retro_ML.Neural;
 using Retro_ML.Neural.Scoring;
-using Retro_ML.SuperBomberman3.Configuration;
-using SharpNeat.BlackBox;
 
 namespace Retro_ML.SuperBomberMan3.Neural;
 
@@ -11,17 +9,17 @@ namespace Retro_ML.SuperBomberMan3.Neural;
 /// This class takes care of the evaluation of a single AI.
 /// Since it has an internal state, it may not be used to evaluate multiple AIs at once on a single instance.
 /// </summary>
-internal class SB3Evaluator : DefaultEvaluator
+internal class SB3Evaluator : BaseEvaluator
 {
-    public SB3Evaluator(ApplicationConfig appConfig, IBlackBox<double> phenome, IEnumerable<string> saveStates, IEmulatorAdapter emulator) : base(appConfig, phenome, saveStates, emulator) { }
-    protected override void DoSaveState(IBlackBox<double> phenome, Score score, string state)
+    public SB3Evaluator(ApplicationConfig appConfig, IPhenomeWrapper phenome, IEnumerable<string> saveStates, EmulatorManager emulatorManager) : base(appConfig, phenome, saveStates, emulatorManager) { }
+    protected override void DoSaveState(Score score, string state)
     {
         emulator!.LoadState(Path.GetFullPath(state));
         WaitThenStart();
         emulator.NextFrame();
         dataFetcher!.NextState();
 
-        DoEvaluationLoop(phenome, score);
+        DoEvaluationLoop(score);
 
         score.LevelDone();
     }

@@ -3,34 +3,33 @@ using Retro_ML.Emulator;
 using Retro_ML.Game;
 using Retro_ML.Neural.Scoring;
 using Retro_ML.Utils;
-using Retro_ML.Utils.SharpNeat;
-using SharpNeat.BlackBox;
 
 namespace Retro_ML.Neural;
-public class DefaultEvaluator : IEvaluator
+public class BaseEvaluator : IEvaluator
 {
+    protected IPhenomeWrapper? phenome;
+    protected readonly EmulatorManager emulatorManager;
     protected readonly IEmulatorAdapter emulator;
     protected readonly ApplicationConfig appConfig;
-    protected readonly IBlackBox<double> phenome;
     protected readonly IGamePluginConfig gamePluginConfig;
     protected readonly IEnumerable<string> saveStates;
     protected readonly IDataFetcher dataFetcher;
     protected readonly InputSetter inputSetter;
     protected readonly OutputGetter outputGetter;
 
-    public DefaultEvaluator(ApplicationConfig appConfig,
-                                  IBlackBox<double> phenome,
+    public BaseEvaluator(ApplicationConfig appConfig,
+                                  IPhenomeWrapper? phenome,
                                   IEnumerable<string> saveStates,
-                                  IEmulatorAdapter emulator)
+                                  EmulatorManager emulatorManager)
     {
         this.appConfig = appConfig;
+        this.phenome = phenome;
         gamePluginConfig = appConfig.GamePluginConfig!;
         VerifyScoreFactors(gamePluginConfig.ScoreFactors);
 
-        this.phenome = phenome;
         this.saveStates = saveStates;
-
-        this.emulator = emulator;
+        this.emulatorManager = emulatorManager;
+        this.emulator = emulatorManager.WaitOne();
         dataFetcher = emulator.GetDataFetcher();
         inputSetter = emulator.GetInputSetter();
         outputGetter = emulator.GetOutputGetter();
@@ -53,7 +52,7 @@ public class DefaultEvaluator : IEvaluator
     public virtual double Evaluate()
     {
         Score score = new(appConfig.GetScoreFactorClones());
-        DoSaveStateLoop(phenome, score);
+        DoSaveStateLoop(score);
         return score.GetFinalScore();
     }
 
@@ -62,7 +61,7 @@ public class DefaultEvaluator : IEvaluator
     /// </summary>
     /// <param name="phenome"></param>
     /// <param name="score"></param>
-    protected virtual void DoSaveStateLoop(IBlackBox<double> phenome, Score score)
+    protected virtual void DoSaveStateLoop(Score score)
     {
         foreach (var state in saveStates)
         {
@@ -71,7 +70,7 @@ public class DefaultEvaluator : IEvaluator
                 return;
             }
 
-            DoSaveState(phenome, score, state);
+            DoSaveState(score, state);
         }
     }
 
@@ -81,13 +80,13 @@ public class DefaultEvaluator : IEvaluator
     /// <param name="phenome"></param>
     /// <param name="score"></param>
     /// <param name="state"></param>
-    protected virtual void DoSaveState(IBlackBox<double> phenome, Score score, string state)
+    protected virtual void DoSaveState(Score score, string state)
     {
         emulator.LoadState(Path.GetFullPath(state));
         emulator.NextFrame();
         dataFetcher.NextState();
 
-        DoEvaluationLoop(phenome, score);
+        DoEvaluationLoop(score);
 
         score.LevelDone();
     }
@@ -95,7 +94,7 @@ public class DefaultEvaluator : IEvaluator
     /// <summary>
     /// Does the evaluation loop for the current savestate
     /// </summary>
-    protected virtual void DoEvaluationLoop(IBlackBox<double> phenome, Score score)
+    protected virtual void DoEvaluationLoop(Score score)
     {
         while (!score.ShouldStop)
         {
@@ -103,20 +102,20 @@ public class DefaultEvaluator : IEvaluator
             {
                 return;
             }
-            DoEvaluationIteration(phenome, score);
+            DoEvaluationIteration(score);
 
             dataFetcher.NextFrame();
-            emulator.NetworkUpdated(SharpNeatUtils.VectorToArray(phenome.InputVector), SharpNeatUtils.VectorToArray(phenome.OutputVector));
+            emulator.NetworkUpdated(phenome!.InputNodes.ToArray(), phenome!.OutputNodes.ToArray());
         }
     }
 
     /// <summary>
     /// Runs a single score iteration, including the 
     /// </summary>
-    protected virtual void DoEvaluationIteration(IBlackBox<double> phenome, Score score)
+    protected virtual void DoEvaluationIteration(Score score)
     {
-        DoActivation(phenome);
-        DoAIAction(phenome);
+        DoActivation();
+        DoAIAction();
 
         score.Update(dataFetcher!);
     }
@@ -125,21 +124,21 @@ public class DefaultEvaluator : IEvaluator
     /// Runs one iteration of AI evaluation
     /// </summary>
     /// <param name="phenome"></param>
-    protected virtual void DoActivation(IBlackBox<double> phenome)
+    protected virtual void DoActivation()
     {
-        phenome.ResetState();
-        inputSetter.SetInputs(phenome.InputVector);
+        phenome?.ResetState();
+        inputSetter.SetInputs(phenome!.InputNodes);
 
-        phenome.Activate();
+        phenome?.Activate();
     }
 
     /// <summary>
     /// Does the action(s) the AI chose to do
     /// </summary>
     /// <param name="phenome"></param>
-    protected virtual void DoAIAction(IBlackBox<double> phenome)
+    protected virtual void DoAIAction()
     {
-        emulator.SendInput(outputGetter!.GetControllerInput(phenome.OutputVector));
+        emulator.SendInput(outputGetter!.GetControllerInput(phenome!.OutputNodes));
         emulator.NextFrames(FrameSkip + 1, FrameSkipShouldKeepControllerInputs);
     }
 
@@ -154,5 +153,10 @@ public class DefaultEvaluator : IEvaluator
                 Exceptions.QueueException(new Exception($"Type: {sf.GetType()} did not match type {clone.GetType()} after cloning. The Objective will not work properly"));
             }
         }
+    }
+
+    public void Dispose()
+    {
+        emulatorManager.FreeOne(emulator);
     }
 }

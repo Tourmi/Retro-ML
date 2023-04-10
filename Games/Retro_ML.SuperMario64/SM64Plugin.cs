@@ -9,7 +9,6 @@ using Retro_ML.SuperMario64.Configuration;
 using Retro_ML.SuperMario64.Game;
 using Retro_ML.SuperMario64.Neural;
 using Retro_ML.SuperMario64.Neural.Train;
-using SharpNeat.BlackBox;
 
 namespace Retro_ML.SuperMario64;
 
@@ -24,6 +23,6 @@ internal class SM64Plugin : IGamePlugin
     public IDataFetcherFactory GetDataFetcherFactory() => new SM64DataFetcherFactory();
     public INeuralPlayer GetNeuralPlayer(EmulatorManager emulatorManager, ApplicationConfig appConfig) => new SharpNeatPlayer(emulatorManager, appConfig);
     public INeuralTrainer GetNeuralTrainer(EmulatorManager emulatorManager, ApplicationConfig appConfig) => new SM64Trainer(emulatorManager, appConfig);
-    public IEvaluator GetEvaluator(ApplicationConfig appConfig, object phenome, IEnumerable<string> saveStates, IEmulatorAdapter emulator) => new SM64Evaluator(appConfig, (IBlackBox<double>)phenome, saveStates, emulator);
+    public IEvaluator GetEvaluator(ApplicationConfig appConfig, IPhenomeWrapper phenome, IEnumerable<string> saveStates, EmulatorManager emulatorManager) => new SM64Evaluator(appConfig, phenome, saveStates, emulatorManager);
     public IPluginConfig GetPluginConfig() => new SM64PluginConfig();
 }

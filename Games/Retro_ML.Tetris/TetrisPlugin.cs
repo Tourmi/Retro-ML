@@ -9,7 +9,6 @@ using Retro_ML.Tetris.Configuration;
 using Retro_ML.Tetris.Game;
 using Retro_ML.Tetris.Neural;
 using Retro_ML.Tetris.Neural.Train;
-using SharpNeat.BlackBox;
 
 namespace Retro_ML.Tetris;
 
@@ -24,6 +23,6 @@ public class TetrisPlugin : IGamePlugin
     public IDataFetcherFactory GetDataFetcherFactory() => new TetrisDataFetcherFactory();
     public INeuralPlayer GetNeuralPlayer(EmulatorManager emulatorManager, ApplicationConfig appConfig) => new SharpNeatPlayer(emulatorManager, appConfig);
     public INeuralTrainer GetNeuralTrainer(EmulatorManager emulatorManager, ApplicationConfig appConfig) => new TetrisTrainer(emulatorManager, appConfig);
-    public IEvaluator GetEvaluator(ApplicationConfig appConfig, object phenome, IEnumerable<string> saveStates, IEmulatorAdapter emulator) => new TetrisEvaluator(appConfig, (IBlackBox<double>)phenome, saveStates, emulator);
+    public IEvaluator GetEvaluator(ApplicationConfig appConfig, IPhenomeWrapper phenome, IEnumerable<string> saveStates, EmulatorManager emulatorManager) => new TetrisEvaluator(appConfig, phenome, saveStates, emulatorManager);
     public IPluginConfig GetPluginConfig() => new TetrisPluginConfig();
 }

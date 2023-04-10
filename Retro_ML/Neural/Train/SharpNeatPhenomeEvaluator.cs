@@ -13,7 +13,6 @@ public sealed class SharpNeatPhenomeEvaluator : IPhenomeEvaluator<IBlackBox<doub
     private readonly ApplicationConfig appConfig;
 
     private bool shouldStop;
-    private IEmulatorAdapter? emulator;
     private IEvaluator? evaluator;
 
     public SharpNeatPhenomeEvaluator(EmulatorManager emulatorManager, ApplicationConfig appConfig, INeuralTrainer trainer)
@@ -28,18 +27,15 @@ public sealed class SharpNeatPhenomeEvaluator : IPhenomeEvaluator<IBlackBox<doub
         try
         {
             shouldStop = false;
-            emulator = emulatorManager.WaitOne();
             int[] outputMap = new int[phenome.OutputCount];
             Array.Copy(phenome.OutputVector.GetField<int[]>("_map"), outputMap, phenome.OutputCount);
-            emulator.NetworkChanged(SharpNeatUtils.GetConnectionLayers(phenome), outputMap);
 
             new Thread(CheckShouldStopThread).Start();
-            evaluator = appConfig.GetGamePlugin().GetEvaluator(appConfig, phenome, appConfig.SaveStates, emulator);
+            evaluator = appConfig.GetGamePlugin().GetEvaluator(appConfig, new PhenomeWrapper(phenome), appConfig.SaveStates, emulatorManager);
             double score = evaluator.Evaluate();
+            evaluator.Dispose();
 
             shouldStop = true;
-            emulatorManager.FreeOne(emulator);
-            emulator = null;
 
             return new FitnessInfo(score);
         }

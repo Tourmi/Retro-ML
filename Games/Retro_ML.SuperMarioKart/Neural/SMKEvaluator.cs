@@ -2,7 +2,6 @@
 using Retro_ML.Emulator;
 using Retro_ML.Neural;
 using Retro_ML.SuperMarioKart.Configuration;
-using SharpNeat.BlackBox;
 
 namespace Retro_ML.SuperMarioKart.Neural;
 
@@ -10,9 +9,9 @@ namespace Retro_ML.SuperMarioKart.Neural;
 /// This class takes care of the evaluation of a single AI.
 /// Since it has an internal state, it may not be used to evaluate multiple AIs at once on a single instance.
 /// </summary>
-internal class SMKEvaluator : DefaultEvaluator
+internal class SMKEvaluator : BaseEvaluator
 {
-    public SMKEvaluator(ApplicationConfig appConfig, IBlackBox<double> phenome, IEnumerable<string> saveStates, IEmulatorAdapter emulator) : base(appConfig, phenome, saveStates, emulator) { }
+    public SMKEvaluator(ApplicationConfig appConfig, IPhenomeWrapper phenome, IEnumerable<string> saveStates, EmulatorManager emulatorManager) : base(appConfig, phenome, saveStates, emulatorManager) { }
 
     protected override int FrameSkip => ((SMKPluginConfig)gamePluginConfig).FrameSkip;
     protected override bool FrameSkipShouldKeepControllerInputs => true;

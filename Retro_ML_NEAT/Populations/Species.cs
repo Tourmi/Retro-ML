@@ -9,8 +9,8 @@ internal class Species : ISpecies
         Genomes = new List<Genome>();
         Representative = new();
 
-        AdjustedFitnessSum = new Fitness(double.MinValue);
-        BestFitness = new Fitness(double.MinValue);
+        AdjustedFitnessSum = new Fitness(0);
+        BestFitness = new Fitness(0);
     }
 
     public List<Genome> Genomes { get; set; }

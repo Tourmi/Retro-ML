@@ -1,5 +1,5 @@
 ﻿namespace Retro_ML.Neural;
-public interface IEvaluator
+public interface IEvaluator : IDisposable
 {
     bool ShouldStop { get; set; }
 
