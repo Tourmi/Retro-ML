@@ -47,7 +47,7 @@ call QuickTestBuildAndPackage.bat
 ## Building the application
 ```
 dotnet build --configuration Release
-xcopy /e /i ".\Application\bin\Release\net6.0" ".\bin\"
+xcopy /e /i ".\Application\bin\Release\net7.0" ".\bin\"
 ```
 
 ## Running the application
