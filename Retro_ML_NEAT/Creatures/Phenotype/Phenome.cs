@@ -7,6 +7,7 @@ internal sealed class Phenome : IPhenome
     private readonly Connection[] connections;
     private readonly double[] nodeValues;
     private readonly int[] nodesDepth;
+    private readonly int[] outputNodes;
     private readonly int maximumDepth;
 
     private readonly Func<double, double> inputFn;
@@ -24,6 +25,8 @@ internal sealed class Phenome : IPhenome
         OutputCount = genome.OutputNodeCount;
 
         (nodesDepth, maximumDepth) = genome.GetNodesDepth();
+
+        outputNodes = nodesDepth.Select((nd, i) => (nd, i)).Where((v) => v.nd == maximumDepth).Select(v => v.i).ToArray();
 
         List<Connection> activeConnections = new();
         foreach (var c in genome.ConnectionGenes)
@@ -59,6 +62,26 @@ internal sealed class Phenome : IPhenome
         }
 
         ActivateLayer(maximumDepth, InputCount);
+    }
+
+    public ((int input, int output, double weight)[][], int[] outputIds) GetConnectionLayers()
+    {
+        var layers = connections.GroupBy(c => c.Depth).ToList();
+        (int, int, double)[][] resultLayers = new (int, int, double)[layers.Count][];
+        for (int i = 0; i < layers.Count; i++)
+        {
+            var layerList = layers[i].ToList();
+            (int, int, double)[] resultLayer = new (int, int, double)[layerList.Count];
+
+            for (int j = 0; j < layerList.Count; j++)
+            {
+                resultLayer[j] = (layerList[j].InputNode, layerList[j].OutputNode, layerList[j].Weight);
+            }
+
+            resultLayers[i] = resultLayer;
+        }
+
+        return (resultLayers, outputNodes);
     }
 
     private void ActivateLayer(int depth, int connectionIndex)

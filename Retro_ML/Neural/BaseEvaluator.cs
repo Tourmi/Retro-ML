@@ -51,6 +51,8 @@ public class BaseEvaluator : IEvaluator
 
     public virtual double Evaluate()
     {
+        var topology = phenome!.GetConnectionLayers();
+        emulator.NetworkChanged(topology.Item1, topology.outputIds);
         Score score = new(appConfig.GetScoreFactorClones());
         DoSaveStateLoop(score);
         return score.GetFinalScore();

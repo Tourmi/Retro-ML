@@ -17,4 +17,11 @@ public class PhenomeWrapper : IPhenomeWrapper
 
     public void Activate() => blackbox.Activate();
     public void ResetState() => blackbox.ResetState();
+    public ((int input, int output, double weight)[][], int[] outputIds) GetConnectionLayers()
+    {
+        int[] outputMap = new int[blackbox!.OutputCount];
+        Array.Copy(blackbox.OutputVector.GetField<int[]>("_map"), outputMap, blackbox.OutputCount);
+
+        return (SharpNeatUtils.GetConnectionLayers(blackbox), outputMap);
+    }
 }

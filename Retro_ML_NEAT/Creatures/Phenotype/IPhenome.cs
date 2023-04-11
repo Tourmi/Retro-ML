@@ -23,4 +23,9 @@ public interface IPhenome
     /// Takes the given <see cref="Inputs"/> values and activates the phenome, storing the result in the <see cref="Outputs"/>
     /// </summary>
     public void Activate();
+
+    /// <summary>
+    /// Returns the connection layers of the phenome
+    /// </summary>
+    public ((int input, int output, double weight)[][], int[] outputIds) GetConnectionLayers();
 }

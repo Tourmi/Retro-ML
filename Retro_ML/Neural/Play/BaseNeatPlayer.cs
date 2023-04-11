@@ -13,6 +13,7 @@ public abstract class BaseNeatPlayer : INeuralPlayer
     protected readonly IEmulatorAdapter emulator;
     protected readonly ApplicationConfig appConfig;
     protected readonly IGamePlugin gamePlugin;
+    protected readonly List<IPhenomeWrapper> phenomes;
 
     protected readonly List<string> states;
 
@@ -31,6 +32,10 @@ public abstract class BaseNeatPlayer : INeuralPlayer
         states = new();
         this.appConfig = appConfig;
         gamePlugin = appConfig.GetGamePlugin();
+
+        emulator = emulatorManager.GetFirstEmulator();
+
+        phenomes = new();
     }
 
     public bool LoadGenomes(string[] paths)
@@ -38,7 +43,7 @@ public abstract class BaseNeatPlayer : INeuralPlayer
         bool shouldRestart = IsPlaying;
         StopPlaying();
 
-        ClearGenomes();
+        phenomes.Clear();
         foreach (var path in paths.OrderBy(p => p))
         {
             if (!CheckAndLoadGenome(path))
@@ -66,15 +71,13 @@ public abstract class BaseNeatPlayer : INeuralPlayer
         if (shouldRestart) StartPlaying();
     }
 
-    protected abstract bool AreAnyGenomesLoaded();
-
     public void StartPlaying()
     {
         if (IsPlaying)
         {
             throw new InvalidOperationException("Already playing");
         }
-        if (!AreAnyGenomesLoaded())
+        if (!phenomes.Any())
         {
             throw new InvalidOperationException("A genome wasn't loaded before playing");
         }
@@ -118,12 +121,10 @@ public abstract class BaseNeatPlayer : INeuralPlayer
         states.Add(Path.GetFullPath(path));
     }
 
-    protected abstract void ClearGenomes();
-
     /// <summary>
     /// Play loop
     /// </summary>
-    protected void Play()
+    protected virtual void Play()
     {
         try
         {
@@ -143,11 +144,22 @@ public abstract class BaseNeatPlayer : INeuralPlayer
     }
 
     /// <summary>
-    /// Goes through every savestates for every loaded black boxes
+    /// Goes through every savestates for every loaded genomes
     /// </summary>
-    protected abstract void DoPlayLoop();
 
-    public void Dispose()
+    protected virtual void DoPlayLoop()
+    {
+        var phenomesEnum = phenomes.GetEnumerator();
+
+        while (!shouldStop && phenomesEnum.MoveNext())
+        {
+            genomeEvaluator = gamePlugin.GetEvaluator(appConfig, phenomesEnum.Current, states, emulatorManager);
+            _ = genomeEvaluator.Evaluate();
+            genomeEvaluator.Dispose();
+        }
+    }
+
+    public virtual void Dispose()
     {
         emulatorManager.Clean();
         GC.SuppressFinalize(this);

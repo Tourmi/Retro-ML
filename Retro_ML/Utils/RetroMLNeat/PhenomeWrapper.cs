@@ -17,4 +17,5 @@ public class PhenomeWrapper : IPhenomeWrapper
 
     public void Activate() => phenome.Activate();
     public void ResetState() { }
+    public ((int input, int output, double weight)[][], int[] outputIds) GetConnectionLayers() => phenome.GetConnectionLayers();
 }

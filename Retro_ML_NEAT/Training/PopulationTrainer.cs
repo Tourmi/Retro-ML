@@ -66,9 +66,9 @@ internal class PopulationTrainer : IPopulationTrainer
         reproductor.NewGeneration();
 
         PruneStaleSpecies();
-        SelectSpeciesRepresentatives();
 
         EliminateLowPerforming();
+        SelectSpeciesRepresentatives();
 
         var children = ReproduceAndMutate();
 
@@ -142,7 +142,7 @@ internal class PopulationTrainer : IPopulationTrainer
                 var otherSpeciesToReproduce = random.PickRandomFromWeightedList(population.Species, adjustedFitnesses, totalAdjustedFitnesses);
                 var otherGenomeToReproduce = random.PickRandomFromWeightedList(otherSpeciesToReproduce.Genomes, otherSpeciesToReproduce.Genomes.Select(g => g.AdjustedFitness.Score).ToList(), otherSpeciesToReproduce.AdjustedFitnessSum.Score);
 
-                var (bestGenome, otherGenome) = genome.AdjustedFitness.CompareTo(otherGenomeToReproduce.AdjustedFitness) < 0 ? (otherGenomeToReproduce, genome) : (genome, otherGenomeToReproduce);
+                var (bestGenome, otherGenome) = genome.AdjustedFitness < otherGenomeToReproduce.AdjustedFitness ? (otherGenomeToReproduce, genome) : (genome, otherGenomeToReproduce);
                 genomes.Add(reproductor.Crossover(bestGenome, otherGenome));
             }
             else
@@ -245,22 +245,22 @@ internal class PopulationTrainer : IPopulationTrainer
         foreach (var species in population.Species)
         {
             species.GensSinceLastProgress++;
-            double adjustedFitnessTotal = 0;
-            var genMaxFitness = new Fitness(0);
+            var adjustedFitnessTotal = Fitness.Zero;
+            var speciesMaxFitness = Fitness.Zero;
             foreach (var genome in species.Genomes)
             {
-                genMaxFitness = Fitness.Max(genMaxFitness, genome.Fitness);
-                genome.AdjustedFitness = new Fitness(genome.Fitness.Score / species.Genomes.Count);
-                adjustedFitnessTotal += genome.AdjustedFitness.Score;
+                (speciesMaxFitness, _) = Fitness.MaxMin(speciesMaxFitness, genome.Fitness);
+                genome.AdjustedFitness = genome.Fitness / species.Genomes.Count;
+                adjustedFitnessTotal += genome.AdjustedFitness;
             }
 
-            if (genMaxFitness.CompareTo(species.BestFitness) > 0)
+            if (speciesMaxFitness > species.BestFitness)
             {
                 species.GensSinceLastProgress = 0;
-                species.BestFitness = genMaxFitness;
+                species.BestFitness = speciesMaxFitness;
             }
 
-            species.AdjustedFitnessSum = new Fitness(adjustedFitnessTotal);
+            species.AdjustedFitnessSum = adjustedFitnessTotal;
         }
     }
 
@@ -278,8 +278,8 @@ internal class PopulationTrainer : IPopulationTrainer
     #region Stats
     public Statistics GetStatistics()
     {
-        stats.BestGenomeFitness = population.AllGenomes.FirstOrDefault()?.Fitness?.Score ?? 0;
-        stats.BestSpeciesAverageFitness = population.Species.FirstOrDefault()?.Genomes?.Select(g => g.Fitness.Score)?.DefaultIfEmpty(0)?.Average() ?? 0;
+        stats.BestGenomeFitness = population.AllGenomes.Select(g => g.Fitness).FirstOrDefault().Score;
+        stats.BestSpeciesAverageFitness = population.Species.MaxBy(s => s.BestFitness)?.Genomes?.Select(g => g.Fitness.Score)?.DefaultIfEmpty(0)?.Average() ?? 0;
         stats.AverageFitness = population.AllGenomes.Select(g => g.Fitness.Score).DefaultIfEmpty(0).Average();
 
         stats.BestGenomeComplexity = population.AllGenomes.FirstOrDefault()?.ConnectionGenes?.Length ?? 0;
@@ -287,7 +287,7 @@ internal class PopulationTrainer : IPopulationTrainer
         stats.MaximumGenomeComplexity = population.AllGenomes.Select(g => g.ConnectionGenes.Length).DefaultIfEmpty(0).Max();
 
         stats.TotalSpecies = population.Species.Count;
-        stats.BestSpeciesPopulation = population.Species.FirstOrDefault()?.Genomes?.Count ?? 0;
+        stats.BestSpeciesPopulation = population.Species.MaxBy(s => s.BestFitness)?.Genomes?.Count ?? 0;
         stats.AverageSpeciesPopulation = population.Species.Select(s => s.Genomes.Count).DefaultIfEmpty(0).Average();
 
         return stats;
