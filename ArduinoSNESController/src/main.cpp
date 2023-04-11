@@ -44,19 +44,19 @@ void loop()
   {
     Serial.readBytes(bytes, 2);
     int curr = 0;
-    digitalWrite(A, bytes[0] & 1 << curr++ ? HIGH : LOW);
-    digitalWrite(B, bytes[0] & 1 << curr++ ? HIGH : LOW);
-    digitalWrite(X, bytes[0] & 1 << curr++ ? HIGH : LOW);
-    digitalWrite(Y, bytes[0] & 1 << curr++ ? HIGH : LOW);
-    digitalWrite(l, bytes[0] & 1 << curr++ ? HIGH : LOW);
-    digitalWrite(r, bytes[0] & 1 << curr++ ? HIGH : LOW);
-    digitalWrite(u, bytes[0] & 1 << curr++ ? HIGH : LOW);
-    digitalWrite(d, bytes[0] & 1 << curr++ ? HIGH : LOW);
+    digitalWrite(A, bytes[0] & (1 << curr++) ? HIGH : LOW);
+    digitalWrite(B, bytes[0] & (1 << curr++) ? HIGH : LOW);
+    digitalWrite(X, bytes[0] & (1 << curr++) ? HIGH : LOW);
+    digitalWrite(Y, bytes[0] & (1 << curr++) ? HIGH : LOW);
+    digitalWrite(l, bytes[0] & (1 << curr++) ? HIGH : LOW);
+    digitalWrite(r, bytes[0] & (1 << curr++) ? HIGH : LOW);
+    digitalWrite(u, bytes[0] & (1 << curr++) ? HIGH : LOW);
+    digitalWrite(d, bytes[0] & (1 << curr++) ? HIGH : LOW);
 
     curr = 0;
-    digitalWrite(L, bytes[1] & 1 << curr++ ? HIGH : LOW);
-    digitalWrite(R, bytes[1] & 1 << curr++ ? HIGH : LOW);
-    digitalWrite(S, bytes[1] & 1 << curr++ ? HIGH : LOW);
-    digitalWrite(s, bytes[1] & 1 << curr++ ? HIGH : LOW);
+    digitalWrite(L, bytes[1] & (1 << curr++) ? HIGH : LOW);
+    digitalWrite(R, bytes[1] & (1 << curr++) ? HIGH : LOW);
+    digitalWrite(S, bytes[1] & (1 << curr++) ? HIGH : LOW);
+    digitalWrite(s, bytes[1] & (1 << curr++) ? HIGH : LOW);
   }
 }
