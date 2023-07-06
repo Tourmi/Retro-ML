@@ -10,7 +10,6 @@ public readonly struct Fitness : IComparable<Fitness>, IEquatable<Fitness>
 
     public Fitness(double primaryFitness, params double[] secondaryFitnesses)
     {
-        if (primaryFitness < 0) throw new ArgumentException("Fitness cannot be negative", nameof(primaryFitness));
         this.primaryFitness = primaryFitness;
         this.secondaryFitnesses = secondaryFitnesses;
     }
@@ -37,9 +36,9 @@ public readonly struct Fitness : IComparable<Fitness>, IEquatable<Fitness>
         return other.secondaryFitnesses.Length > secondaryFitnesses.Length ? -1 : 0;
     }
 
-    public bool Equals(Fitness other) => primaryFitness == other.primaryFitness && EqualityComparer<double[]>.Default.Equals(secondaryFitnesses, other.secondaryFitnesses);
+    public bool Equals(Fitness other) => CompareTo(other) == 0;
     public override bool Equals(object? obj) => obj is Fitness fitness && Equals(fitness);
-    public override int GetHashCode() => HashCode.Combine(primaryFitness, secondaryFitnesses);
+    public override int GetHashCode() => secondaryFitnesses.Aggregate(primaryFitness.GetHashCode(), (total, next) => HashCode.Combine(total, next));
     public override string? ToString() => $$"""{{primaryFitness}} {{{string.Join(", ", secondaryFitnesses)}}}""";
     #endregion
 

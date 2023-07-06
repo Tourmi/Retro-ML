@@ -25,7 +25,7 @@ internal class Genome : IGenome
     public Fitness Fitness { get; set; }
     public Fitness AdjustedFitness { get; set; }
 
-    public Phenome ToPhenome() => new(this);
+    internal Phenome ToPhenome() => new(this);
     public IPhenome GetPhenome() => ToPhenome();
 
     /// <summary>
@@ -59,10 +59,10 @@ internal class Genome : IGenome
         //update output nodes
         for (int i = InputNodeCount; i < InputNodeCount + OutputNodeCount; i++)
         {
-            depths[i] = maximumLayer + 1;
+            depths[i] = maximumLayer;
         }
 
-        return (depths, maximumLayer + 1);
+        return (depths, maximumLayer);
     }
 
     public double GetDelta(Genome other, double excessMulti, double disjointMulti, double weightMulti, int minimumN)
@@ -125,13 +125,15 @@ internal class Genome : IGenome
 
     public Genome Copy() => new()
     {
-        ConnectionGenes = ConnectionGenes.Select(g => g.Copy()).ToArray(),
+        ConnectionGenes = ConnectionGenes.ToArray(),
         HiddenActivationFunction = HiddenActivationFunction,
         InputActivationFunction = InputActivationFunction,
         InputNodeCount = InputNodeCount,
         OutputActivationFunction = OutputActivationFunction,
         OutputNodeCount = OutputNodeCount,
-        TotalNodeCount = TotalNodeCount
+        TotalNodeCount = TotalNodeCount,
+        Fitness = Fitness,
+        AdjustedFitness = AdjustedFitness,
     };
 
     public Genome WithGenes(IEnumerable<ConnectionGene> genes) => new()
@@ -142,6 +144,8 @@ internal class Genome : IGenome
         InputNodeCount = InputNodeCount,
         OutputActivationFunction = OutputActivationFunction,
         OutputNodeCount = OutputNodeCount,
-        TotalNodeCount = TotalNodeCount
+        TotalNodeCount = TotalNodeCount,
+        Fitness = Fitness,
+        AdjustedFitness = AdjustedFitness,
     };
 }

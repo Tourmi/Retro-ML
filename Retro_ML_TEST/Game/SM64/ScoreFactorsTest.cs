@@ -3,7 +3,7 @@ using Retro_ML.Configuration;
 using Retro_ML.SuperMario64.Configuration;
 using Retro_ML.SuperMario64.Game;
 using Retro_ML.SuperMario64.Neural.Scoring;
-using Retro_ML_TEST.Emulator;
+using Retro_ML_TEST.Mocks;
 using static Retro_ML.SuperMario64.Game.Addresses;
 
 namespace Retro_ML_TEST.Game.SM64;

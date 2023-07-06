@@ -3,7 +3,7 @@ using Retro_ML.Configuration;
 using Retro_ML.SuperMario64.Configuration;
 using Retro_ML.SuperMario64.Game;
 using Retro_ML.Utils.Game.Geometry3D;
-using Retro_ML_TEST.Emulator;
+using Retro_ML_TEST.Mocks;
 using Retro_ML_TEST.Utils.Game.Geometry3D;
 using System;
 using static Retro_ML.SuperMario64.Game.Addresses;

@@ -95,7 +95,8 @@ internal class TrainingChartViewModel : ViewModelBase
                 Name = filter.Name,
                 LineSmoothness = 0,
                 TooltipLabelFormatter = FormatTooltip,
-                IsVisible = filter.Enabled
+                IsVisible = filter.Enabled,
+                GeometrySize = 10
             };
 
             ShownSeries.Add(series);

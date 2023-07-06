@@ -24,7 +24,7 @@
 				</DataTemplate>
 			</ItemsControl.ItemTemplate>
 		</ItemsControl>
-		<lvc:CartesianChart Series="{Binding ShownSeries}" DockPanel.Dock="Top" TooltipFontFamily="Courier New" />
+		<lvc:CartesianChart Name="TrainingChart" Series="{Binding ShownSeries}" DockPanel.Dock="Top" FontFamily="Courier New"/>
 	</DockPanel>
 
 </UserControl>

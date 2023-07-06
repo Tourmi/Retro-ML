@@ -3,7 +3,7 @@ using Retro_ML.Configuration;
 using Retro_ML.SuperBomberman3.Configuration;
 using Retro_ML.SuperBomberman3.Game;
 using Retro_ML.SuperBomberMan3.Neural.Scoring;
-using Retro_ML_TEST.Emulator;
+using Retro_ML_TEST.Mocks;
 
 namespace Retro_ML_TEST.Game.SuperBomberman3
 {

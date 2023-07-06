@@ -4,7 +4,7 @@ using Retro_ML.Neural.Scoring;
 using Retro_ML.SuperMarioWorld.Configuration;
 using Retro_ML.SuperMarioWorld.Game;
 using Retro_ML.SuperMarioWorld.Neural.Scoring;
-using Retro_ML_TEST.Emulator;
+using Retro_ML_TEST.Mocks;
 
 namespace Retro_ML_TEST.Game.SuperMarioWorld
 {

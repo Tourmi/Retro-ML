@@ -1,5 +1,5 @@
 ﻿namespace Retro_ML.NEAT.Creatures.Genotype;
-internal class ConnectionGene
+internal struct ConnectionGene
 {
     public int InputNode { get; set; }
     public int OutputNode { get; set; }
@@ -7,21 +7,10 @@ internal class ConnectionGene
     public bool Enabled { get; set; }
     public long InnovationNumber { get; set; }
 
-    internal ConnectionGene Copy() => new()
+    internal ConnectionGene WithWeight(double weight)
     {
-        Weight = Weight,
-        InnovationNumber = InnovationNumber,
-        Enabled = Enabled,
-        InputNode = InputNode,
-        OutputNode = OutputNode
-    };
-
-    internal ConnectionGene WithWeight(double weight) => new()
-    {
-        Weight = weight,
-        InnovationNumber = InnovationNumber,
-        Enabled = Enabled,
-        InputNode = InputNode,
-        OutputNode = OutputNode
-    };
+        var c = this;
+        c.Weight = weight;
+        return c;
+    }
 }

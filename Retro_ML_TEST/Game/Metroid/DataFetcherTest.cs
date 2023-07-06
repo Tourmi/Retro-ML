@@ -2,7 +2,7 @@
 using Retro_ML.Configuration;
 using Retro_ML.Metroid.Configuration;
 using Retro_ML.Metroid.Game;
-using Retro_ML_TEST.Emulator;
+using Retro_ML_TEST.Mocks;
 using System;
 
 namespace Retro_ML_TEST.Game.Metroid

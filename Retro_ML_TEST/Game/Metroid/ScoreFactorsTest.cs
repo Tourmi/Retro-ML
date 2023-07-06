@@ -3,7 +3,7 @@ using Retro_ML.Configuration;
 using Retro_ML.Metroid.Configuration;
 using Retro_ML.Metroid.Game;
 using Retro_ML.Metroid.Neural.Scoring;
-using Retro_ML_TEST.Emulator;
+using Retro_ML_TEST.Mocks;
 
 namespace Retro_ML_TEST.Game.Metroid
 {

@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 using Retro_ML.PokemonGen1.Configuration;
 using Retro_ML.PokemonGen1.Game;
 using Retro_ML.PokemonGen1.Neural.Scoring;
-using Retro_ML_TEST.Emulator;
+using Retro_ML_TEST.Mocks;
 
 namespace Retro_ML_TEST.Game.PokemonGen1
 {

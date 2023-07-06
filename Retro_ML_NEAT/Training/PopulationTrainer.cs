@@ -96,9 +96,7 @@ internal class PopulationTrainer : IPopulationTrainer
     {
         foreach (var species in population.Species)
         {
-            int removeCount = (int)Math.Floor(species.Genomes.Count * config.ReproductionConfig.PreReproductionRemoveRatio);
-            if (removeCount < 1 || species.Genomes.Count == 1) continue;
-
+            int removeCount = Math.Min((int)Math.Floor(species.Genomes.Count * config.ReproductionConfig.PreReproductionRemoveRatio), species.Genomes.Count - 1);
             for (int i = 0; i < removeCount; i++)
             {
                 var g = species.Genomes.Last();
@@ -122,7 +120,7 @@ internal class PopulationTrainer : IPopulationTrainer
         //Since we always round down the count per species, we need to pick some randomly to increase back to the target number
         while (targetCount > 0)
         {
-            int indexSpecies = random.PickRandomFromWeightedList(population.Species.Select((s, i) => i).ToList(), adjustedFitnesses, totalAdjustedFitnesses);
+            int indexSpecies = random.RandomFromWeightedList(population.Species.Select((s, i) => i).ToList(), adjustedFitnesses, totalAdjustedFitnesses);
             countPerSpecies[indexSpecies]++;
 
             targetCount--;
@@ -130,7 +128,7 @@ internal class PopulationTrainer : IPopulationTrainer
 
         var genomesToReproduce = countPerSpecies.SelectMany((s, i)
             => Enumerable.Repeat(0, s)
-                         .Select(_ => random.PickRandomFromWeightedList(
+                         .Select(_ => random.RandomFromWeightedList(
                              population.Species[i].Genomes,
                              population.Species[i].Genomes.Select(g => g.AdjustedFitness.Score).ToList(),
                              adjustedFitnesses[i])));
@@ -139,8 +137,8 @@ internal class PopulationTrainer : IPopulationTrainer
         {
             if (random.NextDouble() < config.ReproductionConfig.CrossoverOdds)
             {
-                var otherSpeciesToReproduce = random.PickRandomFromWeightedList(population.Species, adjustedFitnesses, totalAdjustedFitnesses);
-                var otherGenomeToReproduce = random.PickRandomFromWeightedList(otherSpeciesToReproduce.Genomes, otherSpeciesToReproduce.Genomes.Select(g => g.AdjustedFitness.Score).ToList(), otherSpeciesToReproduce.AdjustedFitnessSum.Score);
+                var otherSpeciesToReproduce = random.RandomFromWeightedList(population.Species, adjustedFitnesses, totalAdjustedFitnesses);
+                var otherGenomeToReproduce = random.RandomFromWeightedList(otherSpeciesToReproduce.Genomes, otherSpeciesToReproduce.Genomes.Select(g => g.AdjustedFitness.Score).ToList(), otherSpeciesToReproduce.AdjustedFitnessSum.Score);
 
                 var (bestGenome, otherGenome) = genome.AdjustedFitness < otherGenomeToReproduce.AdjustedFitness ? (otherGenomeToReproduce, genome) : (genome, otherGenomeToReproduce);
                 genomes.Add(reproductor.Crossover(bestGenome, otherGenome));
@@ -156,6 +154,9 @@ internal class PopulationTrainer : IPopulationTrainer
 
     private void PruneStaleSpecies()
     {
+        //Don't prune if the best species has made progress recently
+        if (population.Species[0].GensSinceLastProgress < config.SpeciesConfig.PruneAfterXGenerationsWithoutProgress) return;
+
         List<Species> toRemove = new();
         for (int i = config.ReproductionConfig.EliteSpeciesCount; i < population.Species.Count; i++)
         {
@@ -230,7 +231,11 @@ internal class PopulationTrainer : IPopulationTrainer
 
     private void EvaluatePopulation()
     {
-        _ = Parallel.For(0, population.AllGenomes.Count, (i) =>
+        _ = Parallel.For(0, population.AllGenomes.Count, new ParallelOptions()
+        {
+            MaxDegreeOfParallelism = 10,
+            TaskScheduler = TaskScheduler.Current
+        }, (i) =>
         {
             var currGenome = population.AllGenomes[i];
 

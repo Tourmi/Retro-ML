@@ -2,7 +2,7 @@
 internal static class RandomExtensions
 {
     public static T RandomFromList<T>(this Random rand, IList<T> collection) => collection[rand.Next(0, collection.Count)];
-    public static T PickRandomFromWeightedList<T>(this Random rand, IList<T> collection, IList<double> weights, double totalWeights)
+    public static T RandomFromWeightedList<T>(this Random rand, IList<T> collection, IList<double> weights, double totalWeights)
     {
         var chosen = rand.NextDouble() * totalWeights;
         double currWeight = 0;

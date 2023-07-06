@@ -32,11 +32,12 @@ public class NEATConfiguration
 
             MutationIterations = 2;
             AdjustWeightsOdds = 0.45;
-            WeightPerturbationOdds = 0.9;
-            WeightPerturbationPercentRange = 0.1;
+            WeightPerturbationOdds = 0.3;
+            WeightShuffleOdds = 0.1;
+            WeightPerturbationPercentRange = 0.2;
             MaximumWeightAmplitude = 5.0;
 
-            MutationAddConnectionOdds = 0.1;
+            MutationAddConnectionOdds = 0.25;
             MutationAddNodeOdds = 0.1;
         }
 
@@ -52,6 +53,7 @@ public class NEATConfiguration
         public int MutationIterations { get; set; }
         public double AdjustWeightsOdds { get; set; }
         public double WeightPerturbationOdds { get; set; }
+        public double WeightShuffleOdds { get; set; }
         public double WeightPerturbationPercentRange { get; set; }
         public double MaximumWeightAmplitude { get; set; }
         public double MutationAddConnectionOdds { get; set; }
@@ -62,13 +64,13 @@ public class NEATConfiguration
     {
         public Species()
         {
-            SpeciesMaxDelta = 1.75;
-            DeltaExcessGenesWeight = 1;
+            SpeciesMaxDelta = 2;
+            DeltaExcessGenesWeight = 0.5;
             DeltaDisjointGenesWeight = 1;
             MinimumGeneCountToNormalizeExcessDisjoint = 5;
             DeltaAverageWeightDifferenceWeight = 1;
 
-            PruneAfterXGenerationsWithoutProgress = 20;
+            PruneAfterXGenerationsWithoutProgress = 50;
         }
 
         public double SpeciesMaxDelta { get; set; }

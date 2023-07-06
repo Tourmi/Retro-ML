@@ -2,7 +2,7 @@
 using Retro_ML.Configuration;
 using Retro_ML.StreetFighter2Turbo.Configuration;
 using Retro_ML.StreetFighter2Turbo.Game;
-using Retro_ML_TEST.Emulator;
+using Retro_ML_TEST.Mocks;
 
 namespace Retro_ML_TEST.Game.StreetFighter2Turbo
 {

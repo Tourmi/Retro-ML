@@ -65,7 +65,7 @@ internal class GenomeReproductor
         return toMutate;
     }
 
-    private Genome MutateWeights(Genome toMutate)
+    internal Genome MutateWeights(Genome toMutate)
     {
         if (toMutate.ConnectionGenes.Length == 0) return toMutate;
         if (random.NextDouble() >= config.ReproductionConfig.AdjustWeightsOdds) return toMutate;
@@ -77,19 +77,23 @@ internal class GenomeReproductor
             {
                 modifiedGenes.Add(connection.WithWeight(PertubedWeight(connection.Weight)));
             }
-            else
+            else if (random.NextDouble() < config.ReproductionConfig.WeightShuffleOdds)
             {
                 modifiedGenes.Add(connection.WithWeight(RandomWeight()));
+            }
+            else
+            {
+                modifiedGenes.Add(connection);
             }
         }
 
         return toMutate.WithGenes(modifiedGenes);
     }
 
-    private Genome MutateAddConnection(Genome toMutate)
+    internal Genome MutateAddConnection(Genome toMutate)
     {
         if (random.NextDouble() >= config.ReproductionConfig.MutationAddConnectionOdds && toMutate.ConnectionGenes.Any()) return toMutate;
-        var copiedGenes = toMutate.ConnectionGenes.Select(g => g.Copy()).ToList();
+        var copiedGenes = toMutate.ConnectionGenes.ToList();
         var (nodeDepths, maximumDepth) = toMutate.GetNodesDepth();
         int randomInput = 0;
         int randomOutput = 0;
@@ -124,10 +128,10 @@ internal class GenomeReproductor
         return result;
     }
 
-    private Genome MutateAddNode(Genome toMutate)
+    internal Genome MutateAddNode(Genome toMutate)
     {
         if (random.NextDouble() >= config.ReproductionConfig.MutationAddNodeOdds || toMutate.ConnectionGenes.Length <= 1) return toMutate;
-        var copiedGenes = toMutate.ConnectionGenes.Select(g => g.Copy()).ToList();
+        var copiedGenes = toMutate.ConnectionGenes.ToList();
         var chosenGeneToSplit = random.RandomFromList(copiedGenes.Where(g => g.Enabled).ToList());
         chosenGeneToSplit.Enabled = false;
 
@@ -151,12 +155,12 @@ internal class GenomeReproductor
         {
             if (j >= otherGenes.Count)
             {
-                newGenes.Add(bestGenes[i].Copy());
+                newGenes.Add(bestGenes[i]);
                 continue;
             }
             if (bestGenes[i].InnovationNumber < otherGenes[j].InnovationNumber)
             {
-                newGenes.Add(bestGenes[i].Copy());
+                newGenes.Add(bestGenes[i]);
                 j--;
                 continue;
             }
@@ -166,7 +170,7 @@ internal class GenomeReproductor
                 continue;
             }
 
-            var chosenGene = (random.Next(2) == 0 ? bestGenes[i] : otherGenes[j]).Copy();
+            var chosenGene = (random.Next(2) == 0 ? bestGenes[i] : otherGenes[j]);
             if (!bestGenes[i].Enabled || !otherGenes[j].Enabled) chosenGene.Enabled = random.NextDouble() >= config.ReproductionConfig.GeneRemainsDisabledOdds;
             newGenes.Add(chosenGene);
         }
@@ -174,7 +178,7 @@ internal class GenomeReproductor
         return best.WithGenes(newGenes);
     }
 
-    private long GetInnovationNumber(int input, int output) => GetInnovationNumber(new Innovation(input, output));
+    internal long GetInnovationNumber(int input, int output) => GetInnovationNumber(new Innovation(input, output));
 
     private long GetInnovationNumber(Innovation innovation)
     {

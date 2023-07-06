@@ -9,7 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Retro_ML_TEST.Emulator
+namespace Retro_ML_TEST.Mocks
 {
     internal class MockEmulatorAdapter : IEmulatorAdapter
     {
@@ -59,9 +59,7 @@ namespace Retro_ML_TEST.Emulator
             NeuralMemory.Reset();
 
             if (!GetStates().Any(state => saveState.EndsWith(state)))
-            {
                 throw new Exception($"Invalid save state : {saveState}");
-            }
         }
 
         public int NextFrameCallCount = 0;

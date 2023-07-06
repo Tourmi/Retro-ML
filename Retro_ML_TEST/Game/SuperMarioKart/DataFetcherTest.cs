@@ -2,7 +2,7 @@
 using Retro_ML.Configuration;
 using Retro_ML.SuperMarioKart.Configuration;
 using Retro_ML.SuperMarioKart.Game;
-using Retro_ML_TEST.Emulator;
+using Retro_ML_TEST.Mocks;
 using System;
 
 namespace Retro_ML_TEST.Game.SuperMarioKart

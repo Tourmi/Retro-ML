@@ -3,7 +3,7 @@ using Retro_ML.Configuration;
 using Retro_ML.Tetris.Configuration;
 using Retro_ML.Tetris.Game;
 using Retro_ML.Tetris.Neural.Scoring;
-using Retro_ML_TEST.Emulator;
+using Retro_ML_TEST.Mocks;
 using System;
 using System.Collections.Generic;
 using System.Linq;

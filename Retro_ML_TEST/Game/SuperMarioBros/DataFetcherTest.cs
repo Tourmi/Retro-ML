@@ -2,7 +2,7 @@
 using Retro_ML.Configuration;
 using Retro_ML.SuperMarioBros.Configuration;
 using Retro_ML.SuperMarioBros.Game;
-using Retro_ML_TEST.Emulator;
+using Retro_ML_TEST.Mocks;
 
 namespace Retro_ML_TEST.Game.SuperMarioBros
 {
